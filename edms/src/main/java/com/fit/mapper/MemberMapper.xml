@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.MemberMapper">
+	<!-- 인사정보 등록여부 검사 -->
+	<select id="empInfoCnt" parameterType="int" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM emp_info
+		WHERE emp_no = #{empNo}
+	</select>
+	
+	<!-- 사원번호 중복검사 -->
+	<select id="memberInfoCnt" parameterType="int" resultType="int">
+		SELECT
+			COUNT(*)
+		FROM member_info
+		WHERE emp_no = #{empNo}
+	</select>
+	
+	<!-- 회원가입 -->
+	<insert id="addMember" parameterType="com.fit.vo.MemberInfo">
+		INSERT INTO member_info(
+			emp_no,
+			member_name,
+			pw,
+			gender,
+			email,
+			address,
+			createdate,
+			updatedate
+		) VALUES (
+			#{empNo},
+			#{memberName},
+			PASSWORD( #{pw} ),
+			#{gender},
+			#{email},
+			#{address},
+			NOW(),
+			NOW()
+		)
+	</insert>
+</mapper>
