@@ -26,7 +26,13 @@ public class LoginController {
 	
 //로그인 폼
 	@GetMapping("/login")
-	public String loginForm(HttpServletRequest request) {		
+	public String loginForm(HttpServletRequest request, HttpSession session) {
+		
+		if ( session.getAttribute("loginMemberId") != null ) {
+			log.debug("\u001B[46m" + "로긴폼.세션ID :  " + session.getAttribute("loginMemberId") + "\u001B[0m");
+	        return "/home"; // 세션계층에서 로그인 중이라면 home으로 이동
+		}
+		
 		// 쿠키에 저장된 로그인 성공 아이디가 있다면 request 속성에 저장
 		Cookie[] cookies = request.getCookies();
 		if (cookies != null) {
@@ -69,7 +75,10 @@ log.debug("\u001B[46m" + "로긴컨트롤러.쿠키에 저장된 loginId :  " + 
 		session.setAttribute("loginMemberId", memberId);							// 로그인 정보 저장
 		session.setAttribute("accessLevel", loginSessionMap.get("accessLevel")); 	// 세션에 엑세스 레벨 저장
 		session.setAttribute("empName", loginSessionMap.get("empName")); 			// 사원이름 저장
-		
+log.debug("\u001B[46m" + "로긴컨트롤러.세션계층 loginMemberId :  " + session.getAttribute("loginMemberId") + "\u001B[0m");
+log.debug("\u001B[46m" + "로긴컨트롤러.세션계층 accessLevel :  " + session.getAttribute("accessLevel") + "\u001B[0m");
+log.debug("\u001B[46m" + "로긴컨트롤러.세션계층 empName :  " + session.getAttribute("empName") + "\u001B[0m");
+
         return "redirect:/home"; // 로그인 성공 시 이동할 페이지
 	}
 
