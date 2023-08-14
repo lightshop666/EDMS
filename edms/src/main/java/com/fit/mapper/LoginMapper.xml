@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.LoginMapper">
+
+<!-- 세션에 저장할 로그인 정보  -->
+	<select id="selectEmpForSession" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+			li.emp_no empNo
+			, fo.access_level accessLevel
+			, fo.emp_state empState
+			, fo.emp_name empName
+		FROM
+			emp_no_list li
+			INNER JOIN emp_info fo
+			INNER JOIN member_info mem
+		WHERE 
+			li.emp_no = #{memberId} AND mem.pw=#{memberPw};
+
+	</select>
+
+
+</mapper>
