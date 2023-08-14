@@ -17,7 +17,7 @@
 		<tr>
 			<td>사원번호</td>
 			<td colspan="2">
-				<input type="number" name="empNo">
+				<input type="number" name="empNo" value="${empNo}">
 			</td>
 		</tr>
 		<tr>
