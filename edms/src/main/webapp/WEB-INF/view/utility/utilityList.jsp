@@ -13,7 +13,7 @@
 		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
 		<a href="${pageContext.request.contextPath}/utility/utilityList">공용품추가</a>
 	</div>	
-	<!-- 조건문 -->
+	<!-- [시작] 조건문 -->
 	<div>
 		<c:forEach var="m" items="${utilityList}">
 			<a herf="${pageContext.request.contextPath}/utility/utilityList"></a>
