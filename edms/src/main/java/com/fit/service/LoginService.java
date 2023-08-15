@@ -17,7 +17,7 @@ public class LoginService {
     public Map<String, Object> validateUser(String memberId, String memberPw) {
     	
 		Map<String, Object> loginSessionMap = loginMapper.selectEmpForSession(memberId, memberPw);
-log.debug("\u001B[46m" + "로긴서비스.loginSessionMap :  " + loginSessionMap + "\u001B[0m");
+log.debug("\u001B[42;1m" + "로긴서비스.loginSessionMap :  " + loginSessionMap + "\u001B[0m");
 		
 		
 		return loginSessionMap;

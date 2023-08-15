@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -40,6 +40,9 @@
 </head>
 <body>
 	<h1>Login</h1>
+<!-- 로긴 에러 메시지 -->
+	<p>${loginError}</p>
+<!-- 사번, pw 폼 -->
 	<form action="${pageContext.request.contextPath}/login" method="post">
 		<div>
 			아이디 : <input type="text" name="memberId" value="${loginId}">
