@@ -47,7 +47,9 @@
 	<c:if test="${currentPage > 1 }">
 		<a href="${pageContext.request.contextPath}/utilityList?currentPage=${currentPage - 1}">이전</a>
 	</c:if>
+	
 	&nbsp;<span>${currentPage}</span>
+	
 	<c:if test="${lastPage > currentPage }">
 		<a href="${pageContext.request.contextPath}/utilityList?currentPage=${currentPage + 1}">다음</a>
 	</c:if>
