@@ -53,5 +53,6 @@
 	<c:if test="${lastPage > currentPage }">
 		<a href="${pageContext.request.contextPath}/utilityList?currentPage=${currentPage + 1}">다음</a>
 	</c:if>
+	<!-- [끝] 페이징 영역 -->
 </body>
 </html>
