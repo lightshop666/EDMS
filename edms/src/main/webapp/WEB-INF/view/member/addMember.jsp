@@ -66,11 +66,11 @@
 			let errorMsg = '최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.';
 			
 			if ( pwPattern.test(pw1) ) { // test 메서드는 해당 문자열이 정규식과 패턴이 일치하면 true를 반환
-				$('#pwMsg1').html(successMsg).css('color', 'green');
+				$('#pwMsg1').text(successMsg).css('color', 'green');
 				console.log('비밀번호 정규식 일치');
 				return true;
 			} else {
-				$('#pwMsg1').html(errorMsg).css('color', 'red');
+				$('#pwMsg1').text(errorMsg).css('color', 'red');
 				console.log('비밀번호 정규식 불일치');
 				return false;
 			}
@@ -84,11 +84,11 @@
 			let errorMsg = '비밀번호가 일치하지 않습니다.';
 			
 			if ( pw1 == pw2 ) { 
-				$('#pwMsg2').html(successMsg).css('color', 'green');
+				$('#pwMsg2').text(successMsg).css('color', 'green');
 				console.log('비밀번호 일치');
 				return true;
 			} else { 
-				$('#pwMsg2').html(errorMsg).css('color', 'red');
+				$('#pwMsg2').text(errorMsg).css('color', 'red');
 				console.log('비밀번호 불일치')
 				return false;
 			}
@@ -112,11 +112,11 @@
 							
 							// 검사 결과에 따라 분기
 							if (response.empInfoCnt == 0 || response.memberInfoCnt != 0) {
-								$('#empNoMsg').html(response.resultMsg).css('color', 'red'); // 반환된 메세지를 출력
+								$('#empNoMsg').text(response.resultMsg).css('color', 'red'); // 반환된 메세지를 출력
 								console.log('사원번호 검사 결과 -> 가입 불가능');
 								empNoValid = false;
 							} else {
-								$('#empNoMsg').html(response.resultMsg).css('color', 'green'); // 반환된 메세지를 출력
+								$('#empNoMsg').text(response.resultMsg).css('color', 'green'); // 반환된 메세지를 출력
 								console.log('사원번호 검사 결과 -> 가입 가능');
 								empNoValid = true;
 							}
@@ -127,7 +127,7 @@
 		                }
 					});
 				} else { // 사원번호를 11자리 이상 입력할 경우
-					$('#empNoMsg').html('사원번호는 7자리입니다.').css('color', 'red');
+					$('#empNoMsg').text('사원번호는 7자리입니다.').css('color', 'red');
 					empNoValid = false;
 				}
 			} else { // 사원번호 미입력 시
