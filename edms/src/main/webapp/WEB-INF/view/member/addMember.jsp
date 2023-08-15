@@ -6,75 +6,242 @@
 <title>addMember</title>
 	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-	<!-- 다음 카카오 도로명 주소 API -->
+	<!-- 다음 카카오 도로명 주소 API 사용 -->
 	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 	<script>
+		// 함수 선언 시작
+		// 도로명 주소 찾기 함수
+		function sample6_execDaumPostcode() {
+			new daum.Postcode({
+				oncomplete: function(data) {
+					// 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
+					// 각 주소의 노출 규칙에 따라 주소를 조합한다.
+					// 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
+					var addr = ''; // 주소 변수
+					var extraAddr = ''; // 참고항목 변수
+		
+					// 사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
+					if (data.userSelectedType == 'R') { // 사용자가 도로명 주소를 선택했을 경우
+						addr = data.roadAddress;
+					} else { // 사용자가 지번 주소를 선택했을 경우(J)
+						addr = data.jibunAddress;
+					}
+		
+					// 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
+					if (data.userSelectedType == 'R') {
+						// 법정동명이 있을 경우 추가한다. (법정리는 제외)
+						// 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
+						if (data.bname != '' && /[동|로|가]$/g.test(data.bname)) {
+							extraAddr += data.bname;
+						}
+						// 건물명이 있고, 공동주택일 경우 추가한다.
+						if (data.buildingName != '' && data.apartment == 'Y') {
+							extraAddr += (extraAddr != '' ? ', ' + data.buildingName : data.buildingName);
+						}
+						// 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
+						if (extraAddr != '') {
+							extraAddr = ' (' + extraAddr + ')';
+						}
+						// 조합된 참고항목을 해당 필드에 넣는다.
+						$('#sample6_extraAddress').val(extraAddr);
+					} else {
+						$('#sample6_extraAddress').val('');
+					}
+		
+					// 우편번호와 주소 정보를 해당 필드에 넣는다.
+					$('#sample6_postcode').val(data.zonecode);
+					$('#sample6_address').val(addr);
+					// 커서를 상세주소 필드로 이동한다.
+					$('#sample6_detailAddress').focus();
+				}
+			}).open();
+		}
+	
+		// 비밀번호 정규식 검사 함수
+		function validatePassword() {
+			// 정규식 패턴은 양 끝에 슬래시를 포함해야 한다
+			let pwPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}:;<>,.?~[\]\-]).{8,}$/;
+			let pw1 = $('#pw1').val();
+			let successMsg = '사용 가능한 비밀번호입니다.';
+			let errorMsg = '최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.';
+			
+			if ( pwPattern.test(pw1) ) { // test 메서드는 해당 문자열이 정규식과 패턴이 일치하면 true를 반환
+				$('#pwMsg1').html(successMsg).css('color', 'green');
+				console.log('비밀번호 정규식 일치');
+				return true;
+			} else {
+				$('#pwMsg1').html(errorMsg).css('color', 'red');
+				console.log('비밀번호 정규식 불일치');
+				return false;
+			}
+		}
+		
+		// 비밀번호 일치불일치 검사 함수
+		function checkPasswordMatch() {
+			let pw1 = $('#pw1').val();
+			let pw2 = $('#pw2').val();
+			let successMsg = '비밀번호가 일치합니다.';
+			let errorMsg = '비밀번호가 일치하지 않습니다.';
+			
+			if ( pw1 == pw2 ) { 
+				$('#pwMsg2').html(successMsg).css('color', 'green');
+				console.log('비밀번호 일치');
+				return true;
+			} else { 
+				$('#pwMsg2').html(errorMsg).css('color', 'red');
+				console.log('비밀번호 불일치')
+				return false;
+			}
+		}
+		
+		// 사원번호 비동기 검사 함수
+		let empNoValid = false; // 사원번호 검사 결과 변수 선언
+		
+		function checkEmpNo() {
+			let empNo = $('#empNo').val();
+			
+			if ( empNo != '' ) { // 사원번호가 입력되어 있을 시
+				if ( empNo.length < 11 ) { // Integer 타입의 최대 정수 범위 검사
+					// 비동기 검사 실행
+					$.ajax({
+						url : '/checkEmpNo',
+						type : 'post',
+						data : {empNo : empNo},
+						success : function(response) {
+							console.log('사원번호 검사 실행');
+							
+							// 검사 결과에 따라 분기
+							if (response.empInfoCnt == 0 || response.memberInfoCnt != 0) {
+								$('#empNoMsg').html(response.resultMsg).css('color', 'red'); // 반환된 메세지를 출력
+								console.log('사원번호 검사 결과 -> 가입 불가능');
+								empNoValid = false;
+							} else {
+								$('#empNoMsg').html(response.resultMsg).css('color', 'green'); // 반환된 메세지를 출력
+								console.log('사원번호 검사 결과 -> 가입 가능');
+								empNoValid = true;
+							}
+						},
+						error: function(error) {
+		                	console.error('사원번호 검사 실패: ' + error);
+		                	empNoValid = false;
+		                }
+					});
+				} else { // 사원번호를 11자리 이상 입력할 경우
+					$('#empNoMsg').html('사원번호는 7자리입니다.').css('color', 'red');
+					empNoValid = false;
+				}
+			} else { // 사원번호 미입력 시
+				$('#empNoMsg').text('사원번호를 입력해주세요.').css('color', 'red');
+				empNoValid = false;
+			}
+		}
+		
+		// 공백 및 유효성 검사 함수
+		function validateInputs() {
+			let isValid = true;
+			
+			// 각 input 입력값 가져오기
+			let empNo = $('#empNo').val();
+			let pw1 = $('#pw1').val();
+			let pw2 = $('#pw2').val();
+			let gender = $('input[name="gender"]:checked').val();
+			let email = $('#email').val();
+			let address = $('#sample6_address').val();
+			let detailAddress = $('#sample6_detailAddress').val();
+		
+			// 각 입력값 검사하기
+			if (empNo == '') {
+				alert('사원번호를 입력하세요.');
+				isValid = false;
+			}
+			// 사원번호 비동기 검사는 이미 진행
+			if (!empNoValid) { 
+				alert('사원번호를 확인하세요.');
+				isValid = false;
+			}
+			// 비밀번호 정규식 검사 및 비밀번호 일치여부 검사는 이미 진행
+			if (pw1 == '') {
+				alert('비밀번호를 입력하세요.');
+				isValid = false;
+			}
+			if (pw2 == '') {
+				alert('비밀번호 확인을 입력하세요.');
+				isValid = false;
+			}
+			if (gender == undefined) {
+				alert('성별을 선택하세요.');
+				isValid = false;
+			}
+			if (email == '') {
+				alert('이메일을 입력하세요.');
+				isValid = false;
+			}
+			if (address == '' || detailAddress == '') {
+				alert('주소를 입력하세요.');
+				isValid = false;
+			}
+		
+			return isValid;
+		}
+
+		// 이벤트 스크립트 시작
 		$(document).ready(function() {
-			// 회원가입 실패시 alert 띄우기
-			let error = '${param.error}';
-			if (error == 'true') {
+			// 페이지 로드 시 사원번호 검사를 최조 1번 실행
+			checkEmpNo();
+			
+			// 회원가입 실패시 alert
+			let error = '${param.error}'; // 회원가입 실패시 url의 매개값으로 error=true 전달
+			if (error == 'true') { // error의 값이 true이면
 			    console.log('회원가입 실패');
 			    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
 			}
 			
-			// 사원번호 검사
+			// 사원번호 입력 후 커서를 떼면 이벤트 발생
 			$('#empNo').blur(function() {
-				if( $('#empNo').val().length < 11 ) { // Integer 타입의 최대 정수 범위 검사
-					$.ajax({
-						url : '/checkEmpNo',
-						type : 'post',
-						data : {empNo : $('#empNo').val()},
-						success : function(response) {
-							console.log('사원번호 검사 실행');
-							alert(response);
-						},
-						error: function(error) {
-		                	console.error('사원번호 검사 실패: ' + error);
-		                }
-					});
-				} else {
-					alert('사원번호는 7자리입니다.');
-				}
+				checkEmpNo(); // 사원번호 비동기 검사 함수 호출
+			});
+
+			// 비밀번호 입력 후 커서를 떼면 이벤트 발생
+			$('#pw1').blur(function() { 
+				validatePassword(); // 정규식 검사 함수 호출
+				checkPasswordMatch(); // 일치불일치 검사 함수 호출
 			});
 			
-			// 비밀번호 정규식 검사
-			$('#pw1').blur(function() {
-				let pwPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}:;<>,.?~[\]\-]).{8,}$/;
-				// 정규식 패턴은 양 끝에 슬래시를 포함해야 한다
+			// 비밀번호 확인란 입력 후 커서를 떼면 이벤트 발생
+			$('#pw2').blur(function() { 
+				checkPasswordMatch(); // 일치불일치 검사 함수 호출
+			});
+
+			// 회원가입 버튼 클릭 시
+			$('#addMemberBtn').click(function(event) {
+		    	// 1) 주소값 가져오기
+				let postcode = $('#sample6_postcode').val(); // 우편번호
+				let address = $('#sample6_address').val(); // 주소
+				let detailAddress = $('#sample6_detailAddress').val(); // 상세주소
+				// 한줄의 주소로 합치기
+				let fullAddress = postcode + " " + address + " " + detailAddress;
+				console.log('주소 : ' + fullAddress);
+				// hidden input에 주소값 저장
+				$('#fullAddress').val(fullAddress);
 				
-				if ( pwPattern.test( $('#pw1').val() ) ) {
-					// test 메서드는 해당 문자열이 정규식과 패턴이 일치하면 true를 반환한다
-					$('#pwMsg1').html('<span style="color: green;">사용 가능한 비밀번호입니다.</span>');
-					console.log('비밀번호 정규식 일치');
+				// 2) 유효성 및 공백 검사
+				let allFieldsValid = empNoValid && validatePassword() && checkPasswordMatch() && validateInputs();	
+		
+				if (allFieldsValid) {
+					$('form').submit(); // 폼 제출
 				} else {
-					$('#pwMsg1').html('<span style="color: red;">최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.</span>');
-					console.log('비밀번호 정규식 불일치');
-				}
-			});
-			
-			// 비밀번호 일치불일치 검사
-			$('#pw2').blur(function() { // 비밀번호 확인란에 입력 후 커서를 떼면 이벤트 발생
-				if ( $('#pw1').val() != $('#pw2').val() ) {
-					$('#pwMsg2').html('<span style="color: red;">비밀번호가 일치하지 않습니다.</span>');
-					console.log('비밀번호 불일치');
-				} else if ( $('#pw1').val() == $('#pw2').val() ) {
-					$('#pwMsg2').html('<span style="color: green;">비밀번호가 일치합니다.</span>');
-					console.log('비밀번호 일치');
+					alert('사원번호 또는 비밀번호를 확인해주세요.');
+					event.preventDefault(); // 폼 제출 막기
 				}
 			});
 
-			// 회원가입 버튼 클릭 시 이벤트 발생
-		    $('#addMemberBtn').click(function() {
-		        // 공백검사
-		        // 주소값 가져오기
-		        let postcode = $('#sample6_postcode').val();
-		        let address = $('#sample6_address').val();
-		        let detailAddress = $('#sample6_detailAddress').val();
-		        // 한줄의 주소로 합치기
-		        let fullAddress = postcode + " " + address + " " + detailAddress;
-		        console.log('주소 : ' + fullAddress);
-		        $('#fullAddress').val(fullAddress);
-		    });			
+			// 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('로그인 페이지로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				if (result) {
+					window.location.href = '/login'; // 로그인 페이지로 이동
+				}
+			});
 		});
 	</script>
 </head>
@@ -88,18 +255,15 @@
 			</tr>
 			<tr>
 				<td>사원번호</td>
-				<td colspan="2">
+				<td>
 					<input type="number" name="empNo" value="${empNo}" id="empNo"> <!-- empNo가 넘어올경우 출력 -->
 				</td>
-			</tr>
-			<tr>
-				<td>이름</td>
-				<td colspan="2">
-					<input type="text" name="memberName">
+				<td>
+					<span id="empNoMsg"></span>
 				</td>
 			</tr>
 			<tr>
-				<td>PW</td>
+				<td>비밀번호</td>
 				<td>
 					<input type="password" name="pw" placeholder="비밀번호를 입력하세요" id="pw1">
 				</td>
@@ -108,7 +272,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>PW확인</td>
+				<td>비밀번호 확인</td>
 				<td>
 					<input type="password" name="pw2" placeholder="비밀번호를 한번 더 입력하세요" id="pw2">
 				</td>
@@ -124,7 +288,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td>e-mail</td>
+				<td>이메일</td>
 				<td>
 					<input type="email" name="email" id="email">
 				</td>
@@ -133,71 +297,20 @@
 				</td>
 			</tr>
 			<tr>
-				<td>address</td>
+				<td>주소</td>
 				<td colspan="2">
-					<!-- 도로명 주소 찾기 -->
+					<!-- 도로명 주소 찾기 input -->
 					<input type="text" id="sample6_postcode" placeholder="우편번호">
 					<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
 					<input type="text" id="sample6_address" placeholder="주소"><br>
 					<input type="text" id="sample6_detailAddress" placeholder="상세주소">
 					<input type="text" id="sample6_extraAddress" placeholder="참고항목">
 					<input type="hidden" name="address" id="fullAddress">
-					
-					<script>
-					// 도로명 주소 찾기 API
-					    function sample6_execDaumPostcode() {
-					        new daum.Postcode({
-					            oncomplete: function(data) {
-					                // 팝업에서 검색결과 항목을 클릭했을때 실행할 코드를 작성하는 부분.
-					
-					                // 각 주소의 노출 규칙에 따라 주소를 조합한다.
-					                // 내려오는 변수가 값이 없는 경우엔 공백('')값을 가지므로, 이를 참고하여 분기 한다.
-					                var addr = ''; // 주소 변수
-					                var extraAddr = ''; // 참고항목 변수
-					
-					                //사용자가 선택한 주소 타입에 따라 해당 주소 값을 가져온다.
-					                if (data.userSelectedType === 'R') { // 사용자가 도로명 주소를 선택했을 경우
-					                    addr = data.roadAddress;
-					                } else { // 사용자가 지번 주소를 선택했을 경우(J)
-					                    addr = data.jibunAddress;
-					                }
-					
-					                // 사용자가 선택한 주소가 도로명 타입일때 참고항목을 조합한다.
-					                if(data.userSelectedType === 'R'){
-					                    // 법정동명이 있을 경우 추가한다. (법정리는 제외)
-					                    // 법정동의 경우 마지막 문자가 "동/로/가"로 끝난다.
-					                    if(data.bname !== '' && /[동|로|가]$/g.test(data.bname)){
-					                        extraAddr += data.bname;
-					                    }
-					                    // 건물명이 있고, 공동주택일 경우 추가한다.
-					                    if(data.buildingName !== '' && data.apartment === 'Y'){
-					                        extraAddr += (extraAddr !== '' ? ', ' + data.buildingName : data.buildingName);
-					                    }
-					                    // 표시할 참고항목이 있을 경우, 괄호까지 추가한 최종 문자열을 만든다.
-					                    if(extraAddr !== ''){
-					                        extraAddr = ' (' + extraAddr + ')';
-					                    }
-					                    // 조합된 참고항목을 해당 필드에 넣는다.
-					                    document.getElementById("sample6_extraAddress").value = extraAddr;
-					                
-					                } else {
-					                    document.getElementById("sample6_extraAddress").value = '';
-					                }
-					
-					                // 우편번호와 주소 정보를 해당 필드에 넣는다.
-					                document.getElementById('sample6_postcode').value = data.zonecode;
-					                document.getElementById("sample6_address").value = addr;
-					                // 커서를 상세주소 필드로 이동한다.
-					                document.getElementById("sample6_detailAddress").focus();
-					            }
-					        }).open();
-					    }
-					</script>
 				</td>
 			</tr>
 		</table>
-		<button type="button" id="addMemberBtn">취소</button><!-- 왼쪽 정렬 -->
-		<button type="submit">저장</button><!-- 오른쪽 정렬 -->
+		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+		<button type="submit" id="addMemberBtn">저장</button> <!-- 오른쪽 정렬 -->
 	</form>
 </body>
 </html>

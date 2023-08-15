@@ -47,7 +47,7 @@ public class MemberController {
 		
 		if (row == 1) {
 			log.debug("\033[46;97m" + "MemberController.addMember() row : " + row + "\u001B[0m");
-	        return "redirect:/login/login"; // 회원가입 성공 시 로그인 페이지로
+	        return "redirect:/login"; // 회원가입 성공 시 로그인 페이지로
 	    } else { // 회원가입 실패 시
 	    	log.debug("\033[46;97m" + "MemberController.addMember() row : " + row + "\u001B[0m");
 	        return "redirect:/member/addMember?error=true";

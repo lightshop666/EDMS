@@ -21,7 +21,6 @@
 	<insert id="addMember" parameterType="com.fit.vo.MemberInfo">
 		INSERT INTO member_info(
 			emp_no,
-			member_name,
 			pw,
 			gender,
 			email,
@@ -30,7 +29,6 @@
 			updatedate
 		) VALUES (
 			#{empNo},
-			#{memberName},
 			PASSWORD( #{pw} ),
 			#{gender},
 			#{email},
