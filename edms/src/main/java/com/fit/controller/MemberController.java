@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fit.CC;
 import com.fit.service.MemberService;
 import com.fit.vo.MemberInfo;
 
@@ -25,15 +26,16 @@ public class MemberController {
 	public String addMember(HttpSession session,
 							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
+		log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
 		// 로그인 상태면 home으로 분기
 		if(session.getAttribute("loginMemberId") != null) {
-			log.debug("\033[46;97m" + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + "\u001B[0m");
+			log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
 			return "/home";
 		}
 		
 		// 매개값 empNo가 넘어오면 view에서 출력한다
 		if(empNo != null) {
-			log.debug("\033[46;97m" + "MemberController.addMember() empNo param : " + empNo + "\u001B[0m");
+			log.debug(CC.HE + "MemberController.addMember() empNo param : " + empNo + CC.RESET);
 			model.addAttribute("empNo", empNo);
 		}
 		
@@ -46,10 +48,10 @@ public class MemberController {
 		int row = memberService.addMember(memberInfo); // 회원가입 결과값
 		
 		if (row == 1) {
-			log.debug("\033[46;97m" + "MemberController.addMember() row : " + row + "\u001B[0m");
+			log.debug(CC.HE + "MemberController.addMember() row : " + row + CC.RESET);
 	        return "redirect:/login"; // 회원가입 성공 시 로그인 페이지로
 	    } else { // 회원가입 실패 시
-	    	log.debug("\033[46;97m" + "MemberController.addMember() row : " + row + "\u001B[0m");
+	    	log.debug(CC.HE + "MemberController.addMember() row : " + row + CC.RESET);
 	        return "redirect:/member/addMember?error=true";
 	    }
 	}
