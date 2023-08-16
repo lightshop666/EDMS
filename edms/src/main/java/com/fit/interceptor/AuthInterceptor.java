@@ -7,6 +7,8 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.fit.CC;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -41,7 +43,7 @@ preHandle 메서드는 컨트롤러의 메서드가 호출되기 전에 실행�
 		
 		// 로그인된 사용자 아이디가 없는 경우
 		if (loginMemberId == null) {
-log.debug("\u001B[42;1m" + "인터셉터.preHandle : loginMemberId가 널이면 로긴페이지로 리다이렉트  " + "\u001B[0m");
+log.debug(CC.WOO + "인터셉터.preHandle : loginMemberId가 널이면 로긴페이지로 리다이렉트  " + CC.RESET);
 			// 로그인되지 않은 상태이므로 로그인 페이지로 리다이렉트
 			response.sendRedirect("/login");
 			return false; // 요청 처리 중단

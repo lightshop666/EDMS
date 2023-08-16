@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fit.CC;
 import com.fit.mapper.LoginMapper;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ public class LoginService {
     public Map<String, Object> validateUser(String memberId, String memberPw) {
     	
 		Map<String, Object> loginSessionMap = loginMapper.selectEmpForSession(memberId, memberPw);
-log.debug("\u001B[42;1m" + "로긴서비스.loginSessionMap :  " + loginSessionMap + "\u001B[0m");
+log.debug(CC.WOO + "로긴서비스.loginSessionMap :  " + loginSessionMap + CC.RESET);
 		
 		
 		return loginSessionMap;

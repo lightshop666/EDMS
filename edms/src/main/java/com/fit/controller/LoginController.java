@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fit.CC;
 import com.fit.service.LoginService;
 
 import lombok.AccessLevel;
@@ -29,7 +30,7 @@ public class LoginController {
 	public String loginForm(HttpServletRequest request, HttpSession session) {
 		
 		if ( session.getAttribute("loginMemberId") != null ) {
-			log.debug("\u001B[42;1m" + "로긴폼.세션ID :  " + session.getAttribute("loginMemberId") + "\u001B[0m");
+			log.debug(CC.WOO + "로긴폼.세션ID :  " + session.getAttribute("loginMemberId") + CC.RESET);
 	        return "/home"; // 세션계층에서 로그인 중이라면 home으로 이동
 		}
 		
@@ -40,7 +41,7 @@ public class LoginController {
 				if (c.getName().equals("loginId")) {
                     // 로그인 성공한 아이디를 뷰 페이지에 전달
 					request.setAttribute("loginId", c.getValue());
-log.debug("\u001B[42;1m" + "로긴컨트롤러.쿠키에 저장된 loginId :  " + request.getAttribute("loginId") + "\u001B[0m");
+log.debug(CC.WOO + "로긴컨트롤러.쿠키에 저장된 loginId :  " + request.getAttribute("loginId") + CC.RESET);
 					break; // 찾았으면 더 이상 반복할 필요가 없음
 				}
 			}
@@ -75,9 +76,9 @@ log.debug("\u001B[42;1m" + "로긴컨트롤러.쿠키에 저장된 loginId :  " 
 		session.setAttribute("loginMemberId", memberId);							// 로그인 정보 저장
 		session.setAttribute("accessLevel", loginSessionMap.get("accessLevel")); 	// 세션에 엑세스 레벨 저장
 		session.setAttribute("empName", loginSessionMap.get("empName")); 			// 사원이름 저장
-log.debug("\u001B[42;1m" + "로긴컨트롤러.세션계층 loginMemberId :  " + session.getAttribute("loginMemberId") + "\u001B[0m");
-log.debug("\u001B[42;1m" + "로긴컨트롤러.세션계층 accessLevel :  " + session.getAttribute("accessLevel") + "\u001B[0m");
-log.debug("\u001B[42;1m" + "로긴컨트롤러.세션계층 empName :  " + session.getAttribute("empName") + "\u001B[0m");
+log.debug(CC.WOO + "로긴컨트롤러.세션계층 loginMemberId :  " + session.getAttribute("loginMemberId") + CC.RESET);
+log.debug(CC.WOO + "로긴컨트롤러.세션계층 accessLevel :  " + session.getAttribute("accessLevel") + CC.RESET);
+log.debug(CC.WOO + "로긴컨트롤러.세션계층 empName :  " + session.getAttribute("empName") + CC.RESET);
 
         return "redirect:/home"; // 로그인 성공 시 이동할 페이지
 	}
