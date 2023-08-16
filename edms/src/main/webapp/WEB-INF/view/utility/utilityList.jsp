@@ -40,6 +40,7 @@
 				<td>${u.updatedate}</td>
 			</tr>
 		</c:forEach>
+		<!-- [끝] 조건문 -->
 	</table>
 	<!-- [끝] 테이블 영역 -->
 	
