@@ -9,6 +9,5 @@ public class VacationHistory {
        private String vacationName;
        private String vacationPm;
        private int vacationDays;
-       private String vacationStart;
-       private String createDate;
+       private String createdate;
 }

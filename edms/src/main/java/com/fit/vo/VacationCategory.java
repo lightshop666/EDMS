@@ -7,6 +7,6 @@ public class VacationCategory {
        private String vacationName;
        private int minDays;
        private int maxDays;
-       private String createDate;
-       private String updateDate;
+       private String createdate;
+       private String updatedate;
 }

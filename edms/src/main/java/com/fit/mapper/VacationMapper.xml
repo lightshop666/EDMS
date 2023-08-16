@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.VacationMapper">
+  
+    <!-- 휴가 내역 리스트 조회 -->
+     <!-- 휴가 내역 리스트 조회 -->
+    <select id="getVacationHistoryList" parameterType="map" resultType="com.fit.vo.VacationHistory">
+        SELECT
+            *
+        FROM vacation_history
+        WHERE emp_no = #{empNo}
+            <if test="startDate != null">
+                AND createdate &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND createdate &lt;= #{endDate}
+            </if>
+            <if test="vacationName != null">
+                AND vacation_name = #{vacationName}
+            </if>
+        ORDER BY createdate DESC
+        LIMIT #{beginRow}, #{rowPerPage}
+    </select>
+    
+     <!-- 휴가 내역 데이터 총 행수 조회 -->
+    <select id="getVacationHistoryCount" parameterType="map" resultType="int">
+        SELECT COUNT(*) 
+        FROM vacation_history
+        WHERE emp_no = #{empNo}
+            <if test="startDate != null">
+                AND createdate &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND createdate &lt;= #{endDate}
+            </if>
+            <if test="vacationName != null">
+                AND vacation_name = #{vacationName}
+            </if>
+    </select>
+</mapper>
