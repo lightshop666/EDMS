@@ -3,7 +3,7 @@ package com.fit.vo;
 import lombok.Data;
 
 @Data
-public class empInfo {
+public class EmpInfo {
 	private int empNo;				// 7자리
 	private String empName;
 	private String deptName;		// 부서명 반정규화, 소속부서 없을시 ""

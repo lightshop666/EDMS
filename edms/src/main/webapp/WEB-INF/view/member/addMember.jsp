@@ -146,6 +146,7 @@
 			let pw2 = $('#pw2').val();
 			let gender = $('input[name="gender"]:checked').val();
 			let email = $('#email').val();
+			let postcode = $('sample6_postcode').val();
 			let address = $('#sample6_address').val();
 			let detailAddress = $('#sample6_detailAddress').val();
 		
@@ -176,7 +177,7 @@
 				alert('이메일을 입력하세요.');
 				isValid = false;
 			}
-			if (address == '' || detailAddress == '') {
+			if (postcode == '' || address == '' || detailAddress == '') {
 				alert('주소를 입력하세요.');
 				isValid = false;
 			}
@@ -186,7 +187,7 @@
 
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
-			// 페이지 로드 시 사원번호 검사를 최조 1번 실행
+			// 페이지 로드 시 사원번호 검사를 최초 1번 실행
 			checkEmpNo();
 			
 			// 회원가입 실패시 alert
@@ -219,7 +220,7 @@
 				let address = $('#sample6_address').val(); // 주소
 				let detailAddress = $('#sample6_detailAddress').val(); // 상세주소
 				// 한줄의 주소로 합치기
-				let fullAddress = postcode + " " + address + " " + detailAddress;
+				let fullAddress = postcode + ' ' + address + ' ' + detailAddress;
 				console.log('주소 : ' + fullAddress);
 				// hidden input에 주소값 저장
 				$('#fullAddress').val(fullAddress);
