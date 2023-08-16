@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.fit.CC;
 import com.fit.mapper.UtilityMapper;
 import com.fit.service.UtilityService;
 import com.fit.vo.Utility;
@@ -31,7 +32,7 @@ public class UtilityController {
 	public String utility(Model model,
 							@RequestParam(name="utilityNo") int utilityNo) {
 		// 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityController.addUtility() utilityNo: "+utilityNo+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityController.addUtility() utilityNo: "+utilityNo+CC.RESET);
 		
 		return "/utility/addUtility";
 	}
@@ -42,13 +43,13 @@ public class UtilityController {
 			, @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage
 			, @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage
 			, @RequestParam(name = "utilityCategory", required = false, defaultValue = "") String utilityCategory
-			, @RequestParam(name="utilityNo") int utilityNo) {
+			, @RequestParam(name="utilityNo", required = false, defaultValue = "") int utilityNo) {
 		
 		// 넘어온값 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityController.utilityList() currentPage: "+currentPage+"\u001B[0m");
-		log.debug("\u001B[48;5;208m"+"utilityController.utilityList() rowPerPage: "+rowPerPage+"\u001B[0m");
-		log.debug("\u001B[48;5;208m"+"utilityController.utilityList() utilityCategory: "+utilityCategory+"\u001B[0m");
-		log.debug("\u001B[48;5;208m"+"utilityController.utilityList() utilityNo: "+utilityNo+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityController.utilityList() currentPage: "+currentPage+CC.RESET);
+		log.debug(CC.YOUN+"utilityController.utilityList() rowPerPage: "+rowPerPage+CC.RESET);
+		log.debug(CC.YOUN+"utilityController.utilityList() utilityCategory: "+utilityCategory+CC.RESET);
+		log.debug(CC.YOUN+"utilityController.utilityList() utilityNo: "+utilityNo+CC.RESET);
 		
 		// 공용품 리스트 출력
 		List<Utility> utilityList = utilityService.getUtilityListByPage(currentPage, rowPerPage, utilityCategory);

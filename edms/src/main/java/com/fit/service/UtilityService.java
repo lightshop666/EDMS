@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fit.CC;
 import com.fit.mapper.UtilityFileMapper;
 import com.fit.mapper.UtilityMapper;
 import com.fit.vo.Utility;
@@ -32,7 +33,7 @@ public class UtilityService {
 		int beginRow = (currentPage - 1) * rowPerPage;
 		
 		// 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityService.getUtilityListByPage() beginRow: "+beginRow+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityService.getUtilityListByPage() beginRow: "+beginRow+CC.RESET);
 		
 		// Map 타입으로 저장
 		Map<String, Object> paramMap = new HashMap<>();
@@ -58,7 +59,7 @@ public class UtilityService {
 		}
 		
 		// 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityService.getLastPage() lastPage: "+lastPage+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityService.getLastPage() lastPage: "+lastPage+CC.RESET);
 		
         return lastPage;
     }
@@ -80,7 +81,7 @@ public class UtilityService {
 		utilityFileMap.put("updatedate", utilityFile.getUpdatedate());
 		
 		// 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityService.getUtilityFileOne() utilityFileMap: "+utilityFileMap+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityService.getUtilityFileOne() utilityFileMap: "+utilityFileMap+CC.RESET);
 		
 		return utilityFileMap;
 	}
@@ -89,7 +90,7 @@ public class UtilityService {
 	public Utility getUtilityOne(int utilityNo) {
 		
 		// 디버깅
-		log.debug("\u001B[48;5;208m"+"utilityService.getUtilityOne() utilityNo: "+utilityNo+"\u001B[0m");
+		log.debug(CC.YOUN+"utilityService.getUtilityOne() utilityNo: "+utilityNo+CC.RESET);
 		
 		return utilityMapper.selectUtilityOne(utilityNo);
 	}

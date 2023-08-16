@@ -18,10 +18,13 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		
+		<!-- springboot 배포시 이슈 : scope 추가 -->		
 		<!-- 내장톰켓 JSP 사용 -->
 		<dependency>
 		    <groupId>org.apache.tomcat.embed</groupId>
 		    <artifactId>tomcat-embed-jasper</artifactId>
+		    <scope>provided</scope>
 		</dependency>
 		<!-- JSTL -->
 		<dependency>
