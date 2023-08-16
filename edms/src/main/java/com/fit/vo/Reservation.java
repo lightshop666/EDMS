@@ -3,7 +3,7 @@ package com.fit.vo;
 import lombok.Data;
 
 @Data
-public class reservation {
+public class Reservation {
 	private int reservationNo;
 	private int empNo;
 	private int utilityNo;
