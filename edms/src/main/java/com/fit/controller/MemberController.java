@@ -52,7 +52,7 @@ public class MemberController {
 	        return "redirect:/login"; // 회원가입 성공 시 로그인 페이지로
 	    } else { // 회원가입 실패 시
 	    	log.debug(CC.HE + "MemberController.addMember() row : " + row + CC.RESET);
-	        return "redirect:/member/addMember?error=true";
+	        return "redirect:/member/addMember?result=fail";
 	    }
 	}
 }

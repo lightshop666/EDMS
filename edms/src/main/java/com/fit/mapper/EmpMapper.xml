@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.EmpMapper">
+	<!-- 인사정보 조회 -->
+	<select id="selectEmp" parameterType="int" resultType="com.fit.vo.EmpInfo">
+		SELECT
+			emp_no empNo,
+			emp_name empName,
+			dept_name deptName,
+			team_name teamName,
+			emp_position empPosition,
+			access_level accessLevel,
+			emp_state empState,
+			employ_date employDate,
+			remain_days remainDays,
+			createdate,
+			updatedate
+		FROM
+			emp_info
+		WHERE
+			emp_no = #{empNo}
+	</select>
+	
+	<!-- 부서 테이블 조회 -->
+	<select id="selectDepartment" resultType="com.fit.vo.Department">
+		SELECT
+			dept_no deptNo,
+			dept_name deptName,
+			head_no headNo,
+			createdate
+		FROM
+			department
+	</select>
+	
+	<!-- 팀 테이블 조회 -->
+	<select id="selectTeam" resultType="com.fit.vo.Team">
+		SELECT
+			team_no teamNo,
+			team_name teamName,
+			dept_no deptNo,
+			head_no headNo,
+			createdate
+		FROM
+			team
+	</select>
+	
+	<!-- 인사정보 수정 -->
+	<update id="modifyEmp" parameterType="com.fit.vo.EmpInfo">
+		UPDATE
+			emp_info
+		SET
+			emp_name = #{empName},
+			dept_name = #{deptName},
+			team_name = #{teamName},
+			emp_position = #{empPosition},
+			access_level = #{accessLevel},
+			emp_state = #{empState},
+			employ_date = #{employDate},
+			updatedate = NOW()
+		WHERE
+			emp_no = #{empNo}
+	</update>
+</mapper>

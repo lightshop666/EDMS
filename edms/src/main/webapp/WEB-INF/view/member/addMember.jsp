@@ -136,7 +136,7 @@
 			}
 		}
 		
-		// 공백 및 유효성 검사 함수
+		// 공백 검사 함수
 		function validateInputs() {
 			let isValid = true;
 			
@@ -150,36 +150,38 @@
 			let address = $('#sample6_address').val();
 			let detailAddress = $('#sample6_detailAddress').val();
 		
-			// 각 입력값 검사하기
+			// 각 입력값 검사시작
+			// 사원번호 비동기 검사는 이미 진행
 			if (empNo == '') {
 				alert('사원번호를 입력하세요.');
 				isValid = false;
-			}
-			// 사원번호 비동기 검사는 이미 진행
-			if (!empNoValid) { 
-				alert('사원번호를 확인하세요.');
-				isValid = false;
+				return isValid;
 			}
 			// 비밀번호 정규식 검사 및 비밀번호 일치여부 검사는 이미 진행
 			if (pw1 == '') {
 				alert('비밀번호를 입력하세요.');
 				isValid = false;
+				return isValid;
 			}
 			if (pw2 == '') {
 				alert('비밀번호 확인을 입력하세요.');
 				isValid = false;
+				return isValid;
 			}
 			if (gender == undefined) {
 				alert('성별을 선택하세요.');
 				isValid = false;
+				return isValid;
 			}
 			if (email == '') {
 				alert('이메일을 입력하세요.');
 				isValid = false;
+				return isValid;
 			}
 			if (postcode == '' || address == '' || detailAddress == '') {
 				alert('주소를 입력하세요.');
 				isValid = false;
+				return isValid;
 			}
 		
 			return isValid;
@@ -191,8 +193,8 @@
 			checkEmpNo();
 			
 			// 회원가입 실패시 alert
-			let error = '${param.error}'; // 회원가입 실패시 url의 매개값으로 error=true 전달
-			if (error == 'true') { // error의 값이 true이면
+			let result = '${param.result}'; // 회원가입 실패시 url의 매개값으로 result=fail 전달
+			if (result == 'fail') { // result의 값이 fail이면
 			    console.log('회원가입 실패');
 			    alert('회원가입에 실패했습니다. 다시 시도해주세요.');
 			}
@@ -214,7 +216,7 @@
 			});
 
 			// 회원가입 버튼 클릭 시
-			$('#addMemberBtn').click(function(event) {
+			$('#saveBtn').click(function(event) {
 		    	// 1) 주소값 가져오기
 				let postcode = $('#sample6_postcode').val(); // 우편번호
 				let address = $('#sample6_address').val(); // 주소
@@ -228,10 +230,15 @@
 				// 2) 유효성 및 공백 검사
 				let allFieldsValid = empNoValid && validatePassword() && checkPasswordMatch() && validateInputs();	
 		
-				if (allFieldsValid) {
+				if (allFieldsValid) { // 모든 항목이 유효하면
 					$('form').submit(); // 폼 제출
-				} else {
-					alert('사원번호 또는 비밀번호를 확인해주세요.');
+				} else if (!empNoValid) { // 사원번호 검사가 false이면
+					alert('사원번호를 확인해주세요.');
+					event.preventDefault(); // 폼 제출 막기
+				} else if ( !validatePassword() || !checkPasswordMatch() ) { // 비밀번호 검사가 false이면
+					alert('비밀번호를 확인해주세요.');
+					event.preventDefault(); // 폼 제출 막기
+				} else { // !validateInputs() // 공백 검사가 false이면
 					event.preventDefault(); // 폼 제출 막기
 				}
 			});
@@ -311,7 +318,7 @@
 			</tr>
 		</table>
 		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-		<button type="submit" id="addMemberBtn">저장</button> <!-- 오른쪽 정렬 -->
+		<button type="submit" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
 	</form>
 </body>
 </html>

@@ -5,16 +5,20 @@
 	<select id="empInfoCnt" parameterType="int" resultType="int">
 		SELECT
 			COUNT(*)
-		FROM emp_info
-		WHERE emp_no = #{empNo}
+		FROM
+			emp_info
+		WHERE
+			emp_no = #{empNo}
 	</select>
 	
 	<!-- 사원번호 중복검사 -->
 	<select id="memberInfoCnt" parameterType="int" resultType="int">
 		SELECT
 			COUNT(*)
-		FROM member_info
-		WHERE emp_no = #{empNo}
+		FROM
+			member_info
+		WHERE
+			emp_no = #{empNo}
 	</select>
 	
 	<!-- 회원가입 -->
