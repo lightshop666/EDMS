@@ -26,7 +26,6 @@ public class MemberController {
 	public String addMember(HttpSession session,
 							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
-		log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
 		// 로그인 상태면 home으로 분기
 		if(session.getAttribute("loginMemberId") != null) {
 			log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);

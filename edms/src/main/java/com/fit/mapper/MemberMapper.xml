@@ -41,4 +41,39 @@
 			NOW()
 		)
 	</insert>
+	
+	<!-- 개인정보 조회 -->
+	<select id="selectMemberInfo" parameterType="int" resultType="com.fit.vo.MemberInfo">
+		SELECT
+			emp_no empNo,
+			gender,
+			email,
+			address,
+			createdate,
+			updatedate
+		FROM
+			member_info
+		WHERE
+			emp_no = ${empNo}
+	</select>
+	
+	<!-- 개인정보 파일 조회 -->
+	<select id="selectMemberFile" parameterType="java.util.Map" resultType="com.fit.vo.MemberFile">
+		SELECT
+			member_file_no memberFileNo,
+			emp_no empNo,
+			file_category fileCategory,
+			member_ori_file_name memberOriFileName,
+			member_save_file_name memberSaveFileName,
+			member_filetype memberFiletype,
+			member_path memberPath,
+			createdate,
+			updatedate
+		FROM
+			member_file
+		WHERE
+			emp_no = #{empNo}
+		AND
+			file_category = #{fileCategory}
+	</select>
 </mapper>

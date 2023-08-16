@@ -2,6 +2,7 @@ package com.fit.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
 
 @Mapper
@@ -14,4 +15,10 @@ public interface MemberMapper {
 	
 	// 회원가입
 	int addMember(MemberInfo memberInfo);
+	
+	// 개인정보 조회
+	MemberInfo selectMemberInfo(int empNo);
+	
+	// 개인정보 파일 조회
+	MemberFile selectMemberFile(int empNo, String fileCategory);
 }

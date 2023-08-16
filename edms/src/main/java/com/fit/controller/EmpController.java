@@ -68,4 +68,23 @@ public class EmpController {
 			return "redirect:/emp/modifyEmp?result=fail";
 		}
 	}
+	
+	// 개인정보 조회 (관리자)
+	@GetMapping("/emp/adminMemberOne")
+	public String adminMemberOne(HttpSession session,
+								@RequestParam(required = false, name = "empNo") Integer empNo,
+								Model model) {
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		
+		// empNo 유효성 검사 후 분기 예정
+		int empNoEx = 2016001;
+		
+		Map<String, Object> result = empService.selectMember(empNoEx);
+		
+		model.addAttribute("member", result.get("memberInfo"));
+		model.addAttribute("image", result.get("memberImage"));
+		model.addAttribute("sign", result.get("memberSign"));
+		
+		return "/emp/adminMemberOne";
+	}
 }

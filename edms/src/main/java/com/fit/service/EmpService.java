@@ -10,8 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.CC;
 import com.fit.mapper.EmpMapper;
+import com.fit.mapper.MemberMapper;
 import com.fit.vo.Department;
 import com.fit.vo.EmpInfo;
+import com.fit.vo.MemberFile;
+import com.fit.vo.MemberInfo;
 import com.fit.vo.Team;
 
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class EmpService {
 	@Autowired
 	private EmpMapper empMapper;
+	
+	@Autowired
+	private MemberMapper memberMapper;
 	
 	// 인사정보 조회 (emp_info)
 	public EmpInfo selectEmp(int empNo) {
@@ -55,5 +61,28 @@ public class EmpService {
 		
 		return row;
 	}
-
+	
+	// 개인정보 조회 (관리자)
+	public Map<String, Object> selectMember(int empNo) {
+		Map<String, Object> result = new HashMap<>();
+		
+		log.debug(CC.HE + "EmpService.selectMember() empNo param : " + empNo + CC.RESET);
+		
+		// 개인정보 조회
+		MemberInfo memberInfo = memberMapper.selectMemberInfo(empNo);
+		log.debug(CC.HE + "EmpService.selectMember() memberInfo : " + memberInfo + CC.RESET);
+		// fileCategory를 Image로 지정하여 사진 조회
+		MemberFile memberImage = memberMapper.selectMemberFile(empNo, "Image");
+		log.debug(CC.HE + "EmpService.selectMember() memberImage : " + memberImage + CC.RESET);
+		// fileCategory를 Sign으로 지정하여 서명 조회
+		MemberFile memberSign = memberMapper.selectMemberFile(empNo, "Sign");
+		log.debug(CC.HE + "EmpService.selectMember() memberSign : " + memberSign + CC.RESET);
+		
+		// map에 담기
+		result.put("memberInfo", memberInfo);
+		result.put("memberImage", memberImage);
+		result.put("memberSign", memberSign);
+		
+		return result;	
+	}
 }
