@@ -16,7 +16,6 @@
 	<!-- [시작] 조건문 -->
 	<div>
 		<c:forEach var="m" items="${utilityList}">
-			<a herf="${pageContext.request.contextPath}/utility/utilityList"></a>
 		</c:forEach>
 	</div>
 	
@@ -24,6 +23,7 @@
 	<table border="1">
 		<tr>
 			<th>공용품 번호</th>
+			<th>공용품 이미지</th>
 			<th>공용품 종류</th>
 			<th>공용품 이름</th>
 			<th>공용품 정보</th>
@@ -31,14 +31,19 @@
 			<th>수정일</th>
 		</tr>
 		<c:forEach var="u" items="${utilityList}">
-			<tr>
-				<td>${u.utilityNo}</td>
-				<td>${u.utilityCategory}</td>
-				<td>${u.utilityName}</td>
-				<td>${u.utilityInfo}</td>
-				<td>${u.createdate}</td>
-				<td>${u.updatedate}</td>
-			</tr>
+			<c:forEach var="f" items="${utilityFileMap }">
+				<tr>
+					<td>${u.utilityNo}</td>
+					<td>
+						<img class="thumbnail" alt="Utility Image" src="${pageContext.request.contextPath}/upload/${f.utilityPath}/${f.utilitySaveFilename}">
+					</td>
+					<td>${u.utilityCategory}</td>
+					<td>${u.utilityName}</td>
+					<td>${u.utilityInfo}</td>
+					<td>${u.createdate}</td>
+					<td>${u.updatedate}</td>
+				</tr>
+			</c:forEach>
 		</c:forEach>
 		<!-- [끝] 조건문 -->
 	</table>
