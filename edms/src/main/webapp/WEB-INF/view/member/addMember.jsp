@@ -121,8 +121,8 @@
 								empNoValid = true;
 							}
 						},
-						error: function(error) {
-		                	console.error('사원번호 검사 실패: ' + error);
+						error : function(error) {
+		                	console.error('사원번호 검사 실패 : ' + error);
 		                	empNoValid = false;
 		                }
 					});

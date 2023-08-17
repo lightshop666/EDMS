@@ -92,8 +92,19 @@
 	        NOW()
 	    )
 	</insert>
+	
 	<!-- 사원번호 사용여부 등록 -->
 	<insert id="addEmpNo" parameterType="int">
 	    INSERT INTO emp_no_list (emp_no, active, createdate) VALUES (#{empNo}, 'Y', NOW())
 	</insert>
+	
+	<!-- 비밀번호 수정 (관리자) -->
+	<update id="modifyPw" parameterType="java.util.Map">
+		UPDATE
+			member_info
+		SET
+			pw = PASSWORD( #{tempPw} )
+		WHERE
+			emp_no = #{empNo}
+	</update>
 </mapper>

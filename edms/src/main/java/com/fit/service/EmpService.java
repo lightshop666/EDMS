@@ -85,6 +85,13 @@ public class EmpService {
 		return result;	
 	}
 	
+	// 비밀번호 수정 (관리자)
+	public int modifyPw(int empNo, String tempPw) {
+		int row = empMapper.modifyPw(empNo, tempPw);
+		
+		return row;
+	}
+	
 	// 인사 정보 등록
 	public int addEmp(EmpInfo empInfo) {
 	    

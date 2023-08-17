@@ -26,9 +26,9 @@
 			
 			// 취소 버튼 클릭 시
 			$('#cancelBtn').click(function() {
-				let result = confirm('메인 페이지로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				let result = confirm('사원목록으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
-					window.location.href = '/home'; // home으로 이동
+					window.location.href = '/emp/empList'; // empList로 이동
 				}
 			});
 		});

@@ -27,4 +27,7 @@ public interface EmpMapper {
 	
 	// 사원번호 사용여부 등록
 	int addEmpNo(int empNo);
+	
+	// 비밀번호 수정 (관리자)
+	int modifyPw(int empNo, String tempPw);
 }
