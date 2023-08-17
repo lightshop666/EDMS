@@ -8,7 +8,7 @@
 <body>
 <div>
 <!-- 홈으로 -->
-	<h1><a href="<%=request.getContextPath()%>/home">GoodeeFit</a></h1>	
+	<h1><a href="${pageContext.request.contextPath}/home">GoodeeFit</a></h1>	
 </div>
 
 <div>
@@ -18,7 +18,7 @@
 <div>
 <!-- 마이페이지 -->
 	<a href="">${loginMemberId} 님</a>
-	<a href="<%=request.getContextPath()%>/logout">로그아웃</a>
+	<a href="${pageContext.request.contextPath}/logout">로그아웃</a>
 </div>
 
 

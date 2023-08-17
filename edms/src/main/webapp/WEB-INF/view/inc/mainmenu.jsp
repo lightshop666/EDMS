@@ -27,19 +27,19 @@ $(document).ready(function() {
 	<div>
 	<!-- 전자결재 -->
 		<h4>전자결재</h4>
-		<a href="<%=request.getContextPath()%>/home">새 결재</a>
-		<a href="<%=request.getContextPath()%>/home">내 문서함</a>
-		<a href="<%=request.getContextPath()%>/home">임시 저장함</a>
+		<a href="${pageContext.request.contextPath}/home">새 결재</a>
+		<a href="${pageContext.request.contextPath}/home">내 문서함</a>
+		<a href="${pageContext.request.contextPath}/home">임시 저장함</a>
 	</div>
 	
 	<div>
 	<!-- 일정관리 -->
 		<h4>일정관리</h4>
-		<a href="<%=request.getContextPath()%>/home">달력</a>
+		<a href="${pageContext.request.contextPath}/home">달력</a>
 		<!-- 레벨1 제한 -->
-		<a href="<%=request.getContextPath()%>/home" class="access-level-link" data-access-level="1">일정관리</a>
-		<a href="<%=request.getContextPath()%>/home">예약신청</a>
-		<a href="<%=request.getContextPath()%>/home">예약조회</a>
+		<a href="${pageContext.request.contextPath}/home" class="access-level-link" data-access-level="1">일정관리</a>
+		<a href="${pageContext.request.contextPath}/home">예약신청</a>
+		<a href="${pageContext.request.contextPath}/home">예약조회</a>
 	
 	</div>
 
@@ -49,22 +49,22 @@ $(document).ready(function() {
 		<!-- 레벨0은 사용자용, 레벨1 이상은 관리자용 분기 -->
 		<c:if test="${accessLevel >= 1}">
 			<!-- 관리자용 링크 -->
-			<a href="<%=request.getContextPath()%>/admin/home">사원목록 (관리자용)</a>
+			<a href="${pageContext.request.contextPath}/admin/home">사원목록 (관리자용)</a>
 		</c:if>
 		<c:if test="${accessLevel < 1}">
 			<!-- 사용자용 링크 -->
-			<a href="<%=request.getContextPath()%>/home">사원목록 (사용자용)</a>
+			<a href="${pageContext.request.contextPath}/home">사원목록 (사용자용)</a>
 		</c:if>
 		
 		<!-- 레벨2 제한 -->
-		<a href="<%=request.getContextPath()%>/home" class="access-level-link" data-access-level="2">사원등록</a>
+		<a href="${pageContext.request.contextPath}/home" class="access-level-link" data-access-level="2">사원등록</a>
 	
 	</div>
 
 	<div>
 	<!-- 게시판 -->
 		<h4>게시판</h4>
-		<a href="<%=request.getContextPath()%>/home">공지사항</a>
+		<a href="${pageContext.request.contextPath}/home">공지사항</a>
 	
 	</div>
 </body>
