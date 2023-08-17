@@ -15,7 +15,6 @@
 		   INNER JOIN member_info mem ON fo.emp_no = mem.emp_no
 		WHERE 
 			li.emp_no = #{memberId} AND mem.pw = PASSWORD( #{memberPw} );
-
 	</select>
 
 
