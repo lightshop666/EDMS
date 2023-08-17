@@ -17,30 +17,40 @@
 	</select>
 	
 	<!-- 리스트를 보여줄 경우 페이징 쿼리, 마이바티스는 매개변수를 1개 받을 수 있으므로 
-	Map 타입으로 currentPage, RowPerPage 넘겨줄 예정 -->
+	Map 타입으로 currentPage, RowPerPage 넘겨줄 예정 
+	추가적으로 view 레이어에서 파일이미지까지 같이 조회하기 위해 join문 사용-->
 	<select id="selectUtilityListByPage" parameterType="java.util.Map"
 		resultType="com.fit.vo.Utility">
 		SELECT
-			utility_no utilityNo
-			, utility_category utilityCategory
-			, utility_name utilityName
-			, utility_info utilityInfo
-			, createdate
-			, updatedate		
-		FROM utility
-		<where>
-			<if test="utilityCategory == '차량'">
-				AND utility_category = '차량'
-			</if>
-			<if test="utilityCategory == '회의실'">
-				AND utility_category = '회의실'
-			</if>
-			<if test="utilityCategory == ''">
-				AND '1' = '1'
-			</if>
-		</where>
-		ORDER BY createdate DESC
-		LIMIT #{beginRow}, #{rowPerPage}
+			u.utility_no utilityNo,
+		    u.utility_category utilityCategory,
+		    u.utility_name utilityName,
+		    u.utility_info utilityInfo,
+		    u.createdate,
+		    u.updatedate,
+		    uf.utility_ori_filename utilityOriFilename,
+		    uf.utility_save_filename utilitySaveFilename,
+		    uf.utility_filetype utilityFiletype,
+		    uf.utility_path utilityPath
+		FROM
+		    utility u
+		LEFT JOIN
+		    utility_file uf 
+		ON u.utility_no = uf.utility_no
+	<where>
+	    <if test="utilityCategory == '차량'">
+	        AND u.utility_category = '차량'
+	    </if>
+	    <if test="utilityCategory == '회의실'">
+	        AND u.utility_category = '회의실'
+	    </if>
+	    <if test="utilityCategory == ''">
+	        AND '1' = '1'
+	    </if>
+	</where>
+	ORDER BY
+	    u.createdate DESC
+	LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 조건에 따른 전체 행의 개수를 확인하기 위한 메서드 -->

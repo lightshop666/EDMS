@@ -10,5 +10,5 @@ public interface UtilityFileMapper {
 	int insertUtilityFile(UtilityFile utilityFile);
 	
 //	1:1 방식으로 연결되므로 객체 타입으로 반환
-	UtilityFile selectUtilityFileOne(Utility utility);
+	UtilityFile selectUtilityFileOne(int utilityNo);
 }

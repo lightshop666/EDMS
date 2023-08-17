@@ -17,8 +17,8 @@
 		,	#{utilitySaveFilename}
 		,	#{utilityFiletype}
 		,	#{utilityPath}
-		,	#{createdate}
-		,	#{updatedate}
+		,	NOW()
+		,	NOW()
 		)
 	</insert>
 
@@ -37,4 +37,11 @@
 			utility_file
 		WHERE utility_no = #{utilityNo}
 	</select>
+	
+	<!-- 특정 공용품 파일 삭제 -->
+	<delete id="deleteUtilityFile" parameterType="com.fit.vo.Utility">
+		DELETE FROM utility_file
+		WHERE utility_no = #{utility_no}
+	</delete>
+	
 </mapper>
