@@ -26,7 +26,8 @@ public class EmpController {
 	// 인사정보 수정 폼
 	@GetMapping("/emp/modifyEmp")
 	public String modifyEmp(HttpSession session,
-							@RequestParam(required = false, name = "empNo") Integer empNo,
+										// 아무 값을 넣지 않아도 호출이 되게 하려면, required=false로 바꿔주면 된다.
+							@RequestParam(required = true, name = "empNo") Integer empNo,
 							Model model) {
 		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
 		

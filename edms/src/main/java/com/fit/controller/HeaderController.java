@@ -22,6 +22,6 @@ log.debug(CC.WOO + "헤더컨트롤러.세션계층 loginMemberId :  " + loginMe
 		//뷰에 출력하기 위해 저장
 		model.addAttribute("loginMemberId", loginMemberId);		
 		
-		return "inc/header";		
+		return "/inc/header";		
 	}
 }
