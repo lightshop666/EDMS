@@ -1,5 +1,7 @@
 package com.fit.mapper;
 
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Mapper;
 
 import com.fit.vo.MemberFile;
@@ -16,8 +18,8 @@ public interface MemberMapper {
 	// 회원가입
 	int addMember(MemberInfo memberInfo);
 	
-	// 개인정보 조회
-	MemberInfo selectMemberInfo(int empNo);
+	// 개인정보 조회 // emp_name 추출을 위해 emp_info와 join해야하므로 반환타입은 Map
+	Map<String, Object> selectMemberInfo(int empNo);
 	
 	// 개인정보 파일 조회
 	MemberFile selectMemberFile(int empNo, String fileCategory);

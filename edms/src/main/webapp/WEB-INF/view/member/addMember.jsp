@@ -254,13 +254,9 @@
 	</script>
 </head>
 <body>
+	<h1>회원가입</h1>
 	<form action="/member/addMember" method="post">
 		<table border="1">
-			<tr>
-				<td colspan="3">
-					<h1>회원가입</h1>
-				</td>
-			</tr>
 			<tr>
 				<td>사원번호</td>
 				<td>

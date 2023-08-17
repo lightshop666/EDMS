@@ -8,10 +8,34 @@
 	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script>
-		
+		// 이벤트 스크립트 시작
+		$(document).ready(function() {
+			
+			// 수정 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 수정 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('인사정보 수정 실패');
+			    alert('인사정보가 수정되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('인사정보 수정 성공');
+			    alert('인사정보가 수정되었습니다.');
+			}
+			
+			// 상위 카테고리 선택에 따른 하위 카테고리 선택.. 보류중
+			
+			// 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('메인 페이지로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				if (result) {
+					window.location.href = '/home'; // home으로 이동
+				}
+			});
+		});
 	</script>
 </head>
 <body>
+	<h1>인사정보 수정(조회) - 관리자</h1>
 	<form action="/emp/modifyEmp" method="post">
 		<table border="1">
 			<tr>

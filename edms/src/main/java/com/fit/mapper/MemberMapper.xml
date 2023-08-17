@@ -5,20 +5,16 @@
 	<select id="empInfoCnt" parameterType="int" resultType="int">
 		SELECT
 			COUNT(*)
-		FROM
-			emp_info
-		WHERE
-			emp_no = #{empNo}
+		FROM emp_info
+		WHERE emp_no = #{empNo}
 	</select>
 	
 	<!-- 사원번호 중복검사 -->
 	<select id="memberInfoCnt" parameterType="int" resultType="int">
 		SELECT
 			COUNT(*)
-		FROM
-			member_info
-		WHERE
-			emp_no = #{empNo}
+		FROM member_info
+		WHERE emp_no = #{empNo}
 	</select>
 	
 	<!-- 회원가입 -->
@@ -43,18 +39,19 @@
 	</insert>
 	
 	<!-- 개인정보 조회 -->
-	<select id="selectMemberInfo" parameterType="int" resultType="com.fit.vo.MemberInfo">
+	<!-- emp_name을 추출하기 위해 emp_info 테이블과 join -->
+	<select id="selectMemberInfo" parameterType="int" resultType="java.util.Map">
 		SELECT
-			emp_no empNo,
-			gender,
-			email,
-			address,
-			createdate,
-			updatedate
-		FROM
-			member_info
-		WHERE
-			emp_no = ${empNo}
+			m.emp_no empNo,
+			i.emp_name empName,
+			m.gender gender,
+			m.email email,
+			m.address address,
+			m.createdate createdate,
+			m.updatedate updatedate
+		FROM member_info m
+			INNER JOIN emp_info i ON m.emp_no = i.emp_no
+		WHERE m.emp_no = ${empNo}
 	</select>
 	
 	<!-- 개인정보 파일 조회 -->
@@ -69,11 +66,8 @@
 			member_path memberPath,
 			createdate,
 			updatedate
-		FROM
-			member_file
-		WHERE
-			emp_no = #{empNo}
-		AND
-			file_category = #{fileCategory}
+		FROM member_file
+		WHERE emp_no = #{empNo}
+		AND file_category = #{fileCategory}
 	</select>
 </mapper>

@@ -6,7 +6,7 @@ import lombok.Data;
 public class MemberInfo {
 	private int empNo;
 	private String pw;
-	private char gender; // M or F
+	private String gender; // M or F
 	private String email;
 	private String address;
 	private String createdate; // DATETIME

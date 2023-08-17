@@ -26,13 +26,13 @@ public class MemberController {
 	public String addMember(HttpSession session,
 							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
-		// 로그인 상태면 home으로 분기 -> 앞으로는 안받아와도 된다 인터셉터에서 처리한다
+		// 로그인 상태면 home으로 리다이렉션
 		if(session.getAttribute("loginMemberId") != null) {
 			log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
-			return "/home";
+			return "redirect:/home";
 		}
 		
-		// 매개값 empNo가 넘어오면 view에서 출력한다
+		// 매개값 empNo가 넘어오면 view에서 출력
 		if(empNo != null) {
 			log.debug(CC.HE + "MemberController.addMember() empNo param : " + empNo + CC.RESET);
 			model.addAttribute("empNo", empNo);

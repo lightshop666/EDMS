@@ -1,5 +1,6 @@
 package com.fit.controller;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -27,12 +28,21 @@ public class EmpController {
 	// 인사정보 수정 폼
 	@GetMapping("/emp/modifyEmp")
 	public String modifyEmp(HttpSession session,
-										// 아무 값을 넣지 않아도 호출이 되게 하려면, required=false로 바꿔주면 된다.
-							@RequestParam(required = true, name = "empNo") Integer empNo,
+							// required = true이면 null일 경우 404 오류가 반환된다
+							// null값 검사 후 다른 페이지로 리다이렉션 하려면 우선 required = false로 둔 뒤에
+							// 조건문으로 null값 검사를 해야한다
+							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
 		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
 		
-		// empNo 유효성 검사 후 분기 예정
+		// empNo 유효성 검사 후 null일 경우 사원목록 페이지로 리다이렉션
+		/*
+		if (empNo == null) {
+			return "redirect:/home";
+		}
+		*/
 		int empNoEx = 2016001;
 		
 		// 1) 인사정보 조회 호출
@@ -77,13 +87,38 @@ public class EmpController {
 								@RequestParam(required = false, name = "empNo") Integer empNo,
 								Model model) {
 		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
 		
-		// empNo 유효성 검사 후 분기 예정
-		int empNoEx = 2016001;
+		// empNo 유효성 검사 후 null일 경우 사원목록 페이지로 리다이렉션
+		/*
+		if (empNo == null) {
+			return "redirect:/home";
+		}
+		*/
+		int empNoEx = 1000000;
 		
+		// empNo로 개인정보 조회 (관리자) 서비스 호출
 		Map<String, Object> result = empService.selectMember(empNoEx);
 		
-		model.addAttribute("member", result.get("memberInfo"));
+		// 성별 추출
+		Map<String, Object> memberInfo = (Map) result.get("memberInfo");
+		if ( memberInfo.get("gender").equals("M") ) {
+			memberInfo.put("gender", "남자");
+		} else {
+			memberInfo.put("gender", "여자");
+		}
+		
+		// 날짜 추출
+		// log.debug(CC.HE + memberInfo.get("createdate").getClass() + CC.RESET);
+		// -> class java.sql.Timestamp
+		String createdate = memberInfo.get("createdate").toString(); // Timestamp 객체를 String타입으로 형변환
+		String udpatedate = memberInfo.get("updatedate").toString();
+		memberInfo.put("createdate", createdate.substring(0, 10));
+		memberInfo.put("updatedate", udpatedate.substring(0, 10));
+		
+		// 각 타입의 객체를 model에 담기
+		model.addAttribute("member", memberInfo);
 		model.addAttribute("image", result.get("memberImage"));
 		model.addAttribute("sign", result.get("memberSign"));
 		

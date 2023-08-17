@@ -14,7 +14,6 @@ import com.fit.mapper.MemberMapper;
 import com.fit.vo.Department;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
-import com.fit.vo.MemberInfo;
 import com.fit.vo.Team;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,8 +67,8 @@ public class EmpService {
 		
 		log.debug(CC.HE + "EmpService.selectMember() empNo param : " + empNo + CC.RESET);
 		
-		// 개인정보 조회
-		MemberInfo memberInfo = memberMapper.selectMemberInfo(empNo);
+		// 개인정보 조회 // emp_name을 추출하기 위해 emp_info 테이블과 join하므로 반환타입은 Map
+		Map<String, Object> memberInfo = memberMapper.selectMemberInfo(empNo);
 		log.debug(CC.HE + "EmpService.selectMember() memberInfo : " + memberInfo + CC.RESET);
 		// fileCategory를 Image로 지정하여 사진 조회
 		MemberFile memberImage = memberMapper.selectMemberFile(empNo, "Image");
