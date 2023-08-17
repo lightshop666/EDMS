@@ -3,7 +3,7 @@
 <mapper namespace="com.fit.mapper.UtilityFileMapper">
 	<!-- 파일 업로드 -->
 	<insert id="insertUtilityFile" parameterType="com.fit.vo.UtilityFile">
-		INSERT INTO utilit_file(
+		INSERT INTO utility_file(
 			utility_no
 		,	utility_ori_filename
 		,	utility_save_filename
@@ -34,7 +34,7 @@
 		,	createdate
 		,	updatedate
 		FROM
-			utilit_file
+			utility_file
 		WHERE utility_no = #{utilityNo}
 	</select>
 </mapper>

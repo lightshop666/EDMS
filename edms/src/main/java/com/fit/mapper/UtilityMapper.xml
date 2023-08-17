@@ -60,4 +60,42 @@
 			</if>
 		</where>	
 	</select>
+	
+	<!-- 공용품을 추가하는 쿼리 -->
+	<insert id="insertUtility" parameterType="com.fit.vo.Utility">
+		<selectKey order="AFTER" keyProperty="utilityNo" resultType="int">
+			SELECT last_insert_id()
+		</selectKey>
+			INSERT INTO utility(
+				utility_no
+			,	utility_category
+			,	utility_name
+			,	utility_info
+			,	createdate
+			,	updatedate
+			) VALUES(
+				#{utilityNo} <!-- Utility.utilityNo -->
+			,	#{utilityCategory}
+			,	#{utilityName}
+			,	#{utilityInfo}
+			,	NOW()
+			,	NOW()
+			)
+	</insert>
+	
+	<!-- 공용품을 삭제하는 쿼리 -->
+	<delete id="deleteUtility" parameterType="com.fit.vo.Utility">
+		DELETE FROM utility
+		WHERE utility_no = #{utility_no}
+	</delete>
+	
+	<!-- 공용품을 수정하는 쿼리 -->
+	<update id="updateUtility" parameterType="com.fit.vo.Utility">
+		UPDATE utility
+		SET utility_category = #{utilityCategory}
+		,	utility_name = #{utilityName}
+		,	utility_info = #{utilityInfo}
+		,	updatedate = NOW()
+	</update>
+	
 </mapper>

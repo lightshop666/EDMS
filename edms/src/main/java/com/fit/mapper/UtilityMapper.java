@@ -18,5 +18,12 @@ public interface UtilityMapper {
 	// 차량, 회의실, 전체 행의 수
 	int selectUtilityCount(String utilityCategory);
 	
+	// 공용품 추가
+	int insertUtility(Utility utility);
 	
+	// 공용품 수정
+	int updateUtility(Utility utility);
+	
+	// 공용품 삭제
+	int deleteUtility(Utility utility);
 }

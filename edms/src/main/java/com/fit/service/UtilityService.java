@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.mapper.UtilityFileMapper;
@@ -65,11 +66,12 @@ public class UtilityService {
     }
 	
 	// 공용품 이미지 상세를 조회하는 메서드
-	public Map<String, Object> getUtilityFileOne(Utility utility) {
+	public UtilityFile getUtilityFileOne(Utility utility) {
 		
-		// 파일 객체에 저장
+		// 파일 객체에 저장, 이후 view 레이어에서 리스트 형식으로 뿌린다.
 		UtilityFile utilityFile = utilityFileMapper.selectUtilityFileOne(utility);
 		
+		/*
 		// 각 컬럼을 개별적으로 사용하기 위해 Map에 저장
 		Map<String, Object> utilityFileMap = new HashMap<>();
 		utilityFileMap.put("utilityNo", utilityFile.getUtilityNo());
@@ -79,11 +81,12 @@ public class UtilityService {
 		utilityFileMap.put("utilityPath", utilityFile.getUtilityPath());
 		utilityFileMap.put("createdate", utilityFile.getCreatedate());
 		utilityFileMap.put("updatedate", utilityFile.getUpdatedate());
+		*/
 		
 		// 디버깅
-		log.debug(CC.YOUN+"utilityService.getUtilityFileOne() utilityFileMap: "+utilityFileMap+CC.RESET);
+		log.debug(CC.YOUN+"utilityService.getUtilityFileOne() utilityFile: "+utilityFile+CC.RESET);
 		
-		return utilityFileMap;
+		return utilityFile;
 	}
 	
 	// 개별적인 공용품 이미지를 불러오기 위한 공용품 상세 메서드
@@ -94,4 +97,45 @@ public class UtilityService {
 		
 		return utilityMapper.selectUtilityOne(utilityNo);
 	}
+	
+	// 공용품 추가 메서드 생성
+	public int addUtility(Utility utility, String utilityPath) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"utilityService.addUtility() utility: "+utility+CC.RESET);
+		log.debug(CC.YOUN+"utilityService.addUtility() utilityPath: "+utilityPath+CC.RESET);
+		
+		// 삽입 여부 확인을 위한 row 반환
+		int row = utilityMapper.insertUtility(utility);
+		
+		// utility 입력 성공 후 첨부된 파일이 있을 경우
+		MultipartFile singleFile = utility.getSinglepartFile();
+		
+		if(row == 1 && singleFile != null) {
+			
+			// 디버깅
+			log.debug(CC.YOUN+"utilityService.addUtility() param: 첨부 파일이 존재합니다."+CC.RESET);
+			
+			// 공용품 번호를 변수에 저장
+			int utilityNo = utility.getUtilityNo();
+			
+			// 디버깅
+			log.debug(CC.YOUN+"utilityService.addUtility() utilityNo: "+utilityNo+CC.RESET);
+			
+			UtilityFile uf = new UtilityFile();
+			// 참조된 부모의 키값 전달
+			uf.setUtilityNo(utilityNo); 
+			// 원본파일이름
+			uf.setUtilityOriFilename(singleFile.getOriginalFilename());
+			// 파일 타입(MIME)
+			uf.setUtilityFiletype(singleFile.getContentType());
+			// 저장될 파일 이름 = 새로운 이름(UUID) + 확장자
+			String ext = singleFile.getOriginalFilename().substring(singleFile.getOriginalFilename().lastIndexOf("."));
+			
+			
+		}
+		
+	}
+	
+	
 }
