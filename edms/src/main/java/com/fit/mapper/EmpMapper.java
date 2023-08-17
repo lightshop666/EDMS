@@ -21,4 +21,10 @@ public interface EmpMapper {
 	
 	// 인사정보 수정
 	int modifyEmp(EmpInfo empInfo);
+	
+	// 인사정보 등록
+	int addEmp(EmpInfo empInfo);
+	
+	// 사원번호 사용여부 등록
+	int addEmpNo(int empNo);
 }

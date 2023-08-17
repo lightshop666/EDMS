@@ -60,4 +60,40 @@
 		WHERE
 			emp_no = #{empNo}
 	</update>
+	
+	<!-- 인사 정보 등록 -->
+	<insert id="addEmp" parameterType="com.fit.vo.EmpInfo">
+	<selectKey order="AFTER" keyProperty="empNo" resultType="int">
+		SELECT LAST_INSERT_ID()
+	</selectKey>
+	    INSERT INTO emp_info(
+	        emp_no,
+	        emp_name,
+	        dept_name,
+	        team_name,
+	        emp_position,
+	        access_level,
+	        emp_state,
+	        employ_date,
+	        remain_days,
+	        createdate,
+	        updatedate
+	    ) VALUES (
+	        #{empNo},
+	        #{empName},
+	        #{deptName},
+	        #{teamName},
+	        #{empPosition},
+	        #{accessLevel},
+	        #{empState},
+	        #{employDate},
+	        #{remainDays},
+	        NOW(),
+	        NOW()
+	    )
+	</insert>
+	<!-- 사원번호 사용여부 등록 -->
+	<insert id="addEmpNo" parameterType="int">
+	    INSERT INTO emp_no_list (emp_no, active, createdate) VALUES (#{empNo}, 'Y', NOW())
+	</insert>
 </mapper>

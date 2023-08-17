@@ -85,4 +85,20 @@ public class EmpService {
 		
 		return result;	
 	}
+	
+	// 인사 정보 등록
+	public int addEmp(EmpInfo empInfo) {
+	    
+	    // 인사 정보 등록
+	    int addEmpRow = empMapper.addEmp(empInfo);
+	    log.debug(CC.YE + "EmpService.addEmp() row : " + addEmpRow + CC.RESET);
+	    
+	    // 사원번호 사용여부 등록
+	    if( addEmpRow > 0) {
+		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
+		    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
+	    }
+	    
+	    return addEmpRow; // 사원 정보 등록 결과를 반환
+	}
 }

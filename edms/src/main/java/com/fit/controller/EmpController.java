@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -87,5 +88,26 @@ public class EmpController {
 		model.addAttribute("sign", result.get("memberSign"));
 		
 		return "/emp/adminMemberOne";
+	}
+	
+	// 인사 등록 폼
+	@GetMapping("/emp/registEmp")
+	public String showEmployeeRegistrationForm(Model model) {
+	    // 부서, 팀 정보 조회
+	    Map<String, Object> departmentAndTeamInfo = empService.getDeptAndTeamList();
+	    
+	    model.addAttribute("deptList", departmentAndTeamInfo.get("deptList"));
+	    model.addAttribute("teamList", departmentAndTeamInfo.get("teamList"));
+	    
+	    return "/emp/registEmp"; // 인사등록 폼으로 이동
+	}
+	// 인사 등록 액션
+	@PostMapping("/emp/registEmp")
+	public String processEmployeeRegistration(@ModelAttribute("empInfo") EmpInfo empInfo) {
+		
+	    int rowCount = empService.addEmp(empInfo);
+	    log.debug(CC.YE + "EmpController.registEmp() rowCount: " + rowCount + CC.RESET);
+	    
+	    return "redirect:/emp/empList"; // 인사목록 페이지로 리다이렉트
 	}
 }
