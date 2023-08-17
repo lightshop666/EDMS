@@ -107,7 +107,7 @@
 		<tr>
 			<td>사진</td>
 			<td>
-				<!-- 사진 클릭 시 사진 모달로 이미지 출력 -->
+				<!-- 사진 클릭 시 모달로 이미지 출력 -->
 				<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
 					data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
 			</td>
@@ -139,7 +139,7 @@
 		<tr>
 			<td>저장된 서명</td>
 			<td>
-				<!-- 미리보기 클릭 시 사진 모달로 서명 출력 -->
+				<!-- 미리보기 클릭 시 모달로 서명 출력 -->
 				<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
 			</td>
 		</tr>
@@ -166,18 +166,15 @@
 	<div class="modal" id="imageModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-
 				<!-- 모달 헤더 -->
 				<div class="modal-header">
 					<h4 class="modal-title">사원 사진</h4>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 				</div>
-
 				<!-- 모달 본문 -->
 				<div class="modal-body">
 					<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
 				</div>
-
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -191,18 +188,15 @@
 	<div class="modal" id="signModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-
 				<!-- 모달 헤더 -->
 				<div class="modal-header">
 					<h4 class="modal-title">사원 서명</h4>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 				</div>
-
 				<!-- 모달 본문 -->
 				<div class="modal-body">
 					<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
 				</div>
-
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
@@ -216,13 +210,11 @@
 	<div class="modal" id="pwModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
-
 				<!-- 모달 헤더 -->
 				<div class="modal-header">
 					<h4 class="modal-title">비밀번호 초기화</h4>
 					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 				</div>
-
 				<!-- 모달 본문 -->
 				<div class="modal-body">
 					<div>
@@ -230,7 +222,7 @@
 					</div>
 					<div>
 						<button type="button" id="getPwBtn">비밀번호 생성</button>
-						임시 비밀번호 : <span id="tempPw"></span>
+						임시 비밀번호 : <span id="tempPw"></span> <!-- 비밀번호 생성시 출력 -->
 					</div> <br>
 					<div>
 						<p style="color:red;">
@@ -238,10 +230,9 @@
 							생성한 임시 비밀번호를 사용자에게 반드시 전달하세요.
 						</p>
 						<button type="button" id="updatePwBtn">비밀번호 초기화</button>
-						<span id="updateResult"></span>
+						<span id="updateResult"></span> <!-- 비밀번호 초기화 결과 출력 -->
 					</div>
 				</div>
-
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
