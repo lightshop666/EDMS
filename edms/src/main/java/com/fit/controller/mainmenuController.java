@@ -19,7 +19,8 @@ public class mainmenuController {
 
 		//세션계층에서 값 받아오기
 		String loginMemberId = (String)session.getAttribute("loginMemberId");
-		String accessLevel = (String)session.getAttribute("accessLevel");
+		String accessLevelStr = (String)session.getAttribute("accessLevel");
+		int accessLevel = Integer.parseInt(accessLevelStr);
 		String empName = (String)session.getAttribute("empName");		
 log.debug(CC.WOO + "메인메뉴컨트롤러.세션계층 loginMemberId :  " + loginMemberId + CC.RESET);
 log.debug(CC.WOO + "메인메뉴컨트롤러.세션계층 accessLevel :  " + accessLevel + CC.RESET);

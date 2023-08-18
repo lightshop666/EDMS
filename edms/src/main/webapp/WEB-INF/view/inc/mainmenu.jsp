@@ -1,10 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jstl/core" prefix="c" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Mainmenu</title>
+<title>Main Menu</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -47,11 +47,11 @@ $(document).ready(function() {
 	<!-- 인사관리 -->
 		<h4>인사관리</h4>
 		<!-- 레벨0은 사용자용, 레벨1 이상은 관리자용 분기 -->
-		<c:if test="${accessLevel >= 1}">
+		<c:if test="${accessLevel ne 0}">
 			<!-- 관리자용 링크 -->
 			<a href="${pageContext.request.contextPath}/admin/home">사원목록 (관리자용)</a>
 		</c:if>
-		<c:if test="${accessLevel < 1}">
+		<c:if test="${accessLevel eq 0}">
 			<!-- 사용자용 링크 -->
 			<a href="${pageContext.request.contextPath}/home">사원목록 (사용자용)</a>
 		</c:if>
