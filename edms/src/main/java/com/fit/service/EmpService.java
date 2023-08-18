@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fit.CC;
 import com.fit.mapper.EmpMapper;
 import com.fit.mapper.MemberMapper;
+import com.fit.vo.BoardFile;
 import com.fit.vo.Department;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
@@ -119,17 +120,62 @@ public class EmpService {
 	
 	// 인사 정보 등록
 	public int addEmp(EmpInfo empInfo) {
+		// 사원번호 등록
+	    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
+	    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
 	    
-	    // 인사 정보 등록
+	    // 사원번호 등록 후 인사 정보 등록
 	    int addEmpRow = empMapper.addEmp(empInfo);
 	    log.debug(CC.YE + "EmpService.addEmp() row : " + addEmpRow + CC.RESET);
 	    
-	    // 사원번호 사용여부 등록
-	    if( addEmpRow > 0) {
-		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
-		    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
-	    }
-	    
 	    return addEmpRow; // 사원 정보 등록 결과를 반환
 	}
+	
+	// 사원 전체 목록 조회
+	public List<EmpInfo> selectEmpList() {
+		// 사원 목록을 List 형식으로 담기
+		List<EmpInfo> selectEmpList = empMapper.selectEmpList();
+		log.debug(CC.YE + "EmpService.selectListEmp() selectListEmp : " + selectEmpList + CC.RESET);
+		
+		return selectEmpList;
+	}
+	
+    // 사원 등록 엑셀 업로드
+	@Transactional
+    public void excelProcess(List<Map<String, Object>> jsonDataList) {
+        System.out.println(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
+        System.out.println(CC.YE + "EmpService.excelProcess() jsonData.size(): "+ jsonDataList.size() + CC.RESET);
+        // 엑셀 파일 파싱
+        for (Map<String, Object> jsonData : jsonDataList) { // jsonData를 가지고 필요한 처리를 수행하고 데이터베이스에 저장
+            EmpInfo empInfo = new EmpInfo();
+            empInfo.setEmployDate((String) jsonData.get("입사일"));
+            empInfo.setEmpPosition((String) jsonData.get("직급"));
+            empInfo.setEmpNo((int) jsonData.get("사원번호"));
+            empInfo.setAccessLevel((String) jsonData.get("권한"));
+            empInfo.setDeptName((String) jsonData.get("부서명"));
+            empInfo.setEmpState((String) jsonData.get("재직사항"));
+            empInfo.setEmpName((String) jsonData.get("사원명"));
+            empInfo.setTeamName((String) jsonData.get("팀명"));
+            System.out.println(CC.YE + "EmpService.excelProcess() empInfo: "+ empInfo + CC.RESET);
+            
+            // 2. 사원번호 등록
+		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
+		    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
+		    
+		    // 3. 사원번호 등록 후 인사 정보 등록
+		    int addEmpRow = empMapper.addEmp(empInfo);
+		    log.debug(CC.YE + "EmpService.addEmp() row : " + addEmpRow + CC.RESET);
+        }
+    }
+	
+	// 선택된 사원 정보 리스트
+	public List<EmpInfo> getSelectedEmpList(List<Integer> empNos) {
+		// empMapper의 getSelectedEmpList 선택된 사원 정보 리스트 조회
+		List<EmpInfo> selectedEmpList = empMapper.getSelectedEmpList(empNos);
+		log.debug(CC.YE + "EmpService.addEmpNoRow() selectedEmpList : " + selectedEmpList + CC.RESET);
+		
+		// 선택된 사원 정보 리스트를 반환
+        return selectedEmpList;
+    }
+	
 }

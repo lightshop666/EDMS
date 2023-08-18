@@ -32,6 +32,20 @@
 		    <artifactId>jstl</artifactId>
 		</dependency>
 		
+		<!-- Apache POI: Excel 파일 처리를 위한 라이브러리 -->
+	    <!-- Apache POI 기본 라이브러리(Excel 파일의 기본적인 기능 제공) -->
+	    <dependency>
+	        <groupId>org.apache.poi</groupId>
+	        <artifactId>poi</artifactId>
+	        <version>5.0.0</version> <!-- 최신 버전에 맞게 설정 -->
+	    </dependency>
+	    <!-- Apache POI의 OOXML 확장 라이브러리(Excel 파일의 확장 기능인 OOXML(Office Open XML) 형식을 처리) -->
+	    <dependency>
+	        <groupId>org.apache.poi</groupId>
+	        <artifactId>poi-ooxml</artifactId>
+	        <version>5.0.0</version> <!-- 최신 버전에 맞게 설정 -->
+	    </dependency>
+		
 <!-- web jar -->
 		<dependency>
 			<groupId>org.webjars</groupId>
