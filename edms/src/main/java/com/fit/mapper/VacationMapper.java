@@ -13,4 +13,6 @@ public interface VacationMapper {
     
     // 정렬조건에 따른 히스토리 총 행수 카운트
     int getVacationHistoryCount(Map<String, Object> paramMap);
+    
+    int insertVacationHistory(VacationHistory vacationHistory);
 }
