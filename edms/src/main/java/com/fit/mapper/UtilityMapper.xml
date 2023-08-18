@@ -2,18 +2,24 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fit.mapper.UtilityMapper">
 
-	<!-- 공용픔 상세보기 -->
+	<!-- 공용픔 상세보기 공용품 파일 정보까지 전체 -->
 	<select id="selectUtilityOne" parameterType="com.fit.vo.Utility"
 		resultType="com.fit.vo.Utility">
 		SELECT
-			utility_no utilityNo
-			, utility_category utilityCategory
-			, utility_name utilityName
-			, utility_info utilityInfo
-			, createdate
-			, updatedate		
-		FROM utility
-		WHERE utility_no = #{utilityNo}	 
+			u.utility_no utilityNo,
+		    u.utility_category utilityCategory,
+		    u.utility_name utilityName,
+		    u.utility_info utilityInfo,
+		    u.createdate,
+		    u.updatedate,
+		    uf.utility_ori_filename utilityOriFilename,
+		    uf.utility_save_filename utilitySaveFilename,
+		    uf.utility_filetype utilityFiletype,
+		    uf.utility_path utilityPath		
+		FROM utility u
+		LEFT JOIN utility_file uf 
+		ON u.utility_no = uf.utility_no
+		WHERE u.utility_no = #{utilityNo}	 
 	</select>
 	
 	<!-- 리스트를 보여줄 경우 페이징 쿼리, 마이바티스는 매개변수를 1개 받을 수 있으므로 
@@ -94,7 +100,7 @@
 	</insert>
 	
 	<!-- 공용품을 삭제하는 쿼리 -->
-	<delete id="deleteUtility" parameterType="com.fit.vo.Utility">
+	<delete id="deleteUtility" parameterType="Long">
 		DELETE FROM utility
 		WHERE utility_no = #{utility_no}
 	</delete>

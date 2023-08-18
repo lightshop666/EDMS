@@ -37,7 +37,9 @@ public class UtilityController {
 	
 	@PostMapping("/utility/addUtility")
 	public String addUtility(HttpSession session, Utility utility, HttpServletRequest request) {
-		// 경로 입력 후 /image/utility/값만 추출하여 DB에 저장 -> 리스트로 조회하기 위함
+		// 1. 웹 어플리케이션의 실제 경로 
+		// 2. /image/utility/의 하위 폴더 경로를 추가하여 전체 파일 저장 경로 생성
+		// 3. Path는 이미지들을 DB에 저장하고 조회하는데 사용
 		String Path = request.getServletContext().getRealPath("/image/utility/");
 		
 		// 입력유무를 확인
@@ -55,7 +57,6 @@ public class UtilityController {
 			return "redirect:/utility/utilityList?result=fail";
 		}
 	}
-	
 	
 	// 해당 URL 경로로 GET 요청이 들어오면 이 메서드가 실행된다.
 	@GetMapping("/utility/utilityList")
@@ -89,4 +90,80 @@ public class UtilityController {
 		// 이동할 해당 뷰 페이지를 작성한다.
 		return "/utility/utilityList";
 	}
+	
+	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
+	@PostMapping("/delete")
+    public String deleteSelectedUtilities(
+    		// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
+    		@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
+		
+		// 삭제 유무를 확인
+		int row = 0;
+		
+		// 체크박스를 선택한 값이 있다면
+        if (selectedItems != null && !selectedItems.isEmpty()) {
+        	// 체크된 매개값을 해당하는 공용품 번호에 매칭하여 삭제하는 메서드 동작
+            for (Long utilityNo : selectedItems) {
+            	// 서비스단의 공용품글과 파일을 동시에 삭제하는 메서드 실행
+                row = utilityService.deleteUtilityAndFile(utilityNo);
+            }
+        }
+        
+        if(row >= 1) {
+			// 디버깅
+			// 공용품 삭제시 데이터를 보낸다
+			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
+			return "redirect:/utility/utilityList?result=warning";
+		} else {
+			// 디버깅
+			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
+			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
+			return "redirect:/utility/utilityList?result=fail";
+		}
+    }
+	
+	@GetMapping("/utility/modifyUtility")
+	public String modifyUtility(Model model, HttpSession session,
+			// 공용품 리스트에서 수정 버튼을 클릭시 수정 폼으로 utility 객체를 보내준다
+			@RequestParam(name = "utilityNo", required = false, defaultValue = "0") int utilityNo) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"utilityController.modifyUtility() utilityNo: "+utilityNo+CC.RESET);
+		
+		// 공용품 번호를 통해 공용품 리스트를 불러온다.
+		Utility utility = utilityService.getUtilityOne(utilityNo);
+		
+		// 모델에 값 저장 후 수정 폼에서 사용
+		model.addAttribute("utility", utility);
+		
+		return "/utility/modifyUtility";
+	}
+	
+	@PostMapping("/utility/modifyUtility")
+	public String modifyUtility(HttpSession session, Utility utility, HttpServletRequest request,
+			@RequestParam(name = "utilityNo", required = false, defaultValue = "0") int utilityNo) {
+		
+		// 입력받은 값 디버깅
+		log.debug(CC.YOUN+"utilityController.modifyUtility() utilityNo: "+utilityNo+CC.RESET);
+		
+		String Path = request.getServletContext().getRealPath("/image/utility/");
+		
+		// 기존 파일 삭제를 위해 공용품 정보를 조회 -> 해당 공용품 번호의 공용품 내역이 있다면
+		Utility existingUtility = utilityService.getUtilityOne(utilityNo);
+		
+		int row = utilityService.modifyUtility(utility, Path, existingUtility);
+		
+		if(row == 1) {
+			// 디버깅
+			// 공용품 수정 성공시 리스트로
+			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
+			return "redirect:/utility/utilityList";
+		} else {
+			// 디버깅
+			// 공용품 수정 실패시 fail을 매개변수로 view에 전달
+			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
+			return "redirect:/utility/utilityList?result=fail";
+		}
+	}
+	
 }

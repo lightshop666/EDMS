@@ -39,7 +39,7 @@
 	</select>
 	
 	<!-- 특정 공용품 파일 삭제 -->
-	<delete id="deleteUtilityFile" parameterType="com.fit.vo.Utility">
+	<delete id="deleteUtilityFile" parameterType="Long">
 		DELETE FROM utility_file
 		WHERE utility_no = #{utility_no}
 	</delete>

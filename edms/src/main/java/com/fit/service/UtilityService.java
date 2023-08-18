@@ -71,23 +71,11 @@ public class UtilityService {
         return lastPage;
     }
 	
-		// 공용품 이미지 상세를 조회하는 메서드
-		public UtilityFile getUtilityFileOne(int utilityNo) {
+	// 공용품 이미지 상세를 조회하는 메서드
+	public UtilityFile getUtilityFileOne(int utilityNo) {
 		
 		// 파일 객체에 저장, 이후 view 레이어에서 리스트 형식으로 뿌린다.
 		UtilityFile utilityFile = utilityFileMapper.selectUtilityFileOne(utilityNo);
-		
-		/*
-		// 각 컬럼을 개별적으로 사용하기 위해 Map에 저장
-		Map<String, Object> utilityFileMap = new HashMap<>();
-		utilityFileMap.put("utilityNo", utilityFile.getUtilityNo());
-		utilityFileMap.put("utilityOriFilename", utilityFile.getUtilityOriFilename());
-		utilityFileMap.put("utilitySaveFilename", utilityFile.getUtilitySaveFilename());
-		utilityFileMap.put("utilityFiletype", utilityFile.getUtilityFiletype());
-		utilityFileMap.put("utilityPath", utilityFile.getUtilityPath());
-		utilityFileMap.put("createdate", utilityFile.getCreatedate());
-		utilityFileMap.put("updatedate", utilityFile.getUpdatedate());
-		*/
 		
 		// 디버깅
 		log.debug(CC.YOUN+"utilityService.getUtilityFileOne() utilityFile: "+utilityFile+CC.RESET);
@@ -156,7 +144,6 @@ public class UtilityService {
 			log.debug(CC.YOUN+"utilityService.addUtility() uf.getUtilityPath(): "+uf.getUtilityPath()+CC.RESET);
 			log.debug(CC.YOUN+"utilityService.addUtility() uf.getUtilitySaveFilename(): "+uf.getUtilitySaveFilename()+CC.RESET);
 			
-			
 			// 공용품 파일 테이블에 저장
 			utilityFileMapper.insertUtilityFile(uf);
 			
@@ -178,4 +165,103 @@ public class UtilityService {
 		return row;
 	}
 	
+	// 파일과 공용품을 동시에 삭제하는 메서드 -> null값을 포함할 수 있는 Long 타입 사용
+	public int deleteUtilityAndFile(Long utilityNo) {
+        // 공용품 및 관련 파일 삭제 로직 작성 -> Long 타입을 int형으로 형변환
+        Utility utility = utilityMapper.selectUtilityOne(utilityNo.intValue());
+        
+        // 디버깅
+        log.debug(CC.YOUN+"utilityService.deleteUtilityAndFile() utility: "+utility+CC.RESET);
+        
+        // 반환할 row값 생성
+        int row = 0;
+        
+        // 체크박스가 1개라도 선택되서 객체가 생성된 경우
+        if (utility != null) {
+            
+        	// 디버깅
+            log.debug(CC.YOUN+"utilityService.deleteUtilityAndFile() 삭제할 공용품번호:"+utilityNo+CC.RESET);
+        	
+        	// 공용품 파일을 삭제 (DB)
+        	int flieRow = utilityFileMapper.deleteUtilityFile(utilityNo);
+        	
+        	// 디버깅
+            log.debug(CC.YOUN+"utilityService.deleteUtilityAndFile() 공용품 파일 삭제 flieRow:"+flieRow+CC.RESET);
+        	
+        	// 실제 파일이 저장된 경로
+        	String filePath = utility.getUtilityPath();
+        	// 삭제할 파일의 이름
+        	String fileName = utility.getUtilitySaveFilename();
+        	// 파일 객체를 생성 -> 파일 삭제 메서드 사용하기 위함
+        	File file = new File(filePath + fileName);
+        	
+        	// 디버깅
+            log.debug(CC.YOUN+"utilityService.deleteUtilityAndFile() file:"+file+CC.RESET);
+        	
+        	// 파일을 삭제
+        	file.delete();
+        	
+    		// 공용품 글을 삭제
+    		row = utilityMapper.deleteUtility(utilityNo);
+    		
+    		// 디버깅
+            log.debug(CC.YOUN+"utilityService.deleteUtilityAndFile() 공용품 삭제 row:"+row+CC.RESET);
+        }
+        // row 값 반환
+        return row;
+    }
+	
+	// 공용품을 수정하는 메서드 -> 공용품 정보의 경우 UPDATE 하고 기존 파일이 존재할 경우 기존 파일을 삭제하고 수정폼에서 입력받은 파일을 저장한다.
+	// 기존에 파일이 있는지 확인하는 객체 existingUtility를 입력받는다, 수정폼으로부터 수정된 값을 저장하는 modifiedUtility 객체를 입력받는다.
+	public int modifyUtility(Utility modifiedUtility, String path, Utility existingUtility) {
+		// 공용품 정보 업데이트 -> 수정된 공용품 정보를 통해 utility table 수정
+	    int row = utilityMapper.updateUtility(modifiedUtility); 
+	    
+	    // 디버깅
+        log.debug(CC.YOUN+"utilityService.modifyUtility() 공용품 수정 row:"+row+CC.RESET);
+	    
+	    // 수정폼으로부터 입력받은 수정된 공용품 정보를 담고 있는 modifiedUtility 객체로부터 새로 업로드된 파일을 가져온다.
+	    MultipartFile newSingleFile = modifiedUtility.getSinglepartFile();
+	    
+	    // 기존 파일이 있었을 경우 삭제 -> 실제로 파일이 저장되어 있는 경로에서 파일을 삭제
+	    if (existingUtility.getUtilitySaveFilename() != null && !existingUtility.getUtilitySaveFilename().isEmpty()) {
+	        String existingFilePath = path + existingUtility.getUtilitySaveFilename();
+	        File existingFile = new File(existingFilePath);
+	        if (existingFile.exists()) {
+	            existingFile.delete();
+	        }
+	        
+	        // 파일 삭제 메서드의 매개변수 타입이 Long 타입이므로 int 타입을 Long 타입으로 형변환
+	        Long utilityNo = Long.valueOf(existingUtility.getUtilityNo());
+	        // DB에 저장된 파일 데이터 삭제
+	        utilityFileMapper.deleteUtilityFile(utilityNo);
+	    }
+
+	    // 수정폼으로부터 새 파일이 업로드된 경우
+	    if (row == 1 && newSingleFile != null && !newSingleFile.isEmpty()) {
+	        UtilityFile newUtilityFile = new UtilityFile();
+	        newUtilityFile.setUtilityNo(modifiedUtility.getUtilityNo());
+	        newUtilityFile.setUtilityOriFilename(newSingleFile.getOriginalFilename());
+	        newUtilityFile.setUtilityFiletype(newSingleFile.getContentType());
+	        String ext = newSingleFile.getOriginalFilename().substring(newSingleFile.getOriginalFilename().lastIndexOf("."));
+	        newUtilityFile.setUtilitySaveFilename(UUID.randomUUID().toString().replace("-", "") + ext);
+	        newUtilityFile.setUtilityPath(path);
+	        
+	        // DB에 파일업로드
+	        utilityFileMapper.insertUtilityFile(newUtilityFile);
+
+	        // 파일을 저장
+	        File newFile = new File(path + newUtilityFile.getUtilitySaveFilename());
+	        try {
+	        	// 업로드된 파일을 서버의 지정된 경로에 저장
+	            newSingleFile.transferTo(newFile);
+	        } catch (IllegalStateException | IOException e) {
+	            e.printStackTrace();
+	            throw new RuntimeException();
+	        }
+	    }
+	    // 수정유무 확인을 위한 row값 반환
+	    return row;
+	}
+
 }

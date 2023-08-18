@@ -24,6 +24,6 @@ public interface UtilityMapper {
 	// 공용품 수정
 	int updateUtility(Utility utility);
 	
-	// 공용품 삭제
-	int deleteUtility(Utility utility);
+	// 공용품 삭제 
+	int deleteUtility(Long utilityNo);
 }
