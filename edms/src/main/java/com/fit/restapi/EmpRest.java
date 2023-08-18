@@ -15,8 +15,8 @@ public class EmpRest {
 	private EmpService empService;
 	
 	// 비밀번호 초기화
-	@PostMapping("/AdminUpdatePw")
-	public int AdminUpdatePw(int empNo, String tempPw) {
+	@PostMapping("/adminUpdatePw")
+	public int adminUpdatePw(int empNo, String tempPw) {
 		log.debug("\033[46;97m" + "MemberController.AdminUpdatePw() empNo : " + empNo + "\u001B[0m");
 		log.debug("\033[46;97m" + "MemberController.AdminUpdatePw() tempPw : " + tempPw + "\u001B[0m");
 		

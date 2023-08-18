@@ -58,7 +58,7 @@
 					
 					if (result) { // 확인 선택 시 true 반환
 						$.ajax({ // 비밀번호 초기화 비동기 방식으로 실행
-							url : '/AdminUpdatePw',
+							url : '/adminUpdatePw',
 							type : 'post',
 							data : {tempPw : tempPw,
 									empNo : ${member.empNo} },
@@ -158,7 +158,7 @@
 	</table>
 	<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
 	<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
-	<button type="submit" data-bs-toggle="modal" data-bs-target="#pwModal">비밀번호 초기화</button> <!-- 오른쪽 정렬 -->
+	<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal">비밀번호 초기화</button> <!-- 오른쪽 정렬 -->
 	
 	<!-- 모달창 시작 -->
 	

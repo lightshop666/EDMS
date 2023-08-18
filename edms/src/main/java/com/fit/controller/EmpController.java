@@ -46,11 +46,6 @@ public class EmpController {
 		
 		// 1) 인사정보 조회 호출
 		EmpInfo empInfo = empService.selectEmp(empNoEx);
-		// 날짜만 추출
-		String createdate = empInfo.getCreatedate().substring(0, 10);
-		String udpatedate = empInfo.getUpdatedate().substring(0, 10);
-		empInfo.setCreatedate(createdate);
-		empInfo.setUpdatedate(udpatedate);
 		
 		// 2) 부서, 팀 테이블 조회 호출
 		Map<String, Object> result = empService.getDeptAndTeamList();
@@ -99,25 +94,9 @@ public class EmpController {
 		
 		// empNo로 개인정보 조회 (관리자) 서비스 호출
 		Map<String, Object> result = empService.selectMember(empNoEx);
-		
-		// 성별 추출
-		Map<String, Object> memberInfo = (Map) result.get("memberInfo");
-		if ( memberInfo.get("gender").equals("M") ) {
-			memberInfo.put("gender", "남자");
-		} else {
-			memberInfo.put("gender", "여자");
-		}
-		
-		// 날짜 추출
-		// log.debug(CC.HE + memberInfo.get("createdate").getClass() + CC.RESET);
-		// -> class java.sql.Timestamp
-		String createdate = memberInfo.get("createdate").toString(); // Timestamp 객체를 String타입으로 형변환
-		String udpatedate = memberInfo.get("updatedate").toString();
-		memberInfo.put("createdate", createdate.substring(0, 10));
-		memberInfo.put("updatedate", udpatedate.substring(0, 10));
-		
+
 		// 각 타입의 객체를 model에 담기
-		model.addAttribute("member", memberInfo);
+		model.addAttribute("member", result.get("memberInfo"));
 		model.addAttribute("image", result.get("memberImage"));
 		model.addAttribute("sign", result.get("memberSign"));
 		
@@ -135,6 +114,7 @@ public class EmpController {
 	    
 	    return "/emp/registEmp"; // 인사등록 폼으로 이동
 	}
+	
 	// 인사 등록 액션
 	@PostMapping("/emp/registEmp")
 	public String processEmployeeRegistration(@ModelAttribute("empInfo") EmpInfo empInfo) {
