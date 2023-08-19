@@ -1,7 +1,10 @@
 package com.fit.websocket;
 
+import java.security.Principal;
+
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
@@ -29,5 +32,18 @@ public class MessegeController {
 		return new ResponseMessage( HtmlUtils.htmlEscape(message.getMessageContent()));
 	}
 
+	
+	@MessageMapping("/PrivateMessage")		
+	@SendToUser("/topic/PrivateMessage")
+	public ResponseMessage getPrivateMessage(final Message message, final Principal principal) throws InterruptedException {
+		
+		Thread.sleep(500); // 딜레이 0.5초 (시뮬레이션)
+		
+		// 클라이언트에게 보낼 응답 메시지 객체를 생성하고, 이스케이핑한 메시지 내용을 저장하여 반환
+		return new ResponseMessage( HtmlUtils.htmlEscape("프라이빗 메시지 to User : "+principal.getName()+": " + message.getMessageContent()));
+	}
+
+	
+	
 	
 }

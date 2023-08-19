@@ -24,7 +24,9 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(final StompEndpointRegistry registry) {
 		// Stomp 연결을 위한 엔드포인트 설정 및 SockJS 사용
-		registry.addEndpoint("/our-websocket").withSockJS();
+		registry.addEndpoint("/ourWebsocket")
+				.setHandshakeHandler(new UserHandshakeHandler())
+				.withSockJS();
 	}
 
 }

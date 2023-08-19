@@ -1,7 +1,6 @@
 package com.fit.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +11,7 @@ public class WSController {
 	private WSService service;
 	
 	@PostMapping("/sendMassage")
-	public void sendMessage(@RequestBody Message message) {
+	public void sendMessage(@RequestBody final Message message) {
 		service.notifyFrontend(message.getMessageContent());
 	}
 
