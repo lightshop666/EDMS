@@ -4,12 +4,25 @@ import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.fit.vo.Approval;
 import com.fit.vo.EmpInfo;
+import com.fit.vo.ExpenseDraft;
+import com.fit.vo.ExpenseDraftContent;
 
 @Mapper
 public interface DraftMapper {
 
     List<EmpInfo> getAllEmp();
     
-    // 그 외 필요한 쿼리 메소드들
+    int insertApproval(Approval approval);
+    
+    int insertExpenseDraft(ExpenseDraft expenseDraft);
+    
+    int insertExpenseDraftContent(ExpenseDraftContent expenseDetail);
+
+    int insertReceiveDraft(int approvalNo, int empNo);
+    
+    int selectLastInsertedApprovalNo();
+    
+    int selectLastInsertedDocumentNo();
 }

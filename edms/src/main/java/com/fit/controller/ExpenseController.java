@@ -1,6 +1,7 @@
 package com.fit.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,22 +38,17 @@ public class ExpenseController {
     }
     
     @PostMapping("/submitExpense")
-    public String submitExpense(
-            @RequestParam("applicantName") String applicantName,
-            @RequestParam("middleApprover") String middleApprover,
-            @RequestParam("finalApprover") String finalApprover,
-            @RequestParam("dueDate") String dueDate,
-            @RequestParam("documentTitle") String documentTitle,
-            // 다른 파라미터들도 추가해주세요
-            @RequestParam("attachedFile") MultipartFile attachedFile,
-            // 필요한 파라미터들을 받아옵니다.
-            Model model
-    ) {
-        // 여기서 제출된 데이터를 처리하는 로직을 작성합니다.
-        // 예시로 모델에 메시지를 추가하여 결과를 JSP로 전달하는 코드를 작성합니다.
-        String message = "지출결의서가 성공적으로 제출되었습니다.";
-        model.addAttribute("message", message);
-        
-        return "draft/expenseResult"; // 결과 표시를 위한 JSP 파일명
+    public String submitExpense(@RequestParam Map<String, Object> submissionData, Model model) {
+        int result = draftService.processExpenseSubmission(submissionData);
+
+        if (result == 1) {
+            // 성공한 경우의 처리 (예: 리다이렉트)
+            return "redirect:/successPage";
+        } else {
+            // 실패한 경우의 처리 (예: 에러 메시지 전달)
+            String errorMessage = "지출결의서 제출 실패";
+            model.addAttribute("errorMessage", errorMessage);
+            return "errorPage";
+        }
     }
 }
