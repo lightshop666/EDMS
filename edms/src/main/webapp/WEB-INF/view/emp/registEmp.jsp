@@ -44,10 +44,10 @@
 			
 	     	// 페이지 로딩 시 주소창 파라미터 확인 후 알림 표시
 	        const urlParams = new URLSearchParams(window.location.search);
-	        const failParam = urlParams.get('fail'); // '?' 제외한 파라미터 이름만 사용
+	        const failParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
 
-	        if (failParam !== null) { // 파라미터 값이 있을 경우에만 알림 표시
-	            alert('엑셀 파일 업로드에 실패했습니다. 양식에 맞는 엑셀파일을 제출해주세요.');
+	        if (failParam == 'fail') { // fail 파라미터 값이 있을 경우에만 알림 표시
+	            alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.');
 	        }
 			
 		});

@@ -28,6 +28,25 @@
 	            alert('선택된 사원이 없습니다.');
 	        }
 	    });
+	    
+	 	// 서버에서 전송한 결과 값 처리
+        const urlParams = new URLSearchParams(window.location.search);
+        const failParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+
+        if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
+            alert('엑셀 파일 업로드에 성공했습니다.');
+        }
+        
+        const newEmpNos = '<%= request.getAttribute("newEmpNos") %>';
+		const newEmpNosArray = newEmpNos.split(','); // 새로 등록된 사원번호 배열
+		
+		$('.checkbox').each(function() {
+			const empNo = $(this).data('empNo');
+			if (newEmpNosArray.includes(empNo.toString())) {
+				$(this).parent().parent().css('background-color', 'yellow'); // 노란색 스타일 추가
+			}
+		});
+        
 	});
 </script>
 </head>

@@ -1,6 +1,7 @@
 package com.fit.service;
 
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fit.CC;
 import com.fit.mapper.EmpMapper;
 import com.fit.mapper.MemberMapper;
-import com.fit.vo.BoardFile;
 import com.fit.vo.Department;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
@@ -143,8 +143,8 @@ public class EmpService {
     // 사원 등록 엑셀 업로드
 	@Transactional
     public void excelProcess(List<Map<String, Object>> jsonDataList) {
-        System.out.println(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
-        System.out.println(CC.YE + "EmpService.excelProcess() jsonData.size(): "+ jsonDataList.size() + CC.RESET);
+        log.debug(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
+        log.debug(CC.YE + "EmpService.excelProcess() jsonData.size(): " + jsonDataList.size() + CC.RESET);
         // 엑셀 파일 파싱
         for (Map<String, Object> jsonData : jsonDataList) { // jsonData를 가지고 필요한 처리를 수행하고 데이터베이스에 저장
             EmpInfo empInfo = new EmpInfo();
@@ -156,7 +156,7 @@ public class EmpService {
             empInfo.setEmpState((String) jsonData.get("재직사항"));
             empInfo.setEmpName((String) jsonData.get("사원명"));
             empInfo.setTeamName((String) jsonData.get("팀명"));
-            System.out.println(CC.YE + "EmpService.excelProcess() empInfo: "+ empInfo + CC.RESET);
+            log.debug(CC.YE + "EmpService.excelProcess() empInfo: "+ empInfo + CC.RESET);
             
             // 2. 사원번호 등록
 		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());

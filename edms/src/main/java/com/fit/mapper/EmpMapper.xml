@@ -130,7 +130,9 @@
 			    , createdate
 			    , updatedate
 			FROM
-			    emp_info;
+			    emp_info
+			ORDER BY
+    			createdate DESC;
 	</select>
 
     <!-- 선택된 사원 정보 조회 -->
