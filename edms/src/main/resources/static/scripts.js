@@ -76,7 +76,7 @@ function sendMessage() {
 //개인 메시지를 전송하는 함수
 function sendPrivateMessage() {
     console.log("프라이빗 메시지 보내기");
-    stompClient.send("/ws/privateMessages", {}, JSON.stringify({'messageContent': $("#privateMessages").val()}));
+	stompClient.send("/ws/privateMessage", {}, JSON.stringify({'messageContent': $("#privateMessage").val()}));
 }
 
 //알림 표시를 업데이트 하는 함수
