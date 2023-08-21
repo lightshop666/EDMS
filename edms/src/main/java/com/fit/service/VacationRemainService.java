@@ -135,7 +135,7 @@ public class VacationRemainService {
 		} else if (periodOfWork >= 21) {
 			Days = 25;
 		}
-		log.debug(CC.HE + "VactionRemainService vacationByYears() 기준연차 : " + Days + "개" + CC.RESET);
+		log.debug(CC.HE + "VactionRemainService vacationByPeriod() 기준연차 : " + Days + "개" + CC.RESET);
 		
 		return Days;
 	}

@@ -1,6 +1,5 @@
 package com.fit.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fit.CC;
 import com.fit.mapper.DraftMapper;
+import com.fit.mapper.MemberMapper;
 import com.fit.vo.Approval;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
+import com.fit.vo.MemberFile;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -21,6 +23,9 @@ public class DraftService {
 
     @Autowired
     private DraftMapper draftMapper;
+    
+    @Autowired
+    private MemberMapper memberMapper;
 
     
     public List<EmpInfo> getAllEmp() {
@@ -89,5 +94,16 @@ public class DraftService {
         }
         return 1;
 
+    }
+    
+    // 작성 폼에서 출력될 기안자의 서명 이미지 조회
+    // 기존의 memberMapper 사용
+    @Transactional
+    public MemberFile selectMemberSign(int empNo) {
+    	// fileCategory를 Sign으로 지정하여 서명 조회
+		MemberFile memberSign = memberMapper.selectMemberFile(empNo, "Sign");
+		log.debug(CC.HE + "EmpService.selectMemberSign() memberSign : " + memberSign + CC.RESET);
+		
+		return memberSign;
     }
 }
