@@ -37,18 +37,22 @@ public class ExpenseController {
         return "draft/expenseDraft";
     }
     
-    @PostMapping("/submitExpense")
-    public String submitExpense(@RequestParam Map<String, Object> submissionData, Model model) {
-        int result = draftService.processExpenseSubmission(submissionData);
+    @PostMapping("/expenseDraft")
+    public String submitExpense(@RequestParam Map<String, Object> submissionData, 
+                                @RequestParam(value = "recipients[]", required = false) int[] selectedRecipientsIds,
+                                Model model) {
+        log.debug("제출 데이터: {}", submissionData);
+
+        int result = draftService.processExpenseSubmission(submissionData, selectedRecipientsIds);
 
         if (result == 1) {
-            // 성공한 경우의 처리 (예: 리다이렉트)
-            return "redirect:/successPage";
+            // 성공적인 경우 처리 (예: 리다이렉트)
+            return "redirect:/home";
         } else {
-            // 실패한 경우의 처리 (예: 에러 메시지 전달)
-            String errorMessage = "지출결의서 제출 실패";
+            // 실패한 경우 처리 (예: 에러 메시지 전달)
+            String errorMessage = "지출 제출 실패";
             model.addAttribute("errorMessage", errorMessage);
-            return "errorPage";
+            return "/draft/expenseDraft";
         }
     }
 }

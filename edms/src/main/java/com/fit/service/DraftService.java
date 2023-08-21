@@ -1,5 +1,6 @@
 package com.fit.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @Service
 public class DraftService {
 
@@ -25,12 +28,17 @@ public class DraftService {
     }
 
     @Transactional
-    public int processExpenseSubmission(Map<String, Object> submissionData) {
+    public int processExpenseSubmission(Map<String, Object> submissionData,int[] selectedRecipientsIds) {
         String draftState = "결재대기";
         String expenseCategory = "지출결의서";
         String approvalField = "A";
 
-        try {
+        log.debug("processExpenseSubmission() Start");
+
+        // 전달받은 submissionData 출력
+        log.debug("Submission Data: {}", submissionData);
+        
+     
         // approval 테이블에 데이터 입력
         Approval approval = new Approval();
         approval.setEmpNo((Integer) submissionData.get("empNo"));
@@ -71,14 +79,10 @@ public class DraftService {
         }
 
         // receive_draft 테이블에 데이터 입력 (수신참조자)
-        List<Integer> selectedRecipientsIds = (List<Integer>) submissionData.get("selectedRecipientsIds");
-        for (Integer empNo : selectedRecipientsIds) {
+        for (int empNo : selectedRecipientsIds) {
             draftMapper.insertReceiveDraft(approvalNo, empNo);
         }
         return 1;
-        } catch (Exception e) {
-            // 실패 시 예외 처리 및 롤백 후 0을 반환
-            return 0;
-        }
+
     }
 }
