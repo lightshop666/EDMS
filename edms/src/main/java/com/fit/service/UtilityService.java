@@ -71,6 +71,31 @@ public class UtilityService {
         return lastPage;
     }
 	
+	// minPage를 구하는 메서드
+	public int getMinPage(int currentPage, int pagePerPage) {
+		int minPage = (((currentPage - 1) / pagePerPage) * pagePerPage) + 1;
+		
+		// 디버깅
+		log.debug(CC.YOUN+"utilityService.getMinPage() minPage: "+minPage+CC.RESET);
+		
+		return minPage;
+	}
+	
+	// maxPage를 구하는 메서드
+	public int getMaxPage(int minPage, int pagePerPage, int lastPage) {
+		int maxPage = minPage + (pagePerPage - 1);
+		
+		// 최대 페이지가 마지막페이지를 넘어가지 못하도록 제한
+		if (maxPage > lastPage) {
+			maxPage = lastPage;
+		}
+		
+		// 디버깅
+		log.debug(CC.YOUN+"utilityService.getMaxPage() maxPage: "+maxPage+CC.RESET);
+		
+		return maxPage;
+	}
+	
 	// 공용품 이미지 상세를 조회하는 메서드
 	public UtilityFile getUtilityFileOne(int utilityNo) {
 		

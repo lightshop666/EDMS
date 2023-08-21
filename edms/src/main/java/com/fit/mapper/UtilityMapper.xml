@@ -112,6 +112,7 @@
 		,	utility_name = #{utilityName}
 		,	utility_info = #{utilityInfo}
 		,	updatedate = NOW()
+		WHERE utility_no = #{utilityNo}
 	</update>
 	
 </mapper>

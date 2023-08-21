@@ -8,6 +8,7 @@
 <title>utilityList</title>
 </head>
 <body>
+	<!-- 탭 메뉴 형식으로 회사일정 or 공용품리스트 형식으로 나누면서 확인해야함 템플릿 이용 -->
 	<h1>공용품리스트</h1>
 	<div>
 		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
@@ -46,7 +47,7 @@
 						<td>${u.createdate}</td>
 						<td>${u.updatedate}</td>
 						<td>
-							<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityNo=${u.utilityNo}">신청</a>
+							<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityNo=${u.utilityNo}&u.utilityCategory=${u.utilityCategory}">신청</a>
 						</td>
 						<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함  -->
 						<td>
@@ -63,11 +64,18 @@
 	</form>
 	
 	<!-- [시작] 페이징 영역 -->
-	<c:if test="${currentPage > 1 }">
+	<c:if test="${minPage > 1 }">
 		<a href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage - 1}">이전</a>
 	</c:if>
 	
-	&nbsp;<span>${currentPage}</span>
+	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+    	<c:if test="${i == currentPage}">
+        	${i}
+        </c:if>
+        <c:if test="${i != currentPage}">
+        	<a  href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${i}">${i}</a>
+    	</c:if>
+    </c:forEach>
 	
 	<c:if test="${lastPage > currentPage }">
 		<a href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage + 1}">다음</a>

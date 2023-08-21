@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.ReservationMapper">
+
+	<!-- 예약 테이플 추가 쿼리 -->
+	<insert id="insertReservation" parameterType="com.fit.vo.Reservation">
+		<selectKey order="AFTER" keyProperty="reservationNo" resultType="int">
+			SELECT last_insert_id()
+		</selectKey>
+			INSERT INTO reservation(
+				reservation_no
+			,	emp_no
+			,	utility_no
+			,	reservation_date
+			,	reservation_time
+			,	createdate
+			) VALUES(
+				#{reservationNo}
+			,	#{empNo}
+			,	#{utilityNo}
+			,	#{reservationDate}
+			,	#{reservationTime}
+			,	NOW()
+			)
+	</insert>
+	
+	<!-- 예약 테이블 삭제하는 쿼리 -->
+	<delete id="deleteReservation" parameterType="Long">
+		DELETE FROM reservation
+		WHERE reservation_no = #{reservationNo}
+	</delete>
+	
+	<!-- 예약 리스트 확인하는 쿼리 -->
+	<select id="selectReservationListByPage" parameterType="java.util.Map" resultType="com.fit.vo.Reservation">
+	    SELECT
+	        r.reservation_no reservation_no,
+	        r.emp_no emp_no,
+	        r.utility_no utility_no,
+	        r.reservation_date reservation_date,
+	        r.reservation_time reservation_time,
+	        r.createdate reservation_createdate,
+	        e.emp_name emp_name,
+	        u.utility_category utility_category
+	    FROM reservation r
+	    JOIN emp_info e 
+	    ON r.emp_no = e.emp_no
+	    JOIN utility u 
+	    ON r.utility_no = u.utility_no
+	    <where>
+	    	<!-- 검색 시작일이 존재하면 예역일이 해당 시작일보다 크거나 같아야 한다. -->
+	        <if test="startDate != null">
+	            AND r.reservation_date &gt;= #{startDate}
+	        </if>
+	        <!-- 검색 종료일이 존재하면 예역일이 해당 시작일보다 작거나 같아야 한다. -->
+	        <if test="endDate != null">
+	            AND r.reservation_date &lt;= #{endDate}
+	        </if>
+	        <!-- 검색한 조건이 있을경우 searchCol값을 확인하여 검색 대상 열에 대해 Like절로 일치하는지 확인한다. -->
+	        <if test="searchWord != null and searchWord != ''">
+	            <choose>
+	                <when test="searchCol == 'emp_name'">
+	                    AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+	                </when>
+	                <when test="searchCol == 'utility_category'">
+	                    AND u.utility_category LIKE CONCAT('%', #{searchWord}, '%')
+	                </when>
+	            </choose>
+	        </if>
+	    </where>
+	    ORDER BY
+	    	<!-- 정렬은 col에 의해 어떤 컬럼에 대해 정렬할지 정하고 ascDesc를 통해 오름차순 or 내림차순 중 어떤 경우를 적용할지 정한다. -->
+	        <choose>
+	            <when test="col == 'createdate' or col == 'updatedate'">
+	                ${col} ${ascDesc}
+	            </when>
+	            <otherwise>
+	                ${col} ${ascDesc}, r.createdate DESC
+	            </otherwise>
+	        </choose>
+	    LIMIT #{beginRow}, #{rowPerPage}
+	</select>
+
+	
+	<!-- 조건에 따른 전체 행의 개수를 확인하기 위한 메서드 -->
+	<select id="selectReservationCount" parameterType="java.util.Map" resultType="int">
+	    SELECT 
+	        COUNT(*) CNT 
+	    FROM reservation r
+	    JOIN emp_info e ON r.emp_no = e.emp_no
+	    JOIN utility u ON r.utility_no = u.utility_no
+	    <where>
+	        <if test="startDate != null">
+	            AND r.reservation_date &gt;= #{startDate}
+	        </if>
+	        <if test="endDate != null">
+	            AND r.reservation_date &lt;= #{endDate}
+	        </if>
+	        <if test="searchWord != null and searchWord != ''">
+	            <choose>
+	                <when test="searchCol == 'emp_name'">
+	                    AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+	                </when>
+	                <when test="searchCol == 'reservation_date'">
+	                    AND r.reservation_date LIKE CONCAT('%', #{searchWord}, '%')
+	                </when>
+	            </choose>
+	        </if>
+	    </where>
+	</select>
+
+	
+	
+</mapper>

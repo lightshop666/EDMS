@@ -9,7 +9,9 @@
 </head>
 <body>
 	<c:set var="u" value="${utility}" />
-	<form method="get" action="${pageContext.request.contextPath}/utility/modifyUtility?utilityNo=${u.utilityNo}" enctype="multipart/form-data">
+	<form method="post" action="${pageContext.request.contextPath}/utility/modifyUtility" enctype="multipart/form-data">
+		<!-- 히든값으로 해당되는 공용품 번호를 전송 -> 이름은 utility 객체에 해당하는 이름인 utilityNo로 맞춰서 보내야 컨트롤러에서 올바르게 받는다. -->
+		<input type="hidden" name="utilityNo" value="${u.utilityNo}">
 		<h1>공용품 수정</h1>
 		<table>
 			<tr>

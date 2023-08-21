@@ -73,19 +73,32 @@ public class UtilityController {
 		log.debug(CC.YOUN+"utilityController.utilityList() utilityCategory: "+utilityCategory+CC.RESET);
 	    log.debug(CC.YOUN+"utilityController.utilityList() utilityNo: "+utilityNo+CC.RESET);
 		
-		// 공용품 리스트 출력 -> join 통해 파일경로와 파일저장이름을 가지고 있음 
-		List<Utility> utilityList = utilityService.getUtilityListByPage(currentPage, rowPerPage, utilityCategory);
 		
+		// 각 조건에 따른 전체 행 개수 
 		int totalCount = utilityService.getUtilityCount(utilityCategory);
+		// 마지막 페이지 계산
 		int lastPage = utilityService.getLastPage(totalCount, rowPerPage);
+		// 페이지네이션에 표기될 쪽 개수
+		int pagePerPage = 5;
+		// 페이지네이션에서 사용될 가장 작은 페이지 범위
+		int minPage = utilityService.getMinPage(currentPage, pagePerPage);
+		// 페이지네이션에서 사용될 가장 큰 페이지 범위
+		int maxPage = utilityService.getMaxPage(minPage, pagePerPage, lastPage);
+		
+		// 공용품 리스트 출력 -> join 통해 파일경로와 파일저장이름을 가지고 있음 
+		List<Utility> utilityList = utilityService.getUtilityListByPage(currentPage, rowPerPage,  utilityCategory);
 		
 		// 디버깅
 	    // log.debug(CC.YOUN+"utilityController.utilityList() utilityFile: "+utilityFile+CC.RESET);
 	    log.debug(CC.YOUN+"utilityController.utilityList() utilityList: "+utilityList+CC.RESET);
 		
+	    // 페이징에 필요한 값 모델로 view에 넘김
 		model.addAttribute("utilityList", utilityList);
 		model.addAttribute("currentPage", currentPage);
 		model.addAttribute("lastPage", lastPage);
+		model.addAttribute("pagePerPage", pagePerPage);
+		model.addAttribute("minPage", minPage);
+		model.addAttribute("maxPage", maxPage);
 		
 		// 이동할 해당 뷰 페이지를 작성한다.
 		return "/utility/utilityList";
@@ -140,6 +153,7 @@ public class UtilityController {
 	}
 	
 	@PostMapping("/utility/modifyUtility")
+	// 수정폼으로부터 utilityNo를 name 속성을 통해 hidden으로 전달받고 이값을 int utilityNo 요청파라미터값으로 전달받는다.
 	public String modifyUtility(HttpSession session, Utility utility, HttpServletRequest request,
 			@RequestParam(name = "utilityNo", required = false, defaultValue = "0") int utilityNo) {
 		
