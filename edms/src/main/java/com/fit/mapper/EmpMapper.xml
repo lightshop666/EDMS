@@ -114,30 +114,59 @@
 	</insert>
 	
 	<!-- 사원 목록 조회 -->
-	<select id="selectEmpList"
-			parameterType = "com.fit.vo.EmpInfo"
-			resultType="com.fit.vo.EmpInfo">
-			SELECT
-			    emp_no empNo
-			    , emp_name empName
-			    , dept_name deptName
-			    , team_name teamName
-			    , emp_position empPosition
-			    , access_level accessLevel
-			    , emp_state empState
-			    , employ_date employDate
-			    , remain_days remainDays
-			    , createdate
-			    , updatedate
-			FROM
-			    emp_info
-			ORDER BY
-    			createdate DESC;
-	</select>
+	<select id="selectEmpList" parameterType="com.fit.vo.EmpInfo" resultType="com.fit.vo.EmpInfo">
+        SELECT
+            ei.emp_no empNo
+            , ei.emp_name empName
+            , ei.dept_name deptName
+            , ei.team_name teamName
+            , ei.emp_position empPosition
+            , ei.access_level accessLevel
+            , m.gender gender
+            , ei.emp_state empState
+            , ei.employ_date employDate
+            , ei.remain_days remainDays
+            , ei.createdate
+            , ei.updatedate
+        FROM
+            emp_info ei
+        JOIN
+            member_info m ON ei.emp_no = m.emp_no
+        <where>
+            <if test="employmentStatus != null">
+                AND ei.emp_state = #{employmentStatus}
+            </if>
+            <if test="department != null">
+                AND ei.dept_name = #{department}
+            </if>
+            <if test="position != null">
+                AND ei.emp_position = #{position}
+            </if>
+            <if test="gender != null">
+                AND m.gender = #{gender}
+            </if>
+            <if test="startDate != null and endDate != null">
+                AND ei.employ_date BETWEEN #{startDate} AND #{endDate}
+            </if>
+        </where>
+        ORDER BY
+            ei.createdate DESC;
+    </select>
 
     <!-- 선택된 사원 정보 조회 -->
     <select id="getSelectedEmpList" parameterType="java.util.List" resultType="com.fit.vo.EmpInfo">
-        SELECT *
+        SELECT
+        	emp_no empNo
+		    , emp_name empName
+		    , dept_name deptName
+		    , team_name teamName
+		    , emp_position empPosition
+		    , access_level accessLevel
+		    , emp_state empState
+		    , employ_date employDate
+		    , remain_days remainDays
+		    , createdate
+		    , updatedate
         FROM emp_info
         WHERE emp_no
         IN

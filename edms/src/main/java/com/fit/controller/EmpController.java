@@ -307,32 +307,28 @@ public class EmpController {
     }
 	
 	// 사원 목록 폼
-	@GetMapping("/emp/empList")
-	public String empList(Model model,
-	                      @RequestParam(value = "downloadExcel", required = false) String downloadExcel,
-	                      @RequestParam(value = "empNos", required = false) List<Integer> empNos,
-	                      HttpServletResponse response) {
-		// downloadExcel과 empNos 파라미터를 이용하여 엑셀 다운로드 여부 및 사원 번호 목록 확인
-	    if (downloadExcel != null && empNos != null) {
+	@GetMapping("/emp/downloadExcel")
+	public void downloadExcel(@RequestParam(value = "empNos", required = false) List<Integer> empNos,
+	                          HttpServletResponse response) {
+	    // empNos가 제공되었는지 확인하여 엑셀 다운로드를 수행합니다.
+	    if (empNos != null) {
 	        try {
-	        	 // 선택된 사원 정보 조회
+	            // 선택된 사원 정보 조회
 	            List<EmpInfo> selectedEmpList = empService.getSelectedEmpList(empNos);
-	            log.debug(CC.YE + "EmpController Get empList() selectedEmpList: " + selectedEmpList + CC.RESET);
 	            
-	            // HTTP 응답 헤더 설정
-	            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // HTTP 응답 헤더를 설정. 엑셀 파일의 형식 중 Office Open XML 형식을 나타내는 MIME 유형
-	            response.setHeader("Content-Disposition", "attachment; filename=selected_employees.xlsx"); // 응답 헤더의 "Content-Disposition" 필드를 설정. 다운로드할 파일의 이름과 함께 첨부 파일로 다운로드하도록 지시.
+	            // HTTP 응답 헤더 설정: 다운로드할 엑셀 파일의 형식과 이름을 설정합니다.
+	            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	            response.setHeader("Content-Disposition", "attachment; filename=selected_employees.xlsx");
 	            
 	            // 엑셀 워크북 및 시트 생성
 	            Workbook workbook = new XSSFWorkbook();
 	            Sheet sheet = workbook.createSheet("Selected Employees");
 	            
 	            // 엑셀 헤더 생성
-	            Row headerRow = sheet.createRow(0);
 	            String[] headers = {"사원번호", "사원명", "부서명", "팀명", "직급", "권한", "재직사항", "입사일"};
-	            log.debug(CC.YE + "EmpController Get empList() headers: " + selectedEmpList + CC.RESET);
+	            Row headerRow = sheet.createRow(0);
 	            
-	            // 헤더의 길이만큼 셀을 생성하고 각각의 셀에 String 값을 세팅
+	            // 헤더 셀 생성 및 헤더 데이터 설정
 	            for (int i = 0; i < headers.length; i++) {
 	                Cell cell = headerRow.createCell(i);
 	                cell.setCellValue(headers[i]);
@@ -343,6 +339,7 @@ public class EmpController {
 	                EmpInfo empInfo = selectedEmpList.get(rowNum);
 	                Row dataRow = sheet.createRow(rowNum + 1);
 
+	                // 각 셀에 사원 정보 데이터 설정
 	                dataRow.createCell(0).setCellValue(empInfo.getEmpNo());
 	                dataRow.createCell(1).setCellValue(empInfo.getEmpName());
 	                dataRow.createCell(2).setCellValue(empInfo.getDeptName());
@@ -353,35 +350,31 @@ public class EmpController {
 	                dataRow.createCell(7).setCellValue(empInfo.getEmployDate());
 	            }
 	            
-	            // 엑셀 데이터를 HTTP 응답 스트림에 작성하여 다운로드
+	            // 생성한 엑셀 데이터를 HTTP 응답 스트림에 작성하여 다운로드
 	            workbook.write(response.getOutputStream());
 	            workbook.close();
-	            
-	            // 리턴값이 null인 경우 현재 페이지에서 계속 머무르도록 함
-	            return null;
 	        } catch (Exception e) {
-	        	// 예외 발생 시 처리	
 	            e.printStackTrace();
+	            // 예외 처리 작업: 예외 발생 시 로깅 또는 사용자에게 알림 등을 수행합니다.
 	        }
-	    } else {
-	    	// downloadExcel과 empNos가 null인 경우, 사원 목록 페이지 렌더링에 필요한 데이터 추가
-	        // 사원 목록 리스트를 전달하여 모델에 추가
-	        List<EmpInfo> selectEmpList = empService.selectEmpList();
-	        log.debug(CC.YE + "EmpController Get empList() selectEmpList: " + selectEmpList + CC.RESET);
-	        
-	        model.addAttribute("selectEmpList", selectEmpList);
-	        
-	        return "/emp/empList"; // 사원 목록 페이지로 이동
 	    }
-	    
-	    return null; // 기본적으로 null을 리턴하도록 수정
 	}
-
+	
+	@GetMapping("/emp/empList")
+	public String empList(Model model) {
+		// 사원 목록 리스트를 전달하여 모델에 추가
+        List<EmpInfo> selectEmpList = empService.selectEmpList();
+        log.debug(CC.YE + "EmpController Get empList() selectEmpList: " + selectEmpList + CC.RESET);
+        
+        model.addAttribute("selectEmpList", selectEmpList);
+        
+        return "/emp/empList"; // 사원 목록 페이지로 이동
+	}
 	
 	// 사원 목록 액션
 	@PostMapping("/emp/empList")
 	public String empList() {
 		log.debug(CC.YE + "EmpController Post empList() : " + CC.RESET);
-	    return "/emp/resetPw";
+	    return "/emp/empList";
 	}
 }
