@@ -26,37 +26,32 @@ public class DraftController {
 		// 로그인 유무 -> 인터셉터 처리
 		// 권한 분기 -> 메인메뉴에서 처리
 		
+		/*
 		// 1. 세션 정보 조회
 		// 이름, 사원번호, 부서명, 입사일
-		/*
-			String empName = session.getAttribute("empName");
-			String empNo = session.getAttribute("loginMemberId");
-			부서명 없음
-			String employDate = session.getAttribute("employDate");
+		String empName = (String) session.getAttribute("empName");
+		int empNo = (int) session.getAttribute("loginMemberId");
+		// 부서명 없음
+		String employDate = (String) session.getAttribute("employDate");
 		*/
-		int empNoEx = 20160101;
-		String employDateEx = "2016-01-01";
 		
-		// 2. 남은 휴가 일수
+		String employDateEx = "2022-01-01";
+		int empNoEx = 2022002;
+		
+		// 2. 남은 연차 일수 - remainDays
 		// 2-1. 근속기간을 구하는 메서드 호출
-		Map<String, Object> result = vacationRemainService.getPeriodOfWork(employDateEx);
-		boolean isOverOneYear = (boolean) result.get("isOverOneYear"); // 근속년수가 1년 이상이면 true 반환, 1년 미만이면 false 반환
-		int periodOfWork = (int) result.get("periodOfWork"); // 근속기간
-		
-		// 2-2. 반환값에 따라 기준 연차 구하는 메서드 호출
-		int Days = 0; // 기준 연차
-		if (isOverOneYear == true) { // 근속년수 1년 이상
-			Days = vacationRemainService.vacationByYears(periodOfWork);
-		} else { // 근속년수 1년 미만
-			Days = vacationRemainService.vacationByMonths(periodOfWork);
-		}
-		
-		// 2-3. 남은 휴가 일수를 계산하는 메서드 호출
+		Map<String, Object> getPeriodOfWorkResult = vacationRemainService.getPeriodOfWork(employDateEx);
+		// 2-2. 기준 연차를 구하는 메서드 호출
+		int Days = vacationRemainService.vacationByPeriod(getPeriodOfWorkResult);
+		// 2-3. 남은 연차 일수를 구하는 메서드 호출
 		Double remainDays = vacationRemainService.getRemainDays(employDateEx, empNoEx, Days);
 		
-		// 3. 서명 이미지
+		// 3. 남은 보상휴가 일수를 구하는 메서드 호출
+		int remainRewardDays = vacationRemainService.getRemainRewardDays(empNoEx);
 		
-		// 4. 오늘 날짜
+		// 4. 서명 이미지
+		
+		// 5. 오늘 날짜
 		
 		return "/draft/vacationDraft";
 	}

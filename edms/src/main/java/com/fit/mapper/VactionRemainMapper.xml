@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.mapper.VactionRemainMapper">
+	<!-- 연차 또는 반차 사용내역 리스트 -->
+	<select id="getUsedVacationDays" parameterType="map" resultType="double">
+		SELECT
+			v.vacation_days vacationDays
+		FROM vacation_draft v
+			INNER JOIN approval a ON v.approval_no = a.approval_no
+			<!-- 결재상태가 결재완료인 내역만 조회하기 위해 INNER JOIN 사용 -->
+		WHERE v.emp_no = #{empNo}
+			AND v.vacation_name IN ('연차', '반차') <!-- 연차 또는 반차 내역 조회 -->
+			AND v.vacation_end BETWEEN #{recentVacationDate} AND NOW()
+			<!-- 최근 연차 발생일부터 현재 날짜까지의 내역 조회 -->
+			AND a.approval_state = '결재완료'
+	</select>
+	
+	<!-- 남은 보상휴가 일수 계산 -->
+	<select id="getRemainRewardVacationDays" parameterType="int" resultType="int">
+		SELECT
+			<!-- 집계함수 SUM 사용 -->
+			SUM(
+				CASE WHEN vacation_pm = 'P' THEN vacation_days <!-- P 이면 플러스 -->
+					ELSE -vacation_days END <!-- M 이면 마이너스 -->
+			) rewardVacationDays
+		FROM vacation_history
+		WHERE vacation_name = '보상' <!-- 보상휴가만 조회 -->
+			AND createdate BETWEEN DATE_SUB(NOW(), INTERVAL 1 YEAR) AND NOW()
+			<!-- DATE_SUB 함수는 날짜 및 시간에서 지정된 간격을 더하거나 뺄 때 사용한다.
+				INTERVAL은 DATE_SUB 함수내에서 사용되며, 조정할 간격을 지정할 수 있다.
+				INTERVAL은 value unit 형태로 사용되며, value에 음수가 들어가면 간격만큼 빼고 양수가 들어가면 간격만큼 더한다.
+				unit에는 DAY, MONTH, YEAR 등을 넣을 수 있다. -->
+			<!-- 보상휴가의 유효기간은 지급일로부터 1년이므로 현재 날짜로부터 1년 이전까지의 내역만 조회 -->
+			AND emp_no = #{empNo}
+		GROUP BY emp_no
+	</select>
+</mapper>
