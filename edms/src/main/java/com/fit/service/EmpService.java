@@ -141,7 +141,6 @@ public class EmpService {
 	}
 	
     // 사원 등록 엑셀 업로드
-	@Transactional
     public void excelProcess(List<Map<String, Object>> jsonDataList) {
         log.debug(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
         log.debug(CC.YE + "EmpService.excelProcess() jsonData.size(): " + jsonDataList.size() + CC.RESET);

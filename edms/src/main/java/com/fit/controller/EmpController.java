@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.service.EmpService;
+import com.fit.service.MemberService;
 import com.fit.vo.EmpInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,10 @@ import lombok.extern.slf4j.Slf4j;
 public class EmpController {
 	@Autowired
 	private EmpService empService;
+	
+	@Autowired
+	private MemberService memberService;
+	
 	
 	// 인사정보 수정 폼
 	@GetMapping("/emp/modifyEmp")
@@ -152,6 +157,17 @@ public class EmpController {
     	try {
             List<Map<String, Object>> jsonDataList = parseExcel(file); // 업로드된 엑셀 파일을 파싱(분석, 해부)하여 JSON 데이터로 변환
             log.debug(CC.YE + "ExcelUpload Post excelUpload() jsonDataList: " + jsonDataList + CC.RESET);
+
+            for (Map<String, Object> data : jsonDataList) {
+                int empNo = (int) data.get("사원번호"); // 실제 컬럼 이름에 맞게 수정
+                log.debug(CC.YE + "ExcelUpload Post excelUpload() empNo: " + empNo + CC.RESET);
+                
+                int empInfoCnt = (int) memberService.checkEmpNo(empNo).get("empInfoCnt");
+                
+                if ( empInfoCnt > 0 ) { // 중복된 사원번호가 있을 경우
+                    return "redirect:/emp/registEmp?result=fail&error=duplicate";
+                } 
+            }
             
             empService.excelProcess(jsonDataList); // 변환된 데이터를 서비스를 통해 DB에 삽입
             

@@ -44,10 +44,15 @@
 			
 	     	// 페이지 로딩 시 주소창 파라미터 확인 후 알림 표시
 	        const urlParams = new URLSearchParams(window.location.search);
-	        const failParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+	        const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+	        const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
 
-	        if (failParam == 'fail') { // fail 파라미터 값이 있을 경우에만 알림 표시
-	            alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.');
+	        if (resultParam === 'fail') { // fail 파라미터 값이 있고
+	            if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
+	                alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호 알림
+	            } else { // 이외 오류에 대해
+	                alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 엑셀 파일 확인 알림
+	            }
 	        }
 			
 		});
