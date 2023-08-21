@@ -10,6 +10,7 @@
 			, fo.emp_state AS empState
 			, fo.emp_name AS empName
 			, fo.employ_date AS employDate
+			, fo.dept_name AS deptName
 		FROM
 			emp_no_list li
 			INNER JOIN emp_info fo ON li.emp_no = fo.emp_no
