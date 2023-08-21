@@ -32,6 +32,8 @@ public class DraftService {
         String draftState = "결재대기";
         String expenseCategory = "지출결의서";
         String approvalField = "A";
+       //임시번호 
+        int empNotest = 2008001;
 
         log.debug("processExpenseSubmission() Start");
 
@@ -39,14 +41,17 @@ public class DraftService {
         log.debug("Submission Data: {}", submissionData);
         
      
+        log.debug("Selected Middle Approver ID: {}", submissionData.get("selectedMiddleApproverId"));
+        log.debug("Selected Final Approver ID: {}", submissionData.get("selectedFinalApproverId"));
+        log.debug("Approval Date: {}", submissionData.get("approvalDate"));
         // approval 테이블에 데이터 입력
         Approval approval = new Approval();
-        approval.setEmpNo((Integer) submissionData.get("empNo"));
+        approval.setEmpNo(empNotest);
         approval.setDocTitle((String) submissionData.get("documentTitle"));
-        approval.setFirstApproval((Integer) submissionData.get("applicantName"));
-        approval.setMediateApproval((Integer) submissionData.get("selectedMiddleApproverId"));
-        approval.setFinalApproval((Integer) submissionData.get("selectedFinalApproverId"));
-        approval.setApprovalDate((String) submissionData.get("approvalDate"));
+        approval.setFirstApproval(empNotest);
+        approval.setMediateApproval(Integer.parseInt((String) submissionData.get("selectedMiddleApproverId")));
+        approval.setFinalApproval(Integer.parseInt((String) submissionData.get("selectedFinalApproverId")));
+        approval.setApprovalDate("");
         approval.setApprovalReason("");
         approval.setApprovalState(draftState);
         approval.setDocumentCategory(expenseCategory);

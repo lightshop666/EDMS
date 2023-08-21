@@ -189,24 +189,23 @@
         }
 
         function addRecipient(checkbox) {
-            var recipientEmpNo = parseInt(checkbox.value); // empNo to integer
+            var recipientEmpNo = parseInt(checkbox.value);
+            var recipientEmpName = checkbox.parentNode.textContent.trim();
+            
             if (checkbox.checked) {
-                selectedRecipients.push(recipientEmpNo);
+                selectedRecipients.push({ empNo: recipientEmpNo, empName: recipientEmpName });
             } else {
-                var index = selectedRecipients.indexOf(recipientEmpNo);
+                var index = selectedRecipients.findIndex(recipient => recipient.empNo === recipientEmpNo);
                 if (index > -1) {
                     selectedRecipients.splice(index, 1);
                 }
             }
-            
-            // Update the hidden field value
-            var selectedRecipientsIdsInput = document.getElementById("selectedRecipientsIds");
-            selectedRecipientsIdsInput.value = selectedRecipients.join(",");
         }
 
         function selectRecipients() {
             var recipientsElement = document.getElementById("selectedRecipients");
-            recipientsElement.textContent = selectedRecipients.join(", ");
+            var recipientsText = selectedRecipients.map(recipient => recipient.empName).join(", ");
+            recipientsElement.textContent = recipientsText;
             closeModal("recipients");
         }
 
@@ -234,9 +233,10 @@
             // 기안하기 버튼 비활성화
             document.getElementById("submitBtn").disabled = true;
 
-            // 수신자 번호 배열을 쉼표로 연결하여 설정
-            var selectedRecipientsIdsInput = document.getElementById("selectedRecipientsIds");
-            selectedRecipientsIdsInput.value = selectedRecipients.join(",");
+        // 수신자 번호 배열을 쉼표로 연결하여 설정
+        var selectedRecipientsIdsInput = document.getElementById("selectedRecipientsIds");
+        var recipientsIds = selectedRecipients.map(recipient => recipient.empNo).join(",");
+        selectedRecipientsIdsInput.value = recipientsIds;
 
             // 폼 제출
             document.querySelector('form').submit();

@@ -36,4 +36,14 @@
 	    INSERT INTO receive_draft (approval_no, emp_no)
 	    VALUES (#{approvalNo}, #{empNo})
 	</insert>
+	
+	    <!-- 가장 최근의 approval_no 가져오기 -->
+    <select id="selectLastInsertedApprovalNo" resultType="int">
+        SELECT MAX(approval_no) FROM approval;
+    </select>
+
+    <!-- 가장 최근의 document_no 가져오기 -->
+    <select id="selectLastInsertedDocumentNo" resultType="int">
+        SELECT MAX(document_no) FROM expense_draft;
+    </select>
 </mapper>
