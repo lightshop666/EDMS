@@ -21,11 +21,13 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        final String randomId = UUID.randomUUID().toString();
+        // 랜덤한 사용자 ID 생성
+    	final String randomId = UUID.randomUUID().toString();
 
         LOG.info("User with ID '{}' opened the page", randomId);
         log.debug(CC.WOO + "이 페이지에서의 유저 ID :  " + randomId + CC.RESET);
 
+        // 생성한 랜덤 ID를 사용자의 Principal로 반환
         return new UserPrincipal(randomId);
     }
 }

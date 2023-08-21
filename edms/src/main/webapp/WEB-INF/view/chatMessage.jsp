@@ -41,14 +41,14 @@
 	            <thead>
 	            <tr>
 	                <th>Messages
-	                    <span
-	                            id="notifications"
-	                            style="
-	                          color: white;
-	                          background-color: red;
-	                          padding-left: 15px;
-	                          padding-right: 15px;">
-	                  </span>
+						<span
+							id="notifications"
+							style="
+							color: white;
+							background-color: red;
+							padding-left: 15px;
+							padding-right: 15px;">
+						</span>
 	              </th>
 	          </tr>
 	          </thead>

@@ -20,7 +20,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				// 제외될 URL 패턴 설정 (로그인 페이지는 인터셉터가 적용되지 않음)
 				.excludePathPatterns("/login")
 				.excludePathPatterns("/member/addMember")
+				.excludePathPatterns("/checkEmpNo") // ajax 링크도 예외처리를 해주어야 한다
 				.excludePathPatterns("/sendMassage")
-				.excludePathPatterns("/checkEmpNo"); // ajax 링크도 예외처리를 해주어야 한다
+				.excludePathPatterns("/sendPrivateMessage/*");
 	}
 }
