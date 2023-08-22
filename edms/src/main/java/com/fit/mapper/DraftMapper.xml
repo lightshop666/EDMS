@@ -27,8 +27,8 @@
    
    <!-- ExpenseDraft 테이블용 -->
    <insert id="insertExpenseDraft" parameterType="com.fit.vo.ExpenseDraft">
-       INSERT INTO expense_draft (approval_no, document_no, payment_date, doc_title)
-       VALUES (#{approvalNo}, #{documentNo}, #{paymentDate}, #{docTitle})
+       INSERT INTO expense_draft (approval_no,payment_date, doc_title)
+       VALUES (#{approvalNo}, #{paymentDate}, #{docTitle})
    </insert>
    
    <!-- ReceiveDraft 테이블용 -->

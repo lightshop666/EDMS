@@ -33,8 +33,14 @@ public class DraftService {
     }
 
     
-    public int processExpenseSubmission(Map<String, Object> submissionData,int[] selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
-        String draftState = "결재대기";
+    public int processExpenseSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
+    	String draftState = null;  
+    	if (isSaveDraft) {
+    	        draftState = "임시저장";
+    	    } else {
+    	        draftState = "결재대기";
+    	}
+    	
         String expenseCategory = "지출결의서";
         String approvalField = "A";
        //임시번호 
@@ -74,18 +80,22 @@ public class DraftService {
         draftMapper.insertExpenseDraft(expenseDraft);
 
         // expense_draft_content 테이블에 데이터 입력
-        for (ExpenseDraftContent expenseDetail : expenseDraftContentList) {
-            expenseDetail.setDocumentNo(draftMapper.selectLastInsertedDocumentNo());
-            // 기타 필드들 설정
-            draftMapper.insertExpenseDraftContent(expenseDetail);
+        if (expenseDraftContentList != null && !expenseDraftContentList.isEmpty()) {
+            for (ExpenseDraftContent expenseDetail : expenseDraftContentList) {
+                expenseDetail.setDocumentNo(draftMapper.selectLastInsertedDocumentNo());
+                // 기타 필드들 설정
+                draftMapper.insertExpenseDraftContent(expenseDetail);
+            }
         }
-
-        // receive_draft 테이블에 데이터 입력 (수신참조자)
-        for (int empNo : selectedRecipientsIds) {
-            draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
+        
+        if (selectedRecipientsIds == null || selectedRecipientsIds.isEmpty()) {
+        	 return 1; // 수신참조자가 없는 경우를 나타내는 코드 또는 상수값
+        }else {
+        	for (int empNo : selectedRecipientsIds) {
+                draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
+            }
+        	return 1;
         }
-        return 1;
-
     }
     
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회
