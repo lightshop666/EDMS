@@ -12,7 +12,7 @@ public class EmpInfo {
 	private String accessLevel;		// Enum '3', '2','1','0' 부서장, 경영팀2~1, 기획팀-영업팀1~0
 	private String empState;		// Enum '재직', '퇴직'
 	private String employDate;		// Date YYYY-MM-DD 입사일
-	private Double remainDays;
+	private String retirementDate;	// Date YYYY-MM-DD 퇴사일
 	private String createdate;		// DateTime YYYY-MM-DD 00:00:00
 	private String updatedate;		// DateTime YYYY-MM-DD 00:00:00
 }
