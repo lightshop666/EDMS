@@ -191,7 +191,7 @@ public class UtilityService {
 	}
 	
 	// 파일과 공용품을 동시에 삭제하는 메서드 -> null값을 포함할 수 있는 Long 타입 사용
-	public int deleteUtilityAndFile(Long utilityNo) {
+	public int removeUtilityAndFile(Long utilityNo) {
         // 공용품 및 관련 파일 삭제 로직 작성 -> Long 타입을 int형으로 형변환
         Utility utility = utilityMapper.selectUtilityOne(utilityNo.intValue());
         

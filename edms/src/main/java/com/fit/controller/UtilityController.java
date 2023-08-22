@@ -28,7 +28,7 @@ public class UtilityController {
 	private UtilityService utilityService;
 	
 	@GetMapping("/utility/addUtility")
-	public String addUtility(Model model, HttpSession session) {
+	public String addUtility(HttpSession session) {
 		// 디버깅
 		// log.debug(CC.YOUN+"utilityController.addUtility() utilityNo: "+utilityNo+CC.RESET);
 		
@@ -118,7 +118,7 @@ public class UtilityController {
         	// 체크된 매개값을 해당하는 공용품 번호에 매칭하여 삭제하는 메서드 동작
             for (Long utilityNo : selectedItems) {
             	// 서비스단의 공용품글과 파일을 동시에 삭제하는 메서드 실행
-                row = utilityService.deleteUtilityAndFile(utilityNo);
+                row = utilityService.removeUtilityAndFile(utilityNo);
             }
         }
         

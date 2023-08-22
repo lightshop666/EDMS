@@ -33,14 +33,14 @@
 	<!-- 예약 리스트 확인하는 쿼리 -->
 	<select id="selectReservationListByPage" parameterType="java.util.Map" resultType="com.fit.vo.Reservation">
 	    SELECT
-	        r.reservation_no reservation_no,
-	        r.emp_no emp_no,
-	        r.utility_no utility_no,
-	        r.reservation_date reservation_date,
-	        r.reservation_time reservation_time,
-	        r.createdate reservation_createdate,
-	        e.emp_name emp_name,
-	        u.utility_category utility_category
+	        r.reservation_no reservationNo,
+	        r.emp_no empNo,
+	        r.utility_no utilityNo,
+	        r.reservation_date reservationDate,
+	        r.reservation_time reservationTime,
+	        r.createdate createdate,
+	        e.emp_name empName,
+	        u.utility_category utilityCategory
 	    FROM reservation r
 	    JOIN emp_info e 
 	    ON r.emp_no = e.emp_no
@@ -48,13 +48,13 @@
 	    ON r.utility_no = u.utility_no
 	    <where>
 	    	<!-- 검색 시작일이 존재하면 예역일이 해당 시작일보다 크거나 같아야 한다. -->
-	        <if test="startDate != null">
-	            AND r.reservation_date &gt;= #{startDate}
-	        </if>
+	        <if test="startDate != null and startDate != ''">
+		        AND r.reservation_date &gt;= #{startDate}
+		    </if>
 	        <!-- 검색 종료일이 존재하면 예역일이 해당 시작일보다 작거나 같아야 한다. -->
-	        <if test="endDate != null">
-	            AND r.reservation_date &lt;= #{endDate}
-	        </if>
+	        <if test="endDate != null and endDate != ''">
+		        AND r.reservation_date &lt;= #{endDate}
+		    </if>
 	        <!-- 검색한 조건이 있을경우 searchCol값을 확인하여 검색 대상 열에 대해 Like절로 일치하는지 확인한다. -->
 	        <if test="searchWord != null and searchWord != ''">
 	            <choose>
@@ -67,16 +67,18 @@
 	            </choose>
 	        </if>
 	    </where>
-	    ORDER BY
-	    	<!-- 정렬은 col에 의해 어떤 컬럼에 대해 정렬할지 정하고 ascDesc를 통해 오름차순 or 내림차순 중 어떤 경우를 적용할지 정한다. -->
-	        <choose>
-	            <when test="col == 'createdate' or col == 'updatedate'">
-	                ${col} ${ascDesc}
-	            </when>
-	            <otherwise>
-	                ${col} ${ascDesc}, r.createdate DESC
-	            </otherwise>
-	        </choose>
+	   	<!-- 정렬은 col에 의해 어떤 컬럼에 대해 정렬할지 정하고 ascDesc를 통해 오름차순 or 내림차순 중 어떤 경우를 적용할지 정한다. -->
+	    <choose>
+		    <when test="ascDesc == 'ASC'">
+		        ORDER BY ${col} ASC
+		    </when>
+		    <when test="ascDesc == 'DESC'">
+		        ORDER BY ${col} DESC
+		    </when>
+		    <otherwise>
+		        ORDER BY r.createdate DESC
+		    </otherwise>
+		</choose>
 	    LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 
@@ -89,10 +91,10 @@
 	    JOIN emp_info e ON r.emp_no = e.emp_no
 	    JOIN utility u ON r.utility_no = u.utility_no
 	    <where>
-	        <if test="startDate != null">
+	        <if test="startDate != null and startDate != ''">
 	            AND r.reservation_date &gt;= #{startDate}
 	        </if>
-	        <if test="endDate != null">
+	        <if test="endDate != null and endDate != ''">
 	            AND r.reservation_date &lt;= #{endDate}
 	        </if>
 	        <if test="searchWord != null and searchWord != ''">

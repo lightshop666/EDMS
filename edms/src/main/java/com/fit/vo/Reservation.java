@@ -10,4 +10,8 @@ public class Reservation {
 	private String reservationDate;
 	private String reservationTime;
 	private String createdate;
+	
+	// DB 테이블과는 일치하지 않는 확장컬럼
+	private String utilityCategory;
+	private String empName;
 }
