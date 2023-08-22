@@ -2,7 +2,6 @@ package com.fit.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.fit.vo.Utility;
 import com.fit.vo.UtilityFile;
 
 @Mapper

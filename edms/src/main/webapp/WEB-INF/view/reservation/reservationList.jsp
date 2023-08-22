@@ -28,6 +28,9 @@
 	    <div class="sort-area">
 	        <label class="sort-label">정렬</label>
 	        <select name="col">
+	        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
+	        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
+	        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 조건이 거짓일 경우 빈 문자열('') -->
 	            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>Created Date</option>
 	        </select>
 	        <select name="ascDesc">

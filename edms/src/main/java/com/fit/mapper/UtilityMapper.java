@@ -5,24 +5,24 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.fit.vo.Utility;
+import com.fit.vo.UtilityDto;
 
 @Mapper
 public interface UtilityMapper {
 	
-	Utility selectUtilityOne(int utilityNo); // 공용품 상세 -> 공용품 추가 및 수정에 사용예정
+	UtilityDto selectUtilityOne(int utilityNo); // 공용품 상세 -> 공용품 추가 및 수정에 사용예정
 	
 	// param : Map<String, Object> map -> int beginRow int rowPerPage
-	List<Utility> selectUtilityListByPage(Map<String, Object> map);
+	List<UtilityDto> selectUtilityListByPage(Map<String, Object> map);
 	
 	// 차량, 회의실, 전체 행의 수
 	int selectUtilityCount(String utilityCategory);
 	
 	// 공용품 추가
-	int insertUtility(Utility utility);
+	int insertUtility(UtilityDto utility);
 	
 	// 공용품 수정
-	int updateUtility(Utility utility);
+	int updateUtility(UtilityDto utility);
 	
 	// 공용품 삭제 
 	int deleteUtility(Long utilityNo);

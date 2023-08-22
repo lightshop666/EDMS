@@ -3,7 +3,7 @@
 <mapper namespace="com.fit.mapper.ReservationMapper">
 
 	<!-- 예약 테이플 추가 쿼리 -->
-	<insert id="insertReservation" parameterType="com.fit.vo.Reservation">
+	<insert id="insertReservation" parameterType="com.fit.vo.ReservationDto">
 		<selectKey order="AFTER" keyProperty="reservationNo" resultType="int">
 			SELECT last_insert_id()
 		</selectKey>
@@ -31,7 +31,7 @@
 	</delete>
 	
 	<!-- 예약 리스트 확인하는 쿼리 -->
-	<select id="selectReservationListByPage" parameterType="java.util.Map" resultType="com.fit.vo.Reservation">
+	<select id="selectReservationListByPage" parameterType="java.util.Map" resultType="com.fit.vo.ReservationDto">
 	    SELECT
 	        r.reservation_no reservationNo,
 	        r.emp_no empNo,
@@ -42,18 +42,17 @@
 	        e.emp_name empName,
 	        u.utility_category utilityCategory
 	    FROM reservation r
-	    JOIN emp_info e 
-	    ON r.emp_no = e.emp_no
-	    JOIN utility u 
-	    ON r.utility_no = u.utility_no
+	    	JOIN emp_info e ON r.emp_no = e.emp_no
+	    	JOIN utility u ON r.utility_no = u.utility_no
 	    <where>
-	    	<!-- 검색 시작일이 존재하면 예역일이 해당 시작일보다 크거나 같아야 한다. -->
+	    	<!-- 검색 시작일이 존재하면 예역일이 해당 시작일보다 크거나 같아야 한다. 
+	    	view 폼으로 부터 전달받는 DATETYPE은 YYYY-MM-DD이므로 DATE()함수를 이용하여 DATETIME타입을 DATE타입으로 맞춰준다. -->
 	        <if test="startDate != null and startDate != ''">
-		        AND r.reservation_date &gt;= #{startDate}
+		        AND DATE(r.reservation_date) &gt;= #{startDate}
 		    </if>
 	        <!-- 검색 종료일이 존재하면 예역일이 해당 시작일보다 작거나 같아야 한다. -->
 	        <if test="endDate != null and endDate != ''">
-		        AND r.reservation_date &lt;= #{endDate}
+		        AND DATE(r.reservation_date) &lt;= #{endDate}
 		    </if>
 	        <!-- 검색한 조건이 있을경우 searchCol값을 확인하여 검색 대상 열에 대해 Like절로 일치하는지 확인한다. -->
 	        <if test="searchWord != null and searchWord != ''">
@@ -92,18 +91,18 @@
 	    JOIN utility u ON r.utility_no = u.utility_no
 	    <where>
 	        <if test="startDate != null and startDate != ''">
-	            AND r.reservation_date &gt;= #{startDate}
+	            AND DATE(r.reservation_date) &gt;= #{startDate}
 	        </if>
 	        <if test="endDate != null and endDate != ''">
-	            AND r.reservation_date &lt;= #{endDate}
+	            AND DATE(r.reservation_date) &lt;= #{endDate}
 	        </if>
 	        <if test="searchWord != null and searchWord != ''">
 	            <choose>
 	                <when test="searchCol == 'emp_name'">
 	                    AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 	                </when>
-	                <when test="searchCol == 'reservation_date'">
-	                    AND r.reservation_date LIKE CONCAT('%', #{searchWord}, '%')
+	                <when test="searchCol == 'utility_category'">
+	                    AND u.utility_category LIKE CONCAT('%', #{searchWord}, '%')
 	                </when>
 	            </choose>
 	        </if>

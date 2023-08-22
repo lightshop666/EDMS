@@ -3,8 +3,8 @@
 <mapper namespace="com.fit.mapper.UtilityMapper">
 
 	<!-- 공용픔 상세보기 공용품 파일 정보까지 전체 -->
-	<select id="selectUtilityOne" parameterType="com.fit.vo.Utility"
-		resultType="com.fit.vo.Utility">
+	<select id="selectUtilityOne" parameterType="com.fit.vo.UtilityDto"
+		resultType="com.fit.vo.UtilityDto">
 		SELECT
 			u.utility_no utilityNo,
 		    u.utility_category utilityCategory,
@@ -26,7 +26,7 @@
 	Map 타입으로 currentPage, RowPerPage 넘겨줄 예정 
 	추가적으로 view 레이어에서 파일이미지까지 같이 조회하기 위해 join문 사용-->
 	<select id="selectUtilityListByPage" parameterType="java.util.Map"
-		resultType="com.fit.vo.Utility">
+		resultType="com.fit.vo.UtilityDto">
 		SELECT
 			u.utility_no utilityNo,
 		    u.utility_category utilityCategory,
@@ -78,7 +78,7 @@
 	</select>
 	
 	<!-- 공용품을 추가하는 쿼리 -->
-	<insert id="insertUtility" parameterType="com.fit.vo.Utility">
+	<insert id="insertUtility" parameterType="com.fit.vo.UtilityDto">
 		<selectKey order="AFTER" keyProperty="utilityNo" resultType="int">
 			SELECT last_insert_id()
 		</selectKey>
@@ -106,7 +106,7 @@
 	</delete>
 	
 	<!-- 공용품을 수정하는 쿼리 -->
-	<update id="updateUtility" parameterType="com.fit.vo.Utility">
+	<update id="updateUtility" parameterType="com.fit.vo.UtilityDto">
 		UPDATE utility
 		SET utility_category = #{utilityCategory}
 		,	utility_name = #{utilityName}

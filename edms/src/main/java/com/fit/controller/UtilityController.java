@@ -1,7 +1,6 @@
 package com.fit.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -14,10 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.CC;
-import com.fit.mapper.UtilityMapper;
+import com.fit.service.CommonPagingService;
 import com.fit.service.UtilityService;
-import com.fit.vo.Utility;
-import com.fit.vo.UtilityFile;
+import com.fit.vo.UtilityDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UtilityController {
 	@Autowired
 	private UtilityService utilityService;
+	
+	@Autowired
+	private CommonPagingService commonPagingService;
 	
 	@GetMapping("/utility/addUtility")
 	public String addUtility(HttpSession session) {
@@ -36,14 +37,14 @@ public class UtilityController {
 	}
 	
 	@PostMapping("/utility/addUtility")
-	public String addUtility(HttpSession session, Utility utility, HttpServletRequest request) {
+	public String addUtility(HttpSession session, UtilityDto utilityDto, HttpServletRequest request) {
 		// 1. 웹 어플리케이션의 실제 경로 
 		// 2. /image/utility/의 하위 폴더 경로를 추가하여 전체 파일 저장 경로 생성
 		// 3. Path는 이미지들을 DB에 저장하고 조회하는데 사용
 		String Path = request.getServletContext().getRealPath("/image/utility/");
 		
 		// 입력유무를 확인
-		int row = utilityService.addUtility(utility, Path);
+		int row = utilityService.addUtility(utilityDto, Path);
 		
 		if(row == 1) {
 			// 디버깅
@@ -77,16 +78,16 @@ public class UtilityController {
 		// 각 조건에 따른 전체 행 개수 
 		int totalCount = utilityService.getUtilityCount(utilityCategory);
 		// 마지막 페이지 계산
-		int lastPage = utilityService.getLastPage(totalCount, rowPerPage);
+		int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage);
 		// 페이지네이션에 표기될 쪽 개수
 		int pagePerPage = 5;
 		// 페이지네이션에서 사용될 가장 작은 페이지 범위
-		int minPage = utilityService.getMinPage(currentPage, pagePerPage);
+		int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
 		// 페이지네이션에서 사용될 가장 큰 페이지 범위
-		int maxPage = utilityService.getMaxPage(minPage, pagePerPage, lastPage);
+		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 		
 		// 공용품 리스트 출력 -> join 통해 파일경로와 파일저장이름을 가지고 있음 
-		List<Utility> utilityList = utilityService.getUtilityListByPage(currentPage, rowPerPage,  utilityCategory);
+		List<UtilityDto> utilityList = utilityService.getUtilityListByPage(currentPage, rowPerPage,  utilityCategory);
 		
 		// 디버깅
 	    // log.debug(CC.YOUN+"utilityController.utilityList() utilityFile: "+utilityFile+CC.RESET);
@@ -144,17 +145,17 @@ public class UtilityController {
 		log.debug(CC.YOUN+"utilityController.modifyUtility() utilityNo: "+utilityNo+CC.RESET);
 		
 		// 공용품 번호를 통해 공용품 리스트를 불러온다.
-		Utility utility = utilityService.getUtilityOne(utilityNo);
+		UtilityDto utilityDto = utilityService.getUtilityOne(utilityNo);
 		
 		// 모델에 값 저장 후 수정 폼에서 사용
-		model.addAttribute("utility", utility);
+		model.addAttribute("utilityDto", utilityDto);
 		
 		return "/utility/modifyUtility";
 	}
 	
 	@PostMapping("/utility/modifyUtility")
 	// 수정폼으로부터 utilityNo를 name 속성을 통해 hidden으로 전달받고 이값을 int utilityNo 요청파라미터값으로 전달받는다.
-	public String modifyUtility(HttpSession session, Utility utility, HttpServletRequest request,
+	public String modifyUtility(HttpSession session, UtilityDto utilityDto, HttpServletRequest request,
 			@RequestParam(name = "utilityNo", required = false, defaultValue = "0") int utilityNo) {
 		
 		// 입력받은 값 디버깅
@@ -163,9 +164,9 @@ public class UtilityController {
 		String Path = request.getServletContext().getRealPath("/image/utility/");
 		
 		// 기존 파일 삭제를 위해 공용품 정보를 조회 -> 해당 공용품 번호의 공용품 내역이 있다면
-		Utility existingUtility = utilityService.getUtilityOne(utilityNo);
+		UtilityDto existingUtility = utilityService.getUtilityOne(utilityNo);
 		
-		int row = utilityService.modifyUtility(utility, Path, existingUtility);
+		int row = utilityService.modifyUtility(utilityDto, Path, existingUtility);
 		
 		if(row == 1) {
 			// 디버깅

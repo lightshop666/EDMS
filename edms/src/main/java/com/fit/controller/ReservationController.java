@@ -15,16 +15,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.CC;
+import com.fit.service.CommonPagingService;
 import com.fit.service.ReservationService;
-import com.fit.vo.Reservation;
+import com.fit.vo.ReservationDto;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 public class ReservationController {
+	
 	@Autowired
 	private ReservationService reservationService;
+	
+	@Autowired
+	private CommonPagingService commonPagingService;
 	
 	@GetMapping("/reservation/addReservation")
 	public String addReservation(HttpSession session) {
@@ -33,10 +38,10 @@ public class ReservationController {
 	}
 	
 	@PostMapping("/reservation/addReservation")
-	public String addReservation(HttpSession session, Reservation reservation, HttpServletRequest request) {
+	public String addReservation(HttpSession session, ReservationDto reservationDto, HttpServletRequest request) {
 		
 		// 입력유무를 확인
-		int row = reservationService.addReservation(reservation);
+		int row = reservationService.addReservation(reservationDto);
 		
 		if(row == 1) {
 			// 디버깅
@@ -75,16 +80,20 @@ public class ReservationController {
 		log.debug(CC.YOUN+"reservationController.reservationList() ascDesc: "+ascDesc+CC.RESET);
 		
 		// 조건에 따른 전체 행 개수를 출력하는 메서드에 줄 매개변수값을 저장할 Map 생성
+		// Mapper에 조건식에 사용될 변수들을 넣어준다.
 		Map<String, Object> countParam = new HashMap<>();
 		countParam.put("startDate", startDate);
 		countParam.put("endDate", endDate);
 		countParam.put("searchWord", searchWord);
+		countParam.put("searchCol", searchCol);
 		
 		// 조건에 따라 해당하는 리스트를 출력하는 메서드에 줄 매개변수값을 저장할 Map 생성
+		// Mapper에 조건식에 사용될 변수들을 넣어준다.
 		Map<String, Object> listParam = new HashMap<>();
 		listParam.put("startDate", startDate);
 		listParam.put("endDate", endDate);
 		listParam.put("searchWord", searchWord);
+		listParam.put("searchCol", searchCol);
 		listParam.put("col", col);
 		listParam.put("ascDesc", ascDesc);
 		listParam.put("rowPerPage", rowPerPage);
@@ -93,17 +102,17 @@ public class ReservationController {
 		
 		// 각 조건에 따른 전체 행 개수 
 		int totalCount = reservationService.getReservationCount(countParam);
-		// 마지막 페이지 계산
-		int lastPage = reservationService.getLastPage(totalCount, rowPerPage);
+		// 마지막 페이지 계산 -> 공통 페이징 메서드를 사용한다.
+		int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage);
 		// 페이지네이션에 표기될 쪽 개수
 		int pagePerPage = 5;
-		// 페이지네이션에서 사용될 가장 작은 페이지 범위
-		int minPage = reservationService.getMinPage(currentPage, pagePerPage);
-		// 페이지네이션에서 사용될 가장 큰 페이지 범위
-		int maxPage = reservationService.getMaxPage(minPage, pagePerPage, lastPage);
+		// 페이지네이션에서 사용될 가장 작은 페이지 범위 -> 공통 페이징 메서드를 사용한다.
+		int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+		// 페이지네이션에서 사용될 가장 큰 페이지 범위 -> 공통 페이징 메서드를 사용한다.
+		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 		
 		// 예약 리스트 출력 -> join을 통해 사원명과 공용품 종류를 같이 조회
-		List<Reservation> reservationList = reservationService.getReservationListByPage(listParam);
+		List<ReservationDto> reservationList = reservationService.getReservationListByPage(listParam);
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationController.reservationList() reservationList: "+reservationList+CC.RESET);
@@ -118,6 +127,7 @@ public class ReservationController {
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
 		model.addAttribute("searchWord", searchWord);
+		model.addAttribute("searchCol", searchCol);
 		model.addAttribute("col", col);
 		model.addAttribute("ascDesc", ascDesc);
 		

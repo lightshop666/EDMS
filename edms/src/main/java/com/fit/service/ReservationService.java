@@ -1,6 +1,5 @@
 package com.fit.service;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.CC;
 import com.fit.mapper.ReservationMapper;
-import com.fit.vo.Reservation;
+import com.fit.vo.ReservationDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +22,7 @@ public class ReservationService {
 	private ReservationMapper reservationMapper;
 	
 	// 컨트롤러로부터 paramMap 타입으로 필요한 검색조건 매개변수들을 받아 예약 리스트 출력
-	public List<Reservation> getReservationListByPage(Map<String, Object> listParam) {
+	public List<ReservationDto> getReservationListByPage(Map<String, Object> listParam) {
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationService.getReservationListByPage() listParam: "+listParam+CC.RESET);
@@ -52,81 +51,32 @@ public class ReservationService {
 		// 디버깅
 		log.debug(CC.YOUN+"reservationService.getReservationListByPage() listParam: "+listParam+CC.RESET);
 		
-		/*
-		// Map 타입으로 저장
-		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("startDate", startDate);
-		paramMap.put("endDate", endDate);
-		paramMap.put("searchCol", searchCol);
-		paramMap.put("searchWord", searchWord);
-		paramMap.put("col", col);
-		paramMap.put("ascDesc", ascDesc);
-		paramMap.put("beginRow", beginRow);
-		paramMap.put("rowPerPage", rowPerPage);
-		*/
-		
 		// DB에서 페이지별 예약 리스트 조회
-		List<Reservation> reservationList = reservationMapper.selectReservationListByPage(listParam);
+		List<ReservationDto> reservationList = reservationMapper.selectReservationListByPage(listParam);
 		
 		// 리스트 반환 
 		return reservationList;
 	}
 	
-	// 검색 조건별 행의 개수 가져오는 메서드 
+	// 검색 조건별 행의 개수 가져오는 메서드 -> 검색조건중 시작날짜, 종료일자, 검색할 컬럼명, 검색할 단어를 매개변수로 넣어준다.(Map 타입)
 	public int getReservationCount(Map<String, Object> countParam) {
+		
+		int totalCount = reservationMapper.selectReservationCount(countParam);
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationService.getReservationListByPage() countParam: "+countParam+CC.RESET);
 		
-        return reservationMapper.selectReservationCount(countParam);
+        return totalCount;
     }
-	
-	// lastPage를 구하는 메서드
-	public int getLastPage(int totalCount, int rowPerPage) {
-		int lastPage = totalCount / rowPerPage;
-		if(totalCount % rowPerPage != 0) {
-			lastPage = lastPage + 1;
-		}
-		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationService.getLastPage() lastPage: "+lastPage+CC.RESET);
-		
-        return lastPage;
-    }
-	
-	// minPage를 구하는 메서드
-	public int getMinPage(int currentPage, int pagePerPage) {
-		int minPage = (((currentPage - 1) / pagePerPage) * pagePerPage) + 1;
-		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationService.getMinPage() minPage: "+minPage+CC.RESET);
-		
-		return minPage;
-	}
-	
-	// maxPage를 구하는 메서드
-	public int getMaxPage(int minPage, int pagePerPage, int lastPage) {
-		int maxPage = minPage + (pagePerPage - 1);
-		
-		// 최대 페이지가 마지막페이지를 넘어가지 못하도록 제한
-		if (maxPage > lastPage) {
-			maxPage = lastPage;
-		}
-		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationService.getMaxPage() maxPage: "+maxPage+CC.RESET);
-		
-		return maxPage;
-	}
 	
 	// 예약 추가 메서드
-	public int addReservation(Reservation reservation) {
+	public int addReservation(ReservationDto reservationDto) {
 		
 		// 디버깅
-		log.debug(CC.YOUN+"reservationService.addReservation() reservation: "+reservation+CC.RESET);
+		log.debug(CC.YOUN+"reservationService.addReservation() reservationDto: "+reservationDto+CC.RESET);
 		
 		// 예약 성공 여부 확인을 위한 row 반환
-		int row = reservationMapper.insertReservation(reservation);
+		int row = reservationMapper.insertReservation(reservationDto);
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationService.addReservation() row: "+row+CC.RESET);
