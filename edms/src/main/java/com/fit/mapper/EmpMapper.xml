@@ -12,7 +12,7 @@
 			access_level accessLevel,
 			emp_state empState,
 			employ_date employDate,
-			remain_days remainDays,
+			retirement_date retirementDate,
 			createdate,
 			updatedate
 		FROM
@@ -56,6 +56,7 @@
 			access_level = #{accessLevel},
 			emp_state = #{empState},
 			employ_date = #{employDate},
+			retirement_date = #{retirementDate},
 			updatedate = NOW()
 		WHERE
 			emp_no = #{empNo}

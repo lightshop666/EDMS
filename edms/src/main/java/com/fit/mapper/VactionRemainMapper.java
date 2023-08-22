@@ -10,5 +10,5 @@ public interface VactionRemainMapper {
 	List<Double> getUsedVacationDays(int empNo, String recentVacationDate); // 사원번호, 최근 연차 발생일
 	
 	// 남은 보상 휴가 일수 계산
-	int getRemainRewardVacationDays(int empNo);
+	Integer getRemainRewardVacationDays(int empNo);
 }

@@ -63,6 +63,11 @@ public class EmpService {
 	public int modifyEmp(EmpInfo empInfo) {
 		log.debug(CC.HE + "EmpService.modifyEmp() empNo param : " + empInfo.getEmpNo() + CC.RESET);
 		
+		// 재직중일 경우 퇴사일은 기본값 "0000-00-00"
+		if (empInfo.getRetirementDate() == null) {
+			empInfo.setRetirementDate("0000-00-00");
+		}
+		
 		int row = empMapper.modifyEmp(empInfo);
 		log.debug(CC.HE + "EmpService.modifyEmp() row : " + row + CC.RESET);
 		

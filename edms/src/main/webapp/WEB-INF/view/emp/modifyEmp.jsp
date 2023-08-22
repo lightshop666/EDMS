@@ -111,6 +111,12 @@
 				</td>
 			</tr>
 			<tr>
+				<td>퇴사일</td>
+				<td>
+					<input type="date" name="employDate" value="${emp.retirementDate}">
+				</td>
+			</tr>
+			<tr>
 				<td>등록일</td>
 				<td>
 					${emp.createdate} <!-- 수정 불가, 단순 출력 -->

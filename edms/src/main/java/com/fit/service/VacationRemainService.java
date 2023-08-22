@@ -186,8 +186,13 @@ public class VacationRemainService {
 	*/
 	
 	// 남은 보상휴가 일수 구하기
-	public int getRemainRewardDays(int empNo) {
-		int remainRewardDays = vacationRemainMapper.getRemainRewardVacationDays(empNo);
+	// null값 검사를 위해 Integer 타입으로 반환
+	public Integer getRemainRewardDays(int empNo) {
+		Integer remainRewardDays = vacationRemainMapper.getRemainRewardVacationDays(empNo);
+		
+		if (remainRewardDays == null) {
+			remainRewardDays = 0;
+		}
 		log.debug(CC.HE + "VactionRemainService getRemainRewardDays() 남은 보상휴가 일수 : " + remainRewardDays + "개" + CC.RESET);
 	
 		return remainRewardDays;
