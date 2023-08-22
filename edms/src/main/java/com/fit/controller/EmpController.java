@@ -157,18 +157,20 @@ public class EmpController {
     	try {
             List<Map<String, Object>> jsonDataList = parseExcel(file); // 업로드된 엑셀 파일을 파싱(분석, 해부)하여 JSON 데이터로 변환
             log.debug(CC.YE + "ExcelUpload Post excelUpload() jsonDataList: " + jsonDataList + CC.RESET);
-
+            
+            // 중복검사 메서드
             for (Map<String, Object> data : jsonDataList) {
                 int empNo = (int) data.get("사원번호"); // 실제 컬럼 이름에 맞게 수정
                 log.debug(CC.YE + "ExcelUpload Post excelUpload() empNo: " + empNo + CC.RESET);
                 
                 int empInfoCnt = (int) memberService.checkEmpNo(empNo).get("empInfoCnt");
-                
+                // 중복 되면 back 
                 if ( empInfoCnt > 0 ) { // 중복된 사원번호가 있을 경우
                     return "redirect:/emp/registEmp?result=fail&error=duplicate";
-                } 
+                }
             }
             
+            // 실행
             empService.excelProcess(jsonDataList); // 변환된 데이터를 서비스를 통해 DB에 삽입
             
             // 새로 등록된 사원번호 목록 추적

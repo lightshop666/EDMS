@@ -65,12 +65,14 @@
 
         <label for="employmentStatus">재직상태:</label>
         <select name="employmentStatus" id="employmentStatus">
+        	<option value="전체">전체</option>
             <option value="재직">재직</option>
             <option value="퇴직">퇴직</option>
         </select><br>
 
         <label for="department">부서별:</label>
         <select name="department" id="department">
+        	<option value="전체">전체</option>
             <option value="기획추진본부">기획추진본부</option>
             <option value="경영지원본부">경영지원본부</option>
             <option value="영업지원본부">영업지원본부</option>
@@ -78,6 +80,7 @@
 
         <label for="position">직급별:</label>
         <select name="position" id="position">
+        	<option value="전체">전체</option>
             <option value="팀장">팀장</option>
             <option value="팀원">팀원</option>
         </select><br>

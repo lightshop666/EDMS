@@ -29,11 +29,11 @@
 	                alert('파일을 선택해주세요.');
 	                return false;
 	            }
-
+				
 	            const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
 	            const fileName = file.name;
 	            const fileExtension = fileName.split('.').pop().toLowerCase();
-
+				
 	            // 엑셀 파일이 아닌 경우 업로드 막기
 	            if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
 	                event.preventDefault(); // 기본 동작 중단
@@ -87,7 +87,6 @@
 	<form action="/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->
 		<!-- 재직과, 남은휴가일수는 고정되어있으므로 hidden 타입으로 제출 -->
 		<input type="hidden" name="empState" value="재직">
-		<input type="hidden" name="remainDays" value="0.0">
 		
 		<table border="1">
 			<tr>

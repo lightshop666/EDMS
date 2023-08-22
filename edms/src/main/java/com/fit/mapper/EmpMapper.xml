@@ -96,7 +96,6 @@
 	        , access_level
 	        , emp_state
 	        , employ_date
-	        , remain_days
 	        , createdate
 	        , updatedate
 	    ) VALUES (
@@ -108,7 +107,6 @@
 	        , #{accessLevel}
 	        , #{empState}
 	        , #{employDate}
-	        , 0.0
 	        , NOW()
 	        , NOW()
 	    )
@@ -126,7 +124,6 @@
             , m.gender gender
             , ei.emp_state empState
             , ei.employ_date employDate
-            , ei.remain_days remainDays
             , ei.createdate
             , ei.updatedate
         FROM
@@ -165,7 +162,6 @@
 		    , access_level accessLevel
 		    , emp_state empState
 		    , employ_date employDate
-		    , remain_days remainDays
 		    , createdate
 		    , updatedate
         FROM emp_info
