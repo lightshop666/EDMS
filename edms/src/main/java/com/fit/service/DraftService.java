@@ -32,8 +32,8 @@ public class DraftService {
         return draftMapper.getAllEmp();
     }
 
-    @Transactional
-    public int processExpenseSubmission(Map<String, Object> submissionData,int[] selectedRecipientsIds) {
+    
+    public int processExpenseSubmission(Map<String, Object> submissionData,int[] selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
         String draftState = "결재대기";
         String expenseCategory = "지출결의서";
         String approvalField = "A";
@@ -61,36 +61,28 @@ public class DraftService {
         approval.setApprovalState(draftState);
         approval.setDocumentCategory(expenseCategory);
         approval.setApprovalField(approvalField);
-        draftMapper.insertApproval(approval);
+        int insertResult = draftMapper.insertApproval(approval);
 
-        // 생성된 approval_no를 가져옴
-        int approvalNo = draftMapper.selectLastInsertedApprovalNo();
-
+        log.debug("insertResult:", insertResult);	
+        
         // expense_draft 테이블에 데이터 입력
         ExpenseDraft expenseDraft = new ExpenseDraft();
-        expenseDraft.setApprovalNo(approvalNo);
-        // 이 값은 어떻게 가져오는지에 따라 다를 수 있음
-        expenseDraft.setDocumentNo(draftMapper.selectLastInsertedDocumentNo());
+        expenseDraft.setApprovalNo(draftMapper.selectLastInsertedApprovalNo());
         expenseDraft.setPaymentDate((String) submissionData.get("paymentDate"));
         expenseDraft.setDocTitle((String) submissionData.get("documentTitle"));
         // 기타 필드들 설정
         draftMapper.insertExpenseDraft(expenseDraft);
 
         // expense_draft_content 테이블에 데이터 입력
-        List<Map<String, Object>> expenseDetails = (List<Map<String, Object>>) submissionData.get("expenseDetails");
-        for (Map<String, Object> expenseDetailData : expenseDetails) {
-            ExpenseDraftContent expenseDetail = new ExpenseDraftContent();
+        for (ExpenseDraftContent expenseDetail : expenseDraftContentList) {
             expenseDetail.setDocumentNo(draftMapper.selectLastInsertedDocumentNo());
-            expenseDetail.setExpenseCategory((String) expenseDetailData.get("expenseCategory"));
-            expenseDetail.setExpenseCost((Double) expenseDetailData.get("expenseCost"));
-            expenseDetail.setExpenseInfo((String) expenseDetailData.get("expenseInfo"));
             // 기타 필드들 설정
             draftMapper.insertExpenseDraftContent(expenseDetail);
         }
 
         // receive_draft 테이블에 데이터 입력 (수신참조자)
         for (int empNo : selectedRecipientsIds) {
-            draftMapper.insertReceiveDraft(approvalNo, empNo);
+            draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
         }
         return 1;
 

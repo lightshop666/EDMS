@@ -1,5 +1,6 @@
 package com.fit.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import com.fit.CC;
 import com.fit.mapper.DraftMapper;
 import com.fit.service.DraftService;
 import com.fit.vo.EmpInfo;
+import com.fit.vo.ExpenseDraftContent;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,12 +40,28 @@ public class ExpenseController {
     }
     
     @PostMapping("/expenseDraft")
-    public String submitExpense(@RequestParam Map<String, Object> submissionData, 
+    public String submitExpense(@RequestParam Map<String, Object> submissionData,
                                 @RequestParam(value = "recipients[]", required = false) int[] selectedRecipientsIds,
+                                @RequestParam String[] expenseCategory,
+                                @RequestParam Double[] expenseCost,
+                                @RequestParam String[] expenseInfo,
                                 Model model) {
         log.debug("제출 데이터: {}", submissionData);
 
-        int result = draftService.processExpenseSubmission(submissionData, selectedRecipientsIds);
+        List<ExpenseDraftContent> expenseDraftContentList = new ArrayList<>();
+        for (int i = 0; i < expenseCategory.length; i++) {
+            ExpenseDraftContent content = new ExpenseDraftContent();
+            content.setExpenseCategory(expenseCategory[i]);
+            content.setExpenseCost(expenseCost[i]);
+            content.setExpenseInfo(expenseInfo[i]);
+
+            expenseDraftContentList.add(content);
+            
+            // 디버깅 메시지 추가: 각 content 정보를 출력
+            log.debug("Expense Draft Content {}: {}", i + 1, content);
+        }
+
+        int result = draftService.processExpenseSubmission(submissionData, selectedRecipientsIds, expenseDraftContentList);
 
         if (result == 1) {
             // 성공적인 경우 처리 (예: 리다이렉트)

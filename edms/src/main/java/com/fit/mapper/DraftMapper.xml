@@ -3,41 +3,41 @@
 <mapper namespace="com.fit.mapper.DraftMapper">
   
     <!-- 사원리스트 조회 -->
-	<select id="getAllEmp" parameterType="int" resultType="com.fit.vo.EmpInfo">
-		SELECT
-			emp_no empNo,
-			emp_name empName
-		FROM
-			emp_info
-	</select>
-	
-	<!-- ExpenseDraftContent 테이블용 -->
-	<insert id="insertExpenseDraftContent" parameterType="com.fit.vo.ExpenseDraftContent">
-	    INSERT INTO expense_draft_content (document_no, expense_category, expense_cost, expense_info)
-	    VALUES (#{documentNo}, #{expenseCategory}, #{expenseCost}, #{expenseInfo})
-	</insert>
-	
-	<!-- Approval 테이블용 -->
-	<insert id="insertApproval" parameterType="com.fit.vo.Approval">
-	    INSERT INTO approval (emp_no, doc_title, first_approval, mediate_approval, final_approval,
-	        approval_date, approval_reason, approval_state, document_category, approval_field)
-	    VALUES (#{empNo}, #{docTitle}, #{firstApproval}, #{mediateApproval}, #{finalApproval},
-	        #{approvalDate}, #{approvalReason}, #{approvalState}, #{documentCategory}, #{approvalField})
-	</insert>
-	
-	<!-- ExpenseDraft 테이블용 -->
-	<insert id="insertExpenseDraft" parameterType="com.fit.vo.ExpenseDraft">
-	    INSERT INTO expense_draft (approval_no, document_no, payment_date, doc_title)
-	    VALUES (#{approvalNo}, #{documentNo}, #{paymentDate}, #{docTitle})
-	</insert>
-	
-	<!-- ReceiveDraft 테이블용 -->
-	<insert id="insertReceiveDraft" parameterType="java.util.Map">
-	    INSERT INTO receive_draft (approval_no, emp_no)
-	    VALUES (#{approvalNo}, #{empNo})
-	</insert>
-	
-	    <!-- 가장 최근의 approval_no 가져오기 -->
+   <select id="getAllEmp" parameterType="int" resultType="com.fit.vo.EmpInfo">
+      SELECT
+         emp_no empNo,
+         emp_name empName
+      FROM
+         emp_info
+   </select>
+   
+   <!-- ExpenseDraftContent 테이블용 -->
+   <insert id="insertExpenseDraftContent" parameterType="com.fit.vo.ExpenseDraftContent">
+       INSERT INTO expense_draft_content (document_no, expense_category, expense_cost, expense_info)
+       VALUES (#{documentNo}, #{expenseCategory}, #{expenseCost}, #{expenseInfo})
+   </insert>
+   
+   <!-- Approval 테이블용 -->
+   <insert id="insertApproval" parameterType="com.fit.vo.Approval" >
+       INSERT INTO approval (emp_no, doc_title, first_approval, mediate_approval, final_approval,
+           approval_date, approval_reason, approval_state, document_category, approval_field)
+       VALUES (#{empNo}, #{docTitle}, #{firstApproval}, #{mediateApproval}, #{finalApproval},
+           #{approvalDate}, #{approvalReason}, #{approvalState}, #{documentCategory}, #{approvalField})
+   </insert>
+   
+   <!-- ExpenseDraft 테이블용 -->
+   <insert id="insertExpenseDraft" parameterType="com.fit.vo.ExpenseDraft">
+       INSERT INTO expense_draft (approval_no, document_no, payment_date, doc_title)
+       VALUES (#{approvalNo}, #{documentNo}, #{paymentDate}, #{docTitle})
+   </insert>
+   
+   <!-- ReceiveDraft 테이블용 -->
+   <insert id="insertReceiveDraft" parameterType="java.util.Map">
+       INSERT INTO receive_draft (approval_no, emp_no)
+       VALUES (#{approvalNo}, #{empNo})
+   </insert>
+   
+       <!-- 가장 최근의 approval_no 가져오기 -->
     <select id="selectLastInsertedApprovalNo" resultType="int">
         SELECT MAX(approval_no) FROM approval;
     </select>
