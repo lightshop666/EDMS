@@ -12,43 +12,109 @@
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	
 	<script>
+		// 사원 목록 배열로 받는 변수 선언 (JSON)
+		let employeeListJson = ${employeeListJson};
+		
+		// 함수 선언
+		// 선택한 결재자의 정보 구하기
+		function getApproverDetails(selectedApproverNo) {
+			let empName = ''; // 이름
+			let deptName = ''; // 부서명
+			let empPosition = ''; // 직급
+			
+			// JSON 배열로 받은 사원 목록을 for문을 이용하여 empNo가 일치하는 정보를 찾습니다.
+			for (let i = 0; i < employeeListJson.length; i++) {
+				if (employeeListJson[i].empNo == selectedApproverNo) {
+					empName = employeeListJson[i].empName;
+					deptName = employeeListJson[i].deptName;
+					empPosition = employeeListJson[i].empPosition;
+					break; // 원하는 사원 정보를 찾았다면 반복문을 중지합니다.
+				}
+			}
+		
+			return empName + '_' + deptName + '_' + empPosition;
+		}
+		
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			
 			// 중간승인자 선택시
-			$('#selectedMiddleBtn').click(function() {
+			$('#saveMiddleBtn').click(function() {
 				// 선택된 값 가져오기
-				let selectedMiddleApprover = $("input[name='selectedMiddleApprover']:checked").val();
-				console.log('선택한 중간승인자 : ' + selectedMiddleApprover);
-				// 중간승인자 출력
-				$('#mediateSpan').text(selectedMiddleApprover);
-				// 중간승인자 hidden에 주입
-				$('#mediateHidden').val(selectedMiddleApprover);
+				let selectedMediateApproval = $("input[name='selectedMediateApproval']:checked").val();
+				console.log('선택한 중간승인자 사원번호 : ' + selectedMediateApproval);
+				// 중간승인자 사원번호 hidden에 주입
+				$('#mediateHidden').val(selectedMediateApproval);
+				
+				// 중간승인자의 정보를 구하는 메서드 호출
+				let selectedMediateDetails = getApproverDetails(selectedMediateApproval);
+				console.log('선택한 중간승인자 정보 : ' + selectedMediateDetails);
+				// 중간승인자 정보 출력
+				$('#mediateSpan').text(selectedMediateDetails);
 			});
 			
 			// 최종승인자 선택시
-			$('#selectedFinalBtn').click(function() {
+			$('#saveFinalBtn').click(function() {
 				// 선택된 값 가져오기
-				let selectedFinalApprover = $("input[name='selectedFinalApprover']:checked").val();
-				console.log('선택한 최종승인자 : ' + selectedFinalApprover);
-				// 중간승인자 출력
-				$('#finalSpan').text(selectedFinalApprover);
-				// 중간승인자 hidden에 주입
-				$('#finalHidden').val(selectedFinalApprover);
+				let selectedFinalApproval = $("input[name='selectedFinalApproval']:checked").val();
+				console.log('선택한 최종승인자 사원번호 : ' + selectedFinalApproval);
+				// 최종승인자 사원번호 hidden에 주입
+				$('#finalHidden').val(selectedFinalApproval);
+				
+				// 최종승인자의 정보를 구하는 메서드 호출
+				let selectedFinalDetails = getApproverDetails(selectedFinalApproval);
+				console.log('선택한 최종승인자 정보 : ' + selectedFinalDetails);
+				// 최종승인자 정보 출력
+				$('#finalSpan').text(selectedFinalDetails);
 			});
 			
 			// 수신참조자 선택시
-			$('#checkedRecipientsBtn').click(function() {
+			$('#saveReceiveBtn').click(function() {
 				// 선택된 값 가져오기
-				// map() 함수를 이용하여 선택된 체크박스의 값을 배열에 매핑하고 get() 함수를 사용하여 배열로 변환합니다.
-				// 체크박스의 값은 일반적으로 String타입이므로 parseInt() 메서드로 int배열로 변환합니다.
-				let checkedRecipients = $("input[name='checkedRecipients']:checked").map(function() {return parseInt(this.value);}).get();
-				console.log('선택한 수신참조자 배열 : ' + checkedRecipients);
+				// 체크박스의 값은 일반적으로 String타입이므로 int타입의 정수배열로 변환하는 과정이 필요합니다.
+				// Array.from()를 이용하여 선택된 체크박스 요소들로 새로운 배열을 생성할 것입니다.
+				// 화살표 함수(=>)로 파라미터값(item)의 value 속성을 parseInt() 메서드로 정수로 변환합니다.
+				let checkedRecipients = Array.from(
+											$("input[name='checkedRecipients']:checked"),
+											item => parseInt(item.value)
+										);
+				console.log('선택한 수신참조자 정수 배열 : ' + checkedRecipients);
+				// 수신참조자 정수 배열을 hidden에 주입
+				$('#receiveHidden').val(checkedRecipients);
+				
+				// 수신참조자의 정보 구하기
+				let checkedRecipientsDetails = '';
+				// 수신참조자는 배열이므로 반복문 안에서 메서드를 호출합니다.
+				for (let i = 0; i < checkedRecipients.length; i++) {
+					if (i == 0) {
+						checkedRecipientsDetails = getApproverDetails(checkedRecipients[i]);
+					} else { // 쉼표를 이용하여 한줄의 문자열을 생성합니다.
+						checkedRecipientsDetails += ', ' + getApproverDetails(checkedRecipients[i]);
+					}
+				}
+				console.log('선택한 수신참조자 정보 : ' + checkedRecipientsDetails);
 				// 수신참조자 출력
-				$('#recipientsSpan').text(checkedRecipients);
-				// 수신참조자 hidden에 주입
-				$('#recipientsHidden').val(checkedRecipients);
+				$('#receiveSpan').text(checkedRecipientsDetails);
 			});
+			
+			// 휴가 종류 선택시
+			$("input[name='vacationName']").change(function() {
+				let vacationName = $(this).val();
+				
+				// ajax로 선택한 휴가 종류의 남은 일수 출력
+				$.ajax({
+					url : '/getRemainDays',
+					type : 'post',
+					data : {vacationName : vacationName},
+					success : function(response) {
+						console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
+						$('#remainDays').text(response + '개');
+					},
+					error : function(error) {
+						console.error('남은 휴가 일수 조회 실패 : ' + error);
+					}
+				});
+			})
 		});
 	</script>
 	
@@ -86,6 +152,7 @@
 				<tr>
 					<td rowspan="2"> <!-- 서명 이미지 출력 -->
 						<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+						<input type="hidden" name="firstApproval" value="${empNo}"> <!-- 기안자 정보 hidden 주입 -->
 					</td>
 					<td>
 						<span id="mediateSpan"></span> <!-- 모달에서 선택된 중간승인자 출력 -->
@@ -98,12 +165,12 @@
 				</tr>
 				<tr>
 					<td>
-						<button type="button" data-bs-toggle="modal" data-bs-target="#middleApproverModal">
+						<button type="button" data-bs-toggle="modal" data-bs-target="#middleModal">
 							검색 <!-- 중간승인자 검색 모달 버튼 -->
 						</button>
 					</td>
 					<td>
-						<button type="button" data-bs-toggle="modal" data-bs-target="#finalApproverModal">
+						<button type="button" data-bs-toggle="modal" data-bs-target="#finalModal">
 							검색 <!-- 최종승인자 검색 모달 버튼 -->
 						</button>
 					</td>
@@ -111,13 +178,13 @@
 				<tr>
 					<th>
 						수신참조자
-						<button type="button" data-bs-toggle="modal" data-bs-target="#recipientsModal">
+						<button type="button" data-bs-toggle="modal" data-bs-target="#receiveModal">
 							검색 <!-- 수신참조자 검색 모달 버튼 -->
 						</button>
 					</th>
 					<td colspan="5">
-						<span id="recipientsSpan"></span> <!-- 모달에서 선택된 수신참조자 출력 -->
-						<input type="hidden" name="recipients" id="recipientsHidden"> <!-- int 배열로 넘길 예정... -->
+						<span id="receiveSpan"></span> <!-- 모달에서 선택된 수신참조자 출력 -->
+						<input type="hidden" name="recipients" id="receiveHidden"> <!-- int 배열로 넘길 예정... -->
 					</td>
 				</tr>
 				<tr>
@@ -136,7 +203,7 @@
 					<th>남은 휴가 일수</th>
 					<td>
 						<!-- ajax 방식으로 남은 휴가 일수 조회 예정.. -->
-						<span id="remainDays"></span>개
+						<span id="remainDays"></span>
 					</td>
 					<th>기간</th>
 					<td colspan="3">
@@ -180,7 +247,7 @@
 	<!-- 모달창 시작 -->
 	
 	<!-- 중간승인자 검색 모달 -->
-	<div class="modal" id="middleApproverModal">
+	<div class="modal" id="middleModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<!-- 모달 헤더 -->
@@ -195,17 +262,25 @@
 							<th>선택</th>
 							<th>사원번호</th>
 							<th>성명</th>
+							<th>부서명</th>
+							<th>직급명</th>
 						</tr>
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
 								<td>
-									<input type="radio" value="${employee.empNo}" name="selectedMiddleApprover">
+									<input type="radio" value="${employee.empNo}" name="selectedMediateApproval">
 								</td>
 								<td>
 									${employee.empNo}
 								</td>
 								<td>
 									${employee.empName}
+								</td>
+								<td>
+									${employee.deptName}
+								</td>
+								<td>
+									${employee.empPosition}
 								</td>
 							</tr>
 						</c:forEach>
@@ -214,7 +289,7 @@
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					<button type="button" id="selectedMiddleBtn" data-bs-dismiss="modal">저장</button>
+					<button type="button" id="saveMiddleBtn" data-bs-dismiss="modal">저장</button>
 				</div>
 			</div>
 		</div>
@@ -222,7 +297,7 @@
 	<!-- 중간승인자 검색 모달 끝 -->
 	
 	<!-- 최종승인자 검색 모달 -->
-	<div class="modal" id="finalApproverModal">
+	<div class="modal" id="finalModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<!-- 모달 헤더 -->
@@ -241,7 +316,7 @@
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
 								<td>
-									<input type="radio" value="${employee.empNo}" name="selectedFinalApprover">
+									<input type="radio" value="${employee.empNo}" name="selectedFinalApproval">
 								</td>
 								<td>
 									${employee.empNo}
@@ -256,7 +331,7 @@
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					<button type="button" id="selectedFinalBtn" data-bs-dismiss="modal">저장</button>
+					<button type="button" id="saveFinalBtn" data-bs-dismiss="modal">저장</button>
 				</div>
 			</div>
 		</div>
@@ -264,7 +339,7 @@
 	<!-- 최종승인자 검색 모달 끝 -->
 	
 	<!-- 수신참조자 검색 모달 -->
-	<div class="modal" id="recipientsModal">
+	<div class="modal" id="receiveModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<!-- 모달 헤더 -->
@@ -298,7 +373,7 @@
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					<button type="button" id="checkedRecipientsBtn" data-bs-dismiss="modal">저장</button>
+					<button type="button" id="saveReceiveBtn" data-bs-dismiss="modal">저장</button>
 				</div>
 			</div>
 		</div>

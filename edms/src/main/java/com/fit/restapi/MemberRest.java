@@ -23,7 +23,7 @@ public class MemberRest {
 	public Map<String, Object> checkEmpNo(Integer empNo) {
 		Map<String, Object> result = new HashMap<>();
 		
-		log.debug("\033[46;97m" + "MemberController.checkEmpNo() empNo param : " + empNo + "\u001B[0m");
+		log.debug("\033[46;97m" + "MemberRest.checkEmpNo() empNo param : " + empNo + "\u001B[0m");
 		
 		// 사원번호 검사 service 호출
 		Map<String, Object> checkEmpNoResult = memberService.checkEmpNo(empNo);
@@ -33,8 +33,8 @@ public class MemberRest {
 		// 반환할 map에 결과값(Cnt) 담기
 		result.put("empInfoCnt", empInfoCnt);
 		result.put("memberInfoCnt", memberInfoCnt);
-		log.debug("\033[46;97m" + "MemberController.checkEmpNo() empInfoCnt : " + empInfoCnt + "\u001B[0m");
-		log.debug("\033[46;97m" + "MemberController.checkEmpNo() memberInfoCnt : " + memberInfoCnt + "\u001B[0m");
+		log.debug("\033[46;97m" + "MemberRest.checkEmpNo() empInfoCnt : " + empInfoCnt + "\u001B[0m");
+		log.debug("\033[46;97m" + "MemberRest.checkEmpNo() memberInfoCnt : " + memberInfoCnt + "\u001B[0m");
 		
 		// 반환할 map에 resultMsg 담기
 		if(empInfoCnt == 0) {
