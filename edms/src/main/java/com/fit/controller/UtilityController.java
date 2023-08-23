@@ -63,7 +63,7 @@ public class UtilityController {
 	@GetMapping("/utility/utilityList")
 	public String utilityList(Model model, HttpSession session
 			, @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage
-			, @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage
+			, @RequestParam(name = "rowPerPage", required = false, defaultValue = "5") int rowPerPage
 			, @RequestParam(name = "utilityCategory", required = false, defaultValue = "") String utilityCategory
 			, @RequestParam(name= "utilityNo", required = false, defaultValue = "0") int utilityNo
 			) {

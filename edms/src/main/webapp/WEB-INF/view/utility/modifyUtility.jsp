@@ -8,12 +8,16 @@
 <title>modifyUtility</title>
 </head>
 <body>
-	<c:set var="u" value="${utility}" />
+	<c:set var="u" value="${utilityDto}" />
 	<form method="post" action="${pageContext.request.contextPath}/utility/modifyUtility" enctype="multipart/form-data">
 		<!-- 히든값으로 해당되는 공용품 번호를 전송 -> 이름은 utility 객체에 해당하는 이름인 utilityNo로 맞춰서 보내야 컨트롤러에서 올바르게 받는다. -->
 		<input type="hidden" name="utilityNo" value="${u.utilityNo}">
 		<h1>공용품 수정</h1>
 		<table>
+			<tr>
+				<td>공용품번호</td>
+				<td><input type="text" name="utilityNo" value="${u.utilityNo}" readonly="readonly"></td>
+			</tr>
 			<tr>
 				<td>공용품종류</td>
 			    <td>
@@ -26,18 +30,19 @@
 			</tr>
 			<tr>
 				<td>공용품명</td>
-				<td><input type="text" name="utilityName" placeholder="${u.utilityName}"></td>
+				<td><textarea rows="3" cols="50" name="utilityName">${u.utilityName}</textarea></td>
 			</tr>
 			<tr>
 				<td>공용품내용</td>
-				<td><input type="text" name="utilityInfo" placeholder="${u.utilityInfo}"></td>
+				<td><textarea rows="3" cols="50" name="utilityInfo">${u.utilityInfo}</textarea></td>
 			</tr>
 			<tr>
-				<td>파일첨부</td>
+				<td>이미지첨부</td>
 				<td>
+					<!-- 해당 공용품 번호에 해당하는 저장파일이름이 있다면 그 파일의 오리지널 이름을 보여주겠다. -->
 					<c:choose>
 						<c:when test="${not empty u.utilitySaveFilename}">
-							<p>기존 파일: ${u.utilitySaveFilename}</p>
+							<p>기존 파일: ${u.utilityOriFilename}</p>
 						</c:when>
 						<c:otherwise>
 							<p>선택된 파일 없음</p>

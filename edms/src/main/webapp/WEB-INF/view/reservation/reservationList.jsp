@@ -31,7 +31,7 @@
 	        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
 	        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
 	        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 조건이 거짓일 경우 빈 문자열('') -->
-	            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>Created Date</option>
+	            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>신청일</option>
 	        </select>
 	        <select name="ascDesc">
 	            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
@@ -44,13 +44,12 @@
 	    <div class="search-area">
 	        <label class="search-label">검색</label>
 	        <select name="searchCol">
-	            <option value="emp_name" ${searchCol eq 'emp_name' ? 'selected' : ''}>Emp Name</option>
-	            <option value="utility_category" ${searchCol eq 'utility_category' ? 'selected' : ''}>Utility Category</option>
+	            <option value="emp_name" ${searchCol eq 'emp_name' ? 'selected' : ''}>사원명</option>
+	            <option value="utility_category" ${searchCol eq 'utility_category' ? 'selected' : ''}>공용품종류</option>
 	        </select>
 	        <input type="text" name="searchWord" value="${searchWord}">
 	        <button type="submit">검색</button>
 	    </div>
-	    
 	</form>
 	
 	<form action="${pageContext.request.contextPath}/delete" method="post">

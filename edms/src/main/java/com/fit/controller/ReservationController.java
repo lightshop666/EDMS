@@ -18,6 +18,7 @@ import com.fit.CC;
 import com.fit.service.CommonPagingService;
 import com.fit.service.ReservationService;
 import com.fit.vo.ReservationDto;
+import com.fit.vo.UtilityDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,8 +32,29 @@ public class ReservationController {
 	@Autowired
 	private CommonPagingService commonPagingService;
 	
+	// 예약리스트로부터 예약신청 버튼이 눌렸을 경우 차량인지 회의실인지 유무를 받아서 예약 신청 폼으로 전달한다.
 	@GetMapping("/reservation/addReservation")
-	public String addReservation(HttpSession session) {
+	public String addReservation(HttpSession session, Model model
+			, @RequestParam(name = "utilityCategory") String utilityCategory) {
+		
+		// 세션의 사원번호 및 사원명을 가져온다.
+		int empNo = (int)session.getAttribute("loginMemberId");
+		String empName = (String)session.getAttribute("empName");
+		
+		// utilityCategory에 따라서 필요한 공용품 번호와 공용품 이름들을 불러온다.
+		List<UtilityDto> utilities = reservationService.getUtilityByCategory(utilityCategory);
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationController.addReservation() utilityCategory: "+utilityCategory+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.addReservation() utilities: "+utilities+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.addReservation() empNo: "+empNo+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.addReservation() empName: "+empName+CC.RESET);
+		
+		// 모델에 값 저장 후 view로 보낸다.
+		model.addAttribute("utilities", utilities);
+		model.addAttribute("utilityCategory", utilityCategory);
+		model.addAttribute("empNo", empNo);
+		model.addAttribute("empName", empName);
 		
 		return "/reservation/addReservation";
 	}
@@ -40,18 +62,47 @@ public class ReservationController {
 	@PostMapping("/reservation/addReservation")
 	public String addReservation(HttpSession session, ReservationDto reservationDto, HttpServletRequest request) {
 		
-		// 입력유무를 확인
-		int row = reservationService.addReservation(reservationDto);
+		// 차량 중복검사에 사용할 값을 Map으로 전달
+		Map<String, Object> carChkParam = new HashMap<>();
+		carChkParam.put("reservationDate", reservationDto.getReservationDate());
+		carChkParam.put("empNo", reservationDto.getEmpNo());
+		carChkParam.put("utilityNo", reservationDto.getUtilityNo());
 		
-		if(row == 1) {
+		// 회의실 중복검사에 사용할 값을 Map으로 전달
+		Map<String, Object> meetingChkParam = new HashMap<>();
+		meetingChkParam.put("reservationDate", reservationDto.getReservationDate());
+		meetingChkParam.put("reservationDate", reservationDto.getReservationTime());
+		meetingChkParam.put("empNo", reservationDto.getEmpNo());
+		meetingChkParam.put("utilityNo", reservationDto.getUtilityNo());
+		
+		// 차량 중복체크를 수행한다.
+		int carRow = reservationService.getCarChk(carChkParam);	
+		
+		// 회의실 중복체크를 수행한다.
+		int meetingRow = reservationService.getMeetingChk(meetingChkParam);	
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationController.addReservation() carRow: "+carRow+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.addReservation() meetingRow: "+meetingRow+CC.RESET);
+		
+		// 중복등록된 값이 있으면 리다이렉션
+		if(carRow != 0 || meetingRow != 0) {
+			// 예약 신청 실패시 fail을 매개변수로 view에 전달
+			return "redirect:/reservation/reservationList?result=fail";
+		}
+		
+		// 입력유무를 확인
+		int insertRow = reservationService.addReservation(reservationDto);
+		
+		if(insertRow == 1) {
 			// 디버깅
 			// 예약 신청 성공시 리스트로
-			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
+			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
 			return "redirect:/reservation/reservationList";
 		} else {
 			// 디버깅
 			// 예약 신청 실패시 fail을 매개변수로 view에 전달
-			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
+			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
 			return "redirect:/reservation/reservationList?result=fail";
 		}
 	}

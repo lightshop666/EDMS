@@ -22,11 +22,11 @@
 			</tr>
 			<tr>
 				<td>공용품명</td>
-				<td><input type="text" name="utilityName" ></td>
+				<td><textarea rows="3" cols="50" name="utilityName">공용품명을 입력해 주세요</textarea></td>
 			</tr>
 			<tr>
 				<td>공용품내용</td>
-				<td><input type="text" name="utilityInfo" ></td>
+				<td><textarea rows="3" cols="50" name="utilityInfo">고용품내용을 입력해 주세요</textarea></td>
 			</tr>
 			<tr>
 				<td>파일첨부</td>

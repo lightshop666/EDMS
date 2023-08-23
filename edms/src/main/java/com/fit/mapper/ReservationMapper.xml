@@ -24,6 +24,25 @@
 			)
 	</insert>
 	
+	<!-- 예약 테이블 추가시 차량 중복검사 쿼리 -->
+	<select id="selectCarChk" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) 
+		FROM reservation
+		WHERE reservation_date = #{reservationDate} 
+			AND utility_no = #{utilityNo} 
+			AND emp_no = #{empNo}
+	</select>
+	
+	<!-- 예약 테이블 추가시 회의실 중복검사 쿼리 -->
+	<select id="selectMeetingChk" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*) 
+		FROM reservation
+		WHERE reservation_date = #{reservationDate} 
+			AND reservation_time = #{reservationTime}
+			AND utility_no = #{utilityNo} 
+			AND emp_no = #{empNo}
+	</select>
+	
 	<!-- 예약 테이블 삭제하는 쿼리 -->
 	<delete id="deleteReservation" parameterType="Long">
 		DELETE FROM reservation

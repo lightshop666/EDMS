@@ -26,4 +26,7 @@ public interface UtilityMapper {
 	
 	// 공용품 삭제 
 	int deleteUtility(Long utilityNo);
+	
+	// 카테고리 종류에 따라 해당하는 공용품 번호를 출력 -> 예약 신청 페이지에서 활용
+	List<UtilityDto> selectUtilityByCategory(String utilityCategory);
 }

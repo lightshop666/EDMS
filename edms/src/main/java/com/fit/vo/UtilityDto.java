@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.Data;
 
 @Data
+// 공용품리스트에서 출력할 정보를 모아둔다.
 public class UtilityDto {
 	private int utilityNo;
 	private String utilityCategory;
@@ -21,4 +22,8 @@ public class UtilityDto {
 	private String utilitySaveFilename;
 	private String utilityFiletype;
 	private String utilityPath; 
+	/*
+	// 공용품 리스트에서 예약 신청을 하므로 해당 내역을 저장
+	private int reservationNo;
+	*/
 }

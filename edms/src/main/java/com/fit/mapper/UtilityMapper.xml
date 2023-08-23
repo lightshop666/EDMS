@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fit.mapper.UtilityMapper">
 
-	<!-- 공용픔 상세보기 공용품 파일 정보까지 전체 -->
+	<!-- 공용픔 상세보기 공용품 파일 정보 및 예약 번호까지 조회 -->
 	<select id="selectUtilityOne" parameterType="com.fit.vo.UtilityDto"
 		resultType="com.fit.vo.UtilityDto">
 		SELECT
@@ -15,7 +15,7 @@
 		    uf.utility_ori_filename utilityOriFilename,
 		    uf.utility_save_filename utilitySaveFilename,
 		    uf.utility_filetype utilityFiletype,
-		    uf.utility_path utilityPath		
+		    uf.utility_path utilityPath,
 		FROM utility u
 		LEFT JOIN utility_file uf 
 		ON u.utility_no = uf.utility_no
@@ -60,7 +60,8 @@
 	</select>
 	
 	<!-- 조건에 따른 전체 행의 개수를 확인하기 위한 메서드 -->
-	<select id="selectUtilityCount" resultType="int">
+	<select id="selectUtilityCount" parameterType="String"
+		resultType="int">
 		SELECT 
 			COUNT(*) CNT 
 		FROM utility
@@ -114,5 +115,15 @@
 		,	updatedate = NOW()
 		WHERE utility_no = #{utilityNo}
 	</update>
+	
+	<!-- 공용품 종류(회의실, 차량)에 따라 해당하는 공용품 번호를 가져오는 쿼리 -->
+	<select id="selectUtilityByCategory" parameterType="string" resultType="com.fit.vo.UtilityDto">
+    	SELECT 
+    		utility_no utilityNo,
+    		utility_name utilityName
+    	FROM utility 
+    	WHERE utility_category = #{category}
+	</select>
+	
 	
 </mapper>

@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.CC;
 import com.fit.mapper.ReservationMapper;
+import com.fit.mapper.UtilityMapper;
 import com.fit.vo.ReservationDto;
+import com.fit.vo.UtilityDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +22,9 @@ public class ReservationService {
 	
 	@Autowired
 	private ReservationMapper reservationMapper;
+	
+	@Autowired
+	private UtilityMapper utilityMapper;
 	
 	// 컨트롤러로부터 paramMap 타입으로 필요한 검색조건 매개변수들을 받아 예약 리스트 출력
 	public List<ReservationDto> getReservationListByPage(Map<String, Object> listParam) {
@@ -100,4 +105,41 @@ public class ReservationService {
 		// row값 반환하여 컨트롤러단에서 예약취소 성공 및 실패 여부 확인
 		return row;
 	}
+	
+	// 공용품 카테고리를 입력받아서 해당하는 공용품 번호를 리스트 형식으로 출력한다.
+	public List<UtilityDto> getUtilityByCategory(String utilityCategory) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationService.getUtilityNoByCategory() utilityCategory: "+utilityCategory+CC.RESET);
+		
+		// 해당 카테고리에 포함된 공용품 번호를 출력
+		List<UtilityDto> utilities = utilityMapper.selectUtilityByCategory(utilityCategory);
+		
+		return utilities;
+	}
+	
+	// 예약일, 공용품 번호, 사원 번호를 입력받아서 중복검사를 진행
+	public int getCarChk(Map<String, Object> carChkParam) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationService.getCarChk() carChkParam: "+carChkParam+CC.RESET);
+		
+		// Mapper를 통해 중복체크 여부를 반환받음 1 - 중복, 0 - 비중복
+		int row = reservationMapper.selectCarChk(carChkParam);
+		
+		return row;
+	}
+	
+	// 예약일, 예약시간, 공용품 번호, 사원 번호를 입력받아서 중복검사를 진행
+	public int getMeetingChk(Map<String, Object> meetingChkParam) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationService.getUtilityNoByCategory() carChkParam: "+meetingChkParam+CC.RESET);
+		
+		// Mapper를 통해 중복체크 여부를 반환받음 1 - 중복, 0 - 비중복
+		int row = reservationMapper.selectCarChk(meetingChkParam);
+		
+		return row;
+	}
+	
 }

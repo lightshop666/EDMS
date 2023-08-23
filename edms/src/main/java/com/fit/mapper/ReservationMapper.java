@@ -19,8 +19,14 @@ public interface ReservationMapper {
 	int selectReservationCount(Map<String, Object> countParam);
 	
 	// 예약 추가
-	int insertReservation(ReservationDto reservation);
+	int insertReservation(ReservationDto reservationDto);
 	
 	// 예약 삭제
 	int deleteReservation(Long reservationNo);
+	
+	// 예약 신청시 차량 중복검사하는 메서드
+	int selectCarChk(Map<String, Object> carChkParam);
+	
+	// 예약 신청시 회의실 중복검사하는 메서드
+	int selectMeetingChk(Map<String, Object> meetingChkParam);
 }

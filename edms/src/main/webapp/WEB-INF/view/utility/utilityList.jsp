@@ -11,6 +11,11 @@
 	<!-- 탭 메뉴 형식으로 회사일정 or 공용품리스트 형식으로 나누면서 확인해야함 템플릿 이용 -->
 	<h1>공용품리스트</h1>
 	<div>
+		<!-- 예약신청폼에서 utilityCategory를 검사하므로 매개변수로 넣어서 웹 브라우저에서 각각 다른 입력폼이 보이도록 한다. -->
+		<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=차량">차량 예약신청</a>
+		<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=회의실">회의실 예약신청</a>
+	</div>
+	<div>
 		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
 		<a href="${pageContext.request.contextPath}/utility/addUtility">공용품추가</a>
 	</div>	
@@ -26,7 +31,6 @@
 				<th>공용품 정보</th>
 				<th>등록일</th>
 				<th>수정일</th>
-				<th>신청</th>
 				<th>수정</th>
 			</tr>
 			<c:forEach var="u" items="${utilityList}">
@@ -46,9 +50,6 @@
 						<td>${u.utilityInfo}</td>
 						<td>${u.createdate}</td>
 						<td>${u.updatedate}</td>
-						<td>
-							<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityNo=${u.utilityNo}&u.utilityCategory=${u.utilityCategory}">신청</a>
-						</td>
 						<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함  -->
 						<td>
 							<a href="${pageContext.request.contextPath}/utility/modifyUtility?utilityNo=${u.utilityNo}">수정</a>
