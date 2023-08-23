@@ -145,6 +145,7 @@
 			let pw1 = $('#pw1').val();
 			let pw2 = $('#pw2').val();
 			let gender = $('input[name="gender"]:checked').val();
+			let phoneNumber = $('#phoneNumber').val();
 			let email = $('#email').val();
 			let postcode = $('sample6_postcode').val();
 			let address = $('#sample6_address').val();
@@ -170,6 +171,11 @@
 			}
 			if (gender == undefined) {
 				alert('성별을 선택하세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (phoneNumber == '') {
+				alert('전화번호를 입력하세요.');
 				isValid = false;
 				return isValid;
 			}
@@ -292,9 +298,15 @@
 				</td>
 			</tr>
 			<tr>
+				<td>전화번호</td>
+				<td>
+					<input type="text" name="phoneNumber" id="phoneNumber" placeholder="ex) 010-1234-5678">
+				</td>
+			</tr>
+			<tr>
 				<td>이메일</td>
 				<td>
-					<input type="email" name="email" id="email">
+					<input type="email" name="email" id="email" placeholder="ex) example@email.com">
 				</td>
 				<td>
 					<span id="emailMsg"></span>

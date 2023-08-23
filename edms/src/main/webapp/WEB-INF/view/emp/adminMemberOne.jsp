@@ -125,6 +125,12 @@
 			</td>
 		</tr>
 		<tr>
+			<td>전화번호</td>
+			<td>
+				${member.phoneNumber}
+			</td>
+		</tr>
+		<tr>
 			<td>이메일</td>
 			<td>
 				${member.email}
