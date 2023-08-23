@@ -29,6 +29,10 @@ public class EmpService {
 	@Autowired
 	private MemberMapper memberMapper;
 	
+	// 사원 목록에서 남은 휴가 일수를 가져오기 위한 의존성 주입
+	@Autowired
+	private VacationRemainService vacationRemainService;
+	
 	// 인사정보 조회 (emp_info)
 	public EmpInfo selectEmp(int empNo) {
 		log.debug(CC.HE + "EmpService.selectEmp() empNo param : " + empNo + CC.RESET);
@@ -139,7 +143,9 @@ public class EmpService {
 	// 사원 전체 목록 조회
 	public List<EmpInfo> selectEmpList() {
 		// 사원 목록을 List 형식으로 담기
-		List<EmpInfo> selectEmpList = empMapper.selectEmpList();
+		List<EmpInfo> selectEmpList = empMapper.selectEmpList(); // -> join후 map타입으로 수정 예정
+		// 조회한 값을 반복문을 돌려서 getRemainVacationDays() 메서드 호출 후 반환값을 리스트에 담기
+		// 예정...
 		log.debug(CC.YE + "EmpService.selectListEmp() selectListEmp : " + selectEmpList + CC.RESET);
 		
 		return selectEmpList;
@@ -181,5 +187,25 @@ public class EmpService {
 		// 선택된 사원 정보 리스트를 반환
         return selectedEmpList;
     }
+	
+	// 남은 휴가 일수 (연차 + 보상) - 사원목록 (관리자)
+	private double getRemainVacationDays(int empNo, String employDate) {	
+		// 1. 남은 연차 일수 - remainDays
+		// 1-1. 근속기간을 구하는 메서드 호출
+		Map<String, Object> getPeriodOfWorkResult = vacationRemainService.getPeriodOfWork(employDate);
+		// 1-2. 기준 연차를 구하는 메서드 호출
+		int Days = vacationRemainService.vacationByPeriod(getPeriodOfWorkResult);
+		// 1-3. 남은 연차 일수를 구하는 메서드 호출
+		Double remainDays = vacationRemainService.getRemainDays(employDate, empNo, Days);
+		
+		// 2. 남은 보상휴가 일수를 구하는 메서드 호출 - remainRewardDays
+		int remainRewardDays = vacationRemainService.getRemainRewardDays(empNo);
+		
+		// 3. 남은 연차 일수와 보상휴가 일수 더하기
+		double resultDays = remainDays + remainRewardDays;
+		log.debug(CC.HE + "EmpService.getRemainVacationDays() resultDays : " + resultDays + "개" + CC.RESET);
+		
+		return resultDays;
+	}
 	
 }
