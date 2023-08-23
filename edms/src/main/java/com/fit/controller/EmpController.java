@@ -58,15 +58,12 @@ public class EmpController {
 		// 권한 분기 -> 메인메뉴에서 처리
 		
 		// empNo 유효성 검사 후 null일 경우 사원목록 페이지로 리다이렉션
-		/*
 		if (empNo == null) {
-			return "redirect:/home";
+			return "redirect:/emp/empList";
 		}
-		*/
-		int empNoEx = 2016001;
 		
 		// 1) 인사정보 조회 호출
-		EmpInfo empInfo = empService.selectEmp(empNoEx);
+		EmpInfo empInfo = empService.selectEmp(empNo);
 		
 		// 2) 부서, 팀 테이블 조회 호출
 		Map<String, Object> result = empService.getDeptAndTeamList();
@@ -81,18 +78,20 @@ public class EmpController {
 	// 인사정보 수정 액션
 	@PostMapping("/emp/modifyEmp")
 	public String modifyEmp(EmpInfo empInfo) {
-		// empNo 유효성 검사 후 분기 예정 // empInfo.getEmpNo()
-		int empNoEx = 2016001;
-		empInfo.setEmpNo(empNoEx);
+		// empNo 유효성 검사 후 분기 예정
+		if (empInfo.getEmpNo() == 0) {
+			log.debug(CC.HE + "EmpController.modifyEmp() : empNo param == 0, 잘못된 접근" + CC.RESET);
+			return "redirect:/emp/empList";
+		}
 		
 		int row = empService.modifyEmp(empInfo);
 		
 		if (row == 1) {
 			log.debug(CC.HE + "EmpController.modifyEmp() row : " + row + CC.RESET);
-			return "redirect:/emp/modifyEmp?result=success";
+			return "redirect:/emp/modifyEmp?empNo=" + empInfo.getEmpNo() + "&result=success";
 		} else {
 			log.debug(CC.HE + "EmpController.modifyEmp() row : " + row + CC.RESET);
-			return "redirect:/emp/modifyEmp?result=fail";
+			return "redirect:/emp/modifyEmp?empNo=" + empInfo.getEmpNo() + "&result=fail";
 		}
 	}
 	
@@ -111,7 +110,7 @@ public class EmpController {
 			return "redirect:/home";
 		}
 		*/
-		int empNoEx = 1000000;
+		int empNoEx = 2016001;
 		
 		// empNo로 개인정보 조회 (관리자) 서비스 호출
 		Map<String, Object> result = empService.selectMember(empNoEx);

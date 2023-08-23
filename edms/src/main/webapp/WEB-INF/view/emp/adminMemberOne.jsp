@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -103,151 +104,158 @@
 </head>
 <body>
 	<h1>개인정보 조회 - 관리자</h1>
-	<table border="1">
-		<tr>
-			<td>사진</td>
-			<td>
-				<!-- 사진 클릭 시 모달로 이미지 출력 -->
-				<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
-					data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
-			</td>
-		</tr>
-		<tr>
-			<td>사원명</td>
-			<td>
-				${member.empName}
-			</td>
-		</tr>
-		<tr>
-			<td>성별</td>
-			<td>
-				${member.gender}
-			</td>
-		</tr>
-		<tr>
-			<td>전화번호</td>
-			<td>
-				${member.phoneNumber}
-			</td>
-		</tr>
-		<tr>
-			<td>이메일</td>
-			<td>
-				${member.email}
-			</td>
-		</tr>
-		<tr>
-			<td>주소</td>
-			<td>
-				${member.address}
-			</td>
-		</tr>
-		<tr>
-			<td>저장된 서명</td>
-			<td>
-				<!-- 미리보기 클릭 시 모달로 서명 출력 -->
-				<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
-			</td>
-		</tr>
-		<tr>
-			<td>가입일</td>
-			<td>
-				${member.createdate}
-			</td>
-		</tr>
-		<tr>
-			<td>수정일</td>
-			<td>
-				${member.updatedate}
-			</td>
-		</tr>
-	</table>
-	<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-	<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
-	<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal">비밀번호 초기화</button> <!-- 오른쪽 정렬 -->
-	
-	<!-- 모달창 시작 -->
-	
-	<!-- 이미지 모달 -->
-	<div class="modal" id="imageModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- 모달 헤더 -->
-				<div class="modal-header">
-					<h4 class="modal-title">사원 사진</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
-				</div>
-				<!-- 모달 본문 -->
-				<div class="modal-body">
-					<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
-				</div>
-				<!-- 모달 푸터 -->
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- 이미지 모달 끝 -->
-	
-	<!-- 서명 모달 -->
-	<div class="modal" id="signModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- 모달 헤더 -->
-				<div class="modal-header">
-					<h4 class="modal-title">사원 서명</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
-				</div>
-				<!-- 모달 본문 -->
-				<div class="modal-body">
-					<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
-				</div>
-				<!-- 모달 푸터 -->
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- 서명 모달 끝 -->
-	
-	<!-- 비밀번호 초기화 모달 -->
-	<div class="modal" id="pwModal">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<!-- 모달 헤더 -->
-				<div class="modal-header">
-					<h4 class="modal-title">비밀번호 초기화</h4>
-					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
-				</div>
-				<!-- 모달 본문 -->
-				<div class="modal-body">
-					<div>
-						랜덤한 임시 비밀번호를 생성하여 초기화합니다.
+	<!-- 회원가입 유무에 따라 분기 -->
+	<c:if test="${member.empNo != null}">
+		<table border="1">
+			<tr>
+				<td>사진</td>
+				<td>
+					<!-- 사진 클릭 시 모달로 이미지 출력 -->
+					<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
+						data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
+				</td>
+			</tr>
+			<tr>
+				<td>사원명</td>
+				<td>
+					${member.empName}
+				</td>
+			</tr>
+			<tr>
+				<td>성별</td>
+				<td>
+					${member.gender}
+				</td>
+			</tr>
+			<tr>
+				<td>전화번호</td>
+				<td>
+					${member.phoneNumber}
+				</td>
+			</tr>
+			<tr>
+				<td>이메일</td>
+				<td>
+					${member.email}
+				</td>
+			</tr>
+			<tr>
+				<td>주소</td>
+				<td>
+					${member.address}
+				</td>
+			</tr>
+			<tr>
+				<td>저장된 서명</td>
+				<td>
+					<!-- 미리보기 클릭 시 모달로 서명 출력 -->
+					<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
+				</td>
+			</tr>
+			<tr>
+				<td>가입일</td>
+				<td>
+					${member.createdate}
+				</td>
+			</tr>
+			<tr>
+				<td>수정일</td>
+				<td>
+					${member.updatedate}
+				</td>
+			</tr>
+		</table>
+		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+		<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
+		<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal">비밀번호 초기화</button> <!-- 오른쪽 정렬 -->
+		
+		<!-- 모달창 시작 -->
+		
+		<!-- 이미지 모달 -->
+		<div class="modal" id="imageModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">사원 사진</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 					</div>
-					<div>
-						<button type="button" id="getPwBtn">비밀번호 생성</button>
-						임시 비밀번호 : <span id="tempPw"></span> <!-- 비밀번호 생성시 출력 -->
-					</div> <br>
-					<div>
-						<p style="color:red;">
-							비밀번호 초기화 후 다시 되돌릴 수 없습니다. <br>
-							생성한 임시 비밀번호를 사용자에게 반드시 전달하세요.
-						</p>
-						<button type="button" id="updatePwBtn">비밀번호 초기화</button>
-						<span id="updateResult"></span> <!-- 비밀번호 초기화 결과 출력 -->
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
 					</div>
 				</div>
-				<!-- 모달 푸터 -->
-				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+			</div>
+		</div>
+		<!-- 이미지 모달 끝 -->
+		
+		<!-- 서명 모달 -->
+		<div class="modal" id="signModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">사원 서명</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+					</div>
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- 비밀번호 초기화 모달 끝 -->
-	
-	<!-- 모달창 끝 -->
+		<!-- 서명 모달 끝 -->
+		
+		<!-- 비밀번호 초기화 모달 -->
+		<div class="modal" id="pwModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">비밀번호 초기화</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+					</div>
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<div>
+							랜덤한 임시 비밀번호를 생성하여 초기화합니다.
+						</div>
+						<div>
+							<button type="button" id="getPwBtn">비밀번호 생성</button>
+							임시 비밀번호 : <span id="tempPw"></span> <!-- 비밀번호 생성시 출력 -->
+						</div> <br>
+						<div>
+							<p style="color:red;">
+								비밀번호 초기화 후 다시 되돌릴 수 없습니다. <br>
+								생성한 임시 비밀번호를 사용자에게 반드시 전달하세요.
+							</p>
+							<button type="button" id="updatePwBtn">비밀번호 초기화</button>
+							<span id="updateResult"></span> <!-- 비밀번호 초기화 결과 출력 -->
+						</div>
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 비밀번호 초기화 모달 끝 -->
+		
+		<!-- 모달창 끝 -->
+	</c:if>
+	<!-- 회원가입 유무에 따라 분기 -->
+	<c:if test="${member.empNo == null}">
+		<h4>아직 회원가입하지 않은 사원입니다</h4>
+	</c:if>
 </body>
 </html>
