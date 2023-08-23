@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>GoodeeFit Home</title>
 </head>
 <body>
 <!-- 헤더 인클루드 -->
