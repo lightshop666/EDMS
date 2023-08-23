@@ -1,7 +1,7 @@
 package com.fit.service;
 
 import java.util.HashMap;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -141,14 +141,37 @@ public class EmpService {
 	}
 	
 	// 사원 전체 목록 조회
-	public List<EmpInfo> selectEmpList() {
-		// 사원 목록을 List 형식으로 담기
-		List<EmpInfo> selectEmpList = empMapper.selectEmpList(); // -> join후 map타입으로 수정 예정
-		// 조회한 값을 반복문을 돌려서 getRemainVacationDays() 메서드 호출 후 반환값을 리스트에 담기
-		// 예정...
-		log.debug(CC.YE + "EmpService.selectListEmp() selectListEmp : " + selectEmpList + CC.RESET);
-		
-		return selectEmpList;
+	public List<Map<String, Object>> enrichedEmpList() {
+	    // 사원 목록을 List 형식으로 담기
+	    List<EmpInfo> selectEmpList = empMapper.selectEmpList();
+	    
+	    List<Map<String, Object>> enrichedEmpList = new ArrayList<>();
+	    
+	    for (EmpInfo emp : selectEmpList) {
+	        Map<String, Object> enrichedEmp = new HashMap<>();
+	        enrichedEmp.put("empNo", emp.getEmpNo()); // 사원번호
+	        enrichedEmp.put("empName", emp.getEmpName()); // 사원명
+	        enrichedEmp.put("deptName", emp.getDeptName()); // 부서명
+	        enrichedEmp.put("teamName", emp.getTeamName()); // 팀명
+	        enrichedEmp.put("empPosition", emp.getEmpPosition()); // 직급
+	        enrichedEmp.put("employDate", emp.getEmployDate()); // 입사일
+
+	        // 1. 남은 휴가 일수 계산
+	        double remainDays = getRemainVacationDays(emp.getEmpNo(), emp.getEmployDate());
+	        enrichedEmp.put("remainDays", remainDays);
+	        
+	        // 2) 회원가입 여부 확인
+	        int memberInfoCnt = memberMapper.memberInfoCnt(emp.getEmpNo());
+	        enrichedEmp.put("isMember", memberInfoCnt > 0 ? "O" : "X");
+	        
+	        enrichedEmp.put("accessLevel", emp.getAccessLevel()); // 권한
+	        
+	        enrichedEmpList.add(enrichedEmp);
+	    }
+
+	    log.debug(CC.YE + "EmpService.selectEmpList() enrichedEmpList : " + enrichedEmpList + CC.RESET);
+	    
+	    return enrichedEmpList;
 	}
 	
     // 사원 등록 엑셀 업로드
@@ -178,18 +201,8 @@ public class EmpService {
         }
     }
 	
-	// 선택된 사원 정보 리스트
-	public List<EmpInfo> getSelectedEmpList(List<Integer> empNos) {
-		// empMapper의 getSelectedEmpList 선택된 사원 정보 리스트 조회
-		List<EmpInfo> selectedEmpList = empMapper.getSelectedEmpList(empNos);
-		log.debug(CC.YE + "EmpService.addEmpNoRow() selectedEmpList : " + selectedEmpList + CC.RESET);
-		
-		// 선택된 사원 정보 리스트를 반환
-        return selectedEmpList;
-    }
-	
 	// 남은 휴가 일수 (연차 + 보상) - 사원목록 (관리자)
-	private double getRemainVacationDays(int empNo, String employDate) {	
+	private double getRemainVacationDays(int empNo, String employDate) {
 		// 1. 남은 연차 일수 - remainDays
 		// 1-1. 근속기간을 구하는 메서드 호출
 		Map<String, Object> getPeriodOfWorkResult = vacationRemainService.getPeriodOfWork(employDate);

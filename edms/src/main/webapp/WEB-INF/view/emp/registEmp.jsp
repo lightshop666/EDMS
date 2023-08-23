@@ -19,42 +19,6 @@
 					window.location.href = '/home'; // Home으로 이동
 				}
 			});
-		
-			// 업로드 버튼 클릭 시
-	        $('#uploadBtn').click(function(event) {
-	            const fileInput = $('#fileInput');
-
-	            if (fileInput.get(0).files.length === 0) {
-	                event.preventDefault(); // 기본 동작 중단
-	                alert('파일을 선택해주세요.');
-	                return false;
-	            }
-				
-	            const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
-	            const fileName = file.name;
-	            const fileExtension = fileName.split('.').pop().toLowerCase();
-				
-	            // 엑셀 파일이 아닌 경우 업로드 막기
-	            if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
-	                event.preventDefault(); // 기본 동작 중단
-	                alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
-	                return false;
-	            }
-	        });
-			
-	     	// 페이지 로딩 시 주소창 파라미터 확인 후 알림 표시
-	        const urlParams = new URLSearchParams(window.location.search);
-	        const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
-	        const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
-
-	        if (resultParam === 'fail') { // fail 파라미터 값이 있고
-	            if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
-	                alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호 알림
-	            } else { // 이외 오류에 대해
-	                alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 엑셀 파일 확인 알림
-	            }
-	        }
-			
 		});
 	</script>
 <style>
@@ -72,16 +36,6 @@
 </head>
 <body>
 	<h3>사원 등록</h3>
-	
-	<!-- 엑셀 공통 양식 다운로드 버튼 추가 -->
-	<a href="/file/defaultTemplate.xlsx" download="defaultTemplate.xlsx">엑셀 공통 양식 다운로드</a>
-	
-	<!-- 파일 업로드 -->
-	<form id="uploadForm" action="/excelUpload" method="post" enctype="multipart/form-data">
-		<input type="file" name="file" id="fileInput">
-		<button type="submit" id="uploadBtn">저장</button>
-		<span id="msg"></span>
-	</form>
 	
 	<!-- 사원 정보 등록 -->
 	<form action="/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->

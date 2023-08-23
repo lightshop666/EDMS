@@ -31,9 +31,6 @@ public interface EmpMapper {
 	// 사원 목록 조회
 	List<EmpInfo> selectEmpList();
 	
-	// 선택된 사원 정보 가져오기
-	List<EmpInfo> getSelectedEmpList(List<Integer> empNos);
-	
 	// 비밀번호 수정 (관리자)
 	int modifyPw(int empNo, String tempPw);
 }

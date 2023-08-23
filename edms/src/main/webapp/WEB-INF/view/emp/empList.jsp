@@ -36,11 +36,40 @@
 	        }
 	    });
 	    
-	 	// 서버에서 전송한 결과 값 처리
-        const urlParams = new URLSearchParams(window.location.search);
-        const failParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+	 	// 업로드 버튼 클릭 시
+        $('#uploadBtn').click(function(event) {
+            const fileInput = $('#fileInput');
+
+            if (fileInput.get(0).files.length === 0) {
+                event.preventDefault(); // 기본 동작 중단
+                alert('파일을 선택해주세요.');
+                return false;
+            }
+			
+            const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
+            const fileName = file.name;
+            const fileExtension = fileName.split('.').pop().toLowerCase();
+			
+            // 엑셀 파일이 아닌 경우 업로드 막기
+            if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+                event.preventDefault(); // 기본 동작 중단
+                alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
+                return false;
+            }
+        });
 		
-        if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
+     	// 페이지 로딩 시 주소창 파라미터 확인 후 알림 표시
+        const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+        const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+        const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
+        
+        if (resultParam === 'fail') { // fail 파라미터 값이 있고
+            if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
+                alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호 알림
+            } else { // 이외 오류에 대해
+                alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 엑셀 파일 확인 알림
+            }
+        } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
             alert('엑셀 파일 업로드에 성공했습니다.');
         }
         
@@ -57,40 +86,82 @@
 </script>
 </head>
 <body>
-	<form action="/emp/empList" method="POST">
-		<label for="employmentPeriod">재직기간별:</label>
-        <input type="date" name="startDate" id="startDate">
-        ~
-        <input type="date" name="endDate" id="endDate"><br>
-
-        <label for="employmentStatus">재직상태:</label>
-        <select name="employmentStatus" id="employmentStatus">
-        	<option value="전체">전체</option>
-            <option value="재직">재직</option>
-            <option value="퇴직">퇴직</option>
-        </select><br>
-
-        <label for="department">부서별:</label>
-        <select name="department" id="department">
-        	<option value="전체">전체</option>
-            <option value="기획추진본부">기획추진본부</option>
-            <option value="경영지원본부">경영지원본부</option>
-            <option value="영업지원본부">영업지원본부</option>
-        </select><br>
-
-        <label for="position">직급별:</label>
-        <select name="position" id="position">
-        	<option value="전체">전체</option>
-            <option value="팀장">팀장</option>
-            <option value="팀원">팀원</option>
-        </select><br>
-
-        <label for="gender">성별:</label>
-        <input type="radio" name="gender" value="M">남
-        <input type="radio" name="gender" value="F">여<br>
-		
-		<input type="submit" value="검색">
+	<form action="/emp/empList" method="POST" enctype="multipart/form-data" id="employee-form">
+	    
+	    
+	    <div class="search-by-year-area">
+	        <label class="search-by-year-label">입사년도별 조회</label>
+	        <input type="date" name="startDate" class="search-by-year-input">
+	        ~
+	        <input type="date" name="endDate" class="search-by-year-input">
+	        <button type="submit" class="search-by-year-button">조회</button>
+	    </div>
+	
+	    <div class="sort-area">
+	        <label class="sort-label">정렬</label>
+	        <select name="col" class="sort-select">
+	            <option value="employDate">입사일</option>
+	            <option value="retireDate">퇴사일</option>
+	        </select>
+	        <select name="ascDesc" class="sort-select">
+	            <option value="ASC">오름차순</option>
+	            <option value="DESC">내림차순</option>
+	        </select>
+	        <button type="button" class="sort-button" id="sort-button">조회</button>
+	    </div>
+	    
+	    <div class="sort-personnel-area">
+		    <label class="sort-label">재직사항</label>
+		    <select name="employmentStatus" class="sort-input">
+		        <option value="all">전체</option>
+		        <option value="재직">재직</option>
+		        <option value="퇴직">퇴직</option>
+		    </select>
+		    
+		    <label class="sort-label">부서</label>
+		    <select name="department" class="sort-input">
+		        <option value="all">전체</option>
+		        <option value="기획추진본부">기획추진본부</option>
+		        <option value="경영지원본부">경영지원본부</option>
+		        <option value="영업지원본부">영업지원본부</option>
+		    </select>
+		    
+		    <label class="sort-label">팀</label>
+			<select name="team" class="sort-input">
+			    <option value="all">전체</option>
+			    <option value="기획팀">기획팀</option>
+			    <option value="경영팀">경영팀</option>
+			    <option value="영업팀">영업팀</option>
+			</select>
+		    
+		    <button type="button" class="sort-button" id="personnel-sort-button">조회</button>
+		</div>
+	    
+	    
+	    
+	    <div class="search-area">
+	        <label class="search-label">검색</label>
+	        <select name="searchCol" class="search-input">
+	            <option value="empNo">사원번호</option>
+	            <option value="empName">사원명</option>
+	        </select>
+	        <input type="text" name="searchWord" class="search-input">
+	        <button type="button" class="search-button" id="search-button">검색</button>
+	    </div>
+	    
     </form>
+	
+	<hr>
+	
+	<!-- 엑셀 공통 양식 다운로드 버튼 추가 -->
+	<a href="/file/defaultTemplate.xlsx" download="defaultTemplate.xlsx">사원 등록 공통 양식</a>
+	
+	<!-- 파일 업로드 -->
+	<form id="uploadForm" action="/excelUpload" method="post" enctype="multipart/form-data">
+		<input type="file" name="file" id="fileInput">
+		<button type="submit" id="uploadBtn">저장</button>
+		<span id="msg"></span>
+	</form>
 
 	<button type="button" id="excelBtn">엑셀 다운로드</button>
 	<table border="1">
@@ -101,21 +172,23 @@
 			<th>부서명</th>
 			<th>팀명</th>
 			<th>직급</th>
-			<th>권한</th>
-			<th>재직사항</th>
 			<th>입사일</th>
+			<th>잔여휴가일</th>
+			<th>회원가입유무</th>
+			<th>권한</th>
 		</tr>
-		<c:forEach var="e" items="${selectEmpList}">
-		<tr>
+		<c:forEach var="e" items="${enrichedEmpList}">
+		<tr onclick="window.location='/emp/modifyEmp?empNo=${e.empNo}';">
 			<td><button type="button">초기화</button></td>
 			<td>${e.empNo}</td>
 			<td>${e.empName}</td>
 			<td>${e.deptName}</td>
 			<td>${e.teamName}</td>
 			<td>${e.empPosition}</td>
-			<td>${e.accessLevel}</td>
-			<td>${e.empState}</td>
 			<td>${e.employDate}</td><!-- YYYY-MM-DD -->
+			<th>${e.remainDays}</th>
+			<td>${e.isMember}</td>
+			<td>${e.accessLevel}</td>
 		</tr>
 		</c:forEach>
 	</table>

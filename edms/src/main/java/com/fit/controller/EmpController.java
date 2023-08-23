@@ -166,7 +166,7 @@ public class EmpController {
                 int empInfoCnt = (int) memberService.checkEmpNo(empNo).get("empInfoCnt");
                 // 중복 되면 back 
                 if ( empInfoCnt > 0 ) { // 중복된 사원번호가 있을 경우
-                    return "redirect:/emp/registEmp?result=fail&error=duplicate";
+                    return "redirect:/emp/empList?result=fail&error=duplicate";
                 }
             }
             
@@ -189,7 +189,7 @@ public class EmpController {
             e.printStackTrace();
             
             result = "fail";
-            return "redirect:/emp/registEmp?result=" + result; // 실패 시 사원 등록 페이지로 리다이렉트 + 오류 메시지 전달
+            return "redirect:/emp/empList?result=" + result; // 실패 시 사원 등록 페이지로 리다이렉트 + 오류 메시지 전달
         }
     }
     
@@ -312,7 +312,7 @@ public class EmpController {
 	@GetMapping("/emp/downloadExcel")
 	public void downloadExcel(@RequestParam(value = "empNos", required = false) List<Integer> empNos,
 	                          HttpServletResponse response) {
-	    // empNos가 제공되었는지 확인하여 엑셀 다운로드를 수행합니다.
+	    /* empNos가 제공되었는지 확인하여 엑셀 다운로드를 수행합니다.
 	    if (empNos != null) {
 	        try {
 	            // 선택된 사원 정보 조회
@@ -359,23 +359,33 @@ public class EmpController {
 	            e.printStackTrace();
 	            // 예외 처리 작업: 예외 발생 시 로깅 또는 사용자에게 알림 등을 수행합니다.
 	        }
-	    }
+	    }*/
 	}
 	
 	@GetMapping("/emp/empList")
 	public String empList(Model model) {
 		// 사원 목록 리스트를 전달하여 모델에 추가
-        List<EmpInfo> selectEmpList = empService.selectEmpList();
-        log.debug(CC.YE + "EmpController Get empList() selectEmpList: " + selectEmpList + CC.RESET);
+		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList();
+        log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
         
-        model.addAttribute("selectEmpList", selectEmpList);
+        // 모델에 담아 view에 전달
+        model.addAttribute("enrichedEmpList", enrichedEmpList);
         
         return "/emp/empList"; // 사원 목록 페이지로 이동
 	}
 	
 	// 사원 목록 액션
 	@PostMapping("/emp/empList")
-	public String empList() {
+	public String empList(@RequestParam String col
+						  , @RequestParam String ascDesc
+						  , @RequestParam String employmentStatus
+						  , @RequestParam String department
+						  , @RequestParam String team
+						  , @RequestParam String searchCol
+						  , @RequestParam String searchWord
+						  , @RequestParam String startDate
+						  , @RequestParam String endDate) {
+		
 		log.debug(CC.YE + "EmpController Post empList() : " + CC.RESET);
 	    return "/emp/empList";
 	}
