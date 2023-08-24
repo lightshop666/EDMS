@@ -25,4 +25,12 @@ public interface DraftMapper {
     int selectLastInsertedApprovalNo();
     
     int selectLastInsertedDocumentNo();
+    
+    ExpenseDraft selectExpenseDraftByApprovalNo(int approvalNo);
+    
+    List<ExpenseDraftContent> selectExpenseDraftContentsByApprovalNo(int approvalNo);
+    
+    List<Integer> selectRecipientIdsByApprovalNo(int approvalNo);
+    
+    Approval selectApprovalByApprovalNo(int approvalNo); // 추가됨
 }

@@ -55,7 +55,14 @@
                         </tr>
                         <!-- 내역 항목 -->
                         <tr>
-                            <td><input type="text" name="expenseCategory[]" required></td>
+                            <td>
+						        <select name="expenseCategory[]" required>
+						            <option value="교통비">교통비</option>
+						            <option value="식비">식비</option>
+						            <option value="통신비">통신비</option>
+						            <option value="사무용품비">사무용품비</option>
+						        </select>
+						    </td>
                             <td><input type="number" name="expenseCost[]" required></td>
                             <td><input type="text" name="expenseInfo[]" required></td>
                             <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
@@ -197,11 +204,18 @@
             }
 
             
-            // 내역 항목 추가
+         // 내역 항목 추가
             $("#addExpenseDetailBtn").click(function() {
                 var newRow = `
                     <tr>
-                        <td><input type="text" name="expenseCategory[]" required></td>
+                        <td>
+                            <select name="expenseCategory[]" required>
+                                <option value="교통비">교통비</option>
+                                <option value="식비">식비</option>
+                                <option value="통신비">통신비</option>
+                                <option value="사무용품비">사무용품비</option>
+                            </select>
+                        </td>
                         <td><input type="number" name="expenseCost[]" required></td>
                         <td><input type="text" name="expenseInfo[]" required></td>
                         <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
@@ -293,7 +307,7 @@
                     error: function(xhr, status, error) {
                         console.error("에러 발생: ", error);
                         // 에러 메시지 표시 등의 동작
-                    }
+                    } 
                 });
             }
 
