@@ -119,8 +119,9 @@
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			
-			// 수정 성공 or 실패 결과에 따른 alert
-			let result = '${param.result}'; // 수정 성공유무를 url의 매개값으로 전달
+			// 추후 상세페이지로 이동 예정..
+			// 기안 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 기안 성공유무를 url의 매개값으로 전달
 			
 			if (result == 'fail') { // result의 값이 fail이면
 			    console.log('휴가신청서 기안 실패');
@@ -204,21 +205,21 @@
 						
 						// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
 						if (vacationName == '반차') {
-							halfVactionInput(response);
+							halfVactionInput(response); // 반차 input 출력
 						} else { // 연차 또는 보상일 경우
-							longVacationInput(vacationName, response);
-							vacationDaysSelect(response);
+							longVacationInput(vacationName, response); // 연차 or 보상 input 출력
+							vacationDaysSelect(response); // 연차 or 보상의 남은 휴가일수 selectbox 출력
 							
 							// 휴가 시작일 지정시 이벤트 발생
 							$('#vacationStart').change(function() {
-								vacationEndInput();
+								vacationEndInput(); // 휴가 종료일 지정
 							});
 							
 							// 휴가 일수 변경시 이벤트 발생
 							$('#vacationDays').change(function() {
 								let vacationStart = $('#vacationStart').val();
 								if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
-									vacationEndInput();
+									vacationEndInput(); // 휴가 종료일 지정
 								}
 							});
 						}
@@ -268,6 +269,7 @@
 							<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
 						</c:if>
 						<c:if test="${sign.memberSaveFileName == null}"> <!-- 서명 이미지가 없으면 문구 출력 -->
+							<!-- 해당 부분 문구가 아닌 다른 이미지로 출력할지 고민중.. -->
 							${year}.${month}.${day}<br>
 							결재승인
 						</c:if>
@@ -303,7 +305,7 @@
 					</th>
 					<td colspan="5">
 						<span id="receiveSpan"></span> <!-- 모달에서 선택된 수신참조자 출력 -->
-						<input type="hidden" name="recipients" id="receiveHidden"> <!-- int 배열로 넘길 예정... -->
+						<input type="hidden" name="recipients" id="receiveHidden"> <!-- int 배열 -->
 					</td>
 				</tr>
 				<tr>
