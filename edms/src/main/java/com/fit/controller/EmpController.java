@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -17,7 +16,6 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
+import com.fit.service.CommonPagingService;
 import com.fit.service.EmpService;
 import com.fit.service.MemberService;
 import com.fit.vo.EmpInfo;
@@ -44,6 +43,8 @@ public class EmpController {
 	@Autowired
 	private MemberService memberService;
 	
+	@Autowired
+	private CommonPagingService commonPagingService;
 	
 	// 인사정보 수정 폼
 	@GetMapping("/emp/modifyEmp")
@@ -307,85 +308,94 @@ public class EmpController {
         }
     }
 	
-	// 사원 목록 폼
-	@GetMapping("/emp/downloadExcel")
-	public void downloadExcel(@RequestParam(value = "empNos", required = false) List<Integer> empNos,
-	                          HttpServletResponse response) {
-	    /* empNos가 제공되었는지 확인하여 엑셀 다운로드를 수행합니다.
-	    if (empNos != null) {
-	        try {
-	            // 선택된 사원 정보 조회
-	            List<EmpInfo> selectedEmpList = empService.getSelectedEmpList(empNos);
-	            
-	            // HTTP 응답 헤더 설정: 다운로드할 엑셀 파일의 형식과 이름을 설정합니다.
-	            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-	            response.setHeader("Content-Disposition", "attachment; filename=selected_employees.xlsx");
-	            
-	            // 엑셀 워크북 및 시트 생성
-	            Workbook workbook = new XSSFWorkbook();
-	            Sheet sheet = workbook.createSheet("Selected Employees");
-	            
-	            // 엑셀 헤더 생성
-	            String[] headers = {"사원번호", "사원명", "부서명", "팀명", "직급", "권한", "재직사항", "입사일"};
-	            Row headerRow = sheet.createRow(0);
-	            
-	            // 헤더 셀 생성 및 헤더 데이터 설정
-	            for (int i = 0; i < headers.length; i++) {
-	                Cell cell = headerRow.createCell(i);
-	                cell.setCellValue(headers[i]);
-	            }
-	            
-	            // 선택된 사원 정보로 엑셀 데이터 생성
-	            for (int rowNum = 0; rowNum < selectedEmpList.size(); rowNum++) {
-	                EmpInfo empInfo = selectedEmpList.get(rowNum);
-	                Row dataRow = sheet.createRow(rowNum + 1);
-
-	                // 각 셀에 사원 정보 데이터 설정
-	                dataRow.createCell(0).setCellValue(empInfo.getEmpNo());
-	                dataRow.createCell(1).setCellValue(empInfo.getEmpName());
-	                dataRow.createCell(2).setCellValue(empInfo.getDeptName());
-	                dataRow.createCell(3).setCellValue(empInfo.getTeamName());
-	                dataRow.createCell(4).setCellValue(empInfo.getEmpPosition());
-	                dataRow.createCell(5).setCellValue(empInfo.getAccessLevel());
-	                dataRow.createCell(6).setCellValue(empInfo.getEmpState());
-	                dataRow.createCell(7).setCellValue(empInfo.getEmployDate());
-	            }
-	            
-	            // 생성한 엑셀 데이터를 HTTP 응답 스트림에 작성하여 다운로드
-	            workbook.write(response.getOutputStream());
-	            workbook.close();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            // 예외 처리 작업: 예외 발생 시 로깅 또는 사용자에게 알림 등을 수행합니다.
-	        }
-	    }*/
-	}
-	
-	@GetMapping("/emp/empList")
-	public String empList(Model model) {
-		// 사원 목록 리스트를 전달하여 모델에 추가
-		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList();
-        log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
-        
-        // 모델에 담아 view에 전달
-        model.addAttribute("enrichedEmpList", enrichedEmpList);
-        
-        return "/emp/empList"; // 사원 목록 페이지로 이동
-	}
-	
-	// 사원 목록 액션
-	@PostMapping("/emp/empList")
-	public String empList(@RequestParam String col
-						  , @RequestParam String ascDesc
-						  , @RequestParam String employmentStatus
-						  , @RequestParam String department
-						  , @RequestParam String team
-						  , @RequestParam String searchCol
-						  , @RequestParam String searchWord
-						  , @RequestParam String startDate
-						  , @RequestParam String endDate) {
+    // 사원 목록 폼
+ 	@GetMapping("/emp/empList")
+ 	public String empList(Model model
+			 			  , HttpSession session
+			              , @RequestParam(required = false, name = "ascDesc", defaultValue = "") String ascDesc // 오름차순, 내림차순
+			              , @RequestParam(required = false, name = "empState", defaultValue = "") String empState // 재직, 퇴직
+			              , @RequestParam(required = false, name = "empDate", defaultValue = "") String empDate // 입사일, 퇴사일
+			              , @RequestParam(required = false, name = "deptName", defaultValue = "") String deptName // 부서명
+			              , @RequestParam(required = false, name = "teamName", defaultValue = "") String teamName // 팀명
+			              , @RequestParam(required = false, name = "empPosition", defaultValue = "") String empPosition // 직급
+			              , @RequestParam(required = false, name = "searchCol", defaultValue = "") String searchCol // 검색항목
+			              , @RequestParam(required = false, name = "searchWord", defaultValue = "") String searchWord // 검색어
+			              , @RequestParam(required = false, name = "startDate", defaultValue = "") String startDate // 입사년도 검색 - 시작일
+			              , @RequestParam(required = false, name = "endDate", defaultValue = "") String endDate // 입사년도 검색 - 마지막일
+			              , @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage // 현재 페이지
+			              , @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage) { // 한 페이지에 출력될 행의 수
+ 		
+ 		// 1. 세션에서 accessLevel 가져오기
+ 	    String accessLevel = (String)session.getAttribute("accessLevel");
+ 	    
+ 	    int beginRow = (currentPage-1) * rowPerPage;
+ 	    
+ 	    // 2. parameter들을 Map으로 만들어 enrichedEmpList의 매개값으로 전달
+	    Map<String, Object> param = new HashMap<>();
+	    param.put("ascDesc", ascDesc); // 오름차순, 내림차순
+		// 재직 상태가 선택되지 않았을 때
+	    /* if (empState == null) {
+	        param.put("empState", "재직"); // '재직' 상태만 출력하도록 설정
+	    }
+	    */
+	    param.put("empDate", empDate); // 입사일, 퇴사일
+	    log.debug(CC.YE + "EmpController.empList() empDate: " + empDate + CC.RESET);
+	    param.put("empState", empState); // 재직, 퇴직
+	    log.debug(CC.YE + "EmpController.empList() empState: " + empState + CC.RESET);
+	    param.put("deptName", deptName); // 부서명
+	    log.debug(CC.YE + "EmpController.empList() deptName: " + deptName + CC.RESET);
+	    param.put("teamName", teamName); // 팀명
+	    log.debug(CC.YE + "EmpController.empList() teamName: " + teamName + CC.RESET);
+	    param.put("empPosition", empPosition); // 직급
+	    log.debug(CC.YE + "EmpController.empList() empPosition: " + empPosition + CC.RESET);
+	    param.put("searchCol", searchCol); // 검색항목
+	    log.debug(CC.YE + "EmpController.empList() searchCol: " + searchCol + CC.RESET);
+	    param.put("searchWord", searchWord); // 검색어
+	    log.debug(CC.YE + "EmpController.empList() searchWord: " + searchWord + CC.RESET);
+	    param.put("startDate", startDate); // 입사년도 검색 - 시작일
+	    log.debug(CC.YE + "EmpController.empList() startDate: " + startDate + CC.RESET);
+	    param.put("endDate", endDate); // 입사년도 검색 - 마지막일
+	    log.debug(CC.YE + "EmpController.empList() endDate: " + endDate + CC.RESET);
+	    param.put("beginRow", beginRow); // 시작 행
+	    log.debug(CC.YE + "EmpController.empList() beginRow: " + beginRow + CC.RESET);
+	    param.put("rowPerPage", rowPerPage); // 한 페이지에 출력될 행의 수
+	    log.debug(CC.YE + "EmpController.empList() rowPerPage: " + rowPerPage + CC.RESET);
+	    
+ 	    // 사원 목록 리스트를 전달하여 모델에 추가
+		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList(param);
+	    log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
+	    
+    	// 3. 검색어가 적용된 리스트의 전체 행 개수를 구해주는 메서드 실행
+		int totalCount = empService.getEmpListCount(param);
+		log.debug(CC.YE + "EmpController.empList() totalCount: " + totalCount + CC.RESET);
+		// 마지막 페이지 계산
+		int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage);
+		log.debug(CC.YE + "EmpController.empList() lastPage: " + lastPage + CC.RESET);
+		// 페이지네이션에 표기될 쪽 개수
+		int pagePerPage = 5;
+		// 페이지네이션에서 사용될 가장 작은 페이지 범위
+		int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+		log.debug(CC.YE + "EmpController.empList() minPage: " + minPage + CC.RESET);
+		// 페이지네이션에서 사용될 가장 큰 페이지 범위
+		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
+		log.debug(CC.YE + "EmpController.empList() maxPage: " + maxPage + CC.RESET);
 		
-		log.debug(CC.YE + "EmpController Post empList() : " + CC.RESET);
-	    return "/emp/empList";
-	}
+	    // 모델에 담아 view에 전달
+	    model.addAttribute("enrichedEmpList", enrichedEmpList);
+	    model.addAttribute("accessLevel", accessLevel);
+	    model.addAttribute("totalCount", totalCount); // 전체 행 개수
+	    model.addAttribute("lastPage", lastPage); // 마지막 페이지
+	    model.addAttribute("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
+	    model.addAttribute("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
+	    
+	    return "/emp/empList"; // 사원 목록 페이지로 이동
+ 	}
+ 	
+ 	// 사원 목록 액션
+ 	@PostMapping("/emp/empList")
+ 	public String empList() {
+ 		
+ 		log.debug(CC.YE + "EmpController Post empList() : " + CC.RESET);
+ 	    return "/emp/empList";
+ 	}
 }

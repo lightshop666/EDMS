@@ -142,12 +142,20 @@ public class EmpService {
 	    return addEmpRow; // 사원 정보 등록 결과를 반환
 	}
 	
+	// 사원 목록 페이징(조건에 따른 행의 수)
+	 public int getEmpListCount(Map<String, Object> param) {
+		 int empListCount = empMapper.selectEmpListCount(param);
+		 log.debug(CC.YE + "EmpService.selectEmpList() empListCount : " + empListCount + CC.RESET);	 
+        return empListCount;
+    }
+	
 	// 사원 전체 목록 조회
-	public List<Map<String, Object>> enrichedEmpList() {
-	    // 사원 목록을 List 형식으로 담기
-	    List<EmpInfo> selectEmpList = empMapper.selectEmpList();
+	public List<Map<String, Object>> enrichedEmpList(Map<String, Object> param) {
+	    List<EmpInfo> selectEmpList = empMapper.selectEmpList(param);
+	    log.debug(CC.YE + "성공" + selectEmpList + CC.RESET);
 	    
 	    List<Map<String, Object>> enrichedEmpList = new ArrayList<>();
+	    log.debug(CC.YE + "성공2" + enrichedEmpList + CC.RESET);
 	    
 	    for (EmpInfo emp : selectEmpList) {
 	        Map<String, Object> enrichedEmp = new HashMap<>();
@@ -157,7 +165,8 @@ public class EmpService {
 	        enrichedEmp.put("teamName", emp.getTeamName()); // 팀명
 	        enrichedEmp.put("empPosition", emp.getEmpPosition()); // 직급
 	        enrichedEmp.put("employDate", emp.getEmployDate()); // 입사일
-
+	        enrichedEmp.put("empState", emp.getEmpState()); // 재직사항
+	        
 	        // 1. 남은 휴가 일수 계산
 	        double remainDays = getRemainVacationDays(emp.getEmpNo(), emp.getEmployDate());
 	        enrichedEmp.put("remainDays", remainDays);
@@ -171,7 +180,7 @@ public class EmpService {
 	        enrichedEmpList.add(enrichedEmp);
 	    }
 
-	    log.debug(CC.YE + "EmpService.selectEmpList() enrichedEmpList : " + enrichedEmpList + CC.RESET);
+	    log.debug(CC.YE + "EmpService.enrichedEmpList() enrichedEmpList : " + enrichedEmpList + CC.RESET);
 	    
 	    return enrichedEmpList;
 	}

@@ -1,6 +1,7 @@
 package com.fit.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -29,8 +30,11 @@ public interface EmpMapper {
 	int addEmpNo(int empNo);
 	
 	// 사원 목록 조회
-	List<EmpInfo> selectEmpList();
+	List<EmpInfo> selectEmpList(Map<String, Object> param);
 	
 	// 비밀번호 수정 (관리자)
 	int modifyPw(int empNo, String tempPw);
+	
+	// 사원 목록 페이징
+	int selectEmpListCount(Map<String, Object> param);
 }

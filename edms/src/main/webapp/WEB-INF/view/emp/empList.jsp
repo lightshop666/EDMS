@@ -11,162 +11,244 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
 <!-- file download api : FileServer saveAs-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.min.js"></script>
+<!-- 모달을 띄우기 위한 부트스트랩 라이브러리 추가 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+	
+	// 랜덤 비밀번호 생성 규칙을 정할 상수 선언
+	const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 영대문자
+	const NUMBERS = '0123456789'; // 숫자
+	const SPECIAL_CHARS = '!@#%'; // 특수문자
+	const ALL_CHARACTERS = UPPERCASE + NUMBERS + SPECIAL_CHARS; // 영대문자, 숫자, 특수문자를 보유한 문자 집합 상수 선언
+	const PW_LENGTH = 12; // 생성할 비밀번호의 길이 선언
+	
+	// 함수 선언 시작
+	// 랜덤 비밀번호 생성 함수
+	let tempPw = ''; // 임시 비밀번호 변수 선언
+	
+	function getRandomPw() {
+		tempPw = ''; // 임시 비밀번호를 빈 문자열로 초기화
+		
+		while (tempPw.length < PW_LENGTH) { // 비밀번호 길이만큼 반복
+			// ALL_CHARACTERS의 길이 내에서 랜덤한 인덱스 선택
+			let index = Math.floor(Math.random() * ALL_CHARACTERS.length);
+			// Math.random() -> 0과 1 사이의 무작위한 실수를 반환
+			// ALL_CHARACTERS.length 를 곱하면 결과적으로 0이상 ALL_CHARACTERS.length 미만의 랜덤값을 가짐
+			// Math.floor() -> 소숫점을 버려 정수화
+			tempPw += ALL_CHARACTERS[index];
+			// 랜덤한 인덱스 위치의 문자를 임시 비밀번호에 추가
+		}
+	
+		return tempPw;
+	}
+	
 	//페이지 로드 후 실행
 	$(document).ready(function() {
-	    // 엑셀 다운로드 버튼 클릭 시
-	    $('#excelBtn').click(function() {
-	        var selectedEmpNos = [];
-	        $('.checkbox:checked').each(function() {
-	            selectedEmpNos.push($(this).data('empNo'));
-	        });
 		
-	        // 선택된 사원 번호 배열 출력
-	        console.log("Total selected checkboxes:", $('.checkbox:checked').length);
-		    $('.checkbox:checked').each(function() {
-		        console.log("Data-empNo:", $(this).data('empNo'));
-		    });
-    
-	        if (selectedEmpNos.length > 0) {
-	            // 서버로 선택된 사원의 empNos를 전달하여 엑셀 다운로드 수행
-	            window.location.href = '/emp/downloadExcel?empNos=' + selectedEmpNos.join(',');
-	        } else {
-	            alert('선택된 사원이 없습니다.');
+		// 3. 비밀번호 초기화
+		// 비밀번호 생성 버튼 클릭시 이벤트 발생
+		$('#getPwBtn').click(function() {
+			tempPw = getRandomPw(); // 랜덤 비밀번호 생성 함수 호출
+			console.log('랜덤 비밀번호 생성 : ' + tempPw);
+			$('#tempPw').text(tempPw); // view에 출력
+		});
+        
+        let empNoTest = '';
+        
+        $('.getEmpNo').click(function() {
+        	empNoTest = $(this).data("empno");
+        	console.log('번호 가져오기1 : ' + empNoTest);
+        });
+		
+		// 모달창의 비밀번호 초기화 버튼 클릭시 이벤트 발생 // 비동기
+		$('#updatePwBtn').click(function() {
+			if (tempPw == '') { // 비밀번호를 생성하지 않았을시
+				alert('비밀번호를 생성해주세요.');
+			} else { // 비밀번호를 생성했다면
+				let result = confirm('생성한 임시 비밀번호로 초기화할까요?');
+				// 사용자 선택 값에 따라 true or false 반환
+				
+				if (result) { // 확인 선택 시 true 반환
+					console.log('디버깅');
+					console.log('번호 가져오기2 : ' + empNoTest);
+					$.ajax({ // 비밀번호 초기화 비동기 방식으로 실행
+						url : '/adminUpdatePw',
+						type : 'post',
+						data : {tempPw : tempPw,
+								empNo : empNoTest },
+						success : function(response) {
+							if (response == 1) { // row 값이 1로 반환되면 성공
+								console.log('비밀번호 초기화 완료');
+								$('#updateResult').text('비밀번호 초기화 완료').css('color', 'green');	
+							} else {
+								console.log('비밀번호 초기화 실패');
+								$('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
+							}
+						},
+						error : function(error) {
+							console.error('비밀번호 초기화 실패 : ' + error);
+							$('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
+						}
+					});
+				}
+			}
+		});
+		
+		// 취소 버튼 클릭 시
+		$('#cancelBtn').click(function() {
+			let result = confirm('사원목록으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+			if (result) {
+				window.location.href = '/emp/empList'; // empList로 이동
+			}
+		});
+		
+		// 1. 엑셀 업로드 버튼 클릭 시
+	    $('#uploadBtn').click(function(event) {
+	        const fileInput = $('#fileInput');
+
+	        if (fileInput.get(0).files.length === 0) {
+	            event.preventDefault(); // 기본 동작 중단
+	            alert('파일을 선택해주세요.');
+	            return false;
+	        }
+	     
+	        const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
+	        const fileName = file.name;
+	        const fileExtension = fileName.split('.').pop().toLowerCase();
+	     
+	        // 엑셀 파일이 아닌 경우 업로드 막기
+	        if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+	            event.preventDefault(); // 기본 동작 중단
+	            alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
 	            return false;
 	        }
 	    });
+	  
+	    // 2. 파라미터 값에 따라 알림 메세지
+	    const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+	    const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+	    const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
 	    
-	 	// 업로드 버튼 클릭 시
-        $('#uploadBtn').click(function(event) {
-            const fileInput = $('#fileInput');
-
-            if (fileInput.get(0).files.length === 0) {
-                event.preventDefault(); // 기본 동작 중단
-                alert('파일을 선택해주세요.');
-                return false;
-            }
-			
-            const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
-            const fileName = file.name;
-            const fileExtension = fileName.split('.').pop().toLowerCase();
-			
-            // 엑셀 파일이 아닌 경우 업로드 막기
-            if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
-                event.preventDefault(); // 기본 동작 중단
-                alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
-                return false;
-            }
-        });
-		
-     	// 페이지 로딩 시 주소창 파라미터 확인 후 알림 표시
-        const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
-        const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
-        const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
+	    if (resultParam === 'fail') { // fail 파라미터 값이 있고
+	        if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
+	            alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호라는 것을 알림
+	        } else {
+	            alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 이외 오류에 대해 엑셀 파일 재확인 알림
+	        }
+	    } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
+	        alert('엑셀 파일 업로드에 성공했습니다.');
+	    }
         
-        if (resultParam === 'fail') { // fail 파라미터 값이 있고
-            if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
-                alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호 알림
-            } else { // 이외 오류에 대해
-                alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 엑셀 파일 확인 알림
-            }
-        } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
-            alert('엑셀 파일 업로드에 성공했습니다.');
-        }
-        
-        const newEmpNos = '<%= request.getAttribute("newEmpNos") %>';
-		const newEmpNosArray = newEmpNos.split(','); // 새로 등록된 사원번호 배열
-		
-		$('.checkbox').each(function() {
-			const empNo = $(this).data('empNo');
-			if (newEmpNosArray.includes(empNo.toString())) {
-				$(this).parent().parent().css('background-color', 'yellow'); // 노란색 스타일 추가
-			}
-		});
 	});
 </script>
+	<style>
+		.hover { /* 모달창이 열리는 것을 직관적으로 알리기 위해 커서 포인터를 추가 */
+		  cursor: pointer;
+		}
+		.hover:hover { /* 호버 시 약간의 그림자와 배경색 변경 효과 추가 */
+		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+		  background-color: #f5f5f5;
+		}
+	</style>
 </head>
 <body>
-	<form action="/emp/empList" method="POST" enctype="multipart/form-data" id="employee-form">
-	    
-	    
+	<h1>사원 목록</h1>
+	
+<!-- [시작] 검색 ------->
+	<form action="/emp/empList" method="GET" id="employee-form">
+		<!-- 1. 입사년도별 조회 -->
 	    <div class="search-by-year-area">
-	        <label class="search-by-year-label">입사년도별 조회</label>
+	        <label class="search-by-year-label">입사년도</label>
 	        <input type="date" name="startDate" class="search-by-year-input">
 	        ~
 	        <input type="date" name="endDate" class="search-by-year-input">
-	        <button type="submit" class="search-by-year-button">조회</button>
 	    </div>
-	
+		<!-- 2. 재직/퇴직에 따른 정렬 -->
 	    <div class="sort-area">
-	        <label class="sort-label">정렬</label>
-	        <select name="col" class="sort-select">
-	            <option value="employDate">입사일</option>
-	            <option value="retireDate">퇴사일</option>
-	        </select>
+	    	<label class="sort-label">정렬</label>
+		    <select name="empDate" class="sort-input">
+		        <option value="">전체</option>
+		        <option value="employ_date">입사일</option>
+		        <option value="retirement_date">퇴사일</option>
+		    </select>
 	        <select name="ascDesc" class="sort-select">
 	            <option value="ASC">오름차순</option>
 	            <option value="DESC">내림차순</option>
 	        </select>
-	        <button type="button" class="sort-button" id="sort-button">조회</button>
 	    </div>
-	    
+	    <!-- 3. 재직사항별 조회 -->
 	    <div class="sort-personnel-area">
-		    <label class="sort-label">재직사항</label>
-		    <select name="employmentStatus" class="sort-input">
-		        <option value="all">전체</option>
+	    	<label class="sort-label">재직사항</label>
+		    <select name="empState" class="sort-input">
+		        <option value="">전체</option>
 		        <option value="재직">재직</option>
 		        <option value="퇴직">퇴직</option>
 		    </select>
-		    
-		    <label class="sort-label">부서</label>
-		    <select name="department" class="sort-input">
-		        <option value="all">전체</option>
-		        <option value="기획추진본부">기획추진본부</option>
+		    <label class="sort-label">부서명</label>
+		    <select name="deptName" class="sort-input">
+		        <option value="">전체</option>
+		        <option value="사업추진본부">사업추진본부</option>
 		        <option value="경영지원본부">경영지원본부</option>
 		        <option value="영업지원본부">영업지원본부</option>
 		    </select>
 		    
-		    <label class="sort-label">팀</label>
-			<select name="team" class="sort-input">
-			    <option value="all">전체</option>
+		    <label class="sort-label">팀명</label>
+			<select name="teamName" class="sort-input">
+			    <option value="">전체</option>
 			    <option value="기획팀">기획팀</option>
 			    <option value="경영팀">경영팀</option>
 			    <option value="영업팀">영업팀</option>
 			</select>
 		    
-		    <button type="button" class="sort-button" id="personnel-sort-button">조회</button>
+		    <label class="sort-label">직급</label>
+			<select name="empPosition" class="sort-input">
+			    <option value="">전체</option>
+			    <option value="CEO">CEO</option>
+			    <option value="부서장">부서장</option>
+			    <option value="팀장">팀장</option>
+			    <option value="부팀장">부팀장</option>
+			    <option value="사원">사원</option>
+			</select>
 		</div>
-	    
-	    
-	    
+	    <!-- 4. 특정 사원의 정보 검색 -->
 	    <div class="search-area">
 	        <label class="search-label">검색</label>
 	        <select name="searchCol" class="search-input">
-	            <option value="empNo">사원번호</option>
-	            <option value="empName">사원명</option>
+	        	<option value="">전체</option>
+	            <option value="emp_no">사원번호</option>
+	            <option value="emp_name">사원명</option>
 	        </select>
 	        <input type="text" name="searchWord" class="search-input">
-	        <button type="button" class="search-button" id="search-button">검색</button>
 	    </div>
-	    
+	        <button type="submit" class="search-button" id="search-button">검색</button>
     </form>
+<!-- [끝] 검색 ------->
+
+	<hr><!-- 구분선 -->
 	
-	<hr>
-	
-	<!-- 엑셀 공통 양식 다운로드 버튼 추가 -->
+<!-- 엑셀 공통 양식 다운로드 -->
 	<a href="/file/defaultTemplate.xlsx" download="defaultTemplate.xlsx">사원 등록 공통 양식</a>
-	
-	<!-- 파일 업로드 -->
+
+
+<!-- [시작] 파일 업로드 ------->
 	<form id="uploadForm" action="/excelUpload" method="post" enctype="multipart/form-data">
 		<input type="file" name="file" id="fileInput">
 		<button type="submit" id="uploadBtn">저장</button>
 		<span id="msg"></span>
 	</form>
+<!-- [끝] 파일 업로드 ------->
 
 	<button type="button" id="excelBtn">엑셀 다운로드</button>
+	
+<!-- [시작] 관리자 리스트 출력 ------->	
 	<table border="1">
+		<!-- 관리자의 경우, 비밀번호 초기화 가능 -->
 		<tr>
-			<th>비밀번호 초기화</th>
+			<c:if test="${accessLevel >= 3}">
+                <th>비밀번호 초기화</th>
+            </c:if>
 			<th>사원번호</th>
 			<th>사원명</th>
 			<th>부서명</th>
@@ -178,26 +260,80 @@
 			<th>권한</th>
 		</tr>
 		<c:forEach var="e" items="${enrichedEmpList}">
-		<tr onclick="window.location='/emp/modifyEmp?empNo=${e.empNo}';">
-			<td><button type="button">초기화</button></td>
-			<td>${e.empNo}</td>
-			<td>${e.empName}</td>
-			<td>${e.deptName}</td>
-			<td>${e.teamName}</td>
-			<td>${e.empPosition}</td>
-			<td>${e.employDate}</td><!-- YYYY-MM-DD -->
-			<th>${e.remainDays}</th>
-			<td>${e.isMember}</td>
-			<td>${e.accessLevel}</td>
-		</tr>
+	        <tr>
+				<c:if test="${accessLevel >= 3}">
+                    <td>
+                        <button type="button" class="getEmpNo" data-empno="${e.empNo}" data-bs-toggle="modal" data-bs-target="#pwModal">
+                            모달
+                        </button>
+                    </td>
+                </c:if>
+				<td>${e.empNo}</td>
+				<td onclick="window.location='/emp/modifyEmp?empNo=${e.empNo}';">${e.empName}</td>
+				<td>${e.deptName}</td>
+				<td>${e.teamName}</td>
+				<td>${e.empPosition}</td>
+				<td>${e.employDate}</td><!-- YYYY-MM-DD -->
+				<th>${e.remainDays}</th>
+				<td>${e.isMember}</td>
+				<td>${e.accessLevel}</td>
+			</tr>
 		</c:forEach>
 	</table>
-	<c:if test="${currentPage > 1}">
-		<a href="/emp/empList?localName=${localName}&currentPage=${currentPage - 1}">이전</a>
+	<!-- 비밀번호 초기화 모달 -->
+		<div class="modal" id="pwModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">비밀번호 초기화</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+					</div>
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<div>
+							랜덤한 임시 비밀번호를 생성하여 초기화합니다.
+						</div>
+						<div>
+							<button type="button" id="getPwBtn">비밀번호 생성</button>
+							임시 비밀번호 : <span id="tempPw"></span> <!-- 비밀번호 생성시 출력 -->
+						</div> <br>
+						<div>
+							<p style="color:red;">
+								비밀번호 초기화 후 다시 되돌릴 수 없습니다. <br>
+								생성한 임시 비밀번호를 사용자에게 반드시 전달하세요.
+							</p>
+							<button type="button" id="updatePwBtn">비밀번호 초기화</button>
+							<span id="updateResult"></span> <!-- 비밀번호 초기화 결과 출력 -->
+						</div>
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 비밀번호 초기화 모달 끝 -->
+<!-- [끝] 관리자 리스트 출력 ------->	
+
+<!-- [시작] 페이징 ------->
+	<c:if test="${minPage > 1 }">
+		<a href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage - 1}">이전</a>
 	</c:if>
-	<p>${currentPage}</p>
-	<c:if test="${currentPage < lastPage}">
-		<a href="/board/boardList?localName=${localName}&currentPage=${currentPage + 1}">다음</a>
+	
+	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+    	<c:if test="${i == currentPage}">
+        	${i}
+        </c:if>
+        <c:if test="${i != currentPage}">
+        	<a  href="${pageContext.request.contextPath}/emp/empList?currentPage=${i}">${i}</a>
+    	</c:if>
+    </c:forEach>
+	
+	<c:if test="${lastPage > currentPage }">
+		<a href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage + 1}">다음</a>
 	</c:if>
+<!-- [끝] 페이징 ------->
 </body>
 </html>
