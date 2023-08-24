@@ -15,7 +15,7 @@
 		    uf.utility_ori_filename utilityOriFilename,
 		    uf.utility_save_filename utilitySaveFilename,
 		    uf.utility_filetype utilityFiletype,
-		    uf.utility_path utilityPath,
+		    uf.utility_path utilityPath
 		FROM utility u
 		LEFT JOIN utility_file uf 
 		ON u.utility_no = uf.utility_no

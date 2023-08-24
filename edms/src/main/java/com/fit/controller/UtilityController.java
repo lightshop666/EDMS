@@ -106,7 +106,7 @@ public class UtilityController {
 	}
 	
 	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
-	@PostMapping("/delete")
+	@PostMapping("/utility/delete")
     public String deleteSelectedUtilities(
     		// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
     		@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {

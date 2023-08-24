@@ -19,7 +19,7 @@
 		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
 		<a href="${pageContext.request.contextPath}/utility/addUtility">공용품추가</a>
 	</div>	
-	<form action="${pageContext.request.contextPath}/delete" method="post">
+	<form action="${pageContext.request.contextPath}/utility/delete" method="post">
 		<!-- [시작] 테이블 영역 -->
 		<table border="1">
 			<tr>

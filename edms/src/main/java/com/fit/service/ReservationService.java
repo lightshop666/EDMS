@@ -83,9 +83,6 @@ public class ReservationService {
 		// 예약 성공 여부 확인을 위한 row 반환
 		int row = reservationMapper.insertReservation(reservationDto);
 		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationService.addReservation() row: "+row+CC.RESET);
-		
 		// row값 반환하여 컨트롤러단에서 예약신청 성공 및 실패 여부 확인
 		return row;
 	}
@@ -98,9 +95,6 @@ public class ReservationService {
 		
 		// 예약을 삭제
 		int row = reservationMapper.deleteReservation(reservationNo);
-		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationService.removeReservation() reservationNo: "+reservationNo+CC.RESET);
 		
 		// row값 반환하여 컨트롤러단에서 예약취소 성공 및 실패 여부 확인
 		return row;
@@ -134,10 +128,10 @@ public class ReservationService {
 	public int getMeetingChk(Map<String, Object> meetingChkParam) {
 		
 		// 디버깅
-		log.debug(CC.YOUN+"reservationService.getUtilityNoByCategory() carChkParam: "+meetingChkParam+CC.RESET);
+		log.debug(CC.YOUN+"reservationService.getMeetingChk() meetingChkParam: "+meetingChkParam+CC.RESET);
 		
 		// Mapper를 통해 중복체크 여부를 반환받음 1 - 중복, 0 - 비중복
-		int row = reservationMapper.selectCarChk(meetingChkParam);
+		int row = reservationMapper.selectMeetingChk(meetingChkParam);
 		
 		return row;
 	}

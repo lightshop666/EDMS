@@ -71,24 +71,35 @@ public class ReservationController {
 		// 회의실 중복검사에 사용할 값을 Map으로 전달
 		Map<String, Object> meetingChkParam = new HashMap<>();
 		meetingChkParam.put("reservationDate", reservationDto.getReservationDate());
-		meetingChkParam.put("reservationDate", reservationDto.getReservationTime());
+		meetingChkParam.put("reservationTime", reservationDto.getReservationTime());
 		meetingChkParam.put("empNo", reservationDto.getEmpNo());
 		meetingChkParam.put("utilityNo", reservationDto.getUtilityNo());
 		
-		// 차량 중복체크를 수행한다.
-		int carRow = reservationService.getCarChk(carChkParam);	
+		// 예약시간이 값이 default(08:00 ~ 18:00) 값이라면 차량 중복체크를 수행
+		if(reservationDto.getReservationTime().equals("08:00 ~ 18:00")) {
+			// 차량 중복체크를 수행한다.
+			int carRow = reservationService.getCarChk(carChkParam);	
 		
-		// 회의실 중복체크를 수행한다.
-		int meetingRow = reservationService.getMeetingChk(meetingChkParam);	
-		
-		// 디버깅
-		log.debug(CC.YOUN+"reservationController.addReservation() carRow: "+carRow+CC.RESET);
-		log.debug(CC.YOUN+"reservationController.addReservation() meetingRow: "+meetingRow+CC.RESET);
-		
-		// 중복등록된 값이 있으면 리다이렉션
-		if(carRow != 0 || meetingRow != 0) {
-			// 예약 신청 실패시 fail을 매개변수로 view에 전달
-			return "redirect:/reservation/reservationList?result=fail";
+			// 디버깅
+			log.debug(CC.YOUN+"reservationController.addReservation() carRow: "+carRow+CC.RESET);
+			
+			if(carRow != 0) {
+				// 예약 신청 실패시 fail을 매개변수로 view에 전달
+				return "redirect:/reservation/reservationList?result=fail";
+			}
+		// 예약시간이 기본값이 아닌 다른 값일경우 회의실 중복체크를 수행 -> 한 ID로 여러번 예약해서 하루종일 예약이 가능
+		} else { 
+			// 회의실 중복체크를 수행한다.
+			int meetingRow = reservationService.getMeetingChk(meetingChkParam);	
+			
+			// 디버깅
+			log.debug(CC.YOUN+"reservationController.addReservation() meetingRow: "+meetingRow+CC.RESET);
+			
+			// 중복등록된 값이 있으면 리다이렉션
+			if(meetingRow != 0) {
+				// 예약 신청 실패시 fail을 매개변수로 view에 전달
+				return "redirect:/reservation/reservationList?result=fail";
+			}
 		}
 		
 		// 입력유무를 확인
@@ -107,6 +118,31 @@ public class ReservationController {
 		}
 	}
 	
+	// View로부터 삭제 요청을 받았을 경우 동작한다.
+	@PostMapping("/reservation/delete")
+	public String deleteReservation(
+			@RequestParam(name = "reservationNo", required = false, defaultValue = "0") int reservationNo) {
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationController.deleteReservation() reservationNo: "+reservationNo+CC.RESET);
+		
+		// int 타입의 예약번호를 Long 타입으로 변환
+		int row = reservationService.removeReservation(Long.valueOf(reservationNo));
+		
+		if(row == 1) {
+			// 디버깅
+			// 공용품 삭제시 데이터를 보낸다
+			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
+			return "redirect:/reservation/reservationList?result=warning";
+		} else {
+			// 디버깅
+			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
+			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
+			return "redirect:/reservation/reservationList?result=fail";
+		}
+	}
+	
+	
 	// view의 예약리스트 페이지로부터 각종 검색조건에 필요한 파라미터들을 받는다
 	@GetMapping("/reservation/reservationList")
 	public String reservationList(Model model, HttpSession session
@@ -120,6 +156,9 @@ public class ReservationController {
 			, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
 			) {
 		
+		// 세션으로부터 사원번호를 가져온다.
+		int empNo = (int)session.getAttribute("loginMemberId");
+		
 		// 넘어온값 디버깅
 		log.debug(CC.YOUN+"reservationController.reservationList() currentPage: "+currentPage+CC.RESET);
 		log.debug(CC.YOUN+"reservationController.reservationList() rowPerPage: "+rowPerPage+CC.RESET);
@@ -129,6 +168,7 @@ public class ReservationController {
 		log.debug(CC.YOUN+"reservationController.reservationList() searchWord: "+searchWord+CC.RESET);
 		log.debug(CC.YOUN+"reservationController.reservationList() col: "+col+CC.RESET);
 		log.debug(CC.YOUN+"reservationController.reservationList() ascDesc: "+ascDesc+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.reservationList() empNo: "+empNo+CC.RESET);
 		
 		// 조건에 따른 전체 행 개수를 출력하는 메서드에 줄 매개변수값을 저장할 Map 생성
 		// Mapper에 조건식에 사용될 변수들을 넣어준다.
@@ -181,6 +221,7 @@ public class ReservationController {
 		model.addAttribute("searchCol", searchCol);
 		model.addAttribute("col", col);
 		model.addAttribute("ascDesc", ascDesc);
+		model.addAttribute("empNo", empNo);
 		
 		// 이동할 해당 뷰 페이지를 작성한다.
 		return "/reservation/reservationList";
