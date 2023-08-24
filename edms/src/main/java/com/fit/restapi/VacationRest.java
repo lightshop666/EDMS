@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fit.CC;
 import com.fit.service.VacationRemainService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +21,11 @@ public class VacationRest {
 	private VacationRemainService vacationRemainService;
 	
 	// 휴가 종류 선택에 따른 남은 휴가 일수 조회 // 비동기
-	@PostMapping("/getRemainDays")
-	public double getRemainDays(HttpSession session, String vacationName) {
+	@PostMapping("/getRemainDaysByVacationName")
+	public double getRemainDaysByVacationName(HttpSession session, String vacationName) {
 		double remainDays = 0.0;
 		
-		log.debug("\033[46;97m" + "VacationRest.getRemainDays() vacationName param : " + vacationName + "\u001B[0m");
+		log.debug(CC.HE + "VacationRest.getRemainDaysByVacationName() vacationName param : " + vacationName + CC.RESET);
 		
 		// 1. 세션 정보 조회
 		// 사원번호, 입사일

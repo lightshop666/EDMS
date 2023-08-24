@@ -20,10 +20,16 @@
    
    <!-- Approval 테이블용 -->
    <insert id="insertApproval" parameterType="com.fit.vo.Approval" >
-       INSERT INTO approval (emp_no, doc_title, first_approval, mediate_approval, final_approval,
-           approval_date, approval_reason, approval_state, document_category, approval_field)
+      	<selectKey order="AFTER" keyProperty="approvalNo" resultType="int">
+		<!-- order : AFTER로 설정하면, insert 구문을 실행한 뒤 키 값을 조회 -->
+		<!-- keyProperty : selectKey 구문의 결과가 셋팅될 대상 프로퍼티 -->
+		<!-- resultType : 조회될 키의 타입 -->
+			SELECT last_insert_id()
+		</selectKey>
+      INSERT INTO approval (emp_no, doc_title, first_approval, mediate_approval, final_approval,
+           approval_date, approval_reason, approval_state, document_category, approval_field, createdate)
        VALUES (#{empNo}, #{docTitle}, #{firstApproval}, #{mediateApproval}, #{finalApproval},
-           #{approvalDate}, #{approvalReason}, #{approvalState}, #{documentCategory}, #{approvalField})
+           #{approvalDate}, #{approvalReason}, #{approvalState}, #{documentCategory}, #{approvalField}, NOW())
    </insert>
    
    <!-- ExpenseDraft 테이블용 -->
@@ -34,8 +40,8 @@
    
    <!-- ReceiveDraft 테이블용 -->
    <insert id="insertReceiveDraft" parameterType="java.util.Map">
-       INSERT INTO receive_draft (approval_no, emp_no)
-       VALUES (#{approvalNo}, #{empNo})
+       INSERT INTO receive_draft (approval_no, emp_no, createdate)
+       VALUES (#{approvalNo}, #{empNo}, NOW())
    </insert>
    
        <!-- 가장 최근의 approval_no 가져오기 -->
@@ -92,4 +98,47 @@
        FROM approval
        WHERE approval_no = #{approvalNo}
    </select>
+   
+	<!-- vacation_draft insert -->
+	<insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
+		INSERT INTO vacation_draft (
+			approval_no,
+			emp_no,
+			doc_title,
+			doc_content,
+			vacation_name,
+			vacation_days,
+			vacation_start,
+			vacation_end,
+			phone_number,
+			createdate,
+			updatedate
+		) VALUES (
+			#{approvalNo},
+			#{empNo},
+			#{docTitle},
+			#{docContent},
+			#{vacationName},
+			#{vacationDays},
+			#{vacationStart},
+			#{vacationEnd},
+			#{phoneNumber},
+			NOW(),
+			NOW()
+		)	
+	</insert>
+	
+	<!-- receive_draft insert -->
+	<insert id="insertReceiveDrafts" parameterType="map">
+		INSERT INTO receive_draft (
+			approval_no,
+			emp_no,
+			createdate
+		) VALUES
+			<!-- 배열을 insert하기 위해 반복문을 이용하여 VALUES 구문을 작성합니다. -->
+			<!-- separator을 쉼표(,)로 지정하여 구문이 끝날때마다 ,를 작성하여 각 행을 구분할 수 있습니다. -->
+			<foreach collection="recipients" item="empNo" separator=",">
+				(#{approvalNo}, #{empNo}, NOW())
+			</foreach>
+	</insert>
 </mapper>

@@ -16,6 +16,7 @@ import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
+import com.fit.vo.VacationDraft;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -140,8 +141,83 @@ public class DraftService {
     public MemberFile selectMemberSign(int empNo) {
        // fileCategory를 Sign으로 지정하여 서명 조회
       MemberFile memberSign = memberMapper.selectMemberFile(empNo, "Sign");
-      log.debug(CC.HE + "EmpService.selectMemberSign() memberSign : " + memberSign + CC.RESET);
+      log.debug(CC.HE + "DraftService.selectMemberSign() memberSign : " + memberSign + CC.RESET);
       
       return memberSign;
+    }
+    
+    // approval 테이블에 insert 후 key 값을 반환하는 메서드
+    // approval 테이블은 모든 양식이 공통으로 사용하는 테이블이므로 하나의 메서드를 만들었습니다.
+    // 단, document_category 값을 반드시 양식에 맞게 셋팅 후 호출해주세요.
+    @Transactional
+    private int addApprovalAndReturnKey(Approval approval) {
+    	// 기본값 셋팅
+    	approval.setApprovalDate("0000-00-00"); // 결재일
+    	approval.setApprovalReason(""); // 반려사유
+    	approval.setApprovalState("결재대기"); // 결재상태
+    	approval.setApprovalField("A"); // 승인상태
+    	
+    	// mapper 호출
+    	int row = draftMapper.insertApproval(approval);
+    	log.debug(CC.HE + "DraftService.addApprovalAndReturnKey() row : " + row + CC.RESET);
+    	
+    	if (row == 1) { // insert 성공 시
+    		int approvalKey = approval.getApprovalNo(); // 키 값 가져오기
+    		log.debug(CC.HE + "DraftService.addApprovalAndReturnKey() approvalKey : " + approvalKey + CC.RESET);
+    		
+    		return approvalKey; // 키 값 반환
+    	}
+    	
+    	return 0;
+    }
+
+    // 휴가신청서 기안하기
+    // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)
+    @Transactional
+    public int addVacationDraft(Map<String, Object> paramMap) {
+    	// 1. approval 테이블
+    	Approval approval = (Approval) paramMap.get("approval"); // map에서 approval 객체 가져오기
+    	approval.setDocumentCategory("휴가신청서"); // 메서드 호출 전 양식 셋팅
+    	int approvalKey = addApprovalAndReturnKey(approval); // 메서드 호출하여 키값 가져오기
+    	
+    	// 2. vacation_draft 테이블
+    	VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft"); // map에서 vacationDraft 객체 가져오기
+    	int row = 0;
+    	if (approvalKey != 0) { // approvalKey 값이 정상적으로 반환되었을 경우
+    		// 2-1. 값 셋팅
+    		vacationDraft.setApprovalNo(approvalKey); // 1번에서 반환된 부모키값으로 셋팅
+    		// 2-2. 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
+    		String vacationStart = vacationDraft.getVacationStart();
+    		if (vacationDraft.getVacationName().equals("반차")) {
+    			// 반차일 경우 시작날짜와 종료날짜는 같습니다.
+    			// 단, 반차가 오전인지 오후인지에 따라 시간을 다르게 셋팅합니다.
+    			if (paramMap.get("vacationTime").equals("오전반차")) {
+    				vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+    				vacationDraft.setVacationEnd(vacationStart + " 13:00:00");
+    			} else { // 오후반차
+    				vacationDraft.setVacationStart(vacationStart + " 14:00:00");
+    				vacationDraft.setVacationEnd(vacationStart + " 18:00:00");
+    			}
+    		} else { // 연차 또는 보상
+    			String vacationEnd = vacationDraft.getVacationEnd();
+    			// 연차 또는 보상일 경우 날짜값은 그대로 유지하고, 시간만 셋팅합니다.
+    			vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+    			vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
+    		}
+    		// 2-3. mapper 호출
+    		row = draftMapper.insertVactionDraft(vacationDraft);
+    		log.debug(CC.HE + "DraftService.insertVactionDraft() row : " + row + CC.RESET);
+    	}
+    	
+    	// 3. receive_draft 테이블
+    	int[] recipients = (int[]) paramMap.get("recipients");
+    	if (recipients.length != 0) { // 수신참조자를 선택했을 경우
+    		if (row == 1) { // 이전 과정이 정상적으로 수행되었을 경우
+    			row = draftMapper.insertReceiveDrafts(approvalKey, recipients); // mapper 호출
+    			log.debug(CC.HE + "DraftService.insertReceiveDrafts() row : " + row + CC.RESET);
+    		}
+    	}
+    	
+    	return approvalKey;
     }
 }

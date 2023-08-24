@@ -15,8 +15,9 @@
 		// 사원 목록 배열로 받는 변수 선언 (JSON)
 		let employeeListJson = ${employeeListJson};
 		
-		// 함수 선언
+		// 함수 선언 시작
 		// 선택한 결재자의 정보 구하기
+		// 모달창에서 선택한 결재자의 정보를 출력하기 위해 리스트를 조회합니다.
 		function getApproverDetails(selectedApproverNo) {
 			let empName = ''; // 이름
 			let deptName = ''; // 부서명
@@ -35,8 +36,99 @@
 			return empName + '_' + deptName + '_' + empPosition;
 		}
 		
+		// 휴가 종류 선택에 따라 동적으로 등장하는 input 태그 관련 함수들입니다.
+		// 휴가 반차 선택 시 input 태그 출력
+		function halfVactionInput(remainDays) {
+			if (remainDays < 0.5) { // 남은 휴가 일수가 0.5일보다 작으면 신청 불가
+				let InputMsg = '신청 가능한 반차 휴가 일수가 없습니다.';
+				$('#vacationInput').html(InputMsg);
+			} else {
+				let InputTag = `
+					<input type="date" name="vacationStart">
+					<input type="hidden" name="vacationDays" value="0.5"> <!-- 반차는 0.5일이 고정값으로 들어간다 -->
+					<input type="radio" name="vacationTime" value="오전반차">
+						오전반차 9:00~13:00
+					<input type="radio" name="vacationTime" value="오후반차">
+						오후반차 14:00~18:00
+				`;
+				$('#vacationInput').html(InputTag);
+			}
+		}
+			
+		// 휴가 연차 또는 보상 선택 시 input 태그 출력
+		function longVacationInput(vacationName, remainDays) {
+			if (remainDays < 1) { // 남은 휴가 일수가 1보다 작으면 신청 불가
+				let InputMsg = '신청 가능한 ' + vacationName + ' 휴가 일수가 없습니다.';
+				$('#vacationInput').html(InputMsg);
+			} else {
+				let InputTag = `
+					<label for="vacationDays"> 휴가일수 : </label>
+					<select id="vacationDays" name="vacationDays">
+					<!-- 옵션들은 vacationDaysSelect()를 호출하여 남은 휴가 일수만큼 동적으로 생성할 것입니다. -->
+					</select>
+							
+					<label for="vacationStart"> 휴가 시작일 : </label>
+					<input type="date" id="vacationStart" name="vacationStart">
+							
+					<label for="vacationEnd"> 휴가 종료일 : </label>
+					<span id="vacationEndSpan"></span> <!-- 휴가 종료일은 수정이 불가능하며, 출력만 가능합니다. -->
+					<input type="hidden" id="vacationEndInput" name="vacationEnd"> <!-- hidden 으로 값을 넘깁니다. -->
+				`;
+				$('#vacationInput').html(InputTag);
+			}
+		}
+		
+		// 휴가일수(vacationDays) selectbox의 옵션 출력
+		// ajax로 조회한 남은 휴가 일수(remainDays)만큼 동적으로 옵션을 생성합니다.
+		function vacationDaysSelect(remainDays) {
+			$('#vacationDays').empty(); // 기존 옵션들을 초기화
+			
+			for (let i = 1; i <= remainDays; i++) {
+				// append()를 이용하여 새로운 옵션 태그를 생성합니다.
+				$('#vacationDays').append($('<option>', {
+					value : i, // 옵션태그의 값
+					text : i + '일' // 옵션태그의 출력부분
+				}));
+			}
+		}
+		
+		// 휴가 종료일 지정
+		// 선택한 휴가일수와 휴가 시작일에 따라 동적으로 휴가 종료일을 지정합니다.
+		function vacationEndInput() {
+			let selectedVacationDays = parseInt($('#vacationDays').val()); // 선택한 휴가일수를 정수로 반환
+			console.log('선택한 휴가일수 : ' + selectedVacationDays);
+			
+			// 날짜 정보를 다루기 위한 JavaScript의 객체인 Date 객체를 사용합니다.
+			let startDate = new Date( $('#vacationStart').val() ); // 선택한 휴가 시작일
+			let endDate = new Date(startDate) // 휴가 종료일 선언
+			// 휴가 종료일을 selectedVacationDays만큼 지정합니다.
+			// selectedVacationDays가 1일 경우 당일(시작일과 종료일이 동일)이므로 selectedVacationDays-1을 해줍니다.
+			endDate.setDate(startDate.getDate() + selectedVacationDays - 1);
+			
+			// Date 객체는 날짜와 시간 등 다양한 정보를 담고 있으므로 필요한 정보만 가져옵니다.
+			// ex) Wed Aug 09 2023 09:00:00 GMT+0900 (한국 표준시)
+			// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-09T00:00:00.000Z
+			// substr()으로 날짜 정보만 가져옵니다. ex) 2023-08-09
+			let endDateString = endDate.toISOString().substr(0, 10);
+			
+			$('#vacationEndSpan').text(endDateString);
+			$('#vacationEndInput').val(endDateString);
+			console.log('휴가 종료일 : ' + endDateString);
+		}
+		
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
+			
+			// 수정 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 수정 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('휴가신청서 기안 실패');
+			    alert('휴가신청서가 기안되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('휴가신청서 기안 성공');
+			    alert('휴가신청서가 기안되었습니다.');
+			}
 			
 			// 중간승인자 선택시
 			$('#saveMiddleBtn').click(function() {
@@ -99,22 +191,43 @@
 			
 			// 휴가 종류 선택시
 			$("input[name='vacationName']").change(function() {
-				let vacationName = $(this).val();
+				let vacationName = $(this).val(); // 선택한 휴가 종류
 				
-				// ajax로 선택한 휴가 종류의 남은 일수 출력
+				// 1. ajax로 선택한 휴가 종류의 남은 일수 출력
 				$.ajax({
-					url : '/getRemainDays',
+					url : '/getRemainDaysByVacationName',
 					type : 'post',
 					data : {vacationName : vacationName},
 					success : function(response) {
 						console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
-						$('#remainDays').text(response + '개');
+						$('#remainDays').text(response + '일');
+						
+						// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
+						if (vacationName == '반차') {
+							halfVactionInput(response);
+						} else { // 연차 또는 보상일 경우
+							longVacationInput(vacationName, response);
+							vacationDaysSelect(response);
+							
+							// 휴가 시작일 지정시 이벤트 발생
+							$('#vacationStart').change(function() {
+								vacationEndInput();
+							});
+							
+							// 휴가 일수 변경시 이벤트 발생
+							$('#vacationDays').change(function() {
+								let vacationStart = $('#vacationStart').val();
+								if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
+									vacationEndInput();
+								}
+							});
+						}
 					},
 					error : function(error) {
 						console.error('남은 휴가 일수 조회 실패 : ' + error);
 					}
 				});
-			})
+			});
 		});
 	</script>
 	
@@ -150,8 +263,14 @@
 					<th>최종승인자</th>
 				</tr>
 				<tr>
-					<td rowspan="2"> <!-- 서명 이미지 출력 -->
-						<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+					<td rowspan="2"> 
+						<c:if test="${sign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
+							<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+						</c:if>
+						<c:if test="${sign.memberSaveFileName == null}"> <!-- 서명 이미지가 없으면 문구 출력 -->
+							${year}.${month}.${day}<br>
+							결재승인
+						</c:if>
 						<input type="hidden" name="firstApproval" value="${empNo}"> <!-- 기안자 정보 hidden 주입 -->
 					</td>
 					<td>
@@ -200,16 +319,15 @@
 					</td>
 				</tr>
 				<tr><!-- 휴가종류 선택에 따라 남은 휴가 일수를 동적으로 출력 -->
-					<th>남은 휴가 일수</th>
+					<th>잔여 휴가 일수</th>
 					<td>
-						<!-- ajax 방식으로 남은 휴가 일수 조회 예정.. -->
+						<!-- ajax 방식으로 남은 휴가 일수 출력 -->
 						<span id="remainDays"></span>
 					</td>
 					<th>기간</th>
 					<td colspan="3">
-						<input type="date" name="vacationStart"> ~ <input type="date" name="vacationEnd">
-						<!-- 휴가 종류 선택에 따른 메세지 출력 예정.. -->
-						<span id="vacationMsg">휴가 종류를 선택해주세요.</span>
+						<!-- 선택한 휴가 종류와 잔여 휴가 일수에 따라 기간 선택 태그 출력 -->
+						<div id="vacationInput"></div>
 					</td>
 				</tr>
 				<tr>

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fit.CC;
 import com.fit.service.EmpService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,8 @@ public class EmpRest {
 	// 비밀번호 초기화
 	@PostMapping("/adminUpdatePw")
 	public int adminUpdatePw(int empNo, String tempPw) {
-		log.debug("\033[46;97m" + "EmpRest.adminUpdatePw() empNo : " + empNo + "\u001B[0m");
-		log.debug("\033[46;97m" + "EmpRest.adminUpdatePw() tempPw : " + tempPw + "\u001B[0m");
+		log.debug(CC.HE + "EmpRest.adminUpdatePw() empNo : " + empNo + CC.RESET);
+		log.debug(CC.HE + "EmpRest.adminUpdatePw() tempPw : " + tempPw + CC.RESET);
 		
 		int row = empService.modifyPw(empNo, tempPw);
 
