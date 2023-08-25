@@ -1,5 +1,6 @@
 package com.fit.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,14 @@ public class ScheduleService {
 		log.debug(CC.YOUN+"ScheduleService.getScheduleCount() countParam: "+countParam+CC.RESET);
 		
         return totalCount;
+    }
+
+	// 날짜별 조회된 일정 목록을 반환
+    public List<Schedule> getSchedulesByDate(LocalDate date) {
+    	
+    	List<Schedule> scheduleByDay = scheduleMapper.findByScheduleDate(date);
+    	
+        return scheduleByDay;
     }
 	
 	// 일정추가 메서드

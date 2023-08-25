@@ -128,4 +128,21 @@
 	    </where>
 	</select>
 
+	<!-- 예약 테이블에서 예약일 해당하는 행을 조회하는 쿼리 -->
+	<select id="findByReservationDate" resultType="com.fit.vo.ReservationDto">
+		SELECT
+	        r.reservation_no reservationNo,
+	        r.emp_no empNo,
+	        r.utility_no utilityNo,
+	        r.reservation_date reservationDate,
+	        r.reservation_time reservationTime,
+	        r.createdate createdate,
+	        e.emp_name empName,
+	        u.utility_category utilityCategory
+	    FROM reservation r
+	    	JOIN emp_info e ON r.emp_no = e.emp_no
+	    	JOIN utility u ON r.utility_no = u.utility_no
+		WHERE DATE(r.reservation_date) = #{date}
+	</select>
+
 </mapper>

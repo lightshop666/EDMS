@@ -1,11 +1,13 @@
 package com.fit.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import com.fit.vo.ReservationDto;
+import com.fit.vo.Schedule;
 
 
 @Mapper
@@ -29,4 +31,7 @@ public interface ReservationMapper {
 	
 	// 예약 신청시 회의실 중복검사하는 메서드
 	int selectMeetingChk(Map<String, Object> meetingChkParam);
+	
+	// 예약 테이블에서 날짜를 찾는 메서드
+	List<ReservationDto> findByReservationDate(LocalDate date);
 }

@@ -1,5 +1,6 @@
 package com.fit.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,5 +144,14 @@ public class ReservationService {
 		
 		return row;
 	}
+	
+	// 날짜별 조회된 일정 목록을 반환
+    public List<ReservationDto> getReservationByDate(LocalDate date) {
+    	
+    	List<ReservationDto> reservationByDay = reservationMapper.findByReservationDate(date);
+    	
+        return reservationByDay;
+    }
+	
 	
 }

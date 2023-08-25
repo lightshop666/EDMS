@@ -2,15 +2,18 @@ package com.fit.controller;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.CC;
 import com.fit.service.ReservationService;
@@ -62,7 +65,7 @@ public class ScheduleController {
             // '하루 종일' 옵션은 false로 설정
             event.put("allDay", false);
             // 이벤트에 적용할 CSS 클래스를 설정
-            event.put("clazz", "bg-blue");
+            event.put("className", "bg-info");
             // 생성된 이벤트 객체를 '일정' 이벤트 목록에 추가
             scheduleEvents.put(event);
     	}
@@ -78,13 +81,13 @@ public class ScheduleController {
     	        String clazz;
     	        if ("차량".equals(reservationDto.getUtilityCategory())) {
     	            title = "차량 예약";
-    	            clazz = "bg-blue";
+    	            clazz = "bg-warning";
     	        } else if ("회의실".equals(reservationDto.getUtilityCategory())) {
     	            title = "회의실 예약";
-    	            clazz = "bg-red";
+    	            clazz = "bg-success";
     	        } else {
     	            title = "예약";  // 기본값
-    	            clazz = "bg-green";  // 기본값
+    	            clazz = "bg-info";  // 기본값
     	        }
     	        
     	        event.put("title", title);
@@ -92,7 +95,7 @@ public class ScheduleController {
     	        event.put("start", reservationDto.getStartDateTime().toString());
     	        event.put("end", reservationDto.getEndDateTime().toString());
     	        event.put("allDay", false);
-    	        event.put("clazz", clazz);
+    	        event.put("className", clazz);
     	        reservationEvents.put(event);
     	    }
     	}
@@ -110,4 +113,25 @@ public class ScheduleController {
 		// 뷰 페이지에 객체를 전달
 		return "/schedule/schedule";
 	}
+	
+	// 월별 달력에서 해당 날짜를 클릭했을 때 동작하는 메서드
+	@GetMapping("/schedule/scheduleDay")
+	public String getScheduleReservationDay(@RequestParam(name = "date") @DateTimeFormat(pattern="yyyy-MM-dd") LocalDate date, Model model) {
+		
+		// date에 해당하는 일정 리스트를 반환
+		List<Schedule> scheduleByDay = scheduleService.getSchedulesByDate(date);
+       
+		// date에 해당하는 예약 리스트를 반환
+		List<ReservationDto> reservationByDay = reservationService.getReservationByDate(date);
+		
+		// 디버깅
+		log.debug(CC.YOUN+"ScheduleController.getScheduleReservationDay() scheduleByDay: "+scheduleByDay+CC.RESET);
+		log.debug(CC.YOUN+"ScheduleController.getScheduleReservationDay() reservationByDay: "+reservationByDay+CC.RESET);
+       
+		model.addAttribute("scheduleByDay", scheduleByDay);
+		model.addAttribute("reservationByDay", reservationByDay);
+		model.addAttribute("date", date);
+		
+		return "schedule/scheduleDay";
+    }
 }

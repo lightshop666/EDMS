@@ -73,5 +73,17 @@
 	    </where>
 	</select>
 	
+	<!-- 일정 테이블에서 일정 시작 날짜에 해당하는 행을 조회하는 쿼리 -->
+	<select id="findByScheduleDate" resultType="com.fit.vo.Schedule">
+		SELECT 
+			schedule_no scheduleNo,
+	        schedule_start_time scheduleStartTime,
+	        schedule_end_time scheduleEndTime,
+	        schedule_content scheduleContent,
+	        createdate
+		FROM schedule 
+		WHERE DATE(schedule_start_time) = #{date}
+	</select>
+	
 	
 </mapper>
