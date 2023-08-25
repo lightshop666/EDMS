@@ -121,9 +121,11 @@
 		<!-- ============================================================== -->
 		<!-- footer -->
 		<!-- ============================================================== -->
+<!-- 푸터 인클루드 -->
 		<footer class="footer text-center text-muted">
-		    All Rights Reserved by Freedash. Designed and Developed by <a
-		        href="https://adminmart.com/">Adminmart</a>.
+		
+			<jsp:include page="/WEB-INF/view/inc/footer.jsp" />
+			
 		</footer>
 		<!-- ============================================================== -->
 		<!-- End footer -->
