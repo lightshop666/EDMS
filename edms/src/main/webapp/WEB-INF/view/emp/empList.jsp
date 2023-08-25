@@ -161,68 +161,66 @@
 		<!-- 1. 입사년도별 조회 -->
 	    <div class="search-by-year-area">
 	        <label class="search-by-year-label">입사년도</label>
-	        <input type="date" name="startDate" class="search-by-year-input">
+	        <input type="date" name="startDate" class="search-by-year-input" value="${param.startDate}">
 	        ~
-	        <input type="date" name="endDate" class="search-by-year-input">
+	        <input type="date" name="endDate" class="search-by-year-input" value="${param.endDate}">
 	    </div>
 		<!-- 2. 재직/퇴직에 따른 정렬 -->
 	    <div class="sort-area">
 	    	<label class="sort-label">정렬</label>
 		    <select name="empDate" class="sort-input">
-		        <option value="">전체</option>
-		        <option value="employ_date">입사일</option>
-		        <option value="retirement_date">퇴사일</option>
+		        <option value="employ_date" <c:if test="${param.empDate.equals('employ_date')}">selected</c:if>>입사일</option>
+		        <option value="retirement_date" <c:if test="${param.empDate.equals('retirement_date')}">selected</c:if>>퇴사일</option>
 		    </select>
 	        <select name="ascDesc" class="sort-select">
-	            <option value="ASC">오름차순</option>
-	            <option value="DESC">내림차순</option>
+	            <option value="ASC" <c:if test="${param.ascDesc.equals('ASC')}">selected</c:if>>오름차순</option>
+	            <option value="DESC" <c:if test="${param.ascDesc.equals('DESC')}">selected</c:if>>내림차순</option>
 	        </select>
 	    </div>
 	    <!-- 3. 재직사항별 조회 -->
 	    <div class="sort-personnel-area">
 	    	<label class="sort-label">재직사항</label>
 		    <select name="empState" class="sort-input">
-		        <option value="">전체</option>
-		        <option value="재직">재직</option>
-		        <option value="퇴직">퇴직</option>
+		        <option value="" <c:if test="${param.empState.equals('')}">selected</c:if>>전체</option>
+		        <option value="재직" <c:if test="${param.empState.equals('재직')}">selected</c:if>>재직</option>
+		        <option value="퇴직" <c:if test="${param.empState.equals('퇴직')}">selected</c:if>>퇴직</option>
 		    </select>
 		    <label class="sort-label">부서명</label>
 		    <select name="deptName" class="sort-input">
-		        <option value="">전체</option>
-		        <option value="사업추진본부">사업추진본부</option>
-		        <option value="경영지원본부">경영지원본부</option>
-		        <option value="영업지원본부">영업지원본부</option>
+		        <option value="" <c:if test="${param.deptName.equals('')}">selected</c:if>>전체</option>
+		        <option value="사업추진본부" <c:if test="${param.deptName.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
+		        <option value="경영지원본부" <c:if test="${param.deptName.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
+		        <option value="영업지원본부" <c:if test="${param.deptName.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
 		    </select>
 		    
 		    <label class="sort-label">팀명</label>
 			<select name="teamName" class="sort-input">
-			    <option value="">전체</option>
-			    <option value="기획팀">기획팀</option>
-			    <option value="경영팀">경영팀</option>
-			    <option value="영업팀">영업팀</option>
+			    <option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
+			    <option value="기획팀" <c:if test="${param.teamName.equals('기획팀')}">selected</c:if>>기획팀</option>
+			    <option value="경영팀" <c:if test="${param.teamName.equals('경영팀')}">selected</c:if>>경영팀</option>
+			    <option value="영업팀" <c:if test="${param.teamName.equals('영업팀')}">selected</c:if>>영업팀</option>
 			</select>
 		    
 		    <label class="sort-label">직급</label>
 			<select name="empPosition" class="sort-input">
-			    <option value="">전체</option>
-			    <option value="CEO">CEO</option>
-			    <option value="부서장">부서장</option>
-			    <option value="팀장">팀장</option>
-			    <option value="부팀장">부팀장</option>
-			    <option value="사원">사원</option>
+			    <option value="" <c:if test="${param.empPosition.equals('')}">selected</c:if>>전체</option>
+			    <option value="CEO" <c:if test="${param.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
+			    <option value="부서장" <c:if test="${param.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
+			    <option value="팀장" <c:if test="${param.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
+			    <option value="부팀장" <c:if test="${param.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
+			    <option value="사원" <c:if test="${param.empPosition.equals('사원')}">selected</c:if>>사원</option>
 			</select>
 		</div>
 	    <!-- 4. 특정 사원의 정보 검색 -->
 	    <div class="search-area">
 	        <label class="search-label">검색</label>
 	        <select name="searchCol" class="search-input">
-	        	<option value="">전체</option>
-	            <option value="emp_no">사원번호</option>
-	            <option value="emp_name">사원명</option>
+	            <option value="empNo" <c:if test="${param.searchCol.equals('empNo')}">selected</c:if>>사원번호</option>
+	            <option value="empName" <c:if test="${param.searchCol.equals('empName')}">selected</c:if>>사원명</option>
 	        </select>
 	        <input type="text" name="searchWord" class="search-input">
 	    </div>
-	        <button type="submit" class="search-button" id="search-button">검색</button>
+	        <button type="submit" id="search-button">검색</button>
     </form>
 <!-- [끝] 검색 ------->
 

@@ -333,6 +333,7 @@ public class EmpController {
  	    // 2. parameter들을 Map으로 만들어 enrichedEmpList의 매개값으로 전달
 	    Map<String, Object> param = new HashMap<>();
 	    param.put("ascDesc", ascDesc); // 오름차순, 내림차순
+	    log.debug(CC.YE + "EmpController.empList() ascDesc: " + ascDesc + CC.RESET);
 		// 재직 상태가 선택되지 않았을 때
 	    /* if (empState == null) {
 	        param.put("empState", "재직"); // '재직' 상태만 출력하도록 설정
@@ -387,6 +388,8 @@ public class EmpController {
 	    model.addAttribute("lastPage", lastPage); // 마지막 페이지
 	    model.addAttribute("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
 	    model.addAttribute("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
+	    model.addAttribute("param", param);
+	    
 	    
 	    return "/emp/empList"; // 사원 목록 페이지로 이동
  	}
