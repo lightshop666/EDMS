@@ -51,7 +51,12 @@
 		    <artifactId>gson</artifactId>
 		    <version>2.8.8</version> <!-- 원하는 버전으로 변경 가능 -->
 		</dependency>
-
+		<!-- JSON  -->
+		<dependency>
+	        <groupId>org.json</groupId>
+	        <artifactId>json</artifactId>
+	        <version>20210307</version>
+    	</dependency>
 
 <!-- web jar -->
 		<dependency>

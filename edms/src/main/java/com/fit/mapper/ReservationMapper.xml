@@ -106,8 +106,8 @@
 	    SELECT 
 	        COUNT(*) CNT 
 	    FROM reservation r
-	    JOIN emp_info e ON r.emp_no = e.emp_no
-	    JOIN utility u ON r.utility_no = u.utility_no
+		    JOIN emp_info e ON r.emp_no = e.emp_no
+		    JOIN utility u ON r.utility_no = u.utility_no
 	    <where>
 	        <if test="startDate != null and startDate != ''">
 	            AND DATE(r.reservation_date) &gt;= #{startDate}
@@ -128,6 +128,4 @@
 	    </where>
 	</select>
 
-	
-	
 </mapper>

@@ -1,5 +1,6 @@
 package com.fit.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,13 @@ public class ReservationService {
 	
 	// 컨트롤러로부터 paramMap 타입으로 필요한 검색조건 매개변수들을 받아 예약 리스트 출력
 	public List<ReservationDto> getReservationListByPage(Map<String, Object> listParam) {
+		
+		// 널포인트익셉션 에러를 해결하기 위한 객체 생성 -> 달력출력시 null값이 입력되므로 처리
+		if (listParam == null) {
+			listParam = new HashMap<>();
+			listParam.put("startRow", 0); // 시작 페이지를 0으로 설정
+		    listParam.put("rowPerPage", 10); // 한 페이지당 행 수를 10으로 설정
+		}
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationService.getReservationListByPage() listParam: "+listParam+CC.RESET);
@@ -69,7 +77,7 @@ public class ReservationService {
 		int totalCount = reservationMapper.selectReservationCount(countParam);
 		
 		// 디버깅
-		log.debug(CC.YOUN+"reservationService.getReservationListByPage() countParam: "+countParam+CC.RESET);
+		log.debug(CC.YOUN+"reservationService.getReservationCount() countParam: "+countParam+CC.RESET);
 		
         return totalCount;
     }
@@ -112,7 +120,7 @@ public class ReservationService {
 		return utilities;
 	}
 	
-	// 예약일, 공용품 번호, 사원 번호를 입력받아서 중복검사를 진행
+	// 예약일, 공용품 번호, 사원 번호를 입력받아서 차량 중복검사를 진행
 	public int getCarChk(Map<String, Object> carChkParam) {
 		
 		// 디버깅
@@ -124,7 +132,7 @@ public class ReservationService {
 		return row;
 	}
 	
-	// 예약일, 예약시간, 공용품 번호, 사원 번호를 입력받아서 중복검사를 진행
+	// 예약일, 예약시간, 공용품 번호, 사원 번호를 입력받아서 회의실 중복검사를 진행
 	public int getMeetingChk(Map<String, Object> meetingChkParam) {
 		
 		// 디버깅
