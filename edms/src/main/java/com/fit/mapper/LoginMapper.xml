@@ -5,12 +5,12 @@
 <!-- 세션에 저장할 로그인 정보  -->
 	<select id="selectEmpForSession" parameterType="java.util.Map" resultType="java.util.Map">
 		SELECT
-			li.emp_no AS empNo
-			, fo.access_level AS accessLevel
-			, fo.emp_state AS empState
-			, fo.emp_name AS empName
-			, fo.employ_date AS employDate
-			, fo.dept_name AS deptName
+			li.emp_no empNo
+			, fo.access_level accessLevel
+			, fo.emp_state empState
+			, fo.emp_name empName
+			, fo.employ_date employDate
+			, fo.dept_name deptName
 		FROM
 			emp_no_list li
 			INNER JOIN emp_info fo ON li.emp_no = fo.emp_no

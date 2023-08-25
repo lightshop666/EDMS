@@ -6,9 +6,30 @@
 <meta charset="UTF-8">
 <title>Main Menu</title>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+    <!-- Custom CSS -->
+    <link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+    <link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+    <link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <link href="../dist/css/style.min.css" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
 <script>
+
 $(document).ready(function() {
-	$(".access-level-link").click(function(event) {
+	$(".sidebar-link").click(function(event) {
 		event.preventDefault(); // 기본 링크 동작 취소
 		
 		let requiredAccessLevel = $(this).data("access-level");				// 이 링크의 엑세스 제한 레벨 가져오기
@@ -21,51 +42,139 @@ $(document).ready(function() {
 		}
 	});
 });
+
 </script>
 </head>
 <body>
-	<div>
-	<!-- 전자결재 -->
-		<h4>전자결재</h4>
-		<a href="${pageContext.request.contextPath}/home">새 결재</a>
-		<a href="${pageContext.request.contextPath}/home">내 문서함</a>
-		<a href="${pageContext.request.contextPath}/home">임시 저장함</a>
+<!-- ============================================================== -->
+<!-- Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->
+	<!-- Sidebar scroll-->
+	<div class="scroll-sidebar" data-sidebarbg="skin6">
+		<!-- Sidebar navigation-->
+		<nav class="sidebar-nav">
+			<ul id="sidebarnav">	
+				<!-- 
+					구분선
+				    <li class="list-divider"></li>
+				 -->
+<!-- 전자결재 -->
+				<li class="nav-small-cap">
+					<span class="hide-menu">전자결재</span>
+				</li>
+			
+				<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/draft/basicDraft" aria-expanded="false"  data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">새 결재</span>
+					</a>
+			    </li>
+			    	<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/draft/submitDraft " aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">내 문서함</span>
+					</a>
+			    </li>	
+			    <li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/draft/tempDraft" aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">임시 저장함</span>
+					</a>
+			    </li>
+			    
+<!-- 일정관리 -->	<li class="list-divider"></li>
+				<li class="nav-small-cap">
+					<span class="hide-menu">일정관리</span>
+				</li>
+			
+				<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/schedule/schedule" aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">달력</span>
+					</a>
+			    </li>
+			    	<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/schedule/scheduleList" aria-expanded="false" data-access-level="1">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">일정관리</span>
+					</a>
+			    </li>	
+			    <li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/utility/utilityList" aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">예약신청</span>
+					</a>
+			    </li>
+				<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/reservation/reservationLis" aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">예약조회</span>
+					</a>
+			    </li>				    
+<!-- 인사관리 -->	<li class="list-divider"></li>
+				<li class="nav-small-cap">
+					<span class="hide-menu">인사관리</span>
+				</li>
+						
+				<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/emp/empList" aria-expanded="false" data-access-level="1">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">사원목록</span>
+					</a>
+			    </li>
+			    <li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/emp/registEmp" aria-expanded="false" data-access-level="2">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">사원등록</span>
+					</a>
+			    </li>	
+			    <li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/home" aria-expanded="false" data-access-level="2">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">사원초대</span>
+					</a>
+			    </li>
+<!-- 게시판 -->	<li class="list-divider"></li>
+				<li class="nav-small-cap">
+					<span class="hide-menu">게시판</span>
+				</li>
+			
+				<li class="sidebar-item"> 
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/board/boardList" aria-expanded="false" data-access-level="0">
+						<i data-feather="grid" class="feather-icon"></i>
+							<span class="hide-menu">공지사항</span>
+					</a>
+			    </li>   
+			</ul>
+		</nav>
+		<!-- End Sidebar navigation -->
 	</div>
-	
-	<div>
-	<!-- 일정관리 -->
-		<h4>일정관리</h4>
-		<a href="${pageContext.request.contextPath}/home">달력</a>
-		<!-- 레벨1 제한 -->
-		<a href="${pageContext.request.contextPath}/home" class="access-level-link" data-access-level="1">일정관리</a>
-		<a href="${pageContext.request.contextPath}/home">예약신청</a>
-		<a href="${pageContext.request.contextPath}/home">예약조회</a>
-	
-	</div>
+<!-- ============================================================== -->
+<!-- End Left Sidebar - style you can find in sidebar.scss  -->
+<!-- ============================================================== -->
 
-	<div>
-	<!-- 인사관리 -->
-		<h4>인사관리</h4>
-		<!-- 레벨0은 사용자용, 레벨1 이상은 관리자용 분기 -->
-		<c:if test="${accessLevel ne 0}">
-			<!-- 관리자용 링크 -->
-			<a href="${pageContext.request.contextPath}/admin/home">사원목록 (관리자용)</a>
-		</c:if>
-		<c:if test="${accessLevel eq 0}">
-			<!-- 사용자용 링크 -->
-			<a href="${pageContext.request.contextPath}/home">사원목록 (사용자용)</a>
-		</c:if>
-		
-		<!-- 레벨2 제한 -->
-		<a href="${pageContext.request.contextPath}/home" class="access-level-link" data-access-level="2">사원등록</a>
-	
-	</div>
 
-	<div>
-	<!-- 게시판 -->
-		<h4>게시판</h4>
-		<a href="${pageContext.request.contextPath}/home">공지사항</a>
-	
-	</div>
+	<!-- ============================================================== -->
+	<!-- All Jquery -->
+	<!-- ============================================================== -->
+	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- apps -->
+	<!-- apps -->
+	<script src="../dist/js/app-style-switcher.js"></script>
+	<script src="../dist/js/feather.min.js"></script>
+	<script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+	<script src="../dist/js/sidebarmenu.js"></script>
+	<!--Custom JavaScript -->
+	<script src="../dist/js/custom.min.js"></script>
+	<!--This page JavaScript -->
+	<script src="../assets/extra-libs/c3/d3.min.js"></script>
+	<script src="../assets/extra-libs/c3/c3.min.js"></script>
+	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+
 </body>
 </html>
