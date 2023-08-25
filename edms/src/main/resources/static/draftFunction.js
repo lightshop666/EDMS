@@ -9,7 +9,7 @@
 		5. 저장(기안) -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(false), 폼 제출
 		
 		주의할점
-		- getApproverDetails() 에서 조회할 사원 목록(JSON)을 해당 페이지에서 전역 스코프 변수로 선언해주세요.
+		- getApproverDetails() 에서 조회할 사원 목록 배열(JSON)을 해당 페이지에서 전역 스코프 변수(employeeListJson)로 선언해주세요.
 		- 공통 함수를 호출할 양식의 유효성 검사 메서드의 이름은 validateInputs() 이어야 합니다.
 		- 제출할 form의 id는 draftForm 이어야 합니다.
 		- 값을 가져올 중간/최종승인자, 수신참조자의 name명과 값을 주입할 태그의 id명은 다음과 같아야 합니다.
@@ -116,14 +116,14 @@
 			}).appendTo('#draftForm');
 			
 			// 3. 폼 전송
-			$('#draftForm').submit();	
+			$('#draftForm').submit(); // draftForm -> 제출할 form의 id
 		}
 	}
 	
 	// 저장(기안) 프로세스 // 저장 시 isSaveDraft 값을을 false로 주입합니다.
 	function setDraftSubmit() {
 		// 1. 유효성검사
-		if ( validateInputs() ) { // validateInputs() 메서드 반환값이 true이면
+		if ( validateInputs() ) { // validateInputs() -> 유효성 검사 함수
 			// 2. 임시저장 유무 hidden input 추가
 			$('<input>').attr({
 				type : 'hidden',
@@ -132,6 +132,6 @@
 			}).appendTo('#draftForm');
 			
 			// 3. 폼 전송
-			$('#draftForm').submit();	
+			$('#draftForm').submit(); // draftForm -> 제출할 form의 id
 		}
 	}

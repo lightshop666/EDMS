@@ -237,6 +237,14 @@
 			$('#submitBtn').click(function() {
 				setDraftSubmit(); // 공통 함수 호출
 			});
+			
+			// 취소 버튼 클릭시
+			$('#cancelBtn').click(function() {
+				let result = '작성중인 내용이 모두 사라집니다. 정말 취소하시겠습니까?';
+				if (result) {
+					location.reload(); // 현재 페이지 새로고침
+				}
+			})
 		});
 	</script>
 	
@@ -261,6 +269,7 @@
 <body>
 	<div class="container pt-5">
 		<h1 style="text-align: center;">휴가신청서</h1>
+		<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
 		<form action="/draft/vacationDraft" method="post" id="draftForm">
 			<input type="hidden" name="empNo" value="${empNo}">
 			<table>
