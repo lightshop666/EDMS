@@ -77,7 +77,8 @@ public class DraftController {
 	public String addVacationDraft(@ModelAttribute Approval approvalFormData,
 								@ModelAttribute VacationDraft vacationDraftFormData,
 								@RequestParam(required = false) String vacationTime,
-								@RequestParam(required = false) int[] recipients) {
+								@RequestParam(required = false) int[] recipients,
+								@RequestParam boolean isSaveDraft) {
 		
 		// @ModelAttribute -> form 입력값을 가져올 때 vo 타입과 자동으로 매핑하여 vo 타입 객체로 가져올 수 있습니다.
 		// 디버깅..
@@ -99,6 +100,7 @@ public class DraftController {
 		    log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
 		    // recipients[0] : 2016001, recipients[1] : 2016002, recipients[2] : 2016003
 		}
+		log.debug(CC.HE + "DraftController.addVacationDraft() isSaveDraft : " + isSaveDraft + CC.RESET); // 임시저장 유무
 		
 		// 매개값을 하나의 Map에 담습니다.
 		Map<String, Object> paramMap = new HashMap<>();
@@ -106,6 +108,7 @@ public class DraftController {
 		paramMap.put("vacationDraft", vacationDraftFormData);
 		paramMap.put("vacationTime", vacationTime);
 		paramMap.put("recipients", recipients);
+		paramMap.put("isSaveDraft", isSaveDraft);
 		
 		// 서비스 호출
 		int approvalKey = draftService.addVacationDraft(paramMap);

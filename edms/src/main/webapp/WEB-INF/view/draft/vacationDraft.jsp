@@ -10,31 +10,12 @@
 	<!-- 모달을 띄우기 위한 부트스트랩 라이브러리 추가 -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- 공통 함수를 불러옵니다. -->
+	<script src="/draftFunction.js"></script>
 	
 	<script>
 		// 사원 목록 배열로 받는 변수 선언 (JSON)
 		let employeeListJson = ${employeeListJson};
-		
-		// 함수 선언 시작
-		// 선택한 결재자의 정보 구하기
-		// 모달창에서 선택한 결재자의 정보를 출력하기 위해 리스트를 조회합니다.
-		function getApproverDetails(selectedApproverNo) {
-			let empName = ''; // 이름
-			let deptName = ''; // 부서명
-			let empPosition = ''; // 직급
-			
-			// JSON 배열로 받은 사원 목록을 for문을 이용하여 empNo가 일치하는 정보를 찾습니다.
-			for (let i = 0; i < employeeListJson.length; i++) {
-				if (employeeListJson[i].empNo == selectedApproverNo) {
-					empName = employeeListJson[i].empName;
-					deptName = employeeListJson[i].deptName;
-					empPosition = employeeListJson[i].empPosition;
-					break; // 원하는 사원 정보를 찾았다면 반복문을 중지합니다.
-				}
-			}
-		
-			return empName + '_' + deptName + '_' + empPosition;
-		}
 		
 		// 휴가 종류 선택에 따라 동적으로 등장하는 input 태그 관련 함수들입니다.
 		// 휴가 반차 선택 시 input 태그 출력
@@ -44,7 +25,7 @@
 				$('#vacationInput').html(InputMsg);
 			} else {
 				let InputTag = `
-					<input type="date" name="vacationStart">
+					<input type="date" name="vacationStart" id="vacationStart">
 					<input type="hidden" name="vacationDays" value="0.5"> <!-- 반차는 0.5일이 고정값으로 들어간다 -->
 					<input type="radio" name="vacationTime" value="오전반차">
 						오전반차 9:00~13:00
@@ -63,16 +44,16 @@
 			} else {
 				let InputTag = `
 					<label for="vacationDays"> 휴가일수 : </label>
-					<select id="vacationDays" name="vacationDays">
+					<select name="vacationDays" id="vacationDays">
 					<!-- 옵션들은 vacationDaysSelect()를 호출하여 남은 휴가 일수만큼 동적으로 생성할 것입니다. -->
 					</select>
 							
 					<label for="vacationStart"> 휴가 시작일 : </label>
-					<input type="date" id="vacationStart" name="vacationStart">
+					<input type="date" name="vacationStart" id="vacationStart">
 							
 					<label for="vacationEnd"> 휴가 종료일 : </label>
 					<span id="vacationEndSpan"></span> <!-- 휴가 종료일은 수정이 불가능하며, 출력만 가능합니다. -->
-					<input type="hidden" id="vacationEndInput" name="vacationEnd"> <!-- hidden 으로 값을 넘깁니다. -->
+					<input type="hidden" name="vacationEnd" id="vacationEndInput"> <!-- hidden 으로 값을 넘깁니다. -->
 				`;
 				$('#vacationInput').html(InputTag);
 			}
@@ -116,13 +97,74 @@
 			console.log('휴가 종료일 : ' + endDateString);
 		}
 		
+		// 유효성 검사 함수
+		function validateInputs() {
+			let isValid = true;
+			
+			// 각 input 입력값 가져오기 // 수신참조는 필수값이 아니므로 제외합니다.
+			let mediateHidden = $('#mediateHidden').val();
+			let finalHidden = $('#finalHidden').val();
+			let vacationName = $('input[name="vacationName"]:checked').val();
+			let vacationStart = $('#vacationStart').val();
+			let phoneNumber = $('#phoneNumber').val();
+			let docTitle = $('#docTitle').val();
+			let docContent = $('#docContent').val();
+			
+			// 각 입력값 검사 시작
+			if (mediateHidden == '') {
+				alert('중간승인자를 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (finalHidden == '') {
+				alert('최종승인자를 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (vacationName == undefined) {
+				alert('휴가종류를 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (vacationStart == '') {
+				alert('휴가 시작일을 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			// 선택한 휴가 종류가 반차라면 시간을 추가로 검사합니다.
+			if (vacationName == '반차') {
+				let vacationTime = $('input[name="vacationTime"]:checked').val();
+				if (vacationTime == undefined) {
+					alert('반차 휴가를 사용할 시간을 선택해주세요.');
+					isValid = false;
+					return isValid;
+				}
+			}
+			if (phoneNumber == '') {
+				alert('비상연락망을 작성해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (docTitle == '') {
+				alert('제목을 작성해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (docContent == '') {
+				alert('사유를 작성해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			
+			return isValid;
+		}
+		
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			
 			// 추후 상세페이지로 이동 예정..
 			// 기안 성공 or 실패 결과에 따른 alert
 			let result = '${param.result}'; // 기안 성공유무를 url의 매개값으로 전달
-			
 			if (result == 'fail') { // result의 값이 fail이면
 			    console.log('휴가신청서 기안 실패');
 			    alert('휴가신청서가 기안되지 않았습니다. 다시 시도해주세요.');
@@ -131,63 +173,19 @@
 			    alert('휴가신청서가 기안되었습니다.');
 			}
 			
-			// 중간승인자 선택시
-			$('#saveMiddleBtn').click(function() {
-				// 선택된 값 가져오기
-				let selectedMediateApproval = $("input[name='selectedMediateApproval']:checked").val();
-				console.log('선택한 중간승인자 사원번호 : ' + selectedMediateApproval);
-				// 중간승인자 사원번호 hidden에 주입
-				$('#mediateHidden').val(selectedMediateApproval);
-				
-				// 중간승인자의 정보를 구하는 메서드 호출
-				let selectedMediateDetails = getApproverDetails(selectedMediateApproval);
-				console.log('선택한 중간승인자 정보 : ' + selectedMediateDetails);
-				// 중간승인자 정보 출력
-				$('#mediateSpan').text(selectedMediateDetails);
+			// 모달창에서 중간승인자 저장 버튼 클릭시
+			$('#saveMediateBtn').click(function() {
+				setMediateApproval(); // 공통 함수 호출
 			});
 			
-			// 최종승인자 선택시
+			// 모달창에서 최종승인자 저장 버튼 클릭시
 			$('#saveFinalBtn').click(function() {
-				// 선택된 값 가져오기
-				let selectedFinalApproval = $("input[name='selectedFinalApproval']:checked").val();
-				console.log('선택한 최종승인자 사원번호 : ' + selectedFinalApproval);
-				// 최종승인자 사원번호 hidden에 주입
-				$('#finalHidden').val(selectedFinalApproval);
-				
-				// 최종승인자의 정보를 구하는 메서드 호출
-				let selectedFinalDetails = getApproverDetails(selectedFinalApproval);
-				console.log('선택한 최종승인자 정보 : ' + selectedFinalDetails);
-				// 최종승인자 정보 출력
-				$('#finalSpan').text(selectedFinalDetails);
+				setFinalApproval(); // 공통 함수 호출
 			});
 			
-			// 수신참조자 선택시
+			// 모달창에서 수신참조자 저장 버튼 클릭시
 			$('#saveReceiveBtn').click(function() {
-				// 선택된 값 가져오기
-				// 체크박스의 값은 일반적으로 String타입이므로 int타입의 정수배열로 변환하는 과정이 필요합니다.
-				// Array.from()를 이용하여 선택된 체크박스 요소들로 새로운 배열을 생성할 것입니다.
-				// 화살표 함수(=>)로 파라미터값(item)의 value 속성을 parseInt() 메서드로 정수로 변환합니다.
-				let checkedRecipients = Array.from(
-											$("input[name='checkedRecipients']:checked"),
-											item => parseInt(item.value)
-										);
-				console.log('선택한 수신참조자 정수 배열 : ' + checkedRecipients);
-				// 수신참조자 정수 배열을 hidden에 주입
-				$('#receiveHidden').val(checkedRecipients);
-				
-				// 수신참조자의 정보 구하기
-				let checkedRecipientsDetails = '';
-				// 수신참조자는 배열이므로 반복문 안에서 메서드를 호출합니다.
-				for (let i = 0; i < checkedRecipients.length; i++) {
-					if (i == 0) {
-						checkedRecipientsDetails = getApproverDetails(checkedRecipients[i]);
-					} else { // 쉼표를 이용하여 한줄의 문자열을 생성합니다.
-						checkedRecipientsDetails += ', ' + getApproverDetails(checkedRecipients[i]);
-					}
-				}
-				console.log('선택한 수신참조자 정보 : ' + checkedRecipientsDetails);
-				// 수신참조자 출력
-				$('#receiveSpan').text(checkedRecipientsDetails);
+				setRecipients(); // 공통 함수 호출
 			});
 			
 			// 휴가 종류 선택시
@@ -229,6 +227,16 @@
 					}
 				});
 			});
+			
+			// 임시저장 버튼 클릭시
+			$('#saveBtn').click(function() {
+				setDraftSave(); // 공통 함수 호출
+			});
+			
+			// 저장 버튼 클릭시
+			$('#submitBtn').click(function() {
+				setDraftSubmit(); // 공통 함수 호출
+			});
 		});
 	</script>
 	
@@ -253,7 +261,7 @@
 <body>
 	<div class="container pt-5">
 		<h1 style="text-align: center;">휴가신청서</h1>
-		<form action="/draft/vacationDraft" method="post">
+		<form action="/draft/vacationDraft" method="post" id="draftForm">
 			<input type="hidden" name="empNo" value="${empNo}">
 			<table>
 				<tr>
@@ -286,7 +294,7 @@
 				</tr>
 				<tr>
 					<td>
-						<button type="button" data-bs-toggle="modal" data-bs-target="#middleModal">
+						<button type="button" data-bs-toggle="modal" data-bs-target="#mediateModal">
 							검색 <!-- 중간승인자 검색 모달 버튼 -->
 						</button>
 					</td>
@@ -335,20 +343,20 @@
 				<tr>
 					<th>비상연락망</th>
 					<td colspan="5">
-						<input type="text" name="phoneNumber" placeholder="ex) 010-1234-5678">
+						<input type="text" name="phoneNumber" placeholder="ex) 010-1234-5678" id="phoneNumber">
 					</td>
 				</tr>
 				<tr>
 					<th>제목</th>
 					<td colspan="5">
-						<input type="text" name="docTitle" placeholder="ex) 휴가 신청합니다 - 연차">
+						<input type="text" name="docTitle" placeholder="ex) 휴가 신청합니다 - 연차" id="docTitle">
 					</td>
 				</tr>
 				<tr>
 					<th>사유</th>
 					<td colspan="5">
 						<!-- 웹에디터를 넣을지 고민..! -->
-						<textarea rows="8" cols="70" name="docContent" placeholder="ex) 개인사정으로 인하여 연차 사용을 신청합니다."></textarea>
+						<textarea rows="8" cols="70" name="docContent" placeholder="ex) 개인사정으로 인하여 연차 사용을 신청합니다." id="docContent"></textarea>
 					</td>
 				</tr>
 				<tr>
@@ -359,15 +367,15 @@
 				</tr>
 			</table>
 			<button type="button" id="cancelBtn">취소</button>
-			<button type="submit" id="tempSaveBtn">임시저장</button>
-			<button type="submit" id="saveBtn">저장</button>
+			<button type="button" id="saveBtn">임시저장</button>
+			<button type="button" id="submitBtn">저장</button>
 		</form>
 	</div>
 	
 	<!-- 모달창 시작 -->
 	
 	<!-- 중간승인자 검색 모달 -->
-	<div class="modal" id="middleModal">
+	<div class="modal" id="mediateModal">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<!-- 모달 헤더 -->
@@ -388,7 +396,7 @@
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
 								<td>
-									<input type="radio" value="${employee.empNo}" name="selectedMediateApproval">
+									<input type="radio" value="${employee.empNo}" name="modalMediateApproval">
 								</td>
 								<td>
 									${employee.empNo}
@@ -409,7 +417,7 @@
 				<!-- 모달 푸터 -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-					<button type="button" id="saveMiddleBtn" data-bs-dismiss="modal">저장</button>
+					<button type="button" id="saveMediateBtn" data-bs-dismiss="modal">저장</button>
 				</div>
 			</div>
 		</div>
@@ -436,7 +444,7 @@
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
 								<td>
-									<input type="radio" value="${employee.empNo}" name="selectedFinalApproval">
+									<input type="radio" value="${employee.empNo}" name="modalFinalApproval">
 								</td>
 								<td>
 									${employee.empNo}
@@ -478,7 +486,7 @@
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
 								<td>
-									<input type="checkbox" value="${employee.empNo}" name="checkedRecipients">
+									<input type="checkbox" value="${employee.empNo}" name="modalRecipients">
 								</td>
 								<td>
 									${employee.empNo}

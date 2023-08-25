@@ -150,12 +150,19 @@ public class DraftService {
     // approval 테이블은 모든 양식이 공통으로 사용하는 테이블이므로 하나의 메서드를 만들었습니다.
     // 단, document_category 값을 반드시 양식에 맞게 셋팅 후 호출해주세요.
     @Transactional
-    private int addApprovalAndReturnKey(Approval approval) {
+    private int addApprovalAndReturnKey(Approval approval, boolean isSaveDraft) {
     	// 기본값 셋팅
     	approval.setApprovalDate("0000-00-00"); // 결재일
     	approval.setApprovalReason(""); // 반려사유
-    	approval.setApprovalState("결재대기"); // 결재상태
     	approval.setApprovalField("A"); // 승인상태
+    	// 임시저장 유무에 따라 분기
+    	if (isSaveDraft) {
+    		approval.setApprovalState("임시저장"); // 결재상태
+    		log.debug(CC.HE + "DraftService.addApprovalAndReturnKey() 결재상태 : 임시저장" + CC.RESET);
+    	} else {
+    		approval.setApprovalState("결재대기"); // 결재상태
+    		log.debug(CC.HE + "DraftService.addApprovalAndReturnKey() 결재상태 : 결재대기 " + CC.RESET);
+    	}
     	
     	// mapper 호출
     	int row = draftMapper.insertApproval(approval);
@@ -170,40 +177,77 @@ public class DraftService {
     	
     	return 0;
     }
+    
+    // 휴가신청시 시간값 셋팅
+    // 작성, 수정시 모두 시간값 셋팅이 필요하므로 해당 기능을 모듈화하였습니다.
+    // VacationDraft 객체와 vacationTime 문자열을 매개값으로 넣고 호출해주세요.
+    private void prepareVacationTimes(VacationDraft vacationDraft, String vacationTime) {
+    	// 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
+    	// 1. 휴가종류를 선택하지 않았다면 모든 값들 기본값으로 셋팅
+    	if (vacationDraft.getVacationName() == null) {
+    		vacationDraft.setVacationName("");
+    		vacationDraft.setVacationStart("0000-00-00");
+			vacationDraft.setVacationEnd("0000-00-00");
+			return;
+    	}
+    	// 2. 휴가시작일 값 가져오기
+		String vacationStart = vacationDraft.getVacationStart();
+		// 3. 선택한 휴가 종류가 반차라면
+		// 반차일 경우 시작날짜와 종료날짜는 같습니다.
+		// 단, 반차가 오전인지 오후인지에 따라 시간을 다르게 셋팅합니다.
+		if (vacationDraft.getVacationName().equals("반차")) {
+			// 3-1. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
+			if (vacationStart.equals("")) {
+				vacationStart = "0000-00-00";
+			}
+			// 3-2. 시간 선택에 따라 시간값 셋팅
+			if (vacationTime == null) { // 시간을 선택하지 않았다면 날짜값만 셋팅
+				vacationDraft.setVacationStart(vacationStart);
+				vacationDraft.setVacationEnd(vacationStart);
+			} else if (vacationTime.equals("오전반차")) {
+				vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+				vacationDraft.setVacationEnd(vacationStart + " 13:00:00");
+			} else { // 오후반차
+				vacationDraft.setVacationStart(vacationStart + " 14:00:00");
+				vacationDraft.setVacationEnd(vacationStart + " 18:00:00");
+			}
+		// 4. 선택한 휴가가 연차 혹은 보상이라면
+		} else {
+			// 4-1. 휴가종료일 값 가져오기
+			String vacationEnd = vacationDraft.getVacationEnd();
+			// 4-2. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
+			if (vacationStart.equals("")) {
+				vacationStart = "0000-00-00";
+				vacationEnd = "0000-00-00";
+			}
+			// 4-3. 연차 또는 보상일 경우 날짜값은 그대로 유지하고, 시간만 셋팅합니다.
+			vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+			vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
+		}
+    }
 
-    // 휴가신청서 기안하기
+    // 휴가신청서 기안하기 (+ 임시저장)
     // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)
     @Transactional
     public int addVacationDraft(Map<String, Object> paramMap) {
     	// 1. approval 테이블
     	Approval approval = (Approval) paramMap.get("approval"); // map에서 approval 객체 가져오기
+    	boolean isSaveDraft = (boolean) paramMap.get("isSaveDraft"); // map에서 임시저장 유무 가져오기
     	approval.setDocumentCategory("휴가신청서"); // 메서드 호출 전 양식 셋팅
-    	int approvalKey = addApprovalAndReturnKey(approval); // 메서드 호출하여 키값 가져오기
+    	int approvalKey = addApprovalAndReturnKey(approval, isSaveDraft); // 메서드 호출하여 키값 가져오기
     	
     	// 2. vacation_draft 테이블
-    	VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft"); // map에서 vacationDraft 객체 가져오기
+    	// map에서 vacationDraft 객체 가져오기
+    	VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft");
+    	// map에서 vacationTime 문자열 가져오기
+    	String vacationTime = (String) paramMap.get("vacationTime");
+    	
     	int row = 0;
     	if (approvalKey != 0) { // approvalKey 값이 정상적으로 반환되었을 경우
     		// 2-1. 값 셋팅
     		vacationDraft.setApprovalNo(approvalKey); // 1번에서 반환된 부모키값으로 셋팅
-    		// 2-2. 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
-    		String vacationStart = vacationDraft.getVacationStart();
-    		if (vacationDraft.getVacationName().equals("반차")) {
-    			// 반차일 경우 시작날짜와 종료날짜는 같습니다.
-    			// 단, 반차가 오전인지 오후인지에 따라 시간을 다르게 셋팅합니다.
-    			if (paramMap.get("vacationTime").equals("오전반차")) {
-    				vacationDraft.setVacationStart(vacationStart + " 09:00:00");
-    				vacationDraft.setVacationEnd(vacationStart + " 13:00:00");
-    			} else { // 오후반차
-    				vacationDraft.setVacationStart(vacationStart + " 14:00:00");
-    				vacationDraft.setVacationEnd(vacationStart + " 18:00:00");
-    			}
-    		} else { // 연차 또는 보상
-    			String vacationEnd = vacationDraft.getVacationEnd();
-    			// 연차 또는 보상일 경우 날짜값은 그대로 유지하고, 시간만 셋팅합니다.
-    			vacationDraft.setVacationStart(vacationStart + " 09:00:00");
-    			vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
-    		}
+    		prepareVacationTimes(vacationDraft, vacationTime); // 시간값을 셋팅하는 메서드 호출
+    		
     		// 2-3. mapper 호출
     		row = draftMapper.insertVactionDraft(vacationDraft);
     		log.debug(CC.HE + "DraftService.insertVactionDraft() row : " + row + CC.RESET);
