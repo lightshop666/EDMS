@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fit.websocket.AlarmMapper">
+
+<!-- 알림 생성 -->
+<insert id="insertAlarm" parameterType="com.fit.vo.Alarm">
+	INSERT INTO alarm
+		(emp_no, alarm_content, prefix_content, alarm_date, alarm_check)
+	VALUES
+		(#{empNo}, #{alarmContent}, #{prefixContent}, #{alarmDate}, #{alarmCheck})		
+</insert>
+
+
+
+</mapper>
