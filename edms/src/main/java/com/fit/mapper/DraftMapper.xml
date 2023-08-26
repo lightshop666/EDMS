@@ -20,12 +20,12 @@
    
    <!-- Approval 테이블용 -->
    <insert id="insertApproval" parameterType="com.fit.vo.Approval" >
-      	<selectKey order="AFTER" keyProperty="approvalNo" resultType="int">
-		<!-- order : AFTER로 설정하면, insert 구문을 실행한 뒤 키 값을 조회 -->
-		<!-- keyProperty : selectKey 구문의 결과가 셋팅될 대상 프로퍼티 -->
-		<!-- resultType : 조회될 키의 타입 -->
-			SELECT last_insert_id()
-		</selectKey>
+         <selectKey order="AFTER" keyProperty="approvalNo" resultType="int">
+      <!-- order : AFTER로 설정하면, insert 구문을 실행한 뒤 키 값을 조회 -->
+      <!-- keyProperty : selectKey 구문의 결과가 셋팅될 대상 프로퍼티 -->
+      <!-- resultType : 조회될 키의 타입 -->
+         SELECT last_insert_id()
+      </selectKey>
       INSERT INTO approval (emp_no, doc_title, first_approval, mediate_approval, final_approval,
            approval_date, approval_reason, approval_state, document_category, approval_field, createdate)
        VALUES (#{empNo}, #{docTitle}, #{firstApproval}, #{mediateApproval}, #{finalApproval},
@@ -76,69 +76,91 @@
    </select>
    
    <!-- ReceiveDraft 테이블용 -->
-   <select id="selectRecipientIdsByApprovalNo" parameterType="int" resultType="int">
-       SELECT emp_no
+   <select id="selectRecipientIdsByApprovalNo" parameterType="int" resultType="string">
+       SELECT emp_info.emp_name empName
        FROM receive_draft
-       WHERE approval_no = #{approvalNo}
+       INNER JOIN emp_info ON receive_draft.emp_no = emp_info.emp_no
+       WHERE receive_draft.approval_no = #{approvalNo}
    </select>
    
    <!-- Approval 테이블용 -->
-   <select id="selectApprovalByApprovalNo" parameterType="int" resultType="com.fit.vo.Approval">
-       SELECT
-           emp_no as empNo,
-           doc_title as docTitle,
-           first_approval as firstApproval,
-           mediate_approval as mediateApproval,
-           final_approval as finalApproval,
-           approval_date as approvalDate,
-           approval_reason as approvalReason,
-           approval_state as approvalState,
-           document_category as documentCategory,
-           approval_field as approvalField
-       FROM approval
-       WHERE approval_no = #{approvalNo}
-   </select>
+      <select id="selectApprovalByApprovalNo" parameterType="int" resultType="com.fit.vo.Approval">
+          SELECT
+              a.approval_no as approvalNo,
+              a.emp_no as empNo,
+              a.doc_title as docTitle,
+              e1.emp_name as firstApprovalName,
+              e2.emp_name as mediateApprovalName,
+              e3.emp_name as finalApprovalName,
+              a.first_approval as firstApproval,
+              a.mediate_approval as mediateApproval,
+              a.final_approval as finalApproval,
+              a.approval_date as approvalDate,
+              a.approval_reason as approvalReason,
+              a.approval_state as approvalState,
+              a.document_category as documentCategory,
+              a.approval_field as approvalField,
+              a.createdate as createDate
+          FROM approval a
+          LEFT JOIN emp_info e1 ON a.first_approval = e1.emp_no
+          LEFT JOIN emp_info e2 ON a.mediate_approval = e2.emp_no
+          LEFT JOIN emp_info e3 ON a.final_approval = e3.emp_no
+          WHERE a.approval_no = #{approvalNo}
+      </select>
    
-	<!-- vacation_draft insert -->
-	<insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
-		INSERT INTO vacation_draft (
-			approval_no,
-			emp_no,
-			doc_title,
-			doc_content,
-			vacation_name,
-			vacation_days,
-			vacation_start,
-			vacation_end,
-			phone_number,
-			createdate,
-			updatedate
-		) VALUES (
-			#{approvalNo},
-			#{empNo},
-			#{docTitle},
-			#{docContent},
-			#{vacationName},
-			#{vacationDays},
-			#{vacationStart},
-			#{vacationEnd},
-			#{phoneNumber},
-			NOW(),
-			NOW()
-		)	
-	</insert>
-	
-	<!-- receive_draft insert -->
-	<insert id="insertReceiveDrafts" parameterType="map">
-		INSERT INTO receive_draft (
-			approval_no,
-			emp_no,
-			createdate
-		) VALUES
-			<!-- 배열을 insert하기 위해 반복문을 이용하여 VALUES 구문을 작성합니다. -->
-			<!-- separator을 쉼표(,)로 지정하여 구문이 끝날때마다 ,를 작성하여 각 행을 구분할 수 있습니다. -->
-			<foreach collection="recipients" item="empNo" separator=",">
-				(#{approvalNo}, #{empNo}, NOW())
-			</foreach>
-	</insert>
+    <update id="updateApprovalState">
+        UPDATE approval
+        SET approval_state = #{approvalState}
+        WHERE approval_no = #{approvalNo}
+    </update>
+    
+    <update id="updateApprovalStateAndField">
+        UPDATE approval
+        SET approval_state = #{approvalState},
+            approval_field = #{approvalField}
+        WHERE approval_no = #{approvalNo}
+    </update>
+   
+   <!-- vacation_draft insert -->
+   <insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
+      INSERT INTO vacation_draft (
+         approval_no,
+         emp_no,
+         doc_title,
+         doc_content,
+         vacation_name,
+         vacation_days,
+         vacation_start,
+         vacation_end,
+         phone_number,
+         createdate,
+         updatedate
+      ) VALUES (
+         #{approvalNo},
+         #{empNo},
+         #{docTitle},
+         #{docContent},
+         #{vacationName},
+         #{vacationDays},
+         #{vacationStart},
+         #{vacationEnd},
+         #{phoneNumber},
+         NOW(),
+         NOW()
+      )   
+   </insert>
+   
+   <!-- receive_draft insert -->
+   <insert id="insertReceiveDrafts" parameterType="map">
+      INSERT INTO receive_draft (
+         approval_no,
+         emp_no,
+         createdate
+      ) VALUES
+         <!-- 배열을 insert하기 위해 반복문을 이용하여 VALUES 구문을 작성합니다. -->
+         <!-- separator을 쉼표(,)로 지정하여 구문이 끝날때마다 ,를 작성하여 각 행을 구분할 수 있습니다. -->
+         <foreach collection="recipients" item="empNo" separator=",">
+            (#{approvalNo}, #{empNo}, NOW())
+         </foreach>
+   </insert>
 </mapper>

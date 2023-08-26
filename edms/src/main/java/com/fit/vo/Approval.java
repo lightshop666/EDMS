@@ -5,6 +5,9 @@ import lombok.Data;
 @Data
 public class Approval {
     private int approvalNo;
+    private String firstApprovalName;
+    private String mediateApprovalName;
+    private String finalApprovalName;
     private int empNo;
     private String docTitle;
     private int firstApproval;

@@ -31,10 +31,13 @@ public interface DraftMapper {
     
     List<ExpenseDraftContent> selectExpenseDraftContentsByApprovalNo(int approvalNo);
     
-    List<Integer> selectRecipientIdsByApprovalNo(int approvalNo);
+    List<String> selectRecipientIdsByApprovalNo(int approvalNo);
     
     Approval selectApprovalByApprovalNo(int approvalNo); // 추가됨
     
+    int updateApprovalState(int approvalNo, String approvalState);
+
+    int updateApprovalStateAndField(int approvalNo,String approvalState, String approvalField);
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 양식 테이블 insert
     
     int insertReceiveDrafts(int approvalNo, int[] recipients); // 수신참조자 테이블 insert
