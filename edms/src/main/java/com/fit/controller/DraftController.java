@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fit.CC;
 import com.fit.service.DraftService;
 import com.fit.vo.Approval;
+import com.fit.vo.ApprovalJoinDto;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.VacationDraft;
@@ -45,6 +46,7 @@ public class DraftController {
 		String empName = (String) session.getAttribute("empName");
 		String deptName = (String) session.getAttribute("deptName");
 		
+		// 2~4 를 하나의 서비스에 묶는게 낫지 않을까?
 		// 2. 서명 이미지 - memberSign
 		MemberFile memberSign = draftService.selectMemberSign(empNo);
 		
@@ -125,17 +127,18 @@ public class DraftController {
 	
 	// 휴가신청서 상세
 	@GetMapping("/draft/vacationDraftOne")
-	public String vacationDraftOne() {
-		
+	public String vacationDraftOne(HttpSession session,
+									@RequestParam(required = false) Integer approvalNo, // null값 검사를 위해 Integer로 받습니다.
+									Model model) {
 		/*
 			필요한 정보
 			1. 세션에서 사원번호 가져오기
 			2. 해당 approvalNo의 휴가신청서 내용 조회
 			3. 버튼 출력
 			- 세션에서 조회한 사원번호가 해당 approvalNo의 어떤 결재 라인인지
-			- 현재 결재상태
+			- 현재 결재상태 (A,B,C)
 			
-			3-1. 결재대기
+			3-1. 결재대기 (A)
 			기안자 : 목록 / 기안취소 / 수정
 			-> 기안취소시 임시저장함으로 이동
 			-> 수정시 수정폼으로 이동
@@ -144,24 +147,27 @@ public class DraftController {
 			-> 승인시 결재상태 결재중으로 변경
 			최증승인자 : 목록
 			
-			3-2. 결재중
+			3-2. 결재중 (B)
 			기안자 : 목록
-			중간승인자 : 목록 / 승인취소
+			중간승인자 : 목록 / 승인취소 / 반려
 			-> 승인취소시 결재상태 결재대기로 변경
+			-> 반려시 결재상태 반려로 변경
 			최종승인자 : 목록 / 반려 / 승인
 			-> 반려시 결재상태 반려로 변경
 			-> 승인시 결재상태 결재완료로 변경
 			
-			3-3. 결재완료
+			3-3. 결재완료 (C)
 			기안자 : 목록
 			중간승인자 : 목록
-			최종승인자 : 목록 / 승인취소
+			최종승인자 : 목록 / 승인취소 / 반려
 			-> 승인취소시 결재상태 결재중으로 변경
+			-> 반려시 결재상태 반려로 변경
 			
 			3-4. 반려
 			기안자 : 목록 / 재기안(?)
 			-> 재기안시 해당 데이터를 가지고 어디로?? 수정폼으로 가면 udpate가 되는데...
 			재기안시에는 반려된 데이터는 남겨두어야 하니 새로 insert를 해야해요
+			-> 재기안 보류
 			중간승인자 : 목록
 			최종승인자 : 목록
 			
@@ -169,8 +175,34 @@ public class DraftController {
 			-> 클릭 시 해당 데이터를 가지고 수정폼으로 바로 이동하여 저장시 결재상태 결재대기로 변경
 		*/
 		
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
 		
-		return "";
+		// approvalNo 값이 없으면 분기
+		/*
+		if (approvalNo == null) {
+
+			return "redirect:/home";
+		}
+		*/
+		int approvalNoEx = 6; // test
+		// 세션에서 사원번호 가져오기
+		int empNo = (int) session.getAttribute("loginMemberId");
+		
+		// 서비스 호출
+		Map<String, Object> resultMap = draftService.selectVacationDraftOne(empNo, approvalNoEx);
+		ApprovalJoinDto approvalJoinDto = (ApprovalJoinDto) resultMap.get("approvalJoinDto");
+		VacationDraft vacationDraft = (VacationDraft) resultMap.get("vacationDraft");
+		String vacationTime = (String) resultMap.get("vacationTime"); 
+		Map<String, Object> memberSignMap = (Map) resultMap.get("memberSignMap");
+		
+		model.addAttribute("approvalJoinDto", approvalJoinDto);
+		model.addAttribute("vacationDraft", vacationDraft);
+		model.addAttribute("vacationTime", vacationTime);
+		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
+		
+		return "/draft/vacationDraftOne";
 	}
 	
 	// 임시저장함 목록

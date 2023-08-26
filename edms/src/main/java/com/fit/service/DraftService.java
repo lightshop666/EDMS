@@ -12,6 +12,7 @@ import com.fit.CC;
 import com.fit.mapper.DraftMapper;
 import com.fit.mapper.MemberMapper;
 import com.fit.vo.Approval;
+import com.fit.vo.ApprovalJoinDto;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
@@ -188,7 +189,7 @@ public class DraftService {
        
        
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회
-    // 기존의 memberMapper 사용
+    // 기존의 memberMapper 사용 // -> private으로 바꿀지 고민.. 결재상태에 따른 서명이미지 조회 메서드를 만드니까 이건 없애는게 좋을까?
     @Transactional
     public MemberFile selectMemberSign(int empNo) {
        // fileCategory를 Sign으로 지정하여 서명 조회
@@ -315,5 +316,64 @@ public class DraftService {
        }
        
        return approvalKey;
+    }
+    
+    // 결재상태에 따른 서명이미지 조회
+    private Map<String, Object> getApprovalSign(ApprovalJoinDto approvalJoinDto) {
+    	Map<String, Object> memberSignMap = new HashMap<>();
+    	
+    	// 기안자의 서명은 무조건 조회
+    	int firstEmpNo = approvalJoinDto.getFirstApproval(); // 기안자의 사원번호 조회
+		memberSignMap.put("firstSign", selectMemberSign(firstEmpNo)); // 기존 메서드 사용
+		// 결재상태에 따라 해당 결재자의 서명 이미지를 조회합니다.
+		String approvalField = approvalJoinDto.getApprovalField();
+    	if ( approvalField.equals("B") ) { // 결재중
+    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
+    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo)); 
+    	} else if ( approvalField.equals("C") ) { // 결재완료
+    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
+    		int finalEmpNo = approvalJoinDto.getFinalApproval(); // 중간승인자의 사원번호 조회
+    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo));
+    		memberSignMap.put("finalSign", selectMemberSign(finalEmpNo));
+    	}
+    	
+    	return memberSignMap;
+    }
+    
+    // 휴가신청서 상세페이지 조회
+    @Transactional
+    public Map<String, Object> selectVacationDraftOne(int empNo, int approvalNo) {
+    	Map<String, Object> resultMap = new HashMap<>();
+    	
+    	// 1. 결재정보 조회
+    	// 양식 종류에 상관없이 공통적으로 조회되는 approval, receive_draft, document_file 테이블을 조회하는 메서드입니다.
+        // ApprovalJoinDto DTO 타입으로 반환됩니다.
+    	ApprovalJoinDto approvalJoinDto = draftMapper.selectApprovalOne(empNo, approvalNo);
+    	// 1-1. 기안자의 이름과 부서명 조회
+    	// 예정..
+    	// 1-2. 수신참조자의 이름과 부서명, 직급 조회
+    	// 예정..
+    	// 2. vacation_draft 테이블 조회
+    	VacationDraft vacationDraft = draftMapper.selectVactionDraftOne(approvalNo);
+    	// 2-1. 반차일 경우 vacationTime 값 지정
+    	String vacationTime = ""; // 오전반차, 오후반차
+    	String vacationName = vacationDraft.getVacationName();
+    	if (vacationName.equals("반차")) {
+    		String vacationStartTime = vacationDraft.getVacationStart().substring(11, 13);
+    		if (vacationStartTime.equals("09")) { // 09이면 오전반차
+    			vacationTime = "오전반차";
+    		} else { // 13이면 오후반차
+    			vacationTime = "오후반차";
+    		}
+    	}
+    	// 3. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
+    	Map<String, Object> memberSignMap = getApprovalSign(approvalJoinDto);
+    	
+    	resultMap.put("approvalJoinDto", approvalJoinDto);
+    	resultMap.put("vacationDraft", vacationDraft);
+    	resultMap.put("vacationTime", vacationTime);
+    	resultMap.put("memberSignMap", memberSignMap);
+    	
+    	return resultMap;
     }
 }
