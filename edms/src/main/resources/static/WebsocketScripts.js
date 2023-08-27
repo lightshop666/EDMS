@@ -4,26 +4,6 @@ let stompClient = null;
 let notificationCount = 0;
 
 
-$(document).ready(function() {
-	console.log("채팅창 준비 완료");
-	//웹 소켓 연결 함수 호출
-	connect();
-	
-	//전송 버튼 클릭 시 메시지 전송 함수 호출
-	$("#send").click(function() {
-		sendMessage();
-	});
-	
-	//'프라이빗 전송' 클릭 시 개인 메시지 전송 함수
-	$("#sendPrivate").click(function() {
-		sendPrivateMessage();
-	});
-	
-	//'알림' 영역 클릭시 알림 횟수 초기화 함수 호출
-	$("#notifications").click(function() {
-		resetNotificationCount();
-	});
-});
 
 //웹소켓 연결 함수
 function connect() {
@@ -49,16 +29,11 @@ function connect() {
 		});
 		
 		// '/topic/globalNotifications' 주제를 구독하여 전체 알림 수신 처리
-		stompClient.subscribe('/topic/globalNotifications', function (message) {
+		stompClient.subscribe('/user/topic/draftAlarm', function (message) {
 			notificationCount = notificationCount + 1;
 			updateNotificationDisplay();
 		});
 
-		// '/user/topic/privateNotifications' 주제를 구독하여 개인 알림 수신 처리
-		stompClient.subscribe('/user/topic/privateNotifications', function (message) {
-			notificationCount = notificationCount + 1;
-			updateNotificationDisplay();
-		});
 	});
 }
 
@@ -86,7 +61,7 @@ function updateNotificationDisplay() {
         $('#notifications').hide();
     } else {
         $('#notifications').show();
-        $('#notifications').text(notificationCount);
+        $('#notifications').text(notificationCount);// 알림 횟수를 텍스트로 설정
     }
 }
 

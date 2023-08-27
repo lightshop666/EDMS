@@ -7,7 +7,7 @@
 	INSERT INTO alarm
 		(emp_no, alarm_content, prefix_content, alarm_date, alarm_check)
 	VALUES
-		(#{empNo}, #{alarmContent}, #{prefixContent}, #{alarmDate}, #{alarmCheck})		
+		(#{empNo}, #{alarmContent}, #{prefixContent}, NOW(), 'N')		
 </insert>
 
 

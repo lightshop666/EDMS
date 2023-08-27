@@ -22,6 +22,7 @@ import com.fit.vo.ApprovalJoinDto;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.VacationDraft;
+import com.fit.websocket.AlarmService;
 import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,9 @@ public class DraftController {
 	
 	@Autowired
 	private DraftService draftService;
+	@Autowired
+	private AlarmService alarmService;
+	
 	
 	// 휴가신청서 작성 폼
 	@GetMapping("/draft/vacationDraft")
@@ -114,6 +118,17 @@ public class DraftController {
 		
 		// 서비스 호출
 		int approvalKey = draftService.addVacationDraft(paramMap);
+		
+//웹소켓 알림 보내기
+		//사용자ID, 알림 내용 enum '기안알림','일정알림','공지알림', 구독 주제 (/topic/draftAlarm)
+		//sendAlarmToUser(int empNo,String alarmContent, String prefixContent)
+		alarmService.sendAlarmToUser(1000000, "기안알림", "/topic/draftAlarm");//테스트용 
+		/*
+		//for문으로 중간승인자,최종승인자,참조인에게 알림 보낸다. 나중에는 성공 유무에 따라 성공한 경우만 하게 if문 안으로 넣기
+		for (int recipient : recipients) {
+		    // 사용자가 로그인하지 않은 경우에도 알림 쌓기
+		}		
+		 */
 		
 		// 성공 유무에 따라 approvalKey로 상세 페이지로 분기 예정...
 		if (approvalKey != 0) {

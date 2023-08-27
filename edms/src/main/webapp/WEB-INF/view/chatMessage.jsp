@@ -9,7 +9,29 @@
 	<script src="/webjars/sockjs-client/sockjs.min.js"></script>
 	<script src="/webjars/stomp-websocket/stomp.min.js"></script>
 	<script src="/WebsocketScripts.js"></script>
-
+	
+<script>
+$(document).ready(function() {
+	//웹 소켓 연결 함수 호출
+	connect();
+	console.log("웹소켓 연결 완료");
+	
+	//전송 버튼 클릭 시 메시지 전송 함수 호출
+	$("#send").click(function() {
+		sendMessage();
+	});
+	
+	//'프라이빗 전송' 클릭 시 개인 메시지 전송 함수
+	$("#sendPrivate").click(function() {
+		sendPrivateMessage();
+	});
+	
+	//'알림' 영역 클릭시 알림 횟수 초기화 함수 호출
+	$("#notifications").click(function() {
+		resetNotificationCount();
+	});
+});
+</script>
 </head>
 <body>
 <div class="container" style="margin-top: 50px">

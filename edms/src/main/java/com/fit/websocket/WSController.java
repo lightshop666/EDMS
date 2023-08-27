@@ -26,4 +26,7 @@ public class WSController {
 	                               @RequestBody final Message message) {
 	    service.notifyUser(id, message.getMessageContent());
     }
+	
+	
+	
 }

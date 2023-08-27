@@ -45,6 +45,23 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
+	<!-- 웹소켓 JS -->
+	<script src="/WebsocketScripts.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+	//웹 소켓 연결 함수 호출
+	connect();
+	console.log("웹소켓 연결 완료");
+	
+	//'알림' 영역 클릭시 알림 횟수 초기화 함수 호출
+	$("#bell").click(function() {
+		resetNotificationCount();
+	});
+});
+</script>
+	
 </head>
 
 <body>        
@@ -94,7 +111,7 @@
 					id="bell" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<span><i data-feather="bell" class="svg-icon"></i></span>
 	<!-- 알림 개수 -->
-					<span class="badge text-bg-primary notify-no rounded-circle">5</span>
+					<span class="badge text-bg-primary notify-no rounded-circle" id="notifications"></span>
 				</a>
 				
 	<!-- 알림 드롭다운 -->
