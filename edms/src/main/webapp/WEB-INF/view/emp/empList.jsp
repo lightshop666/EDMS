@@ -43,11 +43,11 @@
 	
 		return tempPw;
 	}
-	
+
 	//페이지 로드 후 실행
 	$(document).ready(function() {
 		
-		// 3. 비밀번호 초기화
+		// 1. 비밀번호 초기화
 		// 비밀번호 생성 버튼 클릭시 이벤트 발생
 		$('#getPwBtn').click(function() {
 			tempPw = getRandomPw(); // 랜덤 비밀번호 생성 함수 호출
@@ -57,7 +57,7 @@
         
         let empNoTest = '';
         
-        $('.getEmpNo').click(function() {
+        $('.getEmpNo').click(function() { // empNo가 전달되지 않아 모달창 열리지 X -> foreach문 안에 있는 empNo에 class 이름을 부여하여 값을 받아옴으로써 해결
         	empNoTest = $(this).data("empno");
         	console.log('번호 가져오기1 : ' + empNoTest);
         });
@@ -104,7 +104,7 @@
 			}
 		});
 		
-		// 1. 엑셀 업로드 버튼 클릭 시
+		// 2. 엑셀 업로드 버튼 클릭 시
 	    $('#uploadBtn').click(function(event) {
 	        const fileInput = $('#fileInput');
 
@@ -126,7 +126,7 @@
 	        }
 	    });
 	  
-	    // 2. 파라미터 값에 따라 알림 메세지
+	    // 3. 파라미터 값에 따라 알림 메세지
 	    const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
 	    const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
 	    const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
@@ -237,9 +237,7 @@
 		<span id="msg"></span>
 	</form>
 <!-- [끝] 파일 업로드 ------->
-
-	<button type="button" id="excelBtn">엑셀 다운로드</button>
-	
+	<a href="/emp/excelDownload" id="excelBtn">엑셀 다운로드</a>
 <!-- [시작] 관리자 리스트 출력 ------->	
 	<table border="1">
 		<!-- 관리자의 경우, 비밀번호 초기화 가능 -->

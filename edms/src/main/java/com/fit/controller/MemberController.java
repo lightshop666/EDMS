@@ -1,5 +1,8 @@
 package com.fit.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.CC;
+import com.fit.service.EmpService;
 import com.fit.service.MemberService;
+import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 	@Autowired
 	private MemberService memberService;
+	
+	@Autowired
+	private EmpService empService;
 	
 	// 회원가입 폼
 	@GetMapping("/member/addMember")
@@ -53,5 +61,36 @@ public class MemberController {
 	    	log.debug(CC.HE + "MemberController.addMember() row : " + row + CC.RESET);
 	        return "redirect:/member/addMember?result=fail";
 	    }
+	}
+	
+	// 내 프로필 폼
+	@GetMapping("/member/modifyMember")
+	public String memberOne(HttpSession session,
+							@RequestParam(required = false, name = "empNo") Integer empNo,
+							Model model) {
+		
+		empNo = 1000000;
+		
+		// empNo로 개인정보 조회
+		Map<String, Object> result = empService.selectMember(empNo);
+
+		model.addAttribute("member", result.get("memberInfo"));
+		model.addAttribute("image", result.get("memberImage"));
+		model.addAttribute("sign", result.get("memberSign"));
+		
+		return "/member/modifyMember";
+	}
+	
+	// 내 프로필 수정 액션
+	@PostMapping("/member/modifyMember")
+	public String memberOne(HttpSession session,
+							@RequestParam(required = false, name = "empNo") Integer empNo) {
+		
+		empNo = (Integer)session.getAttribute("empNo");
+		
+		// empNo로 개인정보 수정
+		int modifyMember = memberService.modifyMember(empNo);
+
+		return "/member/modifyMember";
 	}
 }

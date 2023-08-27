@@ -73,4 +73,49 @@
 		WHERE emp_no = #{empNo}
 		AND file_category = #{fileCategory}
 	</select>
+	
+	<!-- 개인정보 수정 -->
+	<update id="modifyMember" parameterType="int">
+	    UPDATE member_info
+	    SET
+	        gender = #{gender},
+	        phone_number = #{phoneNumber},
+	        email = #{email},
+	        address = #{address},
+	        updatedate = NOW()
+	    WHERE emp_no = #{empNo}
+	</update>
+	
+	<!-- 개인정보 파일 입력 -->
+	<insert id="addMemberFile" parameterType="map">
+    	INSERT INTO member_file (
+	    	emp_no
+	    	, file_category
+	    	, member_ori_file_name
+	    	, member_save_file_name
+	    	, member_filetype
+	    	, member_filesize
+	    	, createdate
+	    	, updatedate )
+    	VALUES (
+    		#{empNo}
+    		, #{fileCategory}
+    		, #{originFilename}
+    		, #{saveFilename}
+    		, #{filetype}
+    		, #{filesize}
+    		, NOW()
+    		, NOW()
+    	)
+	</insert>
+
+	<!-- 개인정보 파일 수정 -->
+	<delete id="removeMemberFile" parameterType="map">
+	    DELETE FROM
+	    	member_file
+	    WHERE
+		    emp_no = #{empNo}
+		    AND file_category = #{fileCategory}
+	</delete>
+	
 </mapper>

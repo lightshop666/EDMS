@@ -23,4 +23,13 @@ public interface MemberMapper {
 	
 	// 개인정보 파일 조회
 	MemberFile selectMemberFile(int empNo, String fileCategory);
+	
+	// 개인정보 수정
+	int modifyMember(int empNo);
+	
+	// 개인정보 파일 입력
+	int addMemberFile(MemberFile memberFile);
+	
+	// 개인정보 파일 삭제
+	int removeMemberFile(int empNo, String fileCategory);
 }
