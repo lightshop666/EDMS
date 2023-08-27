@@ -559,7 +559,11 @@
                                             <div id="calendar"></div>
                                         </div>
                                     </div>
-                                    <!-- [시작] 캘린더 출력부분 -->
+                                    <!-- [끝] 캘린더 출력부분 -->
+                                    
+                                    <button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+                                    <a href="${pageContext.request.contextPath}/schedule/addSchedule">일정추가</a><!-- 오른쪽 정렬 -->
+                                    
                                 </div>
                             </div>
                         </div>

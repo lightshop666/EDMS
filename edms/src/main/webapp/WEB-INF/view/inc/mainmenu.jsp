@@ -106,7 +106,7 @@ $(document).ready(function() {
 					</a>
 			    </li>
 				<li class="sidebar-item"> 
-					<a class="sidebar-link" href="${pageContext.request.contextPath}/reservation/reservationLis" aria-expanded="false" data-access-level="0">
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/reservation/reservationList" aria-expanded="false" data-access-level="0">
 						<i data-feather="grid" class="feather-icon"></i>
 							<span class="hide-menu">예약조회</span>
 					</a>

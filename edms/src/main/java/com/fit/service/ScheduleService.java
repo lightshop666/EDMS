@@ -88,5 +88,42 @@ public class ScheduleService {
     }
 	
 	// 일정추가 메서드
-	
+ 	public int addSchedule(Schedule schedule) {
+ 		
+ 		// 디버깅
+ 		log.debug(CC.YOUN+"scheduleService.addSchedule() schedule: "+schedule+CC.RESET);
+ 		
+ 		// 삽입 여부 확인을 위한 row 반환
+ 		int row = scheduleMapper.insertSchedule(schedule);
+ 		
+ 		// 디버깅
+ 		log.debug(CC.YOUN+"scheduleService.addSchedule() row: "+row+CC.RESET);
+ 		
+ 		return row;
+ 	}
+ 	
+ 	// 일정삭제 - 체크박스를 통한 복수 삭제 메서드
+ 	public int removeSchedule(Long scheduleNo) {
+ 		
+         // 디버깅
+         log.debug(CC.YOUN+"ScheduleService.removeSchedule() scheduleNo: "+scheduleNo+CC.RESET);
+         
+         // 반환할 row값 생성
+         int row = 0;
+         
+         // 체크박스가 1개라도 선택되서 번호가 입력되는 경우
+         if (scheduleNo != null) {
+             
+         	// 디버깅
+            log.debug(CC.YOUN+"ScheduleService.removeSchedule() 삭제할 일정번호:"+scheduleNo+CC.RESET);
+         	
+     		// 공용품 글을 삭제
+     		row = scheduleMapper.deleteSchedule(scheduleNo);
+     		
+     		// 디버깅
+            log.debug(CC.YOUN+"ScheduleService.removeSchedule() 일정 삭제 row:"+row+CC.RESET);
+         }
+         // row 값 반환
+         return row;
+     }
 }

@@ -83,7 +83,7 @@
             var defaultEvents = [{
                     title: 'Meeting #3',
                     start: new Date($.now() + 506800000), // 현재 시간에서 506800000밀리초 만큼 더함(약 5일 20시간 52분 정도를 더함)
-                    className: 'bg-info'
+                    className: 'bg-info' // 이 값을 통해 추가된 일정의 색을 표현
                 }, {
                     title: 'Submission #1',
                     start: today,

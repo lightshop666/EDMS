@@ -21,4 +21,8 @@ public interface ScheduleMapper {
 	List<Schedule> findByScheduleDate(LocalDate date);
 	 
 	// 예약 추가 메서드
+	int insertSchedule(Schedule schedule);
+	
+	// 예약 삭제 메서드
+	int deleteSchedule(Long scheduleNo);
 }

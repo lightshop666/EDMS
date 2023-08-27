@@ -103,7 +103,7 @@
 	<!-- 공용품을 삭제하는 쿼리 -->
 	<delete id="deleteUtility" parameterType="Long">
 		DELETE FROM utility
-		WHERE utility_no = #{utility_no}
+		WHERE utility_no = #{utilityNo}
 	</delete>
 	
 	<!-- 공용품을 수정하는 쿼리 -->
