@@ -13,10 +13,12 @@ import com.fit.mapper.DraftMapper;
 import com.fit.mapper.MemberMapper;
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
+import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
+import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.VacationDraft;
 
 import lombok.extern.slf4j.Slf4j;
@@ -231,7 +233,7 @@ public class DraftService {
     //------------------------------정환 끝---------------------------------------------   
     //------------------------------희진 시작---------------------------------------------   
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회
-    // 기존의 memberMapper 사용 // -> private으로 바꿀지 고민.. 결재상태에 따른 서명이미지 조회 메서드를 만드니까 이건 없애는게 좋을까?
+    // 기존의 memberMapper 사용
     @Transactional
     public MemberFile selectMemberSign(int empNo) {
        // fileCategory를 Sign으로 지정하여 서명 조회
@@ -245,7 +247,7 @@ public class DraftService {
     // approval 테이블은 모든 양식이 공통으로 사용하는 테이블이므로 하나의 메서드를 만들었습니다.
     // 단, document_category 값을 반드시 양식에 맞게 셋팅 후 호출해주세요.
     @Transactional
-    private int addApprovalAndReturnKey(Approval approval, boolean isSaveDraft) {
+    public int addApprovalAndReturnKey(Approval approval, boolean isSaveDraft) {
        // 기본값 셋팅
        approval.setApprovalDate("0000-00-00"); // 결재일
        approval.setApprovalReason(""); // 반려사유
@@ -273,10 +275,51 @@ public class DraftService {
        return 0;
     }
     
+    // 결재정보 조회
+    // 양식 종류에 상관없이 공통적으로 조회되는 approval, receive_draft, document_file 테이블을 조회하는 메서드입니다.
+    public Map<String, Object> selectApprovalOne(int empNo, int approvalNo) {
+    	Map<String, Object> result = new HashMap<>();
+    	
+    	// 1. approval 테이블 조회
+    	ApprovalJoinDto approval = draftMapper.selectApprovalOne(empNo, approvalNo);
+    	result.put("approval", approval);
+    	// 2. receive_draft, document_file 테이블 조회 (List)
+    	if (approval != null) {
+    		List<ReceiveJoinDraft> receiveList = draftMapper.selectReceiveList(approvalNo);
+    		List<DocumentFile> documentFileList = draftMapper.selectDocumentFileList(approvalNo);
+    		result.put("receiveList", receiveList);
+    		result.put("documentFileList", documentFileList);
+    	}
+    	    	
+    	return result;
+    }
+    
+    // 결재상태에 따른 서명이미지 조회
+    public Map<String, Object> getApprovalSign(ApprovalJoinDto approvalJoinDto) {
+    	Map<String, Object> memberSignMap = new HashMap<>();
+    	
+    	// 기안자의 서명은 무조건 조회
+    	int firstEmpNo = approvalJoinDto.getFirstApproval(); // 기안자의 사원번호 조회
+		memberSignMap.put("firstSign", selectMemberSign(firstEmpNo)); // 기존 메서드 사용
+		// 결재상태에 따라 해당 결재자의 서명 이미지를 조회합니다.
+		String approvalField = approvalJoinDto.getApprovalField();
+    	if ( approvalField.equals("B") ) { // 결재중
+    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
+    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo)); 
+    	} else if ( approvalField.equals("C") ) { // 결재완료
+    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
+    		int finalEmpNo = approvalJoinDto.getFinalApproval(); // 중간승인자의 사원번호 조회
+    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo));
+    		memberSignMap.put("finalSign", selectMemberSign(finalEmpNo));
+    	}
+    	
+    	return memberSignMap;
+    }
+    
     // 휴가신청시 시간값 셋팅
     // 작성, 수정시 모두 시간값 셋팅이 필요하므로 해당 기능을 모듈화하였습니다.
     // VacationDraft 객체와 vacationTime 문자열을 매개값으로 넣고 호출해주세요.
-    private void prepareVacationTimes(VacationDraft vacationDraft, String vacationTime) {
+    public void prepareVacationTimes(VacationDraft vacationDraft, String vacationTime) {
        // 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
        // 1. 휴가종류를 선택하지 않았다면 모든 값들 기본값으로 셋팅
        if (vacationDraft.getVacationName() == null) {
@@ -359,42 +402,19 @@ public class DraftService {
        
        return approvalKey;
     }
-    
-    // 결재상태에 따른 서명이미지 조회
-    private Map<String, Object> getApprovalSign(ApprovalJoinDto approvalJoinDto) {
-    	Map<String, Object> memberSignMap = new HashMap<>();
-    	
-    	// 기안자의 서명은 무조건 조회
-    	int firstEmpNo = approvalJoinDto.getFirstApproval(); // 기안자의 사원번호 조회
-		memberSignMap.put("firstSign", selectMemberSign(firstEmpNo)); // 기존 메서드 사용
-		// 결재상태에 따라 해당 결재자의 서명 이미지를 조회합니다.
-		String approvalField = approvalJoinDto.getApprovalField();
-    	if ( approvalField.equals("B") ) { // 결재중
-    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
-    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo)); 
-    	} else if ( approvalField.equals("C") ) { // 결재완료
-    		int mediateEmpNo = approvalJoinDto.getMediateApproval(); // 중간승인자의 사원번호 조회
-    		int finalEmpNo = approvalJoinDto.getFinalApproval(); // 중간승인자의 사원번호 조회
-    		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo));
-    		memberSignMap.put("finalSign", selectMemberSign(finalEmpNo));
-    	}
-    	
-    	return memberSignMap;
-    }
-    
+       
     // 휴가신청서 상세페이지 조회
     @Transactional
     public Map<String, Object> selectVacationDraftOne(int empNo, int approvalNo) {
     	Map<String, Object> resultMap = new HashMap<>();
     	
-    	// 1. 결재정보 조회
-    	// 양식 종류에 상관없이 공통적으로 조회되는 approval, receive_draft, document_file 테이블을 조회하는 메서드입니다.
-        // ApprovalJoinDto DTO 타입으로 반환됩니다.
-    	ApprovalJoinDto approvalJoinDto = draftMapper.selectApprovalOne(empNo, approvalNo);
-    	// 1-1. 기안자의 이름과 부서명 조회
-    	// 예정..
-    	// 1-2. 수신참조자의 이름과 부서명, 직급 조회
-    	// 예정..
+    	// 1. 결재정보 조회 // approval, receive_draft, document_file 테이블
+    	Map<String, Object> result = selectApprovalOne(empNo, approvalNo); // 메서드 호출
+    	log.debug(CC.HE + "DraftService.selectApprovalOne() result : " + result + CC.RESET);
+    	// 반환값 추출 // 휴가신청서는 document_file 테이블 값이 없습니다.
+    	ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+    	List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
+
     	// 2. vacation_draft 테이블 조회
     	VacationDraft vacationDraft = draftMapper.selectVactionDraftOne(approvalNo);
     	// 2-1. 반차일 경우 vacationTime 값 지정
@@ -409,9 +429,10 @@ public class DraftService {
     		}
     	}
     	// 3. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
-    	Map<String, Object> memberSignMap = getApprovalSign(approvalJoinDto);
+    	Map<String, Object> memberSignMap = getApprovalSign(approval);
     	
-    	resultMap.put("approvalJoinDto", approvalJoinDto);
+    	resultMap.put("approval", approval);
+    	resultMap.put("receiveList", receiveList);
     	resultMap.put("vacationDraft", vacationDraft);
     	resultMap.put("vacationTime", vacationTime);
     	resultMap.put("memberSignMap", memberSignMap);

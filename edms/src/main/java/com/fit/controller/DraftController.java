@@ -19,8 +19,10 @@ import com.fit.CC;
 import com.fit.service.DraftService;
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
+import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
+import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.VacationDraft;
 import com.fit.websocket.AlarmService;
 import com.google.gson.Gson;
@@ -50,7 +52,6 @@ public class DraftController {
 		String empName = (String) session.getAttribute("empName");
 		String deptName = (String) session.getAttribute("deptName");
 		
-		// 2~4 를 하나의 서비스에 묶는게 낫지 않을까?
 		// 2. 서명 이미지 - memberSign
 		MemberFile memberSign = draftService.selectMemberSign(empNo);
 		
@@ -119,24 +120,24 @@ public class DraftController {
 		// 서비스 호출
 		int approvalKey = draftService.addVacationDraft(paramMap);
 		
-//웹소켓 알림 보내기
-		//사용자ID, 알림 내용 enum '기안알림','일정알림','공지알림', 구독 주제 (/topic/draftAlarm)
-		//sendAlarmToUser(int empNo,String alarmContent, String prefixContent)
+		// 웹소켓 알림 보내기
+		// 사용자ID, 알림 내용 enum '기안알림','일정알림','공지알림', 구독 주제 (/topic/draftAlarm)
+		// sendAlarmToUser(int empNo,String alarmContent, String prefixContent)
 		alarmService.sendAlarmToUser(1000000, "기안알림", "/topic/draftAlarm");//테스트용 
 		/*
-		//for문으로 중간승인자,최종승인자,참조인에게 알림 보낸다. 나중에는 성공 유무에 따라 성공한 경우만 하게 if문 안으로 넣기
+		// for문으로 중간승인자,최종승인자,참조인에게 알림 보낸다. 나중에는 성공 유무에 따라 성공한 경우만 하게 if문 안으로 넣기
 		for (int recipient : recipients) {
 		    // 사용자가 로그인하지 않은 경우에도 알림 쌓기
 		}		
 		 */
 		
-		// 성공 유무에 따라 approvalKey로 상세 페이지로 분기 예정...
+		// 성공 유무에 따라 approvalKey로 상세 페이지로 분기
 		if (approvalKey != 0) {
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
-			return "redirect:/draft/vacationDraft?result=success";
+			return "redirect:/draft/vacationDraftOne?result=success&approvalNo=" + approvalKey;
 		} else {
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 실패 approvalKey : " + approvalKey + CC.RESET);
-			return "redirect:/draft/vacationDraft?result=fail";
+			return "redirect:/draft/vacationDraft?result=fail&approvalNo=" + approvalKey;
 		}
 	}
 	
@@ -195,24 +196,22 @@ public class DraftController {
 		// 권한 분기 -> 메인메뉴에서 처리
 		
 		// approvalNo 값이 없으면 분기
-		/*
 		if (approvalNo == null) {
-
 			return "redirect:/home";
 		}
-		*/
-		int approvalNoEx = 6; // test
 		// 세션에서 사원번호 가져오기
 		int empNo = (int) session.getAttribute("loginMemberId");
 		
 		// 서비스 호출
-		Map<String, Object> resultMap = draftService.selectVacationDraftOne(empNo, approvalNoEx);
-		ApprovalJoinDto approvalJoinDto = (ApprovalJoinDto) resultMap.get("approvalJoinDto");
-		VacationDraft vacationDraft = (VacationDraft) resultMap.get("vacationDraft");
-		String vacationTime = (String) resultMap.get("vacationTime"); 
-		Map<String, Object> memberSignMap = (Map) resultMap.get("memberSignMap");
+		Map<String, Object> result = draftService.selectVacationDraftOne(empNo, approvalNo);
+		ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+    	List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
+		VacationDraft vacationDraft = (VacationDraft) result.get("vacationDraft");
+		String vacationTime = (String) result.get("vacationTime"); 
+		Map<String, Object> memberSignMap = (Map) result.get("memberSignMap");
 		
-		model.addAttribute("approvalJoinDto", approvalJoinDto);
+		model.addAttribute("approval", approval);
+		model.addAttribute("receiveList", receiveList);
 		model.addAttribute("vacationDraft", vacationDraft);
 		model.addAttribute("vacationTime", vacationTime);
 		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign

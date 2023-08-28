@@ -6,9 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
+import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
+import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.VacationDraft;
 
 @Mapper
@@ -51,16 +53,18 @@ public interface DraftMapper {
     void deleteReceiveDrafts(int approvalNo);
 
     void updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId);
-
-
-
     //정환 끝
     
+    // 희진
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 테이블 insert
     
     int insertReceiveDrafts(int approvalNo, int[] recipients); // 수신참조자 테이블 insert
     
     ApprovalJoinDto selectApprovalOne(int empNo, int approvalNo); // 양식 상세 조회, DTO 사용
+    
+    List<ReceiveJoinDraft> selectReceiveList(int approvalNo); // 해당 문서의 수신참조자 목록 조회, DTO 사용
+    
+    List<DocumentFile> selectDocumentFileList(int approvalNo); // 해당 문서의 파일 목록 조회
     
     VacationDraft selectVactionDraftOne(int approvalNo); // 휴가신청서 상세 조회
 }

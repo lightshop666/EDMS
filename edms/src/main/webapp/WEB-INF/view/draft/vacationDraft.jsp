@@ -28,7 +28,7 @@
 					<input type="date" name="vacationStart" id="vacationStart">
 					<input type="hidden" name="vacationDays" value="0.5"> <!-- 반차는 0.5일이 고정값으로 들어간다 -->
 					<input type="radio" name="vacationTime" value="오전반차">
-						오전반차 9:00~13:00
+						오전반차 09:00~13:00
 					<input type="radio" name="vacationTime" value="오후반차">
 						오후반차 14:00~18:00
 				`;
@@ -449,6 +449,8 @@
 							<th>선택</th>
 							<th>사원번호</th>
 							<th>성명</th>
+							<th>부서명</th>
+							<th>직급명</th>
 						</tr>
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
@@ -460,6 +462,12 @@
 								</td>
 								<td>
 									${employee.empName}
+								</td>
+								<td>
+									${employee.deptName}
+								</td>
+								<td>
+									${employee.empPosition}
 								</td>
 							</tr>
 						</c:forEach>
@@ -491,6 +499,8 @@
 							<th>선택</th>
 							<th>사원번호</th>
 							<th>성명</th>
+							<th>부서명</th>
+							<th>직급명</th>
 						</tr>
 						<c:forEach var="employee" items="${employeeList}">
 							<tr>
@@ -502,6 +512,12 @@
 								</td>
 								<td>
 									${employee.empName}
+								</td>
+								<td>
+									${employee.deptName}
+								</td>
+								<td>
+									${employee.empPosition}
 								</td>
 							</tr>
 						</c:forEach>

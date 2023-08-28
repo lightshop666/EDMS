@@ -10,7 +10,6 @@
          dept_name deptName,
          emp_position empPosition
       FROM emp_info
-      WHERE emp_position != 'super'
    </select>
    
    <!-- ExpenseDraftContent 테이블용 -->
@@ -205,7 +204,7 @@
    </insert>
    
    <!-- approval select by approvalNo, empNo -->
-   <!-- DTO를 사용하여 approval, receive_draft, document_file 테이블을 조회합니다.  -->
+   <!-- emp_info 테이블과 join하여 이름, 부서명도 함께 조회 -> DTO 사용 -->
    <select id="selectApprovalOne" parameterType="map" resultType="com.fit.vo.ApprovalJoinDto">
 		SELECT
 		    a.approval_no approvalNo,
@@ -219,30 +218,54 @@
 		    a.approval_state approvalState,
 		    a.document_category documentCategory,
 		    a.approval_field approvalField,
-		    a.createdate approvalCreateDate, <!-- craetdate -->
+		    a.createdate createDate,
 		    CASE <!-- 해당 양식에 empNo가 어느 결재라인인지 출력합니다. -->
 		        WHEN a.first_approval = #{empNo} THEN '기안자'
 		        WHEN a.mediate_approval = #{empNo} THEN '중간승인자'
 		        WHEN a.final_approval = #{empNo} THEN '최종승인자'
 		    END role, <!-- role -->
-		    r.receive_no receiveNo,
-		    r.emp_no receiveEmpNo, <!-- empNo -->
-		    r.createdate receiveCreateDate, <!-- createdate -->
-		    d.doc_file_no docFileNo,
-		    d.doc_ori_filename docOriFilename,
-		    d.doc_save_filename docSaveFilename,
-		    d.doc_filetype docFiletype,
-		    d.doc_path docPath,
-		    d.createdate documentCreateDate, <!-- createdate -->
-		    d.updatedate documentUpdateDate <!-- updatedate -->
+		    e.emp_name firstEmpName, <!-- 기안자 이름 -->
+		    e.dept_name firstDeptName <!-- 기안자 부서명 -->
 		FROM
 		    approval a
-		LEFT JOIN
-		    receive_draft r ON a.approval_no = r.approval_no
-		LEFT JOIN
-		    document_file d ON a.approval_no = d.approval_no
+		INNER JOIN
+			emp_info e ON a.emp_no = e.emp_no
 		WHERE
-		    a.approval_no = #{approvalNo}
+		    approval_no = #{approvalNo}
+   </select>
+   
+   <!-- receive_draft select by approvalNo -->
+   <!-- emp_info 테이블과 join하여 이름, 부서명, 직급도 함께 조회 -> DTO 사용 -->
+   <select id="selectReceiveList" parameterType="int" resultType="com.fit.vo.ReceiveJoinDraft">
+		SELECT
+			r.receive_no receiveNo,
+			r.approval_no approvalNo,
+		    r.emp_no empNo,
+		    r.createdate createdate,
+		    e.emp_name receiveEmpName, <!-- 수신참조자 이름 -->
+		    e.dept_name receiveDeptName, <!-- 수신참조자 부서명 -->
+		    e.emp_position receiveEmpPosition <!-- 수신참조자 직급 -->
+		FROM
+			receive_draft r
+		INNER JOIN
+			emp_info e ON r.emp_no = e.emp_no
+		WHERE
+			r.approval_no = #{approvalNo}
+   </select>
+   
+   <select id="selectDocumentFileList" parameterType="int" resultType="com.fit.vo.DocumentFile">
+		SELECT
+			doc_file_no docFileNo,
+		    doc_ori_filename docOriFilename,
+		    doc_save_filename docSaveFilename,
+		    doc_filetype docFiletype,
+		    doc_path docPath,
+		    createdate createDate,
+		    updatedate updateDate
+		FROM
+			document_file
+		WHERE
+			approval_no = #{approvalNo}
    </select>
    
    <select id="selectVactionDraftOne" parameterType="int" resultType="com.fit.vo.VacationDraft">

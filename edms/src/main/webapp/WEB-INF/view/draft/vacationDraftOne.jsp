@@ -6,6 +6,8 @@
 <head>
 <meta charset="UTF-8">
 <title>vacationDraftOne</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- 테이블 스타일 추가 -->
 	<style>
 	    table {
@@ -25,10 +27,9 @@
 	</style>
 </head>
 <body>
-	휴가신청서 상세
-</body>
 	<!-- 모델값 변수에 할당 -->
-	<c:set var="a" value="${approvalJoinDto}"></c:set>
+	<c:set var="a" value="${approval}"></c:set>
+	<c:set var="r" value="${receiveList}"></c:set>
 	<c:set var="v" value="${vacationDraft}"></c:set>
 	<c:set var="m" value="${memberSignMap}"></c:set>
 	<!--------------------->
@@ -36,8 +37,8 @@
 		<h1 style="text-align: center;">휴가신청서</h1>
 		<table>
 			<tr>
-				<th rowspan="3" colspan="2">휴가신청서</th>
-				<th rowspan="3">결재</th>
+				<th rowspan="2" colspan="2">휴가신청서</th>
+				<th rowspan="2">결재</th>
 				<th>기안자</th>
 				<th>중간승인자</th>
 				<th>최종승인자</th>
@@ -49,19 +50,15 @@
 					</c:if>
 					<c:if test="${m.firstSign.memberSaveFileName == null}"> <!-- 서명 이미지가 없으면 문구 출력 -->
 						<!-- 해당 부분 문구가 아닌 다른 이미지로 출력할지 고민중.. -->
-						서명 이미지 없음
+						서명 이미지 미등록
 					</c:if>
 				</td>
 				<td>
 					<c:if test="${m.mediateSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
 						<img src="${m.mediateSign.memberPath}${m.mediateSign.memberSaveFileName}.${m.mediateSign.memberFiletype}">
 					</c:if>
-					<!-- 이부분 다시 생각... -->
-					<c:if test="${m.mediateSign.memberSaveFileName == null && a.approvalField == 'B'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-						서명 이미지 없음
-					</c:if>
-					<c:if test="${m.mediateSign.memberSaveFileName == null && a.approvalField == 'C'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-						서명 이미지 없음
+					<c:if test="${m.mediateSign.memberSaveFileName == null && a.approvalField != 'A'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
+						서명 이미지 미등록
 					</c:if>
 				</td>
 				<td>
@@ -69,7 +66,7 @@
 						<img src="${m.finalSign.memberPath}${m.finalSign.memberSaveFileName}.${m.finalSign.memberFiletype}">
 					</c:if>
 					<c:if test="${m.finalSign.memberSaveFileName == null && a.approvalField == 'C'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-						서명 이미지 없음
+						서명 이미지 미등록
 					</c:if>
 				</td>
 			</tr>
@@ -78,18 +75,21 @@
 					수신참조자
 				</th>
 				<td colspan="5">
-					<c:if test="${a.receiveDraftList != null}"> <!-- 수신참조자 테이블 리스트가 존재하면 -->
-						<c:forEach var="r" items="${a.receiveDraftList}">
-							${r.empNo} <!-- 사원번호가 아니라 사원이름, 부서명, 직급이 출력되도록... 쉼표도 넣어야함 -->
+					<c:if test="${r != null}"> <!-- 수신참조자 테이블 리스트가 존재하면 -->
+						<c:forEach var="r" items="${r}" varStatus="status">
+							<!-- varStatus 속성으로 현재 반복문의 상태를 알 수 있습니다. -->
+							<!-- varStatus.last로 현재 항목이 마지막 항복인지 여부를 알 수 있습니다. -->
+							<!-- 마지막 항목일 경우에는 쉼표를 출력하지 않습니다. -->
+							${r.receiveEmpName}_${r.receiveDeptName}_${r.receiveEmpPosition}<c:if test="${!status.last}">, </c:if>
 						</c:forEach>
 					</c:if>
 				</td>
 			</tr>
 			<tr>
 				<th>성명</th>
-				<td>예정..</td>
+				<td>${a.firstEmpName}</td>
 				<th>부서</th>
-				<td>예정..</td>
+				<td>${a.firstDeptName}</td>
 				<th>휴가종류</th>
 				<td>
 					${v.vacationName}
@@ -99,17 +99,17 @@
 				<th>기간</th>
 				<td colspan="5">
 					휴가일수 : ${v.vacationDays}일
-					휴가시작일 : ${v.vacationStart}
+					휴가시작일 : ${fn:substring(v.vacationStart, 0, 16)} <!-- 날짜시간 규격을 맞추기 위해 substring 사용 -->
 					<c:if test="${v.vacationName == '반차'}">
-						<c:if test="${v.vacationTime == '오전반차'}">
-							오전반차 9:00~13:00
+						<c:if test="${vacationTime == '오전반차'}">
+							오전반차 09:00~13:00
 						</c:if>
-						<c:if test="${v.vacationTime == '오후반차'}">
+						<c:if test="${vacationTime == '오후반차'}">
 							오후반차 14:00~18:00
 						</c:if>
 					</c:if>
 					<c:if test="${v.vacationName == '연차' || v.vacationName == '보상'}">
-						휴가종료일 : ${v.vacationEnd}
+						휴가종료일 : ${fn:substring(v.vacationEnd, 0, 16)} <!-- 날짜시간 규격을 맞추기 위해 substring 사용 -->
 					</c:if>
 				</td>
 			</tr>
@@ -139,10 +139,34 @@
 				</th>
 			</tr>
 		</table>
-		<!-- 버튼 분기 예정... -->
-		<!-- 
-			role이 기안자이고, 결재상태가 A이면 .. 목록 / 기안취소 / 수정 출력
-			이런식으로 분기 예정...
-		 -->
+		<button type="button" id="cancelBtn">목록</button> <!-- 왼쪽정렬 -->
+		<!-- 버튼 분기 -->
+		<c:if test="${a.approvalField == 'A'}"> <!-- 결재대기 -->
+			<c:if test="${a.role == '기안자'}">
+				<button type="button" id="">수정</button>
+				<button type="button" id="">기안취소</button>
+			</c:if>
+			<c:if test="${a.role == '중간승인자'}">
+				<button type="button" id="">승인</button>
+				<button type="button" id="">반려</button>
+			</c:if>
+		</c:if>
+		<c:if test="${a.approvalField == 'B'}"> <!-- 결재중 -->
+			<c:if test="${a.role == '중간승인자'}">
+				<button type="button" id="">승인취소</button>
+				<button type="button" id="">반려</button>
+			</c:if>
+			<c:if test="${a.role == '최종승인자'}">
+				<button type="button" id="">승인</button>
+				<button type="button" id="">반려</button>
+			</c:if>
+		</c:if>
+		<c:if test="${a.approvalField == 'C'}"> <!-- 결재완료 -->
+			<c:if test="${a.role == '최종승인자'}">
+				<button type="button" id="">승인취소</button>
+				<button type="button" id="">반려</button>
+			</c:if>
+		</c:if>
 	</div>
+</body>
 </html>
