@@ -147,10 +147,10 @@
                 handleWindowResize: true,
 
                 header: {
-					// 왼쪽 상단에 이전, 다음, 오늘 버튼을 배치
-                    left: 'prev,next today',
-                    // 중앙 상단에 캘린더 제목을 표시
-                    center: 'title',
+					// 왼쪽 상단에 오늘 버튼을 배치
+                    left: 'today',
+                    // 중앙 상단에 이전, 캘린더 제목, 다음을 표시
+                    center: 'prev title next',
                     // 오른쪽 상단에 월별 뷰, 일별 뷰를 선택할 수 있는 버튼을 배치합니다.
                     right: 'month,agendaDay'
                     // ,agendaWeek 주간 뷰 제외
@@ -193,9 +193,10 @@
 
 }(window.jQuery),
 
-// CalendarApp 초기화 실행 -> window 객체의 load 이벤트를 처리하는 함수를 설정, 웹 페이지가 완전히 로드된 후 발생
-$(window).on('load', function() {
-	
+// CalendarApp 초기화 실행 -> 웹 페이지가 완전히 로드된 후 실행되는 함수로 객체를 초기화함
+// $(window).on('load', function() {
+$(document).ready(function() {
+		
 	// 여기에서 서버에서 가져온 initData를 정의하거나 Ajax를 사용하여 가져온다.
     var initData = {
         scheduleEvents:scheduleEvents, // DB에서 가져온 일정 이벤트 데이터

@@ -2,7 +2,7 @@
 <!-- jstl 사용 -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>  
 <!DOCTYPE html>
-<html dir="ltr">
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -13,9 +13,13 @@
     <meta name="author" content="">
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-    <title>Freedash Template - The Ultimate Multipurpose admin template</title>
+    <title>schedule</title>
     <!-- Custom CSS -->
     <link href="../assets/libs/fullcalendar/dist/fullcalendar.min.css" rel="stylesheet" />
+    
+    <link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+	<link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+	<link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" /> 
     <!-- Custom CSS -->
     <link href="../dist/css/style.min.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -30,7 +34,64 @@
 	 	var scheduleEvents = ${scheduleEvents};
 	    var reservationEvents = ${reservationEvents};
 	</script>
-
+	
+	<script>
+		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
+			
+			// 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('HOME으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				if (result) {
+					window.location.href = '/home'; // Home으로 이동
+				}
+			});
+		});
+	</script>
+	
+	<!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/extra-libs/taskboard/js/jquery.ui.touch-punch-improved.js"></script>
+    <script src="../assets/extra-libs/taskboard/js/jquery-ui.min.js"></script>
+    <script src="../assets/libs/popper.js/dist/umd/popper.min.js"></script>
+	
+	<!-- 'defer' 속성이 추가된 스크립트 태그들입니다. -->
+	<!-- 'defer'는 브라우저가 HTML 문서를 파싱하면서 동시에 스크립트를 비동기적으로 로드하도록 지시합니다. -->
+	<!-- 이로 인해 페이지 렌더링이 차단되지 않고, 사용자에게 페이지 내용이 빠르게 표시됩니다. -->
+	<!-- 그리고 모든 HTML 문서 파싱이 완료되고 DOM이 완전히 구성된 직후에, 로드된 스크립트가 실행됩니다. -->
+	<!-- 따라서 이 스크립트들은 DOM 요소를 조작하는 코드를 포함하더라도 안전하게 실행할 수 있습니다. -->
+	<!-- apps -->
+    <script src="../dist/js/app-style-switcher.js" defer></script>
+    <script src="../dist/js/feather.min.js" defer></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js" defer></script>
+    <script src="../dist/js/sidebarmenu.js" defer></script>
+    <!--Custom JavaScript -->
+    <script src="../dist/js/custom.min.js" defer></script>
+    <!--This page JavaScript -->
+    <script src="../assets/libs/moment/min/moment.min.js" defer></script>
+    <script src="../assets/libs/fullcalendar/dist/fullcalendar.min.js" defer></script>
+    <!-- 사용자가 fullcalendar api를 설정하는 js 파일  -->
+    <script src="../dist/js/pages/calendar/cal-init.js" defer></script>
+    <script src="../assets/extra-libs/c3/d3.min.js" defer></script>
+	<script src="../assets/extra-libs/c3/c3.min.js" defer></script>
+	<script src="../assets/libs/chartist/dist/chartist.min.js" defer></script>
+	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js" defer></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js" defer></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js" defer></script>
+	<script src="../dist/js/pages/dashboards/dashboard1.min.js" defer></script>
+	
+	<style>
+	#cancelBtn {
+	    float: left;  // 왼쪽 정렬
+	}
+	
+	#addScheduleLink {
+	    float: right;  // 오른쪽 정렬
+	}
+	</style>
+	
 </head>
 
 <body>
@@ -50,432 +111,27 @@
         <!-- ============================================================== -->
         <!-- Topbar header - style you can find in pages.scss -->
         <!-- ============================================================== -->
-        <header class="topbar" data-navbarbg="skin6">
-            <nav class="navbar top-navbar navbar-expand-lg">
-                <div class="navbar-header" data-logobg="skin6">
-                    <!-- This is for the sidebar toggle which is visible on mobile only -->
-                    <a class="nav-toggler waves-effect waves-light d-block d-lg-none" href="javascript:void(0)"><i
-                            class="ti-menu ti-close"></i></a>
-                    <!-- ============================================================== -->
-                    <!-- Logo -->
-                    <!-- ============================================================== -->
-                    <div class="navbar-brand">
-                        <!-- Logo icon -->
-                        <a href="index.html">
-                            <img src="../assets/images/freedashDark.svg" alt="" class="img-fluid">
-                        </a>
-                    </div>
-                    <!-- ============================================================== -->
-                    <!-- End Logo -->
-                    <!-- ============================================================== -->
-                    <!-- ============================================================== -->
-                    <!-- Toggle which is visible on mobile only -->
-                    <!-- ============================================================== -->
-                    <a class="topbartoggler d-block d-lg-none waves-effect waves-light" href="javascript:void(0)"
-                        data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><i
-                            class="ti-more"></i></a>
-                </div>
-                <!-- ============================================================== -->
-                <!-- End Logo -->
-                <!-- ============================================================== -->
-                <div class="navbar-collapse collapse" id="navbarSupportedContent">
-                    <!-- ============================================================== -->
-                    <!-- toggle and nav items -->
-                    <!-- ============================================================== -->
-                    <ul class="navbar-nav float-left me-auto ms-3 ps-1">
-                        <!-- Notification -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle pl-md-3 position-relative" href="javascript:void(0)"
-                                id="bell" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                <span><i data-feather="bell" class="svg-icon"></i></span>
-                                <span class="badge text-bg-primary notify-no rounded-circle">5</span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-left mailbox animated bounceInDown">
-                                <ul class="list-style-none">
-                                    <li>
-                                        <div class="message-center notifications position-relative">
-                                            <!-- Message -->
-                                            <a href="javascript:void(0)"
-                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
-                                                <div class="btn btn-danger rounded-circle btn-circle"><i
-                                                        data-feather="airplay" class="text-white"></i></div>
-                                                <div class="w-75 d-inline-block v-middle ps-2">
-                                                    <h6 class="message-title mb-0 mt-1">Luanch Admin</h6>
-                                                    <span class="font-12 text-nowrap d-block text-muted">Just see
-                                                        the my new
-                                                        admin!</span>
-                                                    <span class="font-12 text-nowrap d-block text-muted">9:30 AM</span>
-                                                </div>
-                                            </a>
-                                            <!-- Message -->
-                                            <a href="javascript:void(0)"
-                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
-                                                <span class="btn btn-success text-white rounded-circle btn-circle"><i
-                                                        data-feather="calendar" class="text-white"></i></span>
-                                                <div class="w-75 d-inline-block v-middle ps-2">
-                                                    <h6 class="message-title mb-0 mt-1">Event today</h6>
-                                                    <span
-                                                        class="font-12 text-nowrap d-block text-muted text-truncate">Just
-                                                        a reminder that you have event</span>
-                                                    <span class="font-12 text-nowrap d-block text-muted">9:10 AM</span>
-                                                </div>
-                                            </a>
-                                            <!-- Message -->
-                                            <a href="javascript:void(0)"
-                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
-                                                <span class="btn btn-info rounded-circle btn-circle"><i
-                                                        data-feather="settings" class="text-white"></i></span>
-                                                <div class="w-75 d-inline-block v-middle ps-2">
-                                                    <h6 class="message-title mb-0 mt-1">Settings</h6>
-                                                    <span
-                                                        class="font-12 text-nowrap d-block text-muted text-truncate">You
-                                                        can customize this template
-                                                        as you want</span>
-                                                    <span class="font-12 text-nowrap d-block text-muted">9:08 AM</span>
-                                                </div>
-                                            </a>
-                                            <!-- Message -->
-                                            <a href="javascript:void(0)"
-                                                class="message-item d-flex align-items-center border-bottom px-3 py-2">
-                                                <span class="btn btn-primary rounded-circle btn-circle"><i
-                                                        data-feather="box" class="text-white"></i></span>
-                                                <div class="w-75 d-inline-block v-middle ps-2">
-                                                    <h6 class="message-title mb-0 mt-1">Pavan kumar</h6> <span
-                                                        class="font-12 text-nowrap d-block text-muted">Just
-                                                        see the my admin!</span>
-                                                    <span class="font-12 text-nowrap d-block text-muted">9:02 AM</span>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <a class="nav-link pt-3 text-center text-dark" href="javascript:void(0);">
-                                            <strong>Check all notifications</strong>
-                                            <i class="fa fa-angle-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <!-- End Notification -->
-                        <!-- ============================================================== -->
-                        <!-- create new -->
-                        <!-- ============================================================== -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i data-feather="settings" class="svg-icon"></i>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#">Something else here</a>
-                            </div>
-                        </li>
-                        <li class="nav-item d-none d-md-block">
-                            <a class="nav-link" href="javascript:void(0)">
-                                <div class="customize-input">
-                                    <select
-                                        class="custom-select form-control bg-white custom-radius custom-shadow border-0">
-                                        <option selected>EN</option>
-                                        <option value="1">AB</option>
-                                        <option value="2">AK</option>
-                                        <option value="3">BE</option>
-                                    </select>
-                                </div>
-                            </a>
-                        </li>
-                    </ul>
-                    <!-- ============================================================== -->
-                    <!-- Right side toggle and nav items -->
-                    <!-- ============================================================== -->
-                    <ul class="navbar-nav float-end">
-                        <!-- ============================================================== -->
-                        <!-- Search -->
-                        <!-- ============================================================== -->
-                        <li class="nav-item d-none d-md-block">
-                            <a class="nav-link" href="javascript:void(0)">
-                                <form>
-                                    <div class="customize-input">
-                                        <input class="form-control custom-shadow custom-radius border-0 bg-white"
-                                            type="search" placeholder="Search" aria-label="Search">
-                                        <i class="form-control-icon" data-feather="search"></i>
-                                    </div>
-                                </form>
-                            </a>
-                        </li>
-                        <!-- ============================================================== -->
-                        <!-- User profile and search -->
-                        <!-- ============================================================== -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown"
-                                aria-haspopup="true" aria-expanded="false">
-                                <img src="../assets/images/users/profile-pic.jpg" alt="user" class="rounded-circle"
-                                    width="40">
-                                <span class="ms-2 d-none d-lg-inline-block"><span>Hello,</span> <span
-                                        class="text-dark">Jason Doe</span> <i data-feather="chevron-down"
-                                        class="svg-icon"></i></span>
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-right user-dd animated flipInY">
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="user"
-                                        class="svg-icon me-2 ms-1"></i>
-                                    My Profile</a>
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="credit-card"
-                                        class="svg-icon me-2 ms-1"></i>
-                                    My Balance</a>
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="mail"
-                                        class="svg-icon me-2 ms-1"></i>
-                                    Inbox</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="settings"
-                                        class="svg-icon me-2 ms-1"></i>
-                                    Account Setting</a>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="javascript:void(0)"><i data-feather="power"
-                                        class="svg-icon me-2 ms-1"></i>
-                                    Logout</a>
-                                <div class="dropdown-divider"></div>
-                                <div class="pl-4 p-3"><a href="javascript:void(0)" class="btn btn-sm btn-info">View
-                                        Profile</a></div>
-                            </div>
-                        </li>
-                        <!-- ============================================================== -->
-                        <!-- User profile and search -->
-                        <!-- ============================================================== -->
-                    </ul>
-                </div>
-            </nav>
-        </header>
+        
+      <%--   <header class="topbar" data-navbarbg="skin6">
+		<jsp:include page="/WEB-INF/view/inc/header.jsp" />
+		</header> --%>
+        
         <!-- ============================================================== -->
         <!-- End Topbar header -->
         <!-- ============================================================== -->
         <!-- ============================================================== -->
         <!-- Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
-        <aside class="left-sidebar" data-sidebarbg="skin6">
-            <!-- Sidebar scroll-->
-            <div class="scroll-sidebar" data-sidebarbg="skin6">
-                <!-- Sidebar navigation-->
-                <nav class="sidebar-nav">
-                    <ul id="sidebarnav">
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="index.html"
-                                aria-expanded="false"><i data-feather="home" class="feather-icon"></i><span
-                                    class="hide-menu">Dashboard</span></a></li>
-                        <li class="list-divider"></li>
-                        <li class="nav-small-cap"><span class="hide-menu">Applications</span></li>
-
-                        <li class="sidebar-item"> <a class="sidebar-link" href="ticket-list.html"
-                                aria-expanded="false"><i data-feather="tag" class="feather-icon"></i><span
-                                    class="hide-menu">Ticket List
-                                </span></a>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-chat.html"
-                                aria-expanded="false"><i data-feather="message-square" class="feather-icon"></i><span
-                                    class="hide-menu">Chat</span></a></li>
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="app-calendar.html"
-                                aria-expanded="false"><i data-feather="calendar" class="feather-icon"></i><span
-                                    class="hide-menu">Calendar</span></a></li>
-
-                        <li class="list-divider"></li>
-                        <li class="nav-small-cap"><span class="hide-menu">Components</span></li>
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                aria-expanded="false"><i data-feather="file-text" class="feather-icon"></i><span
-                                    class="hide-menu">Forms </span></a>
-                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
-                                <li class="sidebar-item"><a href="form-inputs.html" class="sidebar-link"><span
-                                            class="hide-menu"> Form Inputs
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="form-input-grid.html" class="sidebar-link"><span
-                                            class="hide-menu"> Form Grids
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="form-checkbox-radio.html" class="sidebar-link"><span
-                                            class="hide-menu"> Checkboxes &
-                                            Radios
-                                        </span></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                aria-expanded="false"><i data-feather="grid" class="feather-icon"></i><span
-                                    class="hide-menu">Tables </span></a>
-                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
-                                <li class="sidebar-item"><a href="table-basic.html" class="sidebar-link"><span
-                                            class="hide-menu"> Basic Table
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="table-dark-basic.html" class="sidebar-link"><span
-                                            class="hide-menu"> Dark Basic Table
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="table-sizing.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Sizing Table
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="table-layout-coloured.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Coloured
-                                            Table Layout
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="table-datatable-basic.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Basic
-                                            Datatables
-                                            Layout
-                                        </span></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                aria-expanded="false"><i data-feather="bar-chart" class="feather-icon"></i><span
-                                    class="hide-menu">Charts </span></a>
-                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
-                                <li class="sidebar-item"><a href="chart-morris.html" class="sidebar-link"><span
-                                            class="hide-menu"> Morris Chart
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="chart-chart-js.html" class="sidebar-link"><span
-                                            class="hide-menu"> ChartJs
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="chart-knob.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Knob Chart
-                                        </span></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                aria-expanded="false"><i data-feather="box" class="feather-icon"></i><span
-                                    class="hide-menu">UI Elements </span></a>
-                            <ul aria-expanded="false" class="collapse  first-level base-level-line">
-                                <li class="sidebar-item"><a href="ui-buttons.html" class="sidebar-link"><span
-                                            class="hide-menu"> Buttons
-                                        </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="ui-modals.html" class="sidebar-link"><span
-                                            class="hide-menu"> Modals </span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="ui-tab.html" class="sidebar-link"><span
-                                            class="hide-menu"> Tabs </span></a></li>
-                                <li class="sidebar-item"><a href="ui-tooltip-popover.html" class="sidebar-link"><span
-                                            class="hide-menu"> Tooltip &
-                                            Popover</span></a></li>
-                                <li class="sidebar-item"><a href="ui-notification.html" class="sidebar-link"><span
-                                            class="hide-menu">Notification</span></a></li>
-                                <li class="sidebar-item"><a href="ui-progressbar.html" class="sidebar-link"><span
-                                            class="hide-menu">Progressbar</span></a></li>
-                                <li class="sidebar-item"><a href="ui-typography.html" class="sidebar-link"><span
-                                            class="hide-menu">Typography</span></a></li>
-                                <li class="sidebar-item"><a href="ui-bootstrap.html" class="sidebar-link"><span
-                                            class="hide-menu">Bootstrap
-                                            UI</span></a></li>
-                                <li class="sidebar-item"><a href="ui-breadcrumb.html" class="sidebar-link"><span
-                                            class="hide-menu">Breadcrumb</span></a></li>
-                                <li class="sidebar-item"><a href="ui-list-media.html" class="sidebar-link"><span
-                                            class="hide-menu">List
-                                            Media</span></a></li>
-                                <li class="sidebar-item"><a href="ui-grid.html" class="sidebar-link"><span
-                                            class="hide-menu"> Grid </span></a></li>
-                                <li class="sidebar-item"><a href="ui-carousel.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Carousel</span></a></li>
-                                <li class="sidebar-item"><a href="ui-scrollspy.html" class="sidebar-link"><span
-                                            class="hide-menu">
-                                            Scrollspy</span></a></li>
-                                <li class="sidebar-item"><a href="ui-toasts.html" class="sidebar-link"><span
-                                            class="hide-menu"> Toasts</span></a>
-                                </li>
-                                <li class="sidebar-item"><a href="ui-spinner.html" class="sidebar-link"><span
-                                            class="hide-menu"> Spinner </span></a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="ui-cards.html"
-                                aria-expanded="false"><i data-feather="sidebar" class="feather-icon"></i><span
-                                    class="hide-menu">Cards
-                                </span></a>
-                        </li>
-                        <li class="list-divider"></li>
-                        <li class="nav-small-cap"><span class="hide-menu">Authentication</span></li>
-
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="authentication-login1.html"
-                                aria-expanded="false"><i data-feather="lock" class="feather-icon"></i><span
-                                    class="hide-menu">Login
-                                </span></a>
-                        </li>
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link"
-                                href="authentication-register1.html" aria-expanded="false"><i data-feather="lock"
-                                    class="feather-icon"></i><span class="hide-menu">Register
-                                </span></a>
-                        </li>
-
-                        <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                aria-expanded="false"><i data-feather="feather" class="feather-icon"></i><span
-                                    class="hide-menu">Icons
-                                </span></a>
-                            <ul aria-expanded="false" class="collapse first-level base-level-line">
-                                <li class="sidebar-item"><a href="icon-fontawesome.html" class="sidebar-link"><span
-                                            class="hide-menu"> Fontawesome Icons </span></a></li>
-
-                                <li class="sidebar-item"><a href="icon-simple-lineicon.html" class="sidebar-link"><span
-                                            class="hide-menu"> Simple Line Icons </span></a></li>
-                            </ul>
-                        </li>
-
-                        
-                        <li class="list-divider"></li>
-                        <li class="nav-small-cap"><span class="hide-menu">Extra</span></li>
-                        
-                        <li class="sidebar-item"> <a class="sidebar-link sidebar-link" href="authentication-login1.html"
-                                aria-expanded="false"><i data-feather="log-out" class="feather-icon"></i><span
-                                    class="hide-menu">Logout</span></a></li>
-                                    <li class="sidebar-item"> <a class="sidebar-link has-arrow" href="javascript:void(0)"
-                                        aria-expanded="false"><i data-feather="crosshair" class="feather-icon"></i><span
-                                            class="hide-menu">Multi
-                                            level
-                                            dd</span></a>
-                                    <ul aria-expanded="false" class="collapse first-level base-level-line">
-                                        <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                    class="hide-menu"> item 1.1</span></a>
-                                        </li>
-                                        <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                    class="hide-menu"> item 1.2</span></a>
-                                        </li>
-                                        <li class="sidebar-item"> <a class="has-arrow sidebar-link" href="javascript:void(0)"
-                                                aria-expanded="false"><span class="hide-menu">Menu 1.3</span></a>
-                                            <ul aria-expanded="false" class="collapse second-level base-level-line">
-                                                <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                            class="hide-menu"> item
-                                                            1.3.1</span></a></li>
-                                                <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                            class="hide-menu"> item
-                                                            1.3.2</span></a></li>
-                                                <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                            class="hide-menu"> item
-                                                            1.3.3</span></a></li>
-                                                <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                            class="hide-menu"> item
-                                                            1.3.4</span></a></li>
-                                            </ul>
-                                        </li>
-                                        <li class="sidebar-item"><a href="javascript:void(0)" class="sidebar-link"><span
-                                                    class="hide-menu"> item
-                                                    1.4</span></a></li>
-                                    </ul>
-                                </li>
-                    </ul>
-                </nav>
-                <!-- End Sidebar navigation -->
-            </div>
-            <!-- End Sidebar scroll-->
-        </aside>
+        
+        <!-- 좌측 메인메뉴 인클루드 -->
+	
+		<%-- <aside class="left-sidebar" data-sidebarbg="skin6">
+		
+			<jsp:include page="/WEB-INF/view/inc/mainmenu.jsp" />
+		
+		</aside> --%>
+        
+        
         <!-- ============================================================== -->
         <!-- End Left Sidebar - style you can find in sidebar.scss  -->
         <!-- ============================================================== -->
@@ -562,7 +218,7 @@
                                     <!-- [끝] 캘린더 출력부분 -->
                                     
                                     <button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-                                    <a href="${pageContext.request.contextPath}/schedule/addSchedule">일정추가</a><!-- 오른쪽 정렬 -->
+                                    <a href="${pageContext.request.contextPath}/schedule/addSchedule" id="addScheduleLink">일정추가</a><!-- 오른쪽 정렬 -->
                                     
                                 </div>
                             </div>
@@ -576,10 +232,14 @@
             <!-- ============================================================== -->
             <!-- footer -->
             <!-- ============================================================== -->
-            <footer class="footer text-center">
-                All Rights Reserved by Freedash. Designed and Developed by <a
-                    href="https://wrappixel.com">WrapPixel</a>.
-            </footer>
+            
+            <!-- 푸터 인클루드 -->
+			<footer class="footer text-center text-muted">
+			
+				<jsp:include page="/WEB-INF/view/inc/footer.jsp" />
+				
+			</footer>
+            
             <!-- ============================================================== -->
             <!-- End footer -->
             <!-- ============================================================== -->
@@ -591,26 +251,8 @@
     <!-- ============================================================== -->
     <!-- End Wrapper -->
     <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- All Jquery -->
-    <!-- ============================================================== -->
-    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="../assets/extra-libs/taskboard/js/jquery.ui.touch-punch-improved.js"></script>
-    <script src="../assets/extra-libs/taskboard/js/jquery-ui.min.js"></script>
-    <script src="../assets/libs/popper.js/dist/umd/popper.min.js"></script>
-    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- apps -->
-    <script src="../dist/js/app-style-switcher.js"></script>
-    <script src="../dist/js/feather.min.js"></script>
-    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-    <script src="../dist/js/sidebarmenu.js"></script>
-    <!--Custom JavaScript -->
-    <script src="../dist/js/custom.min.js"></script>
-    <!--This page JavaScript -->
-    <script src="../assets/libs/moment/min/moment.min.js"></script>
-    <script src="../assets/libs/fullcalendar/dist/fullcalendar.min.js"></script>
-    <!-- 사용자가 fullcalendar api를 설정하는 js 파일  -->
-    <script src="../dist/js/pages/calendar/cal-init.js"></script>
+    
+   
 </body>
 
 </html>
