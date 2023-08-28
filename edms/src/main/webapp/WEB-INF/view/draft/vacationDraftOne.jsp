@@ -219,6 +219,9 @@
 				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
 		</c:if>
+		<c:if test="${a.approvalState == '반려'}"> <!-- 반려 -->
+			반려 사유 : ${a.approvalReason}
+		</c:if>
 		<!-- hidden input -->
 		<form action="/draft/updateApprovalState" method="post" id="DraftOneForm">
 			<input type="hidden" name="approvalNo" value="${a.approvalNo}">
