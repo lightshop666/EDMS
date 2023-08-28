@@ -2,17 +2,22 @@ package com.fit.controller;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.fit.CC;
+import com.fit.websocket.AlarmService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 public class HeaderController {
+	@Autowired
+	private AlarmService alarmService;
+	
 
 	@GetMapping("/header")
 	public String header (HttpSession session, Model model) {

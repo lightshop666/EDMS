@@ -10,6 +10,32 @@
 		(#{empNo}, #{alarmContent}, #{prefixContent}, NOW(), 'N')		
 </insert>
 
+<!-- 미확인 알림 검색 -->
+<select id="selectNCked" parameterType="int" resultType="map">
+	SELECT 
+		alarm_no alarmNo
+		, emp_no empNo
+		, alarm_content alarmContent
+		, alarm_date alarmDate
+		, alarm_check alarmCheck
+		, prefix_content prefixContent
+	FROM
+		alarm
+	WHERE
+		#{empNo} AND alarm_check='N';	
+</select>
+
+<!-- 알림 확인 -->
+<update id="updateAlarmCK"  parameterType="int" >
+	UPDATE alarm
+	SET alarm_check = 'Y'
+	WHERE alarm_no = 1 AND emp_no = 1000000;
+</update>
+
+
+
+
+
 
 
 </mapper>

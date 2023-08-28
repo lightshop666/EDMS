@@ -28,7 +28,7 @@ function connect() {
 			showMessage(JSON.parse(message.body).content);
 		});
 		
-		// '/topic/globalNotifications' 주제를 구독하여 전체 알림 수신 처리
+		// '/topic/draftAlarm' 주제를 구독하여 전체 알림 수신 처리
 		stompClient.subscribe('/user/topic/draftAlarm', function (message) {
 			notificationCount = notificationCount + 1;
 			updateNotificationDisplay();
