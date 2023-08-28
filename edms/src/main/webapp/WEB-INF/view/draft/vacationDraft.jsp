@@ -162,15 +162,11 @@
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			
-			// 추후 상세페이지로 이동 예정..
-			// 기안 성공 or 실패 결과에 따른 alert
+			// 기안 실패시 alert
 			let result = '${param.result}'; // 기안 성공유무를 url의 매개값으로 전달
 			if (result == 'fail') { // result의 값이 fail이면
 			    console.log('휴가신청서 기안 실패');
 			    alert('휴가신청서가 기안되지 않았습니다. 다시 시도해주세요.');
-			} else if (result == 'success') { // result의 값이 success이면
-				console.log('휴가신청서 기안 성공');
-			    alert('휴가신청서가 기안되었습니다.');
 			}
 			
 			// 모달창에서 중간승인자 저장 버튼 클릭시
@@ -240,11 +236,11 @@
 			
 			// 취소 버튼 클릭시
 			$('#cancelBtn').click(function() {
-				let result = '작성중인 내용이 모두 사라집니다. 정말 취소하시겠습니까?';
+				let result = confirm('작성중인 내용이 모두 사라집니다. 정말 취소하시겠습니까?');
 				if (result) {
 					location.reload(); // 현재 페이지 새로고침
 				}
-			})
+			});
 		});
 	</script>
 	

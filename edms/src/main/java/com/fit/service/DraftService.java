@@ -20,6 +20,7 @@ import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.VacationDraft;
+import com.fit.vo.VacationHistory;
 
 import lombok.extern.slf4j.Slf4j;
 @Slf4j
@@ -231,7 +232,7 @@ public class DraftService {
        }
    
     //------------------------------정환 끝---------------------------------------------   
-    //------------------------------희진 시작---------------------------------------------   
+    //------------------------------희진 시작--------------------------------------------
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회
     // 기존의 memberMapper 사용
     @Transactional
@@ -316,9 +317,88 @@ public class DraftService {
     	return memberSignMap;
     }
     
+    // 결재상태 업데이트 메서드
+    // actionType : 기안취소 -> cancel, 승인 -> approve, 반려 -> reject, 승인취소 -> CancelApprove
+    @Transactional
+    public int updateApprovalState(int approvalNo, String role, String actionType, String approvalReason) {
+    	int row = 0;
+    	
+    	// actionType에 따라 업데이트할 결재 상태를 지정합니다.
+    	// approvalReason은 입력하지 않았을 시 기본값 공백으로 들어옵니다.
+    	String approvalState = "";
+    	String approvalField = "";
+     	if (actionType.equals("cancel")) { // 기안취소 -> 임시저장
+    		approvalState = "임시저장";
+    	} else if (actionType.equals("approve")) { // 승인
+    		if (role.equals("중간승인자")) { // 결재중으로 변경
+    			approvalState = "결재중";
+    	    	approvalField = "B";
+    		} else if (role.equals("최종승인자")) { // 결재완료로 변경
+    			approvalState = "결재완료";
+    	    	approvalField = "C";
+    		}
+    	} else if (actionType.equals("CancelApprove")) { // 승인취소
+    		if (role.equals("중간승인자")) {
+    			approvalState = "결재대기";
+    			approvalField = "A";
+    		} else if (role.equals("최종승인자")) {
+    			approvalState = "결재중";
+    			approvalField = "B";
+    		}
+    	} else if (actionType.equals("reject")) { // 반려
+    		approvalState = "반려";
+    		approvalField = "A";
+    	}
+    	
+     	row = draftMapper.updateApprovalDetails(approvalNo, approvalState, approvalField, approvalReason);
+     	
+    	return row;
+    }
+    
+    // ----------- 휴가신청서 --------------
+    // 휴가신청서 기안하기 (+ 임시저장)
+    // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)
+    @Transactional
+    public int addVacationDraft(Map<String, Object> paramMap) {
+       // 1. approval 테이블
+       Approval approval = (Approval) paramMap.get("approval"); // map에서 approval 객체 가져오기
+       boolean isSaveDraft = (boolean) paramMap.get("isSaveDraft"); // map에서 임시저장 유무 가져오기
+       approval.setDocumentCategory("휴가신청서"); // 메서드 호출 전 양식 셋팅
+       int approvalKey = addApprovalAndReturnKey(approval, isSaveDraft); // 메서드 호출하여 키값 가져오기
+       
+       // 2. vacation_draft 테이블
+       // map에서 vacationDraft 객체 가져오기
+       VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft");
+       // map에서 vacationTime 문자열 가져오기
+       String vacationTime = (String) paramMap.get("vacationTime");
+       
+       int row = 0;
+       if (approvalKey != 0) { // approvalKey 값이 정상적으로 반환되었을 경우
+          // 2-1. 값 셋팅
+          vacationDraft.setApprovalNo(approvalKey); // 1번에서 반환된 부모키값으로 셋팅
+          prepareVacationTimes(vacationDraft, vacationTime); // 시간값을 셋팅하는 메서드 호출
+          
+          // 2-3. mapper 호출
+          row = draftMapper.insertVactionDraft(vacationDraft);
+          log.debug(CC.HE + "DraftService.insertVactionDraft() row : " + row + CC.RESET);
+       }
+       
+       // 3. receive_draft 테이블
+       int[] recipients = (int[]) paramMap.get("recipients");
+       if (recipients.length != 0) { // 수신참조자를 선택했을 경우
+          if (row == 1) { // 이전 과정이 정상적으로 수행되었을 경우
+             row = draftMapper.insertReceiveDrafts(approvalKey, recipients); // mapper 호출
+             log.debug(CC.HE + "DraftService.insertReceiveDrafts() row : " + row + CC.RESET);
+          }
+       }
+       
+       return approvalKey;
+    }
+    
     // 휴가신청시 시간값 셋팅
     // 작성, 수정시 모두 시간값 셋팅이 필요하므로 해당 기능을 모듈화하였습니다.
     // VacationDraft 객체와 vacationTime 문자열을 매개값으로 넣고 호출해주세요.
+    @Transactional
     public void prepareVacationTimes(VacationDraft vacationDraft, String vacationTime) {
        // 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
        // 1. 휴가종류를 선택하지 않았다면 모든 값들 기본값으로 셋팅
@@ -363,47 +443,8 @@ public class DraftService {
          vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
       }
     }
-
-    // 휴가신청서 기안하기 (+ 임시저장)
-    // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)
-    @Transactional
-    public int addVacationDraft(Map<String, Object> paramMap) {
-       // 1. approval 테이블
-       Approval approval = (Approval) paramMap.get("approval"); // map에서 approval 객체 가져오기
-       boolean isSaveDraft = (boolean) paramMap.get("isSaveDraft"); // map에서 임시저장 유무 가져오기
-       approval.setDocumentCategory("휴가신청서"); // 메서드 호출 전 양식 셋팅
-       int approvalKey = addApprovalAndReturnKey(approval, isSaveDraft); // 메서드 호출하여 키값 가져오기
        
-       // 2. vacation_draft 테이블
-       // map에서 vacationDraft 객체 가져오기
-       VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft");
-       // map에서 vacationTime 문자열 가져오기
-       String vacationTime = (String) paramMap.get("vacationTime");
-       
-       int row = 0;
-       if (approvalKey != 0) { // approvalKey 값이 정상적으로 반환되었을 경우
-          // 2-1. 값 셋팅
-          vacationDraft.setApprovalNo(approvalKey); // 1번에서 반환된 부모키값으로 셋팅
-          prepareVacationTimes(vacationDraft, vacationTime); // 시간값을 셋팅하는 메서드 호출
-          
-          // 2-3. mapper 호출
-          row = draftMapper.insertVactionDraft(vacationDraft);
-          log.debug(CC.HE + "DraftService.insertVactionDraft() row : " + row + CC.RESET);
-       }
-       
-       // 3. receive_draft 테이블
-       int[] recipients = (int[]) paramMap.get("recipients");
-       if (recipients.length != 0) { // 수신참조자를 선택했을 경우
-          if (row == 1) { // 이전 과정이 정상적으로 수행되었을 경우
-             row = draftMapper.insertReceiveDrafts(approvalKey, recipients); // mapper 호출
-             log.debug(CC.HE + "DraftService.insertReceiveDrafts() row : " + row + CC.RESET);
-          }
-       }
-       
-       return approvalKey;
-    }
-       
-    // 휴가신청서 상세페이지 조회
+    // 휴가신청서 상세 조회
     @Transactional
     public Map<String, Object> selectVacationDraftOne(int empNo, int approvalNo) {
     	Map<String, Object> resultMap = new HashMap<>();
@@ -414,29 +455,62 @@ public class DraftService {
     	// 반환값 추출 // 휴가신청서는 document_file 테이블 값이 없습니다.
     	ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
     	List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
-
-    	// 2. vacation_draft 테이블 조회
-    	VacationDraft vacationDraft = draftMapper.selectVactionDraftOne(approvalNo);
-    	// 2-1. 반차일 경우 vacationTime 값 지정
-    	String vacationTime = ""; // 오전반차, 오후반차
-    	String vacationName = vacationDraft.getVacationName();
-    	if (vacationName.equals("반차")) {
-    		String vacationStartTime = vacationDraft.getVacationStart().substring(11, 13);
-    		if (vacationStartTime.equals("09")) { // 09이면 오전반차
-    			vacationTime = "오전반차";
-    		} else { // 13이면 오후반차
-    			vacationTime = "오후반차";
-    		}
+    	
+    	if (approval != null) {
+    		// 2. vacation_draft 테이블 조회
+        	VacationDraft vacationDraft = draftMapper.selectVactionDraftOne(approvalNo);
+        	// 2-1. 반차일 경우 vacationTime 값 지정
+        	String vacationTime = ""; // 오전반차, 오후반차
+        	String vacationName = vacationDraft.getVacationName();
+        	if (vacationName.equals("반차")) {
+        		String vacationStartTime = vacationDraft.getVacationStart().substring(11, 13);
+        		if (vacationStartTime.equals("09")) { // 09이면 오전반차
+        			vacationTime = "오전반차";
+        		} else { // 13이면 오후반차
+        			vacationTime = "오후반차";
+        		}
+        	}
+        	// 3. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
+        	Map<String, Object> memberSignMap = getApprovalSign(approval);
+        	
+        	resultMap.put("approval", approval);
+        	resultMap.put("receiveList", receiveList);
+        	resultMap.put("vacationDraft", vacationDraft);
+        	resultMap.put("vacationTime", vacationTime);
+        	resultMap.put("memberSignMap", memberSignMap);
     	}
-    	// 3. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
-    	Map<String, Object> memberSignMap = getApprovalSign(approval);
-    	
-    	resultMap.put("approval", approval);
-    	resultMap.put("receiveList", receiveList);
-    	resultMap.put("vacationDraft", vacationDraft);
-    	resultMap.put("vacationTime", vacationTime);
-    	resultMap.put("memberSignMap", memberSignMap);
-    	
+
     	return resultMap;
+    }
+    
+    // vacationHistory 업데이트 메서드
+    // vacation_draft의 approval 정보가 업데이트 될때마다 vacation_history 테이블에 insert합니다.
+    public int addVacationHistory(int approvalNo, String actionType, String approvalField) {
+    	int row = 0;
+    	
+    	// 1. vacation_draft의 정보를 조회해옵니다. // 기존 메서드 사용
+		VacationDraft vacationDraft = draftMapper.selectVactionDraftOne(approvalNo);
+		log.debug(CC.HE + "DraftService.addVacationHistory() vacationDraft : " + vacationDraft + CC.RESET);
+		// 2. VacationHistory 객체에 값 주입
+		VacationHistory vacationHistory = new VacationHistory();
+		if (vacationDraft != null) {
+			vacationHistory.setEmpNo(vacationDraft.getEmpNo());
+			vacationHistory.setVacationName(vacationDraft.getVacationName());
+			vacationHistory.setVacationDays(vacationDraft.getVacationDays());
+			// 3. 분기
+	    	// 결재상태가 "결재중(B)"에서 "승인(approve)"된 경우 마이너스.
+			if (approvalField.equals("B") && actionType.equals("approve")) { 
+				vacationHistory.setVacationPm("M"); // vacation_pm -> M
+	    		row = draftMapper.insertVacationHistroy(vacationHistory);
+	    		log.debug(CC.HE + "DraftService.addVacationHistory() row : " + row + CC.RESET);
+	    	// 결재상태가 "결재완료(C)"에서는 플러스 밖에 없다.
+			} else if (approvalField.equals("C")) { 
+				vacationHistory.setVacationPm("P"); // vacation_pm -> P
+	    		row = draftMapper.insertVacationHistroy(vacationHistory);
+	    		log.debug(CC.HE + "DraftService.addVacationHistory() row : " + row + CC.RESET);
+			}
+		}
+
+    	return row;
     }
 }

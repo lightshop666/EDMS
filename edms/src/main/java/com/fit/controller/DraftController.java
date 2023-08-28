@@ -131,13 +131,13 @@ public class DraftController {
 		}		
 		 */
 		
-		// 성공 유무에 따라 approvalKey로 상세 페이지로 분기
-		if (approvalKey != 0) {
+		// 성공 유무에 따라 분기
+		if (approvalKey != 0) { // 성공시 상세 페이지로.. approvalKey 값 필요, result=success
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
 			return "redirect:/draft/vacationDraftOne?result=success&approvalNo=" + approvalKey;
-		} else {
+		} else { // 실패시 작성 페이지로.. result=fail
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 실패 approvalKey : " + approvalKey + CC.RESET);
-			return "redirect:/draft/vacationDraft?result=fail&approvalNo=" + approvalKey;
+			return "redirect:/draft/vacationDraft?result=fail";
 		}
 	}
 	
@@ -205,6 +205,11 @@ public class DraftController {
 		// 서비스 호출
 		Map<String, Object> result = draftService.selectVacationDraftOne(empNo, approvalNo);
 		ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+		
+		if (approval == null) {
+			return "redirect:/home";
+		}
+		
     	List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
 		VacationDraft vacationDraft = (VacationDraft) result.get("vacationDraft");
 		String vacationTime = (String) result.get("vacationTime"); 
@@ -223,5 +228,45 @@ public class DraftController {
 	@GetMapping("/draft/tempDraft")
 	public String tempDraftList() {
 		return "/draft/tempDraft";
+	}
+	
+	// 휴가신청서 수정폼
+	@GetMapping("/draft/modifyVacationDraft")
+	public String modifyVacationDraft() {
+		return "/draft/modifyVacationDraft";
+	}
+	
+	// 결재 상태 업데이트 // 상세페이지에서 클릭한 버튼에 따라 결재상태를 업데이트
+	@PostMapping("/draft/updateApprovalState")
+	public String updateApprovalState(@RequestParam(required = false) Integer approvalNo,
+									@RequestParam(required = false) String role,
+									@RequestParam(required = false) String actionType,
+									@RequestParam(required = false) String approvalField,
+									@RequestParam(required = false) String approvalReason) {
+		log.debug(CC.HE + "DraftController.updateApprovalState() approvalNo param : " + approvalNo + CC.RESET);
+		log.debug(CC.HE + "DraftController.updateApprovalState() role param : " + role + CC.RESET);
+		log.debug(CC.HE + "DraftController.updateApprovalState() actionType param : " + actionType + CC.RESET);
+		log.debug(CC.HE + "DraftController.updateApprovalState() approvalField param : " + approvalField + CC.RESET);
+		log.debug(CC.HE + "DraftController.updateApprovalState() approvalReason param : " + approvalReason + CC.RESET);
+		
+		// 서비스 호출
+		int row = draftService.updateApprovalState(approvalNo, role, actionType, approvalReason);
+		log.debug(CC.HE + "DraftController.updateApprovalState() row : " + row + CC.RESET);
+		
+		// vacationHistory 매서드 호출
+		int vacationHistoryRow = draftService.addVacationHistory(approvalNo, actionType, approvalField);
+		if (vacationHistoryRow != 0) {
+			log.debug(CC.HE + "DraftController.updateApprovalState() vacationHistoryRow : " + vacationHistoryRow + CC.RESET);
+		}
+		
+		if (row != 0) {
+			if (actionType.equals("cancel")) {
+				return "redirect:/draft/tempDraft"; // 성공시 임시저장함으로 이동
+			} else {
+				return "redirect:/draft/vacationDraftOne?approvalNo=" + approvalNo; // 문서 상세페이지로 이동
+			}
+		} else {
+			return "redirect:/draft/vacationDraftOne?result=fail";
+		}
 	}
 }

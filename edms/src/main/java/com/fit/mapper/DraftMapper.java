@@ -12,6 +12,7 @@ import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.VacationDraft;
+import com.fit.vo.VacationHistory;
 
 @Mapper
 public interface DraftMapper {
@@ -67,4 +68,8 @@ public interface DraftMapper {
     List<DocumentFile> selectDocumentFileList(int approvalNo); // 해당 문서의 파일 목록 조회
     
     VacationDraft selectVactionDraftOne(int approvalNo); // 휴가신청서 상세 조회
+    
+    int updateApprovalDetails(int approvalNo, String approvalState, String approvalField, String approvalReason); // 결재상태 업데이트
+
+    int insertVacationHistroy(VacationHistory vacationHistory);
 }

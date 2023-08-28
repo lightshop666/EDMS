@@ -7,6 +7,7 @@
 		4. 수신참조자(int 배열) 정보 출력 및 hidden에 값 주입
 		5. 임시저장 -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(true), 폼 제출
 		5. 저장(기안) -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(false), 폼 제출
+		6. 문서 상세 페이지에서 클릭한 버튼에 따라 액션 분기 (결재 상태 업데이트)
 		
 		주의할점
 		- getApproverDetails() 에서 조회할 사원 목록 배열(JSON)을 해당 페이지에서 전역 스코프 변수(employeeListJson)로 선언해주세요.
@@ -16,6 +17,8 @@
 		중간승인자 -> name : modalMediateApproval, id : mediateHidden, mediateSpan
 		최종승인자 -> name : modalFinalApproval, id : finalHidden, finalSpan
 		수신참조자 -> name : modalRecipients, id : receiveHidden, receiveSpan
+		- handleApprovalAction() 메서드는 매개값으로 role, actionType을 받습니다. actionType은 다음과 같습니다.
+		목록 -> list, 기안취소 -> cancel, 승인 -> approve, 반려 -> reject, 승인취소 -> CancelApprove
 	*/
 	
 	// 선택한 결재자의 정보 구하기// 모달창에서 선택한 결재자의 정보를 출력하기 위해 리스트를 조회합니다.
@@ -133,5 +136,38 @@
 			
 			// 3. 폼 전송
 			$('#draftForm').submit(); // draftForm -> 제출할 form의 id
+		}
+	}
+	
+	// 결재 상태 업데이트 메서드
+	function handleApprovalAction(role, actionType) {
+		console.log('handleApprovalAction() role param : '+ role);
+		console.log('handleApprovalAction() actionType param : '+ actionType);
+		
+		// actionType에 따라 로직을 분기합니다.
+		// 목록 -> list, 기안취소 -> cancel, 승인 -> approve, 반려 -> reject, 승인취소 -> CancelApprove
+		let result = ''; // confirm창 메세지
+		if (actionType == 'list') { // 목록
+			result = confirm('목록으로 이동할까요?');
+			if (result) {
+				if (role == '기안자') {
+					window.location.href = ''; // 내 문서함의 기안탭으로.. 구현예정
+				} else if (role == '중간승인자' || role == '최종승인자') {
+					window.location.href = ''; // 내 문서함의 결재탭으로.. 구현예정
+				} // 수신함으로 이동시키기 구현예정..
+			}
+		} else {
+			if (actionType == 'approve') {
+				result = confirm('승인하시겠습니까?');
+			} else if (actionType == 'reject') {
+				result = confirm('반려하시겠습니까?');
+			} else if (actionType == 'CancelApprove') {
+				result = confirm('승인을 취소하시겠습니까?');
+			} else {
+				result = confirm('기안을 취소하시겠습니까? 취소 시 임시저장함으로 이동합니다.');
+			}
+			if (result) {
+				$('#DraftOneForm').submit(); // 폼제출
+			}
 		}
 	}

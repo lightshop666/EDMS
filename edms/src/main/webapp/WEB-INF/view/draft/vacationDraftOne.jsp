@@ -6,8 +6,55 @@
 <head>
 <meta charset="UTF-8">
 <title>vacationDraftOne</title>
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<!-- 부트스트랩 -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- 공통 함수를 불러옵니다. -->
+	<script src="/draftFunction.js"></script>
+	
+	<script>
+		$(document).ready(function() {
+			
+			// 기안 성공시 alert
+			let result = '${param.result}'; // 기안 성공유무를 url의 매개값으로 전달
+			if (result == 'success') { // result의 값이 success이면
+				console.log('휴가신청서 기안 성공');
+			    alert('휴가신청서가 기안되었습니다.');
+			} else if (result == 'fail'){
+				console.log('결재 업데이트 실패');
+			    alert('결재상태 업데이트에 실패하였습니다. 다시 시도해주세요.');
+			}
+			
+			// action 버튼 클릭시 이벤트 발생 // 이 부분 다시...
+			$('.actionBtn').click(function() {
+				// 1. actionType
+				let actionType = $(this).data("actiontype"); // HTML 데이터 속성은 소문자로 표기되기 때문에 대소문자 구분에 주의합니다.
+				$('#actionTypeHidden').val(actionType); // hidden에 값 주입
+				// 2. approvalReason
+				let approvalReason = ''; // 반려사유 기본값
+				if (actionType == 'reject') { // 반려 사유 입력 모달창의 저장 버튼 클릭시
+					approvalReason = $('#approvalReason').val(); // 반려사유 입력값 가져오기
+				}
+				$('#approvalReasonHidden').val(approvalReason); // hidden에 값 주입
+				// 3. role
+				let role = '${approval.role}';
+				handleApprovalAction(role, actionType); // 공통 함수 호출
+			});
+			
+			// 수정 버튼 클릭시 이벤트 발생
+			// 수정 form 페이지는 양식에 따라 이동하는 페이지가 다르므로 view단에서 페이지를 이동시킵니다.
+			$('#modifyBtn').click(function() {
+				let result = confirm('수정 페이지로 이동할까요?');
+				if (result) {
+					// 현재 문서의 문서번호 값
+					let approvalNo = ${approval.approvalNo};
+					window.location.href = "/draft/modifyVacationDraft?approval=" + approvalNo;
+				}
+			});
+		});
+	</script>
 	<!-- 테이블 스타일 추가 -->
 	<style>
 	    table {
@@ -139,34 +186,73 @@
 				</th>
 			</tr>
 		</table>
-		<button type="button" id="cancelBtn">목록</button> <!-- 왼쪽정렬 -->
-		<!-- 버튼 분기 -->
+		<!-- 목록 버튼 --> <!-- 왼쪽 정렬 -->
+		<button type="button" class="actionBtn" data-actiontype="list">목록</button>
+		<!-- 버튼 분기 --> <!-- 오른쪽 정렬 -->
 		<c:if test="${a.approvalField == 'A'}"> <!-- 결재대기 -->
 			<c:if test="${a.role == '기안자'}">
-				<button type="button" id="">수정</button>
-				<button type="button" id="">기안취소</button>
+				<button type="button" id="modifyBtn">수정</button> <!-- 수정 페이지는 양식에 따라 다르므로 view단에서 분기합니다. -->
+				<button type="button" class="actionBtn" data-actiontype="cancel">기안취소</button>
 			</c:if>
 			<c:if test="${a.role == '중간승인자'}">
-				<button type="button" id="">승인</button>
-				<button type="button" id="">반려</button>
+				<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+				<!-- 반려 사유 입력 모달 열림 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
 		</c:if>
 		<c:if test="${a.approvalField == 'B'}"> <!-- 결재중 -->
 			<c:if test="${a.role == '중간승인자'}">
-				<button type="button" id="">승인취소</button>
-				<button type="button" id="">반려</button>
+				<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
+				<!-- 반려 사유 입력 모달 열림 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
 			<c:if test="${a.role == '최종승인자'}">
-				<button type="button" id="">승인</button>
-				<button type="button" id="">반려</button>
+				<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+				<!-- 반려 사유 입력 모달 열림 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
 		</c:if>
 		<c:if test="${a.approvalField == 'C'}"> <!-- 결재완료 -->
 			<c:if test="${a.role == '최종승인자'}">
-				<button type="button" id="">승인취소</button>
-				<button type="button" id="">반려</button>
+				<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
+				<!-- 반려 사유 입력 모달 열림 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
 		</c:if>
+		<!-- hidden input -->
+		<form action="/draft/updateApprovalState" method="post" id="DraftOneForm">
+			<input type="hidden" name="approvalNo" value="${a.approvalNo}">
+			<input type="hidden" name="role" value="${a.role}">
+			<input type="hidden" name="approvalField" value="${a.approvalField}">
+			<input type="hidden" name="actionType" id="actionTypeHidden">
+			<input type="hidden" name="approvalReason" id="approvalReasonHidden">
+		</form>
 	</div>
+	
+	<!-- 모달창 시작 -->
+	
+	<!-- 반려사유 입력 모달 -->
+	<div class="modal" id="rejectModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- 모달 헤더 -->
+				<div class="modal-header">
+					<h4 class="modal-title">반려 사유 입력</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+				</div>
+				<!-- 모달 본문 -->
+				<div class="modal-body">
+					<textarea rows="8" cols="70" id="approvalReason" placeholder="이곳에 반려 사유를 입력해주세요."></textarea>
+				</div>
+				<!-- 모달 푸터 -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+					<button type="button" class="actionBtn" data-actiontype="reject" data-bs-dismiss="modal">저장</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- 반려사유 입력 모달 끝 -->
+	
 </body>
 </html>

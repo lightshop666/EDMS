@@ -234,7 +234,7 @@
 		    approval_no = #{approvalNo}
    </select>
    
-   <!-- receive_draft select by approvalNo -->
+   <!-- receive_draft select by approvalNo (List) -->
    <!-- emp_info 테이블과 join하여 이름, 부서명, 직급도 함께 조회 -> DTO 사용 -->
    <select id="selectReceiveList" parameterType="int" resultType="com.fit.vo.ReceiveJoinDraft">
 		SELECT
@@ -253,6 +253,7 @@
 			r.approval_no = #{approvalNo}
    </select>
    
+   <!-- document_file select by approvalNo (List) -->
    <select id="selectDocumentFileList" parameterType="int" resultType="com.fit.vo.DocumentFile">
 		SELECT
 			doc_file_no docFileNo,
@@ -268,6 +269,7 @@
 			approval_no = #{approvalNo}
    </select>
    
+   <!-- select vacation_draft by approvalNo -->
    <select id="selectVactionDraftOne" parameterType="int" resultType="com.fit.vo.VacationDraft">
 	   SELECT
 	    document_no documentNo,
@@ -287,4 +289,46 @@
 	WHERE
 	    approval_no = #{approvalNo}
    </select>
+   
+   <!-- update approval (동적 쿼리) -->
+   <update id="updateApprovalDetails" parameterType="map">
+		UPDATE approval
+		<set>
+			<if test="approvalState == '임시저장'">
+				approval_state = #{approvalState}
+			</if>
+			<if test="approvalState == '결재중' || approvalState == '결재대기' || approvalState == '승인취소'">
+				approval_state = #{approvalState},
+				approval_field = #{approvalField}
+			</if>
+			<if test="approvalState == '결재완료'">
+				approval_state = #{approvalState},
+				approval_field = #{approvalField},
+				approval_date = NOW()
+			</if>
+			<if test="approvalState == '반려'">
+				approval_state = #{approvalState},
+				approval_field = #{approvalField},
+				approval_reason = #{approvalReason}
+			</if>
+		</set>
+		WHERE approval_no = #{approvalNo}
+   </update>
+   
+   <!-- insert vacation_history -->
+   <insert id="insertVacationHistroy" parameterType="com.fit.vo.VacationHistory">
+		INSERT INTO vacation_history (
+			emp_no,
+			vacation_name,
+			vacation_pm,
+			vacation_days,
+			createdate
+		) VALUES (
+			#{empNo},
+			#{vacationName},
+			#{vacationPm},
+			#{vacationDays},
+			NOW()
+		)
+   </insert>
 </mapper>
