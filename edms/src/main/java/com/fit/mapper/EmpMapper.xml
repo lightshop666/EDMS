@@ -206,8 +206,7 @@
 	        </otherwise>
 	    </choose>
 	    <!-- 페이징 -->
-	    LIMIT #{beginRow}, #{rowPerPage}
+		    LIMIT #{beginRow}, #{rowPerPage}
 	</select>
-	
 	
 </mapper>

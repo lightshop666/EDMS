@@ -21,7 +21,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <!-- 비밀번호 입력 폼 -->
                     <form>
                         <div class="mb-3">
                             <label for="passwordInput" class="form-label">비밀번호를 입력하세요:</label>

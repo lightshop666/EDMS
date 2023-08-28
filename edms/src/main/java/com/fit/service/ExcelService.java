@@ -1,10 +1,7 @@
 package com.fit.service;
 
-import java.io.ByteArrayInputStream;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,17 +16,49 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
+import com.fit.mapper.EmpMapper;
+import com.fit.vo.EmpInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class ExcelService {
+	@Autowired
+	private EmpMapper empMapper;
 	
+	// 사원 등록 엑셀 업로드
+    public void excelProcess(List<Map<String, Object>> jsonDataList) {
+        log.debug(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
+        log.debug(CC.YE + "EmpService.excelProcess() jsonData.size(): " + jsonDataList.size() + CC.RESET);
+        // 엑셀 파일 파싱
+        for (Map<String, Object> jsonData : jsonDataList) { // jsonData를 가지고 필요한 처리를 수행하고 데이터베이스에 저장
+            EmpInfo empInfo = new EmpInfo();
+            empInfo.setEmployDate((String) jsonData.get("입사일"));
+            empInfo.setEmpPosition((String) jsonData.get("직급"));
+            empInfo.setEmpNo((int) jsonData.get("사원번호"));
+            empInfo.setAccessLevel((String) jsonData.get("권한"));
+            empInfo.setDeptName((String) jsonData.get("부서명"));
+            empInfo.setEmpState((String) jsonData.get("재직사항"));
+            empInfo.setEmpName((String) jsonData.get("사원명"));
+            empInfo.setTeamName((String) jsonData.get("팀명"));
+            log.debug(CC.YE + "EmpService.excelProcess() empInfo: "+ empInfo + CC.RESET);
+            
+            // 2. 사원번호 등록
+		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
+		    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
+		    
+		    // 3. 사원번호 등록 후 인사 정보 등록
+		    int addEmpRow = empMapper.addEmp(empInfo);
+		    log.debug(CC.YE + "EmpService.addEmp() row : " + addEmpRow + CC.RESET);
+        }
+    }
+    
 	// [사원 등록] 엑셀 파일을 파싱하여 JSON 데이터로 변환하는 메서드
     public List<Map<String, Object>> parseExcel( MultipartFile file ) throws IOException { // excelUPload에서 호출하여 사용
         List<Map<String, Object>> jsonDataList = new ArrayList<>();
@@ -144,48 +173,62 @@ public class ExcelService {
                 return null; // null로 반환
         }
     }
-    
-    // [사원 목록 다운로드] 엑셀 목록 다운로드
-    public ByteArrayInputStream createExcelFile(List<Map<String, Object>> enrichedEmpList) throws IOException {
-        if (enrichedEmpList == null || enrichedEmpList.isEmpty()) {
-            throw new IllegalArgumentException("enrichedEmpList is null or empty");
-        }
-        
-        // 엑셀 워크북 생성
-        Workbook workbook = new XSSFWorkbook();
-        
-        // 엑셀 시트 생성
-        Sheet sheet = workbook.createSheet("사원목록");
-        
-        // 엑셀 헤더 행 생성
-        Row headerRow = sheet.createRow(0); // 시트에 첫 번째 행을 생성 = 헤더 행
-        int columnIndex = 0;
-        for (String columnName : enrichedEmpList.get(0).keySet()) { // 첫 번째 데이터 맵의 모든 키(열 이름)들을 가져오고, 각 열 제목을 해당 셀에 동적으로 생성
-            Cell cell = headerRow.createCell(columnIndex++); // 헤더 행에 열을 추가하고 columnIndex를 증가
-            cell.setCellValue(columnName); // 열 제목을 해당 셀에 설정
-        }
-        
-        // 엑셀 데이터 행 생성
-        int rowNum = 1;
-        for (Map<String, Object> data : enrichedEmpList) {
-            Row dataRow = sheet.createRow(rowNum++);
-            columnIndex = 0;
-            for (Object value : data.values()) {
-                Cell cell = dataRow.createCell(columnIndex++);
-                if (value instanceof String) {
-                    cell.setCellValue((String) value);
-                } else if (value instanceof Integer) {
-                    cell.setCellValue((Integer) value);
-                }
-                // 다른 데이터 타입에 따른 추가 처리가 필요할 수 있습니다.
+
+    // [목록 다운로드] 엑셀 파일 생성을 위한 메서드
+    public byte[] getExcel(List<Map<String, Object>> dataList) throws IOException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // 1. 시트 생성 및 이름 설정
+            Sheet sheet = workbook.createSheet("사원 목록");
+
+            // 2. 헤더 행 생성
+            Row headerRow = sheet.createRow(0);
+            int colIdx = 0; // 열 인덱스를 초기화
+            
+            // 3. 열 이름과 키 값을 매칭하는 맵 생성
+            Map<String, String> columnMapping = new HashMap<>();
+            columnMapping.put("사원번호", "empNo");
+            columnMapping.put("사원명", "empName");
+            columnMapping.put("부서명", "deptName");
+            columnMapping.put("팀명", "teamName");
+            columnMapping.put("직급", "empPosition");
+            columnMapping.put("입사일", "employDate");
+            columnMapping.put("잔여휴가일", "remainDays");
+            columnMapping.put("회원가입유무", "isMember");
+            columnMapping.put("권한", "accessLevel");
+
+            // 4. 헤더 셀 생성
+            for (String columnName : columnMapping.keySet()) {
+                Cell cell = headerRow.createCell(colIdx++);
+                cell.setCellValue(columnName); // 헤더 셀에 열 이름을 채우기
             }
+
+            // 5. 데이터 행 채우기
+            int rowIdx = 1; // 데이터 행의 시작 인덱스 설정
+            
+            for (Map<String, Object> data : dataList) {
+                Row dataRow = sheet.createRow(rowIdx++);
+                colIdx = 0; // 열 인덱스를 초기화
+                for (String columnName : columnMapping.values()) {
+                	// 데이터 셀 생성
+                    Cell cell = dataRow.createCell(colIdx++);
+                    Object value = data.get(columnName); // 맵 데이터에서 해당 열 이름에 해당하는 값을 가져오는 코드
+                    
+                    // 값이 문자열일 경우, 셀에 문자열 값을 채웁
+                    if (value instanceof String) {
+                        cell.setCellValue((String) value);
+                    // 값이 숫자일 경우, 셀에 숫자 값을 채움
+                    } else if (value instanceof Number) {
+                        cell.setCellValue(((Number) value).doubleValue());
+                    }
+                    
+                }
+            }
+            
+            // ByteArrayOutputStream에 워크북을 작성하여 엑셀 파일 생성
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray(); // 생성된 엑셀 파일의 바이트 배열을 반환
         }
-        
-        // 엑셀 파일을 바이트 배열로 변환
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        workbook.write(outputStream);
-        workbook.close();
-        
-        return new ByteArrayInputStream(outputStream.toByteArray());
     }
+    
 }

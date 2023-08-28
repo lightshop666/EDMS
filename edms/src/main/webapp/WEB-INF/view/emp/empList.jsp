@@ -16,8 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-	
-	// 랜덤 비밀번호 생성 규칙을 정할 상수 선언
+	//랜덤 비밀번호 생성 규칙을 정할 상수 선언
 	const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 영대문자
 	const NUMBERS = '0123456789'; // 숫자
 	const SPECIAL_CHARS = '!@#%'; // 특수문자
@@ -29,119 +28,116 @@
 	let tempPw = ''; // 임시 비밀번호 변수 선언
 	
 	function getRandomPw() {
-		tempPw = ''; // 임시 비밀번호를 빈 문자열로 초기화
-		
-		while (tempPw.length < PW_LENGTH) { // 비밀번호 길이만큼 반복
-			// ALL_CHARACTERS의 길이 내에서 랜덤한 인덱스 선택
-			let index = Math.floor(Math.random() * ALL_CHARACTERS.length);
-			// Math.random() -> 0과 1 사이의 무작위한 실수를 반환
-			// ALL_CHARACTERS.length 를 곱하면 결과적으로 0이상 ALL_CHARACTERS.length 미만의 랜덤값을 가짐
-			// Math.floor() -> 소숫점을 버려 정수화
-			tempPw += ALL_CHARACTERS[index];
-			// 랜덤한 인덱스 위치의 문자를 임시 비밀번호에 추가
-		}
+	   tempPw = ''; // 임시 비밀번호를 빈 문자열로 초기화
+	   
+	   while (tempPw.length < PW_LENGTH) { // 비밀번호 길이만큼 반복
+	      // ALL_CHARACTERS의 길이 내에서 랜덤한 인덱스 선택
+	      let index = Math.floor(Math.random() * ALL_CHARACTERS.length);
+	      // Math.random() -> 0과 1 사이의 무작위한 실수를 반환
+	      // ALL_CHARACTERS.length 를 곱하면 결과적으로 0이상 ALL_CHARACTERS.length 미만의 랜덤값을 가짐
+	      // Math.floor() -> 소숫점을 버려 정수화
+	      tempPw += ALL_CHARACTERS[index];
+	      // 랜덤한 인덱스 위치의 문자를 임시 비밀번호에 추가
+	   }
 	
-		return tempPw;
+	   return tempPw;
 	}
-
-	//페이지 로드 후 실행
 	$(document).ready(function() {
 		
 		// 1. 비밀번호 초기화
-		// 비밀번호 생성 버튼 클릭시 이벤트 발생
-		$('#getPwBtn').click(function() {
-			tempPw = getRandomPw(); // 랜덤 비밀번호 생성 함수 호출
-			console.log('랜덤 비밀번호 생성 : ' + tempPw);
-			$('#tempPw').text(tempPw); // view에 출력
-		});
-        
-        let empNoTest = '';
-        
-        $('.getEmpNo').click(function() { // empNo가 전달되지 않아 모달창 열리지 X -> foreach문 안에 있는 empNo에 class 이름을 부여하여 값을 받아옴으로써 해결
-        	empNoTest = $(this).data("empno");
-        	console.log('번호 가져오기1 : ' + empNoTest);
-        });
-		
-		// 모달창의 비밀번호 초기화 버튼 클릭시 이벤트 발생 // 비동기
-		$('#updatePwBtn').click(function() {
-			if (tempPw == '') { // 비밀번호를 생성하지 않았을시
-				alert('비밀번호를 생성해주세요.');
-			} else { // 비밀번호를 생성했다면
-				let result = confirm('생성한 임시 비밀번호로 초기화할까요?');
-				// 사용자 선택 값에 따라 true or false 반환
-				
-				if (result) { // 확인 선택 시 true 반환
-					console.log('디버깅');
-					console.log('번호 가져오기2 : ' + empNoTest);
-					$.ajax({ // 비밀번호 초기화 비동기 방식으로 실행
-						url : '/adminUpdatePw',
-						type : 'post',
-						data : {tempPw : tempPw,
-								empNo : empNoTest },
-						success : function(response) {
-							if (response == 1) { // row 값이 1로 반환되면 성공
-								console.log('비밀번호 초기화 완료');
-								$('#updateResult').text('비밀번호 초기화 완료').css('color', 'green');	
-							} else {
-								console.log('비밀번호 초기화 실패');
-								$('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
-							}
-						},
-						error : function(error) {
-							console.error('비밀번호 초기화 실패 : ' + error);
-							$('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
-						}
-					});
-				}
-			}
-		});
-		
-		// 취소 버튼 클릭 시
-		$('#cancelBtn').click(function() {
-			let result = confirm('사원목록으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
-			if (result) {
-				window.location.href = '/emp/empList'; // empList로 이동
-			}
-		});
-		
-		// 2. 엑셀 업로드 버튼 클릭 시
-	    $('#uploadBtn').click(function(event) {
-	        const fileInput = $('#fileInput');
-
-	        if (fileInput.get(0).files.length === 0) {
-	            event.preventDefault(); // 기본 동작 중단
-	            alert('파일을 선택해주세요.');
-	            return false;
-	        }
-	     
-	        const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
-	        const fileName = file.name;
-	        const fileExtension = fileName.split('.').pop().toLowerCase();
-	     
-	        // 엑셀 파일이 아닌 경우 업로드 막기
-	        if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
-	            event.preventDefault(); // 기본 동작 중단
-	            alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
-	            return false;
-	        }
+	    $('#getPwBtn').click(function() { // 비밀번호 생성 버튼 클릭시 이벤트 발생
+	       tempPw = getRandomPw(); // 랜덤 비밀번호 생성 함수 호출
+	       console.log('랜덤 비밀번호 생성 : ' + tempPw);
+	       $('#tempPw').text(tempPw); // view에 출력
 	    });
-	  
-	    // 3. 파라미터 값에 따라 알림 메세지
-	    const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
-	    const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
-	    const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
+	      
+	      let empNoTest = '';
+	      
+	      $('.getEmpNo').click(function() { // empNo가 전달되지 않아 모달창 열리지 X -> foreach문 안에 있는 empNo에 class 이름을 부여하여 값을 받아옴으로써 해결
+	         empNoTest = $(this).data("empno");
+	         console.log('번호 가져오기1 : ' + empNoTest);
+	      });
 	    
-	    if (resultParam === 'fail') { // fail 파라미터 값이 있고
-	        if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
-	            alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호라는 것을 알림
-	        } else {
-	            alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 이외 오류에 대해 엑셀 파일 재확인 알림
-	        }
-	    } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
-	        alert('엑셀 파일 업로드에 성공했습니다.');
-	    }
-        
+	    // 모달창의 비밀번호 초기화 버튼 클릭시 이벤트 발생 // 비동기
+	    $('#updatePwBtn').click(function() {
+	       if (tempPw == '') { // 비밀번호를 생성하지 않았을시
+	          alert('비밀번호를 생성해주세요.');
+	       } else { // 비밀번호를 생성했다면
+	          let result = confirm('생성한 임시 비밀번호로 초기화할까요?');
+	          // 사용자 선택 값에 따라 true or false 반환
+	          
+	          if (result) { // 확인 선택 시 true 반환
+	             console.log('디버깅');
+	             console.log('번호 가져오기2 : ' + empNoTest);
+	             $.ajax({ // 비밀번호 초기화 비동기 방식으로 실행
+	                url : '/adminUpdatePw',
+	                type : 'post',
+	                data : {tempPw : tempPw,
+	                      empNo : empNoTest },
+	                success : function(response) {
+	                   if (response == 1) { // row 값이 1로 반환되면 성공
+	                      console.log('비밀번호 초기화 완료');
+	                      $('#updateResult').text('비밀번호 초기화 완료').css('color', 'green');   
+	                   } else {
+	                      console.log('비밀번호 초기화 실패');
+	                      $('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
+	                   }
+	                },
+	                error : function(error) {
+	                   console.error('비밀번호 초기화 실패 : ' + error);
+	                   $('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
+	                }
+	             });
+	          }
+	       }
+	    });
+	    
+	    // 취소 버튼 클릭 시
+	    $('#cancelBtn').click(function() {
+	       let result = confirm('사원목록으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+	       if (result) {
+	          window.location.href = '/emp/empList'; // empList로 이동
+	       }
+	    });
+	    
+	    // 2. 엑셀 업로드 버튼 클릭 시
+	     $('#uploadBtn').click(function(event) {
+	         const fileInput = $('#fileInput');
+	
+	         if (fileInput.get(0).files.length === 0) {
+	             event.preventDefault(); // 기본 동작 중단
+	             alert('파일을 선택해주세요.');
+	             return false;
+	         }
+	      
+	         const file = fileInput.get(0).files[0]; // 선택된 파일 가져오기
+	         const fileName = file.name;
+	         const fileExtension = fileName.split('.').pop().toLowerCase();
+	      
+	         // 엑셀 파일이 아닌 경우 업로드 막기
+	         if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+	             event.preventDefault(); // 기본 동작 중단
+	             alert('엑셀 파일(xlsx 또는 xls)만 선택해주세요.');
+	             return false;
+	         }
+	     });
+	   
+	     // 3. 파라미터 값에 따라 알림 메세지
+	     const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+	     const resultParam = urlParams.get('result'); // '?' 제외한 파라미터 이름만 사용
+	     const errorParam = urlParams.get('error'); // error 파라미터 값을 가져옴
+	     
+	     if (resultParam === 'fail') { // fail 파라미터 값이 있고
+	         if (errorParam === 'duplicate') { // 그 값이 duplicate 일 때
+	             alert('중복된 사원번호가 있습니다. 엑셀 파일을 수정해주세요.'); // 중복된 사원번호라는 것을 알림
+	         } else {
+	             alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 이외 오류에 대해 엑셀 파일 재확인 알림
+	         }
+	     } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
+	         alert('엑셀 파일 업로드에 성공했습니다.');
+	     }
 	});
+	
 </script>
 	<style>
 		.hover { /* 모달창이 열리는 것을 직관적으로 알리기 위해 커서 포인터를 추가 */
@@ -221,6 +217,7 @@
 	        <input type="text" name="searchWord" class="search-input">
 	    </div>
 	        <button type="submit" id="search-button">검색</button>
+	        
     </form>
 <!-- [끝] 검색 ------->
 
@@ -237,7 +234,8 @@
 		<span id="msg"></span>
 	</form>
 <!-- [끝] 파일 업로드 ------->
-	<a href="/emp/excelDownload" id="excelBtn">엑셀 다운로드</a>
+	<a href="/emp/excelDownload?ascDesc=${ascDesc}&empState=${empState}&empDate=${empDate}&deptName=${deptName}&teamName=${teamName}&empPosition=${empPosition}&searchCol=${searchCol}&searchWord=${searchWord}&startDate=${startDate}&endDate=${endDate}" class="generateListBtn">엑셀 다운로드</a>
+	
 <!-- [시작] 관리자 리스트 출력 ------->	
 	<table border="1">
 		<!-- 관리자의 경우, 비밀번호 초기화 가능 -->
@@ -260,7 +258,7 @@
 				<c:if test="${accessLevel >= 3}">
                     <td>
                         <button type="button" class="getEmpNo" data-empno="${e.empNo}" data-bs-toggle="modal" data-bs-target="#pwModal">
-                            모달
+                            초기화
                         </button>
                     </td>
                 </c:if>
@@ -327,7 +325,7 @@
     	</c:if>
     </c:forEach>
 	
-	<c:if test="${lastPage > currentPage }">
+	<c:if test="${lastPage > currentPage}">
 		<a href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage + 1}">다음</a>
 	</c:if>
 <!-- [끝] 페이징 ------->

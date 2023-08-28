@@ -29,12 +29,13 @@ public interface EmpMapper {
 	// 사원번호 사용여부 등록
 	int addEmpNo(int empNo);
 	
+	// 사원 목록 페이징
+	int selectEmpListCount(Map<String, Object> param);
+	
 	// 사원 목록 조회
 	List<EmpInfo> selectEmpList(Map<String, Object> param);
-	
+
 	// 비밀번호 수정 (관리자)
 	int modifyPw(int empNo, String tempPw);
 	
-	// 사원 목록 페이징
-	int selectEmpListCount(Map<String, Object> param);
 }

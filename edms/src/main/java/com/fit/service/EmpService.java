@@ -152,13 +152,14 @@ public class EmpService {
 	// 사원 전체 목록 조회
 	public List<Map<String, Object>> enrichedEmpList(Map<String, Object> param) {
 	    List<EmpInfo> selectEmpList = empMapper.selectEmpList(param);
-	    log.debug(CC.YE + "성공" + selectEmpList + CC.RESET);
+	    log.debug(CC.YE + "EmpService.enrichedEmpList() selectEmpList : " + selectEmpList + CC.RESET);
 	    
+	    // 정렬/검색 적용된 사원목록 + 휴가일수, 회원가입 여부를 추가하여 => 새로운 List 생성
 	    List<Map<String, Object>> enrichedEmpList = new ArrayList<>();
-	    log.debug(CC.YE + "성공2" + enrichedEmpList + CC.RESET);
 	    
+	    // selectEmpList 만큼 반복
 	    for (EmpInfo emp : selectEmpList) {
-	        Map<String, Object> enrichedEmp = new HashMap<>();
+	        Map<String, Object> enrichedEmp = new HashMap<>(); // 키, 값으로 이루어진 Map을 생성
 	        enrichedEmp.put("empNo", emp.getEmpNo()); // 사원번호
 	        enrichedEmp.put("empName", emp.getEmpName()); // 사원명
 	        enrichedEmp.put("deptName", emp.getDeptName()); // 부서명
@@ -170,13 +171,16 @@ public class EmpService {
 	        // 1. 남은 휴가 일수 계산
 	        double remainDays = getRemainVacationDays(emp.getEmpNo(), emp.getEmployDate());
 	        enrichedEmp.put("remainDays", remainDays);
-	        
+	        log.debug(CC.YE + "EmpService.enrichedEmpList() remainDays : " + remainDays + CC.RESET);
+		    
 	        // 2) 회원가입 여부 확인
 	        int memberInfoCnt = memberMapper.memberInfoCnt(emp.getEmpNo());
 	        enrichedEmp.put("isMember", memberInfoCnt > 0 ? "O" : "X");
-	        
+	        log.debug(CC.YE + "EmpService.enrichedEmpList() memberInfoCnt : " + memberInfoCnt + CC.RESET);
+		    
 	        enrichedEmp.put("accessLevel", emp.getAccessLevel()); // 권한
-	        
+	        log.debug(CC.YE + "EmpService.enrichedEmpList() accessLevel : " + emp.getAccessLevel() + CC.RESET);
+		    
 	        enrichedEmpList.add(enrichedEmp);
 	    }
 
@@ -185,35 +189,8 @@ public class EmpService {
 	    return enrichedEmpList;
 	}
 	
-    // 사원 등록 엑셀 업로드
-    public void excelProcess(List<Map<String, Object>> jsonDataList) {
-        log.debug(CC.YE + "EmpService.excelProcess() 실행" + CC.RESET);
-        log.debug(CC.YE + "EmpService.excelProcess() jsonData.size(): " + jsonDataList.size() + CC.RESET);
-        // 엑셀 파일 파싱
-        for (Map<String, Object> jsonData : jsonDataList) { // jsonData를 가지고 필요한 처리를 수행하고 데이터베이스에 저장
-            EmpInfo empInfo = new EmpInfo();
-            empInfo.setEmployDate((String) jsonData.get("입사일"));
-            empInfo.setEmpPosition((String) jsonData.get("직급"));
-            empInfo.setEmpNo((int) jsonData.get("사원번호"));
-            empInfo.setAccessLevel((String) jsonData.get("권한"));
-            empInfo.setDeptName((String) jsonData.get("부서명"));
-            empInfo.setEmpState((String) jsonData.get("재직사항"));
-            empInfo.setEmpName((String) jsonData.get("사원명"));
-            empInfo.setTeamName((String) jsonData.get("팀명"));
-            log.debug(CC.YE + "EmpService.excelProcess() empInfo: "+ empInfo + CC.RESET);
-            
-            // 2. 사원번호 등록
-		    int addEmpNoRow = empMapper.addEmpNo(empInfo.getEmpNo());
-		    log.debug(CC.YE + "EmpService.addEmpNoRow() row : " + addEmpNoRow + CC.RESET);
-		    
-		    // 3. 사원번호 등록 후 인사 정보 등록
-		    int addEmpRow = empMapper.addEmp(empInfo);
-		    log.debug(CC.YE + "EmpService.addEmp() row : " + addEmpRow + CC.RESET);
-        }
-    }
-	
 	// 남은 휴가 일수 (연차 + 보상) - 사원목록 (관리자)
-	private double getRemainVacationDays(int empNo, String employDate) {
+	public double getRemainVacationDays(int empNo, String employDate) {
 		// 1. 남은 연차 일수 - remainDays
 		// 1-1. 근속기간을 구하는 메서드 호출
 		Map<String, Object> getPeriodOfWorkResult = vacationRemainService.getPeriodOfWork(employDate);

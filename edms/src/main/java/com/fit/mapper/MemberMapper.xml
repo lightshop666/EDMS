@@ -109,7 +109,7 @@
     	)
 	</insert>
 
-	<!-- 개인정보 파일 수정 -->
+	<!-- 개인정보 파일 삭제 -->
 	<delete id="removeMemberFile" parameterType="map">
 	    DELETE FROM
 	    	member_file

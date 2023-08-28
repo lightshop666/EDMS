@@ -1,11 +1,10 @@
 package com.fit.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,18 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 import com.fit.CC;
 import com.fit.service.CommonPagingService;
 import com.fit.service.EmpService;
-import com.fit.service.ExcelService;
-import com.fit.service.MemberService;
 import com.fit.vo.EmpInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -36,10 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EmpController {
 	@Autowired
 	private EmpService empService;
-	
-	@Autowired
-	private ExcelService excelService;
-	
+
 	@Autowired
 	private CommonPagingService commonPagingService;
 	
@@ -147,10 +135,11 @@ public class EmpController {
 	    return "redirect:/emp/empList"; // 사원 목록 페이지로 리다이렉트
 	}
 	
-    // 사원 목록 폼
+    // 사원 목록 조회 폼
  	@GetMapping("/emp/empList")
  	public String empList(Model model
 			 			  , HttpSession session
+			 			  , HttpServletResponse response
 			              , @RequestParam(required = false, name = "ascDesc", defaultValue = "") String ascDesc // 오름차순, 내림차순
 			              , @RequestParam(required = false, name = "empState", defaultValue = "재직") String empState // 재직(기본값), 퇴직
 			              , @RequestParam(required = false, name = "empDate", defaultValue = "") String empDate // 입사일, 퇴사일
@@ -167,6 +156,7 @@ public class EmpController {
  		// 1. accessLevel (세션 accessLevel값으로 권한에 따라 비밀번호 초기화 버튼 공개)
  	    String accessLevel = (String)session.getAttribute("accessLevel");
  	    
+ 	    // 페이지 시작 행
  	    int beginRow = (currentPage-1) * rowPerPage;
  	    
  	    // 2. param Map (parameter값을 Map으로 묶음 -> enrichedEmpList의 매개값으로 전달)
@@ -196,10 +186,10 @@ public class EmpController {
 	    param.put("rowPerPage", rowPerPage); // 한 페이지에 출력될 행의 수
 	    log.debug(CC.YE + "EmpController.empList() rowPerPage: " + rowPerPage + CC.RESET);
 	    
- 	    // 3. 사원 목록 (휴가일수, 회원가입 여부 추가)
+    	// 3. 사원 목록 (휴가일수, 회원가입 여부 추가)
 		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList(param);
-	    log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
-	    
+		log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
+		  
 	    // 4. 페이징
     	// 4-1. 검색어가 적용된 리스트의 전체 행 개수를 구해주는 메서드 실행
 		int totalCount = empService.getEmpListCount(param);
@@ -226,6 +216,6 @@ public class EmpController {
 	    model.addAttribute("param", param); // 파라미터 값
 	    
 	    return "/emp/empList"; // 사원 목록 페이지로 이동
- 	}
+    }
  	
 }

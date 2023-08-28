@@ -1,6 +1,7 @@
 package com.fit.service;
 
 import java.io.File;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +19,7 @@ import com.fit.mapper.MemberMapper;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
-import com.fit.vo.MemberFileList;
+import com.fit.vo.MemberInfoDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,18 +107,22 @@ public class MemberService {
 	}
 	
 	// 내 프로필 파일 수정
-	public MemberFile modifyMemberFile(MemberFile memberFile) {
+	public void modifyMemberFile(MemberFile memberFile) {
+		// 최종 수정 값
+		MemberFile modifyFileOne;
 		
+		// existingFile 매개값
 		Integer empNo = memberFile.getEmpNo();
 	    String fileCategory = memberFile.getFileCategory();
 	    
 	    // member_file 테이블에서 해당 파일 정보 조회
 	    MemberFile existingFile = memberMapper.selectMemberFile(empNo, fileCategory);
 	    
+	    // empNo의 파일이 없다면
 	    if (existingFile == null) {
-	    	//insert 문
+	    	// insert 문 실행
 	    	// 파일 정보 업데이트 성공한 경우에만 파일 저장 및 관련 작업 수행
-	    	MemberFileList fileListInstance = new MemberFileList();
+	    	MemberInfoDto fileListInstance = new MemberInfoDto();
 	    	List<MultipartFile> fileList = fileListInstance.getMultipartFile();
     		
             if (fileList != null && fileList.size() >= 1) {
@@ -159,17 +164,18 @@ public class MemberService {
                         }
                     }
                 }
-	    } else {
-	    	
-	    	
-	    	MemberFile modifyFileOne = memberMapper.removeMemberFile(memberFile.getEmpNo(), memberFile.getFileCategory());
-    		log.debug(CC.YE + "memberService.selectMemberOne() modifyFileOne : " + modifyFileOne + CC.RESET);
-    		
-	            
-	            }
+            // 파일이 있을 시 수정(delete -> insert)
+            } else {
+		    	//int modifyFileRow = memberMapper.removeMemberFile(empNo, fileCategory);
+	    		//log.debug(CC.YE + "memberService.selectMemberOne() modifyFileRow : " + modifyFileRow + CC.RESET);
+	    		
+	    		//int addFileRow = memberMapper.addMemberFile(addFile);
+        		//log.debug(CC.YE + "memberService.selectMemberOne() addMemberFile : " + addFileRow + CC.RESET);
+                
+	        }
 	            
 	    }
-
-		return modifyFileOne;
+	    
+		
 	}
 }

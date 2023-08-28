@@ -1,27 +1,20 @@
 package com.fit.controller;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.apache.poi.ss.usermodel.*;
 
 import com.fit.CC;
 import com.fit.service.EmpService;
@@ -43,127 +36,110 @@ public class ExcelController {
 	@Autowired
 	private MemberService memberService;
 	
-		// [사원 등록] 사원 엑셀 등록
-		@PostMapping("/excelUpload")
-	    public String excelUpload( @RequestParam("file") MultipartFile file ) { // MultiparFile 형식의 file을 요청
-	    	String result = "";
-	    	try {
-	    		// 1. 엑셀 파일 JSON 데이터로 변환 (업로드된 엑셀 파일을 파싱(분석, 해부)하여 JSON 데이터로 변환)
-	            List<Map<String, Object>> jsonDataList = excelService.parseExcel(file);
-	            log.debug(CC.YE + "ExcelController Post excelUpload() jsonDataList: " + jsonDataList + CC.RESET);
-	            
-	            // 2. 사원번호 중복검사
-	            for (Map<String, Object> data : jsonDataList) {
-	                int empNo = (int) data.get("사원번호"); // 현재 데이터의 사원번호를 가져옵니다.
-	                log.debug(CC.YE + "ExcelController Post excelUpload() empNo: " + empNo + CC.RESET);
-	                // 사원번호의 정보 개수
-	                int empInfoCnt = (int) memberService.checkEmpNo(empNo).get("empInfoCnt");
-	                if ( empInfoCnt > 0 ) { // 중복된 사원번호가 있을 경우 empInfoCnt 1 이상 + 알림 메세지 전달
-	                    return "redirect:/emp/empList?result=fail&error=duplicate";
-	                }
-	            }
-	            
-	            // 3. DB에 삽입
-	            empService.excelProcess(jsonDataList); // 
-	            
-	            result = "success";
-	            return "redirect:/emp/empList?result=" + result; // 성공 시 성공 알림
-	            
-	        } catch (IOException e) { // 예외 처리
-	        	log.error(CC.YE + "ExcelController Post excelUpload() error: " + e.getMessage() + CC.RESET);
-	            e.printStackTrace();
-	            
-	            result = "fail";
-	            return "redirect:/emp/empList?result=" + result; // 실패 시 실패 알림
-	        }
-	    }
+	// [사원 등록] 사원 엑셀 등록
+	@PostMapping("/excelUpload")
+    public String excelUpload( @RequestParam("file") MultipartFile file ) { // MultiparFile 형식의 file을 요청
+    	String result = "";
+    	try {
+    		// 1. 엑셀 파일 JSON 데이터로 변환 (업로드된 엑셀 파일을 파싱(분석, 해부)하여 JSON 데이터로 변환)
+            List<Map<String, Object>> jsonDataList = excelService.parseExcel(file);
+            log.debug(CC.YE + "ExcelController Post excelUpload() jsonDataList: " + jsonDataList + CC.RESET);
+            
+            // 2. 사원번호 중복검사
+            for (Map<String, Object> data : jsonDataList) {
+                int empNo = (int) data.get("사원번호"); // 현재 데이터의 사원번호를 가져옵니다.
+                log.debug(CC.YE + "ExcelController Post excelUpload() empNo: " + empNo + CC.RESET);
+                // 사원번호의 정보 개수
+                int empInfoCnt = (int) memberService.checkEmpNo(empNo).get("empInfoCnt");
+                if ( empInfoCnt > 0 ) { // 중복된 사원번호가 있을 경우 empInfoCnt 1 이상 + 알림 메세지 전달
+                    return "redirect:/emp/empList?result=fail&error=duplicate";
+                }
+            }
+            
+            // 3. DB에 삽입
+            excelService.excelProcess(jsonDataList); // 
+            
+            result = "success";
+            return "redirect:/emp/empList?result=" + result; // 성공 시 성공 알림
+            
+        } catch (IOException e) { // 예외 처리
+        	log.error(CC.YE + "ExcelController Post excelUpload() error: " + e.getMessage() + CC.RESET);
+            e.printStackTrace();
+            
+            result = "fail";
+            return "redirect:/emp/empList?result=" + result; // 실패 시 실패 알림
+        }
+    }
+	
+ 	// 엑셀 다운로드 (정렬/검색된 결과값을 페이징 없이 출력)
+  	@GetMapping("/emp/excelDownload")
+  	public void excelDownload(HttpSession session // 권한
+	 			 			  , HttpServletResponse response // 엑셀 다운로드
+	 			              , @RequestParam(required = false, name = "ascDesc", defaultValue = "") String ascDesc // 오름차순, 내림차순
+	 			              , @RequestParam(required = false, name = "empState", defaultValue = "재직") String empState // 재직(기본값), 퇴직
+	 			              , @RequestParam(required = false, name = "empDate", defaultValue = "") String empDate // 입사일, 퇴사일
+	 			              , @RequestParam(required = false, name = "deptName", defaultValue = "") String deptName // 부서명
+	 			              , @RequestParam(required = false, name = "teamName", defaultValue = "") String teamName // 팀명
+	 			              , @RequestParam(required = false, name = "empPosition", defaultValue = "") String empPosition // 직급
+	 			              , @RequestParam(required = false, name = "searchCol", defaultValue = "") String searchCol // 검색항목
+	 			              , @RequestParam(required = false, name = "searchWord", defaultValue = "") String searchWord // 검색어
+	 			              , @RequestParam(required = false, name = "startDate", defaultValue = "") String startDate // 입사년도 검색 - 시작일
+	 			              , @RequestParam(required = false, name = "endDate", defaultValue = "") String endDate) throws IOException { // 입사년도 검색 - 마지막일
+
+  		// 1. 사용자 권한 확인 (권한에 따라 비밀번호 초기화 버튼 공개)
+  	    String accessLevel = (String)session.getAttribute("accessLevel");
+  	    
+  	    // 2. param Map (parameter값들 Map으로 묶기 -> enrichedEmpList의 매개값으로 전달)
+ 	    Map<String, Object> param = new HashMap<>();
+ 	    param.put("ascDesc", ascDesc); // 오름차순, 내림차순
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() ascDesc: " + ascDesc + CC.RESET);
+ 	    param.put("empDate", empDate); // 입사일, 퇴사일
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() empDate: " + empDate + CC.RESET);
+ 	    param.put("empState", empState); // 재직, 퇴직
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() empState: " + empState + CC.RESET);
+ 	    param.put("deptName", deptName); // 부서명
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() deptName: " + deptName + CC.RESET);
+ 	    param.put("teamName", teamName); // 팀명
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() teamName: " + teamName + CC.RESET);
+ 	    param.put("empPosition", empPosition); // 직급
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() empPosition: " + empPosition + CC.RESET);
+ 	    param.put("searchCol", searchCol); // 검색항목
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() searchCol: " + searchCol + CC.RESET);
+ 	    param.put("searchWord", searchWord); // 검색어
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() searchWord: " + searchWord + CC.RESET);
+ 	    param.put("startDate", startDate); // 입사년도 검색 - 시작일
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() startDate: " + startDate + CC.RESET);
+ 	    param.put("endDate", endDate); // 입사년도 검색 - 마지막일
+ 	    log.debug(CC.YE + "ExcelController.excelDownload() endDate: " + endDate + CC.RESET);
+ 	    param.put("beginRow", 0); // 페이지 시작 행
+ 	    param.put("rowPerPage", Integer.MAX_VALUE); // 모든 데이터를 받아야 하므로 Integer 형의 MAX 값으로 지정
+	    
+    	// 3. 사원 목록 (휴가일수, 회원가입 여부 추가)
+		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList(param);
+		log.debug(CC.YE + "ExcelController.excelDownload() enrichedEmpList: " + enrichedEmpList + CC.RESET);
 		
-			// [목록 다운로드] 사원 목록 엑셀 다운로드
-			@GetMapping("/emp/excelDownload")
-			public void excelDownload(HttpServletResponse response, Model model) {
-			    try {
-			        // 모델에서 풍부한 사원 목록을 가져옵니다.
-			        List<Map<String, Object>> enrichedEmpList = (List<Map<String, Object>>) model.getAttribute("enrichedEmpList");
-	
-			        // 엑셀 데이터를 생성하여 포함한 ByteArrayInputStream을 생성합니다.
-			        ByteArrayInputStream excelStream = createExcelStream(enrichedEmpList);
-	
-			        // HTTP 응답 헤더를 설정합니다 (파일 이름 및 타입).
-			        HttpHeaders headers = new HttpHeaders();
-			        headers.add("Content-Disposition", "attachment; filename=employee_list.xlsx");
-			        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-	
-			        // 엑셀 파일을 HTTP 응답에 기록합니다.
-			        ServletOutputStream outputStream = response.getOutputStream();
-			        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-			        response.setHeader("Content-Disposition", "attachment; filename=employee_list.xlsx");
-			        IOUtils.copy(excelStream, outputStream);
-			        
-			        excelStream.close();
-			        outputStream.flush();
-			    } catch (IOException e) {
-			        // 예외 처리
-			        e.printStackTrace();
-			    }
-			}
-		    // [목록 다운로드]
-	    	private ByteArrayInputStream createExcelStream(List<Map<String, Object>> enrichedEmpList) throws IOException {
-	    		log.debug(CC.YE + "ExcelController Post createExcelStream() enrichedEmpList: " + enrichedEmpList + CC.RESET);
-	    		
-	    		// 엑셀 워크북 생성
-	    		Workbook workbook = new XSSFWorkbook();
-	    		log.debug(CC.YE + "ExcelController Post createExcelStream() workbook: " + workbook + CC.RESET);
-	            
-	    		// 엑셀 시트 생성
-	    		Sheet sheet = workbook.createSheet("Employee Data");
-	    		log.debug(CC.YE + "ExcelController Post createExcelStream() sheet: " + sheet + CC.RESET);
-	            
-	    	    // 헤더 행 생성
-	    	    Row headerRow = sheet.createRow(0);
-	    	    String[] columns = {"사원번호", "사원명", "부서명", "팀명", "직급", "입사일", "잔여휴가일", "회원가입 유무", "권한"};
-	    	    log.debug(CC.YE + "ExcelController Post createExcelStream() columns: " + columns + CC.RESET);
-	            
-	    	    for (int col = 0; col < columns.length; col++) {
-	    	        Cell cell = headerRow.createCell(col);
-	    	        log.debug(CC.YE + "ExcelController Post createExcelStream() cell: " + cell + CC.RESET);
-	    	        cell.setCellValue(columns[col]);
-	    	        log.debug(CC.YE + "ExcelController Post createExcelStream() cell: " + cell + CC.RESET);
-	                
-	    	    }
-	    	    
-	    	    // 데이터 행 생성
-	    	    int rowNum = 1;
-	    	    for (Map<String, Object> data : enrichedEmpList) {
-	    	        Row dataRow = sheet.createRow(rowNum++);
-	    	        log.debug(CC.YE + "ExcelController Post createExcelStream() dataRow: " + dataRow + CC.RESET);
-	                
-	    	        int colNum = 0;
-	    	        for (String column : columns) {
-	    	            Cell cell = dataRow.createCell(colNum++);
-	    	            log.debug(CC.YE + "ExcelController.createExcelStream() cell: " + cell + CC.RESET);
-	                    
-	    	            Object value = data.get(column.toLowerCase()); // 열 이름이 소문자로 매핑되도록 설정
-	    	            log.debug(CC.YE + "ExcelController.createExcelStream() value: " + value + CC.RESET);
-	                    
-	    	            if (value != null) {
-	    	                cell.setCellValue(value.toString());
-	    	                log.debug(CC.YE + "ExcelController.createExcelStream() cell value: " + cell + CC.RESET);
-	                        
-	    	            } else {
-	    	                cell.setCellValue("");
-	    	                log.debug(CC.YE + "ExcelController.createExcelStream() cell vlaue값 없음: " + cell + CC.RESET);
-	                        
-	    	            }
-	    	        }
-	    	    }
-	
-	    	    // 엑셀 파일을 바이트 배열로 변환
-	    	    ByteArrayOutputStream excelBytes = new ByteArrayOutputStream();
-	    	    log.debug(CC.YE + "ExcelController.createExcelStream() excelBytes: " + excelBytes + CC.RESET);
-	            
-	    	    workbook.write(excelBytes);
-	    	    workbook.close();
-	
-	    	    return new ByteArrayInputStream(excelBytes.toByteArray());
-	    	}
+		// 4. 엑셀 파일 생성 및 데이터 삽입
+	    byte[] excelData = excelService.getExcel(enrichedEmpList);
+	    log.debug(CC.YE + "ExcelController.excelDownload() excelData: " + excelData + CC.RESET);
+		
+	    // 5. 엑셀 다운로드 처리 설정
+	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // HTTP 응답(response)의 설정을 구성. 브라우저가 이 데이터가 엑셀 파일임을 인식할 수 있도록
+	    
+		/* Content-Disposition : 헤더를 설정하여 브라우저가 엑셀 파일을 어떻게 처리해야 하는지 지정
+		   attachment : 파일을 첨부 파일로 다운로드하도록 지시하는 것
+		   filename=employee_list.xlsx : 다운로드될 파일의 이름을 설정
+		*/  
+	    response.setHeader("Content-Disposition", "attachment; filename=employee_list.xlsx"); // 브라우저가 이 헤더를 통해 다운로드될 파일의 이름을 표시하고, 사용자에게 저장 위치를 묻게됨
+	    
+	    // 6. 엑셀 데이터를 출력 스트림에 작성
+	    try (OutputStream outputStream = response.getOutputStream()) {
+	    	log.debug(CC.YE + "ExcelController.excelDownload() 출력스트림에 엑셀 데이터 작성" + CC.RESET);
+
+	    	outputStream.write(excelData); // 생성한 엑셀 데이터를 출력 스트림에 작성
+	        outputStream.flush(); // 출력 스트림을 강제로 비우고 데이터를 전송
+	    } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 	}
+  	
 }
