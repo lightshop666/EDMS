@@ -30,7 +30,8 @@ public class DraftService {
     @Autowired
     private MemberMapper memberMapper;
 
-    
+
+    //------------------------------정환 시작---------------------------------------------
     public List<EmpInfo> getAllEmp() {
         return draftMapper.getAllEmp();
     }
@@ -187,7 +188,49 @@ public class DraftService {
            // 중간승인자일 경우의 처리도 추가할 수 있음
        }
        
-       
+       public int modifyExpenseDraft(Map<String, Object> submissionData, List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
+           // 1. 수정하려는 지출 결의서의 approvalNo 가져오기
+           int approvalNo = (int) submissionData.get("approvalNo");
+
+           // 2. ExpenseDraft 테이블의 docTitle과 마감일 업데이트
+           String newDocTitle = (String) submissionData.get("documentTitle");
+           String newPaymentDate = (String) submissionData.get("paymentDate");
+           draftMapper.updateExpenseDraft(approvalNo, newDocTitle, newPaymentDate);
+
+           // 3. expense_draft_content 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
+           draftMapper.deleteExpenseDraftContents(approvalNo);
+
+           // 4. expense_draft_content 테이블에 수정된 데이터 insert
+           if (expenseDraftContentList != null && !expenseDraftContentList.isEmpty()) {
+               for (ExpenseDraftContent expenseDetail : expenseDraftContentList) {
+                   // approvalNo와 documentNo 설정
+                   expenseDetail.setApprovalNo(approvalNo);
+                   expenseDetail.setDocumentNo(draftMapper.selectDocumentNoByApprovalNo(approvalNo));
+                   draftMapper.insertExpenseDraftContent(expenseDetail);
+               }
+           }
+
+           // 5. receive_draft 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
+           draftMapper.deleteReceiveDraft(approvalNo);
+
+           // 6. receive_draft 테이블에 수정된 데이터 insert
+           if (selectedRecipientsIds != null && !selectedRecipientsIds.isEmpty()) {
+               for (int empNo : selectedRecipientsIds) {
+                   draftMapper.insertReceiveDraft(approvalNo, empNo);
+               }
+           }
+
+           // 7. approval 테이블 수정
+           int selectedMiddleApproverId = (int) submissionData.get("selectedMiddleApproverId");
+           int selectedFinalApproverId = (int) submissionData.get("selectedFinalApproverId");
+           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId);
+
+
+           return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
+       }
+   
+    //------------------------------정환 끝---------------------------------------------   
+    //------------------------------희진 시작---------------------------------------------   
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회
     // 기존의 memberMapper 사용 // -> private으로 바꿀지 고민.. 결재상태에 따른 서명이미지 조회 메서드를 만드니까 이건 없애는게 좋을까?
     @Transactional

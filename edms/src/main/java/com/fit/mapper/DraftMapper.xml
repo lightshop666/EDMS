@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fit.mapper.DraftMapper">
+   <!-- 정환 시작 -->
    <!-- 사원리스트 조회 -->
    <select id="getAllEmp" parameterType="int" resultType="com.fit.vo.EmpInfo">
       SELECT
@@ -120,7 +121,67 @@
             approval_field = #{approvalField}
         WHERE approval_no = #{approvalNo}
     </update>
+    
+        <update id="updateApprovalState">
+        UPDATE approval
+        SET approval_state = #{approvalState}
+        WHERE approval_no = #{approvalNo}
+    </update>
+    
+    <update id="updateApprovalStateAndField">
+        UPDATE approval
+        SET approval_state = #{approvalState},
+            approval_field = #{approvalField}
+        WHERE approval_no = #{approvalNo}
+    </update>
+    
+    <select id="selectDocumentNoByApprovalNo" parameterType="int" resultType="int">
+       SELECT document_no FROM expense_draft WHERE approval_no = #{approvalNo}
+   </select>
+    
+   <!-- ExpenseDraft 테이블 수정 -->
+   <update id="updateExpenseDraft">
+       UPDATE expense_draft
+       SET doc_title = #{docTitle},
+           payment_date = #{paymentDate}
+       WHERE approval_no = #{approvalNo}
+   </update>
+
+   <!-- expense_draft_content 테이블에서 데이터 삭제 -->
+   <delete id="deleteExpenseDraftContents">
+       DELETE FROM expense_draft_content
+       WHERE document_no IN (SELECT document_no FROM expense_draft WHERE approval_no = #{approvalNo})
+   </delete>
+
+   <!-- expense_draft_content 테이블에 데이터 추가 -->
+   <insert id="insertExpenseDraftContent">
+       INSERT INTO expense_draft_content (document_no, expense_category, expense_cost, expense_info)
+       VALUES (#{documentNo}, #{expenseCategory}, #{expenseCost}, #{expenseInfo})
+   </insert>
+
+   <!-- receive_draft 테이블에서 데이터 삭제 -->
+   <delete id="deleteReceiveDrafts">
+       DELETE FROM receive_draft
+       WHERE approval_no = #{approvalNo}
+   </delete>
+
+	<!-- receive_draft 테이블에 데이터 추가 -->
+	<insert id="insertReceiveDraft">
+	    INSERT INTO receive_draft (approval_no, emp_no, createdate)
+	    VALUES (#{approvalNo}, #{empNo}, NOW())
+	</insert>
+	
+	<!-- approval 테이블 수정 -->
+	<update id="updateApproval">
+	    UPDATE approval
+	    SET mediate_approval = #{selectedMiddleApproverId},
+	        final_approval = #{selectedFinalApproverId}
+	    WHERE approval_no = #{approvalNo}
+	</update> 
+    
+   <!-- 정환 끝 -->
    
+   <!-- 희진 -->
    <!-- vacation_draft insert -->
    <insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
       INSERT INTO vacation_draft (
