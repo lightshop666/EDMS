@@ -121,19 +121,7 @@
             approval_field = #{approvalField}
         WHERE approval_no = #{approvalNo}
     </update>
-    
-        <update id="updateApprovalState">
-        UPDATE approval
-        SET approval_state = #{approvalState}
-        WHERE approval_no = #{approvalNo}
-    </update>
-    
-    <update id="updateApprovalStateAndField">
-        UPDATE approval
-        SET approval_state = #{approvalState},
-            approval_field = #{approvalField}
-        WHERE approval_no = #{approvalNo}
-    </update>
+ 
     
     <select id="selectDocumentNoByApprovalNo" parameterType="int" resultType="int">
        SELECT document_no FROM expense_draft WHERE approval_no = #{approvalNo}
