@@ -203,15 +203,14 @@ public class DraftService {
            // 4. expense_draft_content 테이블에 수정된 데이터 insert
            if (expenseDraftContentList != null && !expenseDraftContentList.isEmpty()) {
                for (ExpenseDraftContent expenseDetail : expenseDraftContentList) {
-                   // approvalNo와 documentNo 설정
-                   expenseDetail.setApprovalNo(approvalNo);
+                   //documentNo 설정
                    expenseDetail.setDocumentNo(draftMapper.selectDocumentNoByApprovalNo(approvalNo));
                    draftMapper.insertExpenseDraftContent(expenseDetail);
                }
            }
 
            // 5. receive_draft 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
-           draftMapper.deleteReceiveDraft(approvalNo);
+           draftMapper.deleteReceiveDrafts(approvalNo);
 
            // 6. receive_draft 테이블에 수정된 데이터 insert
            if (selectedRecipientsIds != null && !selectedRecipientsIds.isEmpty()) {

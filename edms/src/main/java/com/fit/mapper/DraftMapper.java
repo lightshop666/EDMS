@@ -40,6 +40,22 @@ public interface DraftMapper {
 
     int updateApprovalStateAndField(int approvalNo,String approvalState, String approvalField);
     
+    int selectDocumentNoByApprovalNo(int approvalNo);
+
+    void updateExpenseDraft(int approvalNo, String newDocTitle, String newPaymentDate);
+
+    void deleteExpenseDraftContents(int approvalNo);
+
+    void insertExpenseDraftContent(int documentNo, String expenseCategory, double expenseCost, String expenseInfo);
+
+    void deleteReceiveDrafts(int approvalNo);
+
+    void updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId);
+
+
+
+    //정환 끝
+    
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 테이블 insert
     
     int insertReceiveDrafts(int approvalNo, int[] recipients); // 수신참조자 테이블 insert
