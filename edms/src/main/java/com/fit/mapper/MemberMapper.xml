@@ -118,4 +118,15 @@
 		    AND file_category = #{fileCategory}
 	</delete>
 	
+	<!-- 비밀번호 확인 -->
+	<select id="checkPw" resultType="int">
+		SELECT
+			COUNT(*) pwCnt
+		FROM
+			member_info
+		WHERE
+			emp_no = #{empNo}
+			AND pw = #{pw}
+	</select>
+	
 </mapper>

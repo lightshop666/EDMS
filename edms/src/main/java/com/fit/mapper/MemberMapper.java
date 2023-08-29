@@ -32,4 +32,13 @@ public interface MemberMapper {
 	
 	// 개인정보 파일 삭제
 	int removeMemberFile(int empNo, String fileCategory);
+	
+	// 비밀번호 확인
+	int checkPw(int empNo, String pw);
+	
+	// 개인정보 수정
+	
+	// 비밀번호 수정
+	
+	
 }

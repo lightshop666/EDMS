@@ -63,13 +63,13 @@ public class MemberController {
 	    }
 	}
 	
-	// 내 프로필 폼
+	// 내 프로필 수정 폼
 	@GetMapping("/member/modifyMember")
 	public String memberOne(HttpSession session,
-							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
 		
-		empNo = 1000000;
+		int empNo = (int)session.getAttribute("loginMemberId");
+		String empName = (String)session.getAttribute("empName");
 		
 		// empNo로 개인정보 조회
 		Map<String, Object> result = empService.selectMember(empNo);
@@ -77,16 +77,17 @@ public class MemberController {
 		model.addAttribute("member", result.get("memberInfo"));
 		model.addAttribute("image", result.get("memberImage"));
 		model.addAttribute("sign", result.get("memberSign"));
+		model.addAttribute("empNo", empNo);
+		model.addAttribute("empName", empName);
 		
 		return "/member/modifyMember";
 	}
 	
 	// 내 프로필 수정 액션
 	@PostMapping("/member/modifyMember")
-	public String memberOne(HttpSession session,
-							@RequestParam(required = false, name = "empNo") Integer empNo) {
+	public String memberOne(HttpSession session) {
 		
-		empNo = (Integer)session.getAttribute("empNo");
+		int empNo = (int)session.getAttribute("loginMemberId");
 		
 		// empNo로 개인정보 수정
 		int modifyMember = memberService.modifyMember(empNo);

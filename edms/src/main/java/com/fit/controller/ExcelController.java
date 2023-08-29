@@ -73,8 +73,7 @@ public class ExcelController {
 	
  	// 엑셀 다운로드 (정렬/검색된 결과값을 페이징 없이 출력)
   	@GetMapping("/emp/excelDownload")
-  	public void excelDownload(HttpSession session // 권한
-	 			 			  , HttpServletResponse response // 엑셀 다운로드
+  	public void excelDownload(HttpServletResponse response // 엑셀 다운로드
 	 			              , @RequestParam(required = false, name = "ascDesc", defaultValue = "") String ascDesc // 오름차순, 내림차순
 	 			              , @RequestParam(required = false, name = "empState", defaultValue = "재직") String empState // 재직(기본값), 퇴직
 	 			              , @RequestParam(required = false, name = "empDate", defaultValue = "") String empDate // 입사일, 퇴사일
@@ -86,10 +85,7 @@ public class ExcelController {
 	 			              , @RequestParam(required = false, name = "startDate", defaultValue = "") String startDate // 입사년도 검색 - 시작일
 	 			              , @RequestParam(required = false, name = "endDate", defaultValue = "") String endDate) throws IOException { // 입사년도 검색 - 마지막일
 
-  		// 1. 사용자 권한 확인 (권한에 따라 비밀번호 초기화 버튼 공개)
-  	    String accessLevel = (String)session.getAttribute("accessLevel");
-  	    
-  	    // 2. param Map (parameter값들 Map으로 묶기 -> enrichedEmpList의 매개값으로 전달)
+  	    // 1. param Map (parameter값들 Map으로 묶기 -> enrichedEmpList의 매개값으로 전달)
  	    Map<String, Object> param = new HashMap<>();
  	    param.put("ascDesc", ascDesc); // 오름차순, 내림차순
  	    log.debug(CC.YE + "ExcelController.excelDownload() ascDesc: " + ascDesc + CC.RESET);
@@ -114,15 +110,15 @@ public class ExcelController {
  	    param.put("beginRow", 0); // 페이지 시작 행
  	    param.put("rowPerPage", Integer.MAX_VALUE); // 모든 데이터를 받아야 하므로 Integer 형의 MAX 값으로 지정
 	    
-    	// 3. 사원 목록 (휴가일수, 회원가입 여부 추가)
+    	// 2. 사원 목록 (휴가일수, 회원가입 여부 추가)
 		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList(param);
 		log.debug(CC.YE + "ExcelController.excelDownload() enrichedEmpList: " + enrichedEmpList + CC.RESET);
 		
-		// 4. 엑셀 파일 생성 및 데이터 삽입
+		// 3. 엑셀 파일 생성 및 데이터 삽입
 	    byte[] excelData = excelService.getExcel(enrichedEmpList);
 	    log.debug(CC.YE + "ExcelController.excelDownload() excelData: " + excelData + CC.RESET);
 		
-	    // 5. 엑셀 다운로드 처리 설정
+	    // 4. 엑셀 다운로드 처리 설정
 	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); // HTTP 응답(response)의 설정을 구성. 브라우저가 이 데이터가 엑셀 파일임을 인식할 수 있도록
 	    
 		/* Content-Disposition : 헤더를 설정하여 브라우저가 엑셀 파일을 어떻게 처리해야 하는지 지정
@@ -131,7 +127,7 @@ public class ExcelController {
 		*/  
 	    response.setHeader("Content-Disposition", "attachment; filename=employee_list.xlsx"); // 브라우저가 이 헤더를 통해 다운로드될 파일의 이름을 표시하고, 사용자에게 저장 위치를 묻게됨
 	    
-	    // 6. 엑셀 데이터를 출력 스트림에 작성
+	    // 5. 엑셀 데이터를 출력 스트림에 작성
 	    try (OutputStream outputStream = response.getOutputStream()) {
 	    	log.debug(CC.YE + "ExcelController.excelDownload() 출력스트림에 엑셀 데이터 작성" + CC.RESET);
 

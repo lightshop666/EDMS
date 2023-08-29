@@ -3,8 +3,12 @@ package com.fit.restapi;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fit.CC;
@@ -14,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
+@CrossOrigin
 public class MemberRest {
 	
 	@Autowired
@@ -47,5 +52,15 @@ public class MemberRest {
 		}
 		
 		return result;
+	}
+	
+	// 비밀번호 검사 // 비동기
+	@PostMapping("/checkPw")
+	public boolean checkPw(HttpSession session, @RequestParam(required = false, name = "pw") String pw) {
+	    
+		int empNo = (int)session.getAttribute("loginMemberId");
+	    int checkPw = memberService.checkPw(empNo, pw);
+	    
+	    return checkPw > 0; // 비밀번호가 일치하면 true, 아니면 false 반환
 	}
 }

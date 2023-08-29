@@ -217,7 +217,6 @@
 	        <input type="text" name="searchWord" class="search-input">
 	    </div>
 	        <button type="submit" id="search-button">검색</button>
-	        
     </form>
 <!-- [끝] 검색 ------->
 
@@ -234,7 +233,7 @@
 		<span id="msg"></span>
 	</form>
 <!-- [끝] 파일 업로드 ------->
-	<a href="/emp/excelDownload?ascDesc=${ascDesc}&empState=${empState}&empDate=${empDate}&deptName=${deptName}&teamName=${teamName}&empPosition=${empPosition}&searchCol=${searchCol}&searchWord=${searchWord}&startDate=${startDate}&endDate=${endDate}" class="generateListBtn">엑셀 다운로드</a>
+	<a href="/emp/excelDownload?ascDesc=${param.ascDesc}&empState=${param.empState}&empDate=${param.empDate}&deptName=${param.deptName}&teamName=${param.teamName}&empPosition=${param.empPosition}&searchCol=${param.searchCol}&searchWord=${param.searchWord}&startDate=${param.startDate}&endDate=${param.endDate}" class="generateListBtn">엑셀 다운로드</a>
 	
 <!-- [시작] 관리자 리스트 출력 ------->	
 	<table border="1">
@@ -312,22 +311,40 @@
 <!-- [끝] 관리자 리스트 출력 ------->	
 
 <!-- [시작] 페이징 ------->
-	<c:if test="${minPage > 1 }">
-		<a href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage - 1}">이전</a>
-	</c:if>
-	
-	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-    	<c:if test="${i == currentPage}">
-        	${i}
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        <c:if test="${minPage > 1}">
+            <li class="page-item">
+                <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage - 1}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">Previous</span>
+                </a>
+            </li>
         </c:if>
-        <c:if test="${i != currentPage}">
-        	<a  href="${pageContext.request.contextPath}/emp/empList?currentPage=${i}">${i}</a>
-    	</c:if>
-    </c:forEach>
-	
-	<c:if test="${lastPage > currentPage}">
-		<a href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage + 1}">다음</a>
-	</c:if>
+        
+        <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+            <li class="page-item">
+                <c:choose>
+                    <c:when test="${i == currentPage}">
+                        <span class="page-link current-page">${i}</span>
+                    </c:when>
+                    <c:otherwise>
+                        <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${i}">${i}</a>
+                    </c:otherwise>
+                </c:choose>
+            </li>
+        </c:forEach>
+        
+        <c:if test="${lastPage > currentPage}">
+            <li class="page-item">
+                <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage + 1}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </li>
+        </c:if>
+    </ul>
+</nav>
 <!-- [끝] 페이징 ------->
 </body>
 </html>

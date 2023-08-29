@@ -97,6 +97,15 @@ public class MemberService {
 		return selectMemberOneResult;	
 	}
 	
+	// 비밀번호 확인
+	public int checkPw(int empNo, String pw) {
+		// 비밀번호 확인 메서드 실행
+		int pwCnt = memberMapper.checkPw(empNo, pw);
+		log.debug(CC.YE + "memberService.checkPw() pwCnt : " + pwCnt + CC.RESET);
+		
+		return pwCnt;
+	}
+	
 	// 내 프로필 수정
 	public int modifyMember(int empNo) {
 		int modifyMemberRow = memberMapper.modifyMember(empNo);

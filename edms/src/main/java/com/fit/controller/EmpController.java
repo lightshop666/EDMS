@@ -139,7 +139,6 @@ public class EmpController {
  	@GetMapping("/emp/empList")
  	public String empList(Model model
 			 			  , HttpSession session
-			 			  , HttpServletResponse response
 			              , @RequestParam(required = false, name = "ascDesc", defaultValue = "") String ascDesc // 오름차순, 내림차순
 			              , @RequestParam(required = false, name = "empState", defaultValue = "재직") String empState // 재직(기본값), 퇴직
 			              , @RequestParam(required = false, name = "empDate", defaultValue = "") String empDate // 입사일, 퇴사일
