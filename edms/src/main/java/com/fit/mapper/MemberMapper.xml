@@ -126,7 +126,7 @@
 			member_info
 		WHERE
 			emp_no = #{empNo}
-			AND pw = #{pw}
+			AND pw = password(#{pw})
 	</select>
 	
 </mapper>

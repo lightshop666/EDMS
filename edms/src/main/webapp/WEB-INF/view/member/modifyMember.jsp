@@ -104,9 +104,9 @@
 			
 			// 취소 버튼 클릭 시
 			$('#cancelBtn').click(function() {
-				let result = confirm('새로고침 하시겠습니까?'); // 사용자 선택 값에 따라 true or false 반환
+				let result = confirm('Home으로 이동하시겠습니까?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
-					window.location.href = '/member/modifyMember'; // 로그인 페이지로 이동
+					window.location.href = '/home'; // 로그인 페이지로 이동
 				}
 			});
 		
@@ -155,33 +155,43 @@
     <!-- 탭 내용 -->
     <div class="tab-content" id="myTabContent">
     
-    	<!-- 1. 개인정보 수정 탭 -->
+<!-- 1. 개인정보 수정 탭 -->
         <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
             <!-- 사진 수정-->
             <form>
-            	<img src="${memberFile.member_ori_file_name}" alt="프로필 사진">
+            	<!-- 사진 클릭 시 모달로 이미지 출력 -->
+            	<label>사진</label>
+				<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
+					 data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
             </form>
             <!-- 사원번호와 사원명 변경 불가 -->
-            	<p>사원번호: ${emp_no}</p>
-            	<p>사원명: ${emp_name}</p>
+            	<p>사원번호 ${empNo}</p>
+            	<p>사원명 ${empName}</p>
             <!-- 서명 수정 -->
             <form>
-            	<img src="${memberFile.member_ori_signature}" alt="서명 사진">
+            	<label>서명</label>
+            	<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
             </form>
             <!-- 개인정보 수정 폼 -->
-            <form action="/member/addMember" method="post">
-                <label>성별:</label>
-			    <input type="radio" id="male" name="gender" value="M" <c:if test="${gender == 'male'}">checked</c:if>>
+            <form action="/member/modifyMember" method="post">
+                <label>성별</label>
+			    <input type="radio" id="M" name="gender" value="M" <c:if test="${member.gender == 'M'}">checked</c:if>>
 			    <label for="male">남성</label>
-			    <input type="radio" id="female" name="gender" value="F" <c:if test="${gender == 'female'}">checked</c:if>>
+			    <input type="radio" id="F" name="gender" value="F" <c:if test="${member.gender == 'F'}">checked</c:if>>
 			    <label for="female">여성</label>
 			    
 			    <br>
 			    
-                <label for="email">이메일:</label>
-                <input type="email" id="email" name="email" value="${email}"><br>
+			    <label for="phoneNumber">전화번호</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" value="${member.phoneNumber}"><br>
                 
-                <label for="address">주소:</label>
+			    <br>
+			    
+                <label for="email">이메일</label>
+                <input type="email" id="email" name="email" value="${member.email}"><br>
+                
+                <label for="address">주소</label>
+                <input type="text" id="existingAddress" name="existingAddress" value="${member.address}"><br>
                 <input type="text" id="sample6_postcode" placeholder="우편번호">
 				<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
 				<input type="text" id="sample6_address" placeholder="주소"><br>
@@ -189,13 +199,63 @@
 				<input type="text" id="sample6_extraAddress" placeholder="참고항목">
 				<input type="hidden" name="address" id="fullAddress"><br>
                 
+                <label for="createdate">가입일</label>
+                <input type="date" id="createdate" name="createdate" value="${member.createdate}"><br>
+                
+                <label for="updatedate">수정일</label>
+                <input type="date" id="updatedate" name="updatedate" value="${member.updatedate}"><br>
+                
                 <hr>
                 <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
                 <button type="submit" class="btn btn-primary" id="saveBtn">저장</button>
             </form>
         </div>
-        
-        <!-- 2. 비밀번호 수정 탭 -->
+     </div>  
+        <!-- 이미지 모달 -->
+		<div class="modal" id="imageModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">사원 사진</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+					</div>
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 이미지 모달 끝 -->
+		
+		<!-- 서명 모달 -->
+		<div class="modal" id="signModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<!-- 모달 헤더 -->
+					<div class="modal-header">
+						<h4 class="modal-title">사원 서명</h4>
+						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+					</div>
+					<!-- 모달 본문 -->
+					<div class="modal-body">
+						<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+					</div>
+					<!-- 모달 푸터 -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 서명 모달 끝 -->
+		
+<!-- 2. 비밀번호 수정 탭 -->
         <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
             <form>
                 <label for="currentPassword">현재 비밀번호:</label>
@@ -211,8 +271,71 @@
             </form>
         </div>
         
-        <!-- 3. 휴가정보 탭 -->
-        추가해줘
-    </div>
+<!-- 3. 휴가정보 탭 -->
+        <div class="tab-pane fade" id="vacation" role="tabpanel" aria-labelledby="vacation-tab">
+		    <h1>휴가정보</h1>
+            <h4>남은 휴가일수 : ${remain_days} 일</h4>
+		    <form method="post" action="${pageContext.request.contextPath}/vacationHistory">
+		        <div class="search-area">
+		            <label class="search-label">기간검색</label>
+		            <input type="date" name="startDate">
+		            <input type="date" name="endDate">
+		            <button type="submit">검색</button>
+		        </div>      
+				<div class="sort-area">
+				    <label class="sort-label">정렬</label>
+				    <select name="col">
+				        <option value="createdate">발생 일자</option>
+				        <option value="vacationHistoryNo">휴가 번호</option>
+				    </select>
+				    <select name="ascDesc">
+				        <option value="ASC">오름차순</option>
+				        <option value="DESC">내림차순</option>
+				    </select>
+				    <button type="submit">정렬</button>
+				</div>
+		    </form>
+		    
+		    <div align="center">
+		        <a href="${pageContext.request.contextPath}/vacationHistory?vacationName=연차">연차</a>
+		        <a href="${pageContext.request.contextPath}/vacationHistory?vacationName=보상">보상</a>
+		    </div>
+		    
+		    <table class="table">
+		        <thead class="table-active">
+		            <tr>
+		                <th>휴가 번호</th>
+		                <th>사원 번호</th>
+		                <th>휴가 종류</th>
+		                <th>휴가 일수(+/-)</th>
+		                <th>휴가 일수</th>
+		                <th>발생 일자</th>
+		            </tr>
+		        </thead>
+		        <tbody>
+		            <c:forEach var="history" items="${vacationHistoryList}">
+						<tr>
+						    <td>${history.vacationHistoryNo}</td>
+						    <td>${history.empNo}</td>
+						    <td>${history.vacationName}</td>
+						    <td>${history.vacationPm}</td>
+						    <td>${history.vacationDays}</td>
+						    <td>${history.createdate}</td>
+						</tr>
+		            </c:forEach>
+		        </tbody>
+		    </table>
+		    <nav class="pagination justify-content-center">
+		        <ul class="pagination">
+		            <c:forEach var="page" begin="${minPage}" end="${maxPage}">
+		                <li class="page-item ${currentPage eq page ? 'active' : ''}">
+		                    <a class="page-link" href="${pageContext.request.contextPath}/vacationHistory?currentPage=${page}&empNo=${empNo}&startDate=${startDate}&endDate=${endDate}&vacationName=${vacationName}&ascDesc=${ascDesc}">
+		                        ${page}
+		                    </a>
+		                </li>
+		            </c:forEach>
+		        </ul>
+		    </nav>
+    	</div>
 </body>
 </html>
