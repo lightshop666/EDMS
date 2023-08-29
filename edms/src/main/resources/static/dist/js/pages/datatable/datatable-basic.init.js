@@ -9,6 +9,8 @@
  *       Basic Table                   *
  ****************************************/
 $('#zero_config').DataTable();
+$('#zero_config_1').DataTable();
+$('#zero_config_2').DataTable();
 
 /****************************************
  *       Default Order Table           *
