@@ -11,12 +11,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    private final AlarmService alarmService;
 
-    @Autowired
-    public webSocketConfig(AlarmService alarmService) {
-        this.alarmService = alarmService;
-    }
 
 	// 메시지 브로커 설정
 	@Override
@@ -34,12 +29,12 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// Stomp 연결을 위한 엔드포인트 설정 및 SockJS 사용
         // UserHandshakeHandler를 빈으로 등록하고 생성자에서 AlarmService를 주입
         registry.addEndpoint("/ourWebsocket")
-                .setHandshakeHandler(new UserHandshakeHandler(alarmService))	//사용자 Principal을 결정하는 역할
+                .setHandshakeHandler(new UserHandshakeHandler())	//사용자 Principal을 결정하는 역할
                 .withSockJS();
         /*
 UserHandshakeHandler 클래스는 WebSocket 핸드셰이크 시에 사용자 Principal을 결정하는 역할을 합니다. 
 이 핸들러는 WebSocket 연결이 확립될 때마다 호출되어, 사용자를 인식하고 식별하기 위한 작업을 수행합니다.
-여기서 UserHandshakeHandler를 빈으로 등록하는 이유는 핸드셰이크 과정 중에 필요한 의존성을 주입하기 위함입니다. 
+여기서 UserHandshakeHandler를 빈으로 등록하는 이유는 핸드셰이크 과정 중에 필요한 의존성을 주입하기 위함입니다.  (의존성 주입? 장난감 배터리 넣어주듯이)
 
 AlarmService는 알림과 관련된 비즈니스 로직을 처리하는 서비스 클래스로, 웹소켓 핸드셰이크 과정에서 사용자를 식별하고 알림을 전송할 때 필요합니다.
 그래서 UserHandshakeHandler 클래스의 생성자에서 AlarmService를 주입받게 되는데, 이렇게 의존성 주입을 통해 AlarmService의 기능을 활용할 수 있습니다.
