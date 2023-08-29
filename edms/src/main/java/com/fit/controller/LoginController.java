@@ -77,12 +77,14 @@ log.debug(CC.WOO + "로긴컨트롤러.쿠키에 저장된 loginId :  " + reques
 		session.setAttribute("accessLevel", loginSessionMap.get("accessLevel")); 	// 세션에 엑세스 레벨 저장
 		session.setAttribute("empName", loginSessionMap.get("empName")); 			// 사원이름 저장 
 		session.setAttribute("employDate", loginSessionMap.get("employDate")); 		// 입사일 저장
-		session.setAttribute("deptName", loginSessionMap.get("deptName")); 		// 부서명 저장
+		session.setAttribute("deptName", loginSessionMap.get("deptName"));			// 부서명 저장
+		session.setAttribute("empPosition", loginSessionMap.get("empPosition"));	// 직급 저장
 log.debug(CC.WOO + "로긴컨트롤러.세션계층 loginMemberId :  " + session.getAttribute("loginMemberId") + CC.RESET);
 log.debug(CC.WOO + "로긴컨트롤러.세션계층 accessLevel :  " + session.getAttribute("accessLevel") + CC.RESET);
 log.debug(CC.WOO + "로긴컨트롤러.세션계층 empName :  " + session.getAttribute("empName") + CC.RESET);
 log.debug(CC.WOO + "로긴컨트롤러.세션계층 employDate :  " + session.getAttribute("employDate") + CC.RESET);
 log.debug(CC.WOO + "로긴컨트롤러.세션계층 deptName :  " + session.getAttribute("deptName") + CC.RESET);
+log.debug(CC.WOO + "로긴컨트롤러.세션계층 empPosition :  " + session.getAttribute("empPosition") + CC.RESET);
 
         return "redirect:/home"; // 로그인 성공 시 이동할 페이지
 	}

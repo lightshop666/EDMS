@@ -24,7 +24,7 @@
 			    alert('휴가신청서가 기안되었습니다.');
 			} else if (result == 'fail'){
 				console.log('결재 업데이트 실패');
-			    alert('결재상태 업데이트에 실패하였습니다. 다시 시도해주세요.');
+			    alert('결재정보 업데이트에 실패하였습니다. 다시 시도해주세요.');
 			}
 			
 			// action 버튼 클릭시 이벤트 발생 // 이 부분 다시...
@@ -50,7 +50,7 @@
 				if (result) {
 					// 현재 문서의 문서번호 값
 					let approvalNo = ${approval.approvalNo};
-					window.location.href = "/draft/modifyVacationDraft?approval=" + approvalNo;
+					window.location.href = "/draft/modifyVacationDraft?approvalNo=" + approvalNo;
 				}
 			});
 		});
@@ -84,8 +84,8 @@
 		<h1 style="text-align: center;">휴가신청서</h1>
 		<table>
 			<tr>
-				<th rowspan="2" colspan="2">휴가신청서</th>
-				<th rowspan="2">결재</th>
+				<th rowspan="3" colspan="2">휴가신청서</th>
+				<th rowspan="3">결재</th>
 				<th>기안자</th>
 				<th>중간승인자</th>
 				<th>최종승인자</th>
@@ -115,6 +115,17 @@
 					<c:if test="${m.finalSign.memberSaveFileName == null && a.approvalField == 'C'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
 						서명 이미지 미등록
 					</c:if>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					${a.firstEmpName}_${a.firstDeptName}_${a.firstEmpPosition}
+				</td>
+				<td>
+					${a.mediateEmpName}_${a.mediateDeptName}_${a.mediateEmpPosition}
+				</td>
+				<td>
+					${a.finalEmpName}_${a.finalDeptName}_${a.finalEmpPosition}
 				</td>
 			</tr>
 			<tr>
@@ -189,12 +200,12 @@
 		<!-- 목록 버튼 --> <!-- 왼쪽 정렬 -->
 		<button type="button" class="actionBtn" data-actiontype="list">목록</button>
 		<!-- 버튼 분기 --> <!-- 오른쪽 정렬 -->
-		<c:if test="${a.approvalField == 'A'}"> <!-- 결재대기 -->
+		<c:if test="${a.approvalField == 'A' && a.approvalState != '반려'}"> <!-- 결재대기 -->
 			<c:if test="${a.role == '기안자'}">
 				<button type="button" id="modifyBtn">수정</button> <!-- 수정 페이지는 양식에 따라 다르므로 view단에서 분기합니다. -->
 				<button type="button" class="actionBtn" data-actiontype="cancel">기안취소</button>
 			</c:if>
-			<c:if test="${a.role == '중간승인자'}">
+			<c:if test="${a.role == '중간승인자' || a.role == '중간 및 최종승인자'}">
 				<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
 				<!-- 반려 사유 입력 모달 열림 -->
 				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
@@ -211,9 +222,15 @@
 				<!-- 반려 사유 입력 모달 열림 -->
 				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
 			</c:if>
+			<c:if test="${a.role == '중간 및 최종승인자'}">
+				<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
+				<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+				<!-- 반려 사유 입력 모달 열림 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+			</c:if>
 		</c:if>
 		<c:if test="${a.approvalField == 'C'}"> <!-- 결재완료 -->
-			<c:if test="${a.role == '최종승인자'}">
+			<c:if test="${a.role == '최종승인자' || a.role == '중간 및 최종승인자'}">
 				<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
 				<!-- 반려 사유 입력 모달 열림 -->
 				<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>

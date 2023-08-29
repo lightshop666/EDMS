@@ -225,7 +225,7 @@ public class DraftService {
            // 7. approval 테이블 수정
            int selectedMiddleApproverId = (int) submissionData.get("selectedMiddleApproverId");
            int selectedFinalApproverId = (int) submissionData.get("selectedFinalApproverId");
-           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId);
+           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId, newDocTitle);
 
 
            return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
@@ -320,39 +320,98 @@ public class DraftService {
     // 결재상태 업데이트 메서드
     // actionType : 기안취소 -> cancel, 승인 -> approve, 반려 -> reject, 승인취소 -> CancelApprove
     @Transactional
-    public int updateApprovalState(int approvalNo, String role, String actionType, String approvalReason) {
+    public int updateApprovalState(int approvalNo, String role, String approvalField, String actionType, String approvalReason) {
     	int row = 0;
     	
     	// actionType에 따라 업데이트할 결재 상태를 지정합니다.
     	// approvalReason은 입력하지 않았을 시 기본값 공백으로 들어옵니다.
     	String approvalState = "";
-    	String approvalField = "";
+    	String newApprovalField = "A";
      	if (actionType.equals("cancel")) { // 기안취소 -> 임시저장
     		approvalState = "임시저장";
     	} else if (actionType.equals("approve")) { // 승인
     		if (role.equals("중간승인자")) { // 결재중으로 변경
     			approvalState = "결재중";
-    	    	approvalField = "B";
+    			newApprovalField = "B";
     		} else if (role.equals("최종승인자")) { // 결재완료로 변경
     			approvalState = "결재완료";
-    	    	approvalField = "C";
+    			newApprovalField = "C";
+    		} else if (role.equals("중간 및 최종승인자") && approvalField.equals("A")) {
+    			approvalState = "결재중";
+    			newApprovalField = "B";
+    		} else if (role.equals("중간 및 최종승인자") && approvalField.equals("B")) {
+    			approvalState = "결재완료";
+    			newApprovalField = "C";
     		}
     	} else if (actionType.equals("CancelApprove")) { // 승인취소
     		if (role.equals("중간승인자")) {
     			approvalState = "결재대기";
-    			approvalField = "A";
+    			newApprovalField = "A";
     		} else if (role.equals("최종승인자")) {
     			approvalState = "결재중";
-    			approvalField = "B";
+    			newApprovalField = "B";
+    		} else if (role.equals("중간 및 최종승인자") && approvalField.equals("B")) {
+    			approvalState = "결재대기";
+    			newApprovalField = "A";
+    		} else if (role.equals("중간 및 최종승인자") && approvalField.equals("C")) {
+    			approvalState = "결재중";
+    			newApprovalField = "B";
     		}
     	} else if (actionType.equals("reject")) { // 반려
     		approvalState = "반려";
-    		approvalField = "A";
+    		newApprovalField = "A";
     	}
-    	
-     	row = draftMapper.updateApprovalDetails(approvalNo, approvalState, approvalField, approvalReason);
+     	
+     	row = draftMapper.updateApprovalDetails(approvalNo, approvalState, newApprovalField, approvalReason);
+
+     	// vacationHistory 매서드 호출
+		int vacationHistoryRow = addVacationHistory(approvalNo, actionType, approvalField);
+		log.debug(CC.HE + "DraftController.updateApprovalState() vacationHistoryRow : " + vacationHistoryRow + CC.RESET);
      	
     	return row;
+    }
+    
+    // 결재문서를 수정하는 메서드
+    // 양식들의 공통 테이블인 approval, receive_draft, document_file에 대한 수정 작업을 수행합니다.
+    @Transactional
+    public void updateDraftOne(Map<String, Object> paramMap) {
+    	// 복수의 행을 가지는 receive_draft, document_file 테이블은 delete 후 insert 작업을 수행합니다.
+    	// 단일행을 가지는 approval 테이블은 update 작업을 수행합니다.
+    	// 1. approval 테이블
+    	Approval approval = (Approval) paramMap.get("approval"); // map에서 객체 가져오기
+    	int approvalNo = approval.getApprovalNo();
+    	int mediateApproval = approval.getMediateApproval();
+    	int finalApproval = approval.getFinalApproval();
+    	String docTitle = approval.getDocTitle();
+    	// update mapper 호출
+    	draftMapper.updateApproval(approvalNo, mediateApproval, finalApproval, docTitle);
+    	log.debug(CC.HE + "DraftService.updateDraftOne() approval update 실행 "+ CC.RESET);
+    	// 1-1. 결재대기로 변경
+    	String approvalState = "결재대기"; // 임시저장과 같은 form을 공유하므로 결재상태도 수정
+    	int updateApprovalStateRow = draftMapper.updateApprovalState(approvalNo, approvalState);
+    	log.debug(CC.HE + "DraftService.updateDraftOne() approvalState 결재대기로 변경 : " + updateApprovalStateRow + CC.RESET);
+    	
+    	// 2. receive_draft
+    	int[] recipients = (int[]) paramMap.get("recipients"); // map에서 객체 가져오기
+    	// delete mapper 호출
+    	draftMapper.deleteReceiveDrafts(approvalNo);
+    	log.debug(CC.HE + "DraftService.updateDraftOne() receive_draft delete 실행 "+ CC.RESET);
+    	if (recipients != null) { // 빈 배열이 아니면 insert
+        	// insert mapper 호출
+        	int receiveRow = draftMapper.insertReceiveDrafts(approvalNo, recipients);
+        	log.debug(CC.HE + "DraftService.updateDraftOne() receive_draft insert 실행 row : " + receiveRow + CC.RESET);
+    	}
+  
+    	// 3. document_file
+    	List<DocumentFile> documentFileList = (List<DocumentFile>) paramMap.get("documentFileList"); // map에서 객체 가져오기
+    	// delete mapper 호출
+    	draftMapper.deleteDocumentFile(approvalNo);
+    	log.debug(CC.HE + "DraftService.updateDraftOne() document_file delete 실행 "+ CC.RESET);
+    	if (documentFileList != null) { // 빈 배열이 아니면 insert
+    		// insert mapper 호출
+    		int documentFileListRow = draftMapper.insertDocumentFile(approvalNo, documentFileList);
+    		log.debug(CC.HE + "DraftService.updateDraftOne() document_file insert 실행 row : " + documentFileListRow + CC.RESET);
+    	}
     }
     
     // ----------- 휴가신청서 --------------
@@ -403,45 +462,48 @@ public class DraftService {
        // 반차 또는 연차/보상에 따라 휴가날짜와 시간을 셋팅합니다.
        // 1. 휴가종류를 선택하지 않았다면 모든 값들 기본값으로 셋팅
        if (vacationDraft.getVacationName() == null) {
-          vacationDraft.setVacationName("");
-          vacationDraft.setVacationStart("0000-00-00");
-         vacationDraft.setVacationEnd("0000-00-00");
-         return;
+    	   vacationDraft.setVacationName("");
+    	   vacationDraft.setVacationStart("0000-00-00");
+    	   vacationDraft.setVacationEnd("0000-00-00");
+    	   
+    	   return;
        }
        // 2. 휴가시작일 값 가져오기
-      String vacationStart = vacationDraft.getVacationStart();
-      // 3. 선택한 휴가 종류가 반차라면
-      // 반차일 경우 시작날짜와 종료날짜는 같습니다.
-      // 단, 반차가 오전인지 오후인지에 따라 시간을 다르게 셋팅합니다.
-      if (vacationDraft.getVacationName().equals("반차")) {
-         // 3-1. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
-         if (vacationStart.equals("")) {
-            vacationStart = "0000-00-00";
-         }
-         // 3-2. 시간 선택에 따라 시간값 셋팅
-         if (vacationTime == null) { // 시간을 선택하지 않았다면 날짜값만 셋팅
-            vacationDraft.setVacationStart(vacationStart);
-            vacationDraft.setVacationEnd(vacationStart);
-         } else if (vacationTime.equals("오전반차")) {
-            vacationDraft.setVacationStart(vacationStart + " 09:00:00");
-            vacationDraft.setVacationEnd(vacationStart + " 13:00:00");
-         } else { // 오후반차
-            vacationDraft.setVacationStart(vacationStart + " 14:00:00");
-            vacationDraft.setVacationEnd(vacationStart + " 18:00:00");
-         }
-      // 4. 선택한 휴가가 연차 혹은 보상이라면
-      } else {
-         // 4-1. 휴가종료일 값 가져오기
-         String vacationEnd = vacationDraft.getVacationEnd();
-         // 4-2. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
-         if (vacationStart.equals("")) {
-            vacationStart = "0000-00-00";
-            vacationEnd = "0000-00-00";
-         }
-         // 4-3. 연차 또는 보상일 경우 날짜값은 그대로 유지하고, 시간만 셋팅합니다.
-         vacationDraft.setVacationStart(vacationStart + " 09:00:00");
-         vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
-      }
+       String vacationStart = vacationDraft.getVacationStart();
+       // 3. 선택한 휴가 종류가 반차라면
+       // 반차일 경우 시작날짜와 종료날짜는 같습니다.
+       // 단, 반차가 오전인지 오후인지에 따라 시간을 다르게 셋팅합니다.
+       if (vacationDraft.getVacationName().equals("반차")) {
+    	   // 3-1. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
+    	   if (vacationStart.equals("")) {
+    		   vacationStart = "0000-00-00";
+    	   }
+    	   // 3-2. 시간 선택에 따라 시간값 셋팅
+    	   if (vacationTime == null) { // 시간을 선택하지 않았다면 날짜값만 셋팅
+    		   vacationDraft.setVacationStart(vacationStart);
+    		   vacationDraft.setVacationEnd(vacationStart);
+    	   } else if (vacationTime.equals("오전반차")) {
+    		   vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+    		   vacationDraft.setVacationEnd(vacationStart + " 13:00:00");
+    	   } else { // 오후반차
+    		   vacationDraft.setVacationStart(vacationStart + " 14:00:00");
+    		   vacationDraft.setVacationEnd(vacationStart + " 18:00:00");
+    	   }
+       } else { // 4. 선택한 휴가가 연차 혹은 보상이라면
+    	   // 4-1. 휴가종료일 값 가져오기
+    	   String vacationEnd = vacationDraft.getVacationEnd();
+    	   // 4-2. 시작날짜를 지정하지 않았을 경우 날짜 기본값으로 변경
+    	   if (vacationStart.equals("")) {
+    		   vacationStart = "0000-00-00";
+    		   vacationEnd = "0000-00-00";
+    	   }
+    	   // 4-3. 연차 또는 보상일 경우 날짜값은 그대로 유지하고, 시간만 셋팅합니다.
+    	   vacationDraft.setVacationStart(vacationStart + " 09:00:00");
+    	   vacationDraft.setVacationEnd(vacationEnd + " 18:00:00");
+       }
+       
+       log.debug(CC.HE + "DraftService.prepareVacationTimes() vacationStart : " + vacationDraft.getVacationStart() + CC.RESET);
+       log.debug(CC.HE + "DraftService.prepareVacationTimes() vacationEnd : " + vacationDraft.getVacationEnd() + CC.RESET);
     }
        
     // 휴가신청서 상세 조회
@@ -485,6 +547,7 @@ public class DraftService {
     
     // vacationHistory 업데이트 메서드
     // vacation_draft의 approval 정보가 업데이트 될때마다 vacation_history 테이블에 insert합니다.
+    @Transactional
     public int addVacationHistory(int approvalNo, String actionType, String approvalField) {
     	int row = 0;
     	
@@ -511,6 +574,26 @@ public class DraftService {
 			}
 		}
 
+    	return row;
+    }
+    
+    // 휴가신청서 수정 // approvalNo 반환
+    @Transactional
+    public int modifyVacationDraft(Map<String, Object> paramMap) {
+    	int row = 0;
+    	
+    	// 1. approval, receive_draft, document_file 를 수정하는 공통 메서드 호출
+    	updateDraftOne(paramMap);
+    	
+    	// 2. vacation_draft 테이블 수정
+        VacationDraft vacationDraft = (VacationDraft) paramMap.get("vacationDraft");  // map에서 vacationDraft 객체 가져오기
+        String vacationTime = (String) paramMap.get("vacationTime"); // map에서 vacationTime 문자열 가져오기
+        // 2-1. 값 셋팅
+        prepareVacationTimes(vacationDraft, vacationTime); // 시간값을 셋팅하는 메서드 호출
+        // 2-3. mapper 호출
+        row = draftMapper.updateVacationDraft(vacationDraft);
+        log.debug(CC.HE + "DraftService.modifyVacationDraft() row : " + row + CC.RESET);
+        
     	return row;
     }
 }
