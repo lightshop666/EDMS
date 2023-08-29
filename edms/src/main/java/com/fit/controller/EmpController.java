@@ -91,15 +91,12 @@ public class EmpController {
 		// 권한 분기 -> 메인메뉴에서 처리
 		
 		// empNo 유효성 검사 후 null일 경우 사원목록 페이지로 리다이렉션
-		/*
 		if (empNo == null) {
 			return "redirect:/home";
 		}
-		*/
-		int empNoEx = 2016001;
 		
 		// empNo로 개인정보 조회 (관리자) 서비스 호출
-		Map<String, Object> result = empService.selectMember(empNoEx);
+		Map<String, Object> result = empService.selectMember(empNo);
 
 		// 각 타입의 객체를 model에 담기
 		model.addAttribute("member", result.get("memberInfo"));
