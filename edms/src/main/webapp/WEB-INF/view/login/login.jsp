@@ -1,13 +1,21 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Login</title>    
-<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
-
-
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+    <title>GoodeeFit Login</title>
+    <!-- Custom CSS -->
+    <link href="../dist/css/style.min.css" rel="stylesheet">
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script>
 		// 페이지가 로드될 때 실행
 		$(document).ready(function() {
@@ -38,25 +46,84 @@
     </script>
     
 </head>
+
 <body>
-	<h1>Login</h1>
-<!-- 로긴 에러 메시지 -->
-	<p>${loginError}</p>
-<!-- 사번, pw 폼 -->
-	<form action="${pageContext.request.contextPath}/login" method="post">
-		<div>
-			아이디 : <input type="text" name="memberId" value="${loginId}">
-		</div>
-		<div>
-			비밀번호 : <input type="password" name="memberPw"><br>
-			비밀번호 분실시 관리자에게 문의
-		</div>
-		<div>
-			<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장
-		</div>
-		<div>
-			<button type="submit">로그인</button>
-		</div>
-	</form>
+<div class="main-wrapper">
+<!-- ============================================================== -->
+<!-- Login box.scss -->
+<!-- ============================================================== -->
+<div class="auth-wrapper d-flex no-block justify-content-center align-items-center position-relative" 
+	style="background:url(../assets/images/big/auth-bg.jpg) no-repeat center center;">
+<div class="auth-box row">
+	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(../assets/images/big/3.jpg);"> </div>
+	<div class="col-lg-5 col-md-7 bg-white">
+		<div class="p-3">
+			<div class="text-center">
+				<img src="../assets/images/big/icon.png" alt="wrapkit">
+			</div>
+			<h2 class="mt-3 text-center">Sign In</h2>
+			<p class="text-center">GoodeeFit 전자결재 시스템</p>
+				<form class="mt-4" action="${pageContext.request.contextPath}/login" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+						<div class="form-group mb-3">
+						    <label class="form-label text-dark" for="uname">사원번호</label>
+						    <input class="form-control" name="memberId" value="${loginId}" type="text"
+								placeholder="enter your username">
+						</div>
+						</div>
+						<div class="col-lg-12">
+						    <div class="form-group mb-3">
+						        <label class="form-label text-dark" for="pwd">비밀번호</label>
+						        <input class="form-control" id="pwd" name="memberPw" type="password"
+									placeholder="enter your password">
+						    </div>
+						</div>
+						<div class="col-lg-12 text-center">
+							<div align="left">
+								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장				
+							</div>
+						    <button type="submit" class="btn w-100 btn-dark">로그인</button>
+						</div>
+					</div>
+				</form>
+			</div>
+<!-- ============================================================== -->
+<!-- Login box.scss -->
+<!-- ============================================================== -->
+	</div>
+
+
+<!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
+
+</div>
+		<!-- ============================================================== -->
+		<!-- End Container fluid  -->
+		<!-- ============================================================== -->
+            
+		<!-- ============================================================== -->
+		<!-- footer -->
+		<!-- ============================================================== -->
+<!-- 푸터 인클루드 -->
+		<footer class="footer text-center text-muted">
+		
+			<jsp:include page="/WEB-INF/view/inc/footer.jsp" />
+			
+		</footer>
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
+	</div>
+<!-- ============================================================== -->
+<!-- End Page wrapper  -->
+<!-- ============================================================== -->        
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
 </body>
+
 </html>

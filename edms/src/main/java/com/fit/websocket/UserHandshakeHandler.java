@@ -5,9 +5,9 @@ import com.sun.security.auth.UserPrincipal;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
 
@@ -19,8 +19,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 @Slf4j
+@Component
 public class UserHandshakeHandler extends DefaultHandshakeHandler {
-    
 	// WebSocket 핸드셰이크 과정에서 사용자 Principal을 결정하는 메서드. 이 메서드는 WebSocket 연결이 확립될 때마다 호출
     @Override
     protected Principal determineUser(ServerHttpRequest request, WebSocketHandler wsHandler, Map<String, Object> attributes) {

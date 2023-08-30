@@ -47,7 +47,7 @@ log.debug(CC.WOO +"알람서비스.알람발송 :  " + alarm + CC.RESET);
 	public List<Alarm> NckecdAlarmList(int empNo) {
 		
 		Map<String, Alarm> selectNCkedList = alarmMapper.selectNCked(empNo);
-log.debug(CC.WOO +"미확인 알림조회.알림 리스트 :  " + selectNCkedList + CC.RESET);
+		log.debug(CC.WOO +"미확인 알림조회.알림 리스트 :  " + selectNCkedList + CC.RESET);
 		
 	    // 맵의 값들을 리스트로 추출
 	    List<Alarm> pendingAlarms = new ArrayList<>(selectNCkedList.values());

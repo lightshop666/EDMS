@@ -11,7 +11,12 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-
+    @Autowired
+    private final UserHandshakeHandler userHandshakeHandler;
+    
+    public webSocketConfig(UserHandshakeHandler userHandshakeHandler) {
+		this.userHandshakeHandler = userHandshakeHandler;
+    }
 
 	// 메시지 브로커 설정
 	@Override
@@ -27,9 +32,8 @@ public class webSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(final StompEndpointRegistry registry) {
 		// Stomp 연결을 위한 엔드포인트 설정 및 SockJS 사용
-        // UserHandshakeHandler를 빈으로 등록하고 생성자에서 AlarmService를 주입
         registry.addEndpoint("/ourWebsocket")
-                .setHandshakeHandler(new UserHandshakeHandler())	//사용자 Principal을 결정하는 역할
+                .setHandshakeHandler(userHandshakeHandler)	//사용자 Principal을 결정하는 역할
                 .withSockJS();
         /*
 UserHandshakeHandler 클래스는 WebSocket 핸드셰이크 시에 사용자 Principal을 결정하는 역할을 합니다. 

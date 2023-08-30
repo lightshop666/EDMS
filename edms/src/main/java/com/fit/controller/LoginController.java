@@ -41,7 +41,7 @@ public class LoginController {
 				if (c.getName().equals("loginId")) {
                     // 로그인 성공한 아이디를 뷰 페이지에 전달
 					request.setAttribute("loginId", c.getValue());
-log.debug(CC.WOO + "로긴컨트롤러.쿠키에 저장된 loginId :  " + request.getAttribute("loginId") + CC.RESET);
+					log.debug(CC.WOO + "로긴컨트롤러.쿠키에 저장된 loginId :  " + request.getAttribute("loginId") + CC.RESET);
 					break; // 찾았으면 더 이상 반복할 필요가 없음
 				}
 			}
@@ -91,7 +91,7 @@ log.debug(CC.WOO + "로긴컨트롤러.세션계층 deptName :  " + session.getA
 	@GetMapping("/logout")
 	public String logout(HttpSession session) {		
 		session.invalidate();			// 세션을 무효화하여 로그아웃 처리합니다.			
-		return "redirect:/login/login";	// 로그아웃 후 로그인 페이지로 이동
+		return "redirect:/login";	// 로그아웃 후 로그인 페이지로 이동
 	}
 
 }

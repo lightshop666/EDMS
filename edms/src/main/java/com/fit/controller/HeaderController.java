@@ -18,6 +18,7 @@ public class HeaderController {
 	@Autowired
 	private AlarmService alarmService;
 	
+	
 
 	@GetMapping("/header")
 	public String header (HttpSession session, Model model) {
