@@ -1,5 +1,7 @@
 package com.fit.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -44,11 +46,30 @@ public class ScheduleController {
 	
 	// 달력페이지를 요청받았을 때 실행된다.
 	@GetMapping("/schedule/schedule")
-	public String schedule(Model model) {
+	public String schedule(Model model
+			, @RequestParam(name = "tabCategory", required = false, defaultValue = "") String tabCategory
+			) {
 		
-		// 예약리스트와 일정리스트를 조회 -> 파라미터에 넘긴 값이 없으므로 null값 전달
-		List<Schedule> scheduleList = scheduleService.getScheduleListByPage(null);
-		List<ReservationDto> reservationList = reservationService.getReservationListByPage(null);
+		// 예약리스트와 일정리스트 변수 초기화
+		List<Schedule> scheduleList = null;
+		List<ReservationDto> reservationList = null;
+		
+		// view에서 탭을 통해 tabCategory라는 변수를 입력받아서 조건문에 따라 특정 리스트만 출력되도록 분기함.
+		if ("일정".equals(tabCategory)) {
+		       // 일정일 경우 일정 리스트만 조회
+		       scheduleList = scheduleService.getScheduleListByPage(null);
+		   } else if ("예약".equals(tabCategory)) {
+		       // 예약일 경우 예약 리스트만 조회
+		       reservationList = reservationService.getReservationListByPage(null);
+		   } else {
+		       // 그 외 (전체) 경우 모두 조회
+		       scheduleList = scheduleService.getScheduleListByPage(null);
+		       reservationList = reservationService.getReservationListByPage(null);
+		   }
+		
+		// 일반적으로 스프링 프레임워크는 Jackson 라이브러리를 사용하여 자동으로 Java 객체를 JSON 형식으로 변환이 가능하다.
+		// @ResponseBody 또는 ResponseEntity 타입을 반환하는 경우에 이 기능이 활성화된다.
+		// FullCalendar과 같이 클라이언트 사이드 라이브러리가 특정 형식의 JSON 문자열을 요구하는 경우에는 직접 문자열로 변환해야 좋을 수 있으므로 JSON 라이브러리를 추가하고 직접 변환하여 view로 전달한다.
 		
 		// 일정 이벤트 리스트 생성
 		// FullCalendar에 전달할 '일정' 이벤트 목록을 저장할 JSONArray를 생성
@@ -57,56 +78,62 @@ public class ScheduleController {
 	    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    // 출력할 날짜/시간 문자열의 형식 (ISO 8601) 을 정의하는 SimpleDateFormat 객체를 생성
 	    SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	    // 각 '일정'에 대해 JSONObject (event) 를 만들고 그 안에 필요한 정보 (제목, 시작/종료 시간 등) 를 넣기
-    	for (Schedule schedule : scheduleList) {
-            JSONObject event = new JSONObject();
-            event.put("title", schedule.getScheduleContent());
-            // 날짜/시간 문자열을 파싱하거나 포매팅 할 때 오류가 발생할 수 있으므로 try-catch 구문으로 에러 처리
-            try {
-				Date startTime = inputFormat.parse(schedule.getScheduleStartTime());
-				Date endTime = inputFormat.parse(schedule.getScheduleEndTime());
-				event.put("start", outputFormat.format(startTime));
-				event.put("end", outputFormat.format(endTime));
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-            // '하루 종일' 옵션은 false로 설정
-            event.put("allDay", false);
-            // 이벤트에 적용할 CSS 클래스를 설정
-            event.put("className", "bg-info");
-            // 생성된 이벤트 객체를 '일정' 이벤트 목록에 추가
-            scheduleEvents.put(event);
-    	}
+	    // null일 경우 에러가 뜨므로 방지
+	    if (scheduleList != null) {
+		    // 각 '일정'에 대해 JSONObject (event) 를 만들고 그 안에 필요한 정보 (제목, 시작/종료 시간 등) 를 넣기
+	    	for (Schedule schedule : scheduleList) {
+	            JSONObject event = new JSONObject();
+	            event.put("title", schedule.getScheduleContent());
+	            // 날짜/시간 문자열을 파싱하거나 포매팅 할 때 오류가 발생할 수 있으므로 try-catch 구문으로 에러 처리
+	            try {
+					Date startTime = inputFormat.parse(schedule.getScheduleStartTime());
+					Date endTime = inputFormat.parse(schedule.getScheduleEndTime());
+					event.put("start", outputFormat.format(startTime));
+					event.put("end", outputFormat.format(endTime));
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+	            // '하루 종일' 옵션은 false로 설정
+	            event.put("allDay", false);
+	            // 이벤트에 적용할 CSS 클래스를 설정
+	            event.put("className", "bg-info");
+	            // 생성된 이벤트 객체를 '일정' 이벤트 목록에 추가
+	            scheduleEvents.put(event);
+	    	}
+	    }
     	
     	// 예약 이벤트 리스트 생성
     	JSONArray reservationEvents = new JSONArray();
-    	for (ReservationDto reservationDto : reservationList) {
-    	    if (reservationDto.getStartDateTime() != null && reservationDto.getEndDateTime() != null) {
-    	        JSONObject event = new JSONObject();
-    	        
-    	        // 예약 타입에 따라 제목과 CSS 클래스 설정
-    	        String title;
-    	        String clazz;
-    	        if ("차량".equals(reservationDto.getUtilityCategory())) {
-    	            title = "차량 예약";
-    	            clazz = "bg-warning";
-    	        } else if ("회의실".equals(reservationDto.getUtilityCategory())) {
-    	            title = "회의실 예약";
-    	            clazz = "bg-success";
-    	        } else {
-    	            title = "예약";  // 기본값
-    	            clazz = "bg-info";  // 기본값
-    	        }
-    	        
-    	        event.put("title", title);
-    	        // ISO 8601 형식의 문자열로 변환하기 위해 toString 메서드 사용 -> FullCalendar는 ISO 8601 형식의 문자열을 받아들임
-    	        event.put("start", reservationDto.getStartDateTime().toString());
-    	        event.put("end", reservationDto.getEndDateTime().toString());
-    	        event.put("allDay", false);
-    	        event.put("className", clazz);
-    	        reservationEvents.put(event);
-    	    }
+    	// null일 경우 에러가 뜨므로 방지
+    	if (reservationList != null) {
+	    	for (ReservationDto reservationDto : reservationList) {
+	    	    if (reservationDto.getStartDateTime() != null && reservationDto.getEndDateTime() != null) {
+	    	        JSONObject event = new JSONObject();
+	    	        
+	    	        // 예약 타입에 따라 제목과 CSS 클래스 설정
+	    	        String title;
+	    	        String clazz;
+	    	        if ("차량".equals(reservationDto.getUtilityCategory())) {
+	    	            title = "차량 예약";
+	    	            clazz = "bg-warning";
+	    	        } else if ("회의실".equals(reservationDto.getUtilityCategory())) {
+	    	            title = "회의실 예약";
+	    	            clazz = "bg-success";
+	    	        } else {
+	    	            title = "예약";  // 기본값
+	    	            clazz = "bg-info";  // 기본값
+	    	        }
+	    	        
+	    	        event.put("title", title);
+	    	        // ISO 8601 형식의 문자열로 변환하기 위해 toString 메서드 사용 -> FullCalendar는 ISO 8601 형식의 문자열을 받아들임
+	    	        event.put("start", reservationDto.getStartDateTime().toString());
+	    	        event.put("end", reservationDto.getEndDateTime().toString());
+	    	        event.put("allDay", false);
+	    	        event.put("className", clazz);
+	    	        reservationEvents.put(event);
+	    	    }
+	    	}
     	}
 
 		// 디버깅
@@ -159,7 +186,7 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 추가시 달력으로
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList";
+			return "redirect:/schedule/scheduleList?result=success";
 		} else {
 			// 디버깅
 			// 일정 추가 실패시 fail을 매개변수로 view에 전달
@@ -223,7 +250,7 @@ public class ScheduleController {
 		// 페이지네이션에서 사용될 가장 큰 페이지 범위 -> 공통 페이징 메서드를 사용한다.
 		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 		
-		// 예약 리스트 출력 -> join을 통해 사원명과 공용품 종류를 같이 조회
+		// 일정 리스트 출력 
 		List<Schedule> scheduleList = scheduleService.getScheduleListByPage(listParam);
 		
 		// 디버깅
@@ -243,9 +270,16 @@ public class ScheduleController {
 		model.addAttribute("col", col);
 		model.addAttribute("ascDesc", ascDesc);
 		
+		// 디버깅
+		log.debug(CC.YOUN+"scheduleController.scheduleList() model.getAttribute(\"currentPage\"): "+model.getAttribute("currentPage")+CC.RESET);
+		log.debug(CC.YOUN+"scheduleController.scheduleList() model.getAttribute(\"lastPage\"): "+model.getAttribute("lastPage")+CC.RESET);
+		log.debug(CC.YOUN+"scheduleController.scheduleList() model.getAttribute(\"minPage\"): "+model.getAttribute("minPage")+CC.RESET);
+		log.debug(CC.YOUN+"scheduleController.scheduleList() model.getAttribute(\"maxPage\"): "+model.getAttribute("maxPage")+CC.RESET);
+		
 		// 이동할 해당 뷰 페이지를 작성한다.
 		return "/schedule/scheduleList";
 	}
+	
 	
 	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
 	@PostMapping("/schedule/delete")
@@ -269,7 +303,7 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList?result=warning";
+			return "redirect:/schedule/scheduleList?result=success";
 		} else {
 			// 디버깅
 			// 일정 삭제 실패시 fail을 매개변수로 view에 전달

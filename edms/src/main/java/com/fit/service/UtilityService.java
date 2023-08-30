@@ -32,7 +32,7 @@ public class UtilityService {
 	private UtilityFileMapper UtilityFileMapper;
 	
 	// 컨트롤러로부터 받은 매개변수를 넣어 getUtilityListByPage 메서드 실행
-	public List<UtilityDto> getUtilityListByPage(int currentPage, int rowPerPage, String UtilityCategory) {
+	public List<UtilityDto> getUtilityListByPage(int currentPage, int rowPerPage, String utilityCategory) {
 		// 컨트롤러로부터 받은 값을 계산하여 다시 컨트롤러로 반환
 		int beginRow = (currentPage - 1) * rowPerPage;
 		
@@ -41,16 +41,16 @@ public class UtilityService {
 		
 		// Map 타입으로 저장
 		Map<String, Object> paramMap = new HashMap<>();
-		paramMap.put("UtilityCategory", UtilityCategory);
+		paramMap.put("utilityCategory", utilityCategory);
 		paramMap.put("beginRow", beginRow);
 		paramMap.put("rowPerPage", rowPerPage);
 		
 		// 컨트롤러로부터 받은 페이지 번호, 행 수, 카테고리를 기반으로
 		// 데이터베이스에서 페이지별 공용품 리스트를 조회
-		List<UtilityDto> UtilityList = UtilityMapper.selectUtilityListByPage(paramMap);
+		List<UtilityDto> utilityList = UtilityMapper.selectUtilityListByPage(paramMap);
 		
 		// 리스트 반환 -> 파일 정보 내용도 있음
-		return UtilityList;
+		return utilityList;
 	}
 	
 	// 카테고리별 행의 개수 가져오는 메서드 

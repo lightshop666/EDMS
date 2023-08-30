@@ -49,9 +49,20 @@
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
+			// 입력 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 일정 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('일정 등록 실패');
+			    alert('일정이 등록되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('일정 등록 성공');
+			    alert('일정이 등록되었습니다.');
+			}
+			
 			// 취소 버튼 클릭 시
 			$('#cancelBtn').click(function() {
-				let result = confirm('달력으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				let result = confirm('schedule로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
 					window.location.href = '/schedule/schedule'; // schedule으로 이동
 				}

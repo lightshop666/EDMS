@@ -1,5 +1,7 @@
 package com.fit.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +111,7 @@ public class ReservationController {
 			// 디버깅
 			// 예약 신청 성공시 리스트로
 			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
-			return "redirect:/reservation/reservationList";
+			return "redirect:/reservation/reservationList?result=success";
 		} else {
 			// 디버깅
 			// 예약 신청 실패시 fail을 매개변수로 view에 전달
@@ -133,7 +135,7 @@ public class ReservationController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/reservation/reservationList?result=warning";
+			return "redirect:/reservation/reservationList?result=success";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
@@ -217,11 +219,23 @@ public class ReservationController {
 		model.addAttribute("maxPage", maxPage);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
-		model.addAttribute("searchWord", searchWord);
+		// 검색의 경우 한글로 검색할 경우 url에서 한글 깨짐이 발생할 수 있으므로 URL인코딩을 이용해서 VIEW에 전달한다.
+			try {
+				model.addAttribute("encodedSearchWord", URLEncoder.encode(searchWord, "UTF-8"));
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		model.addAttribute("searchCol", searchCol);
 		model.addAttribute("col", col);
 		model.addAttribute("ascDesc", ascDesc);
 		model.addAttribute("empNo", empNo);
+		
+		// 디버깅
+		log.debug(CC.YOUN+"reservationController.reservationList() model.getAttribute(\"currentPage\"): "+model.getAttribute("currentPage")+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.reservationList() model.getAttribute(\"lastPage\"): "+model.getAttribute("lastPage")+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.reservationList() model.getAttribute(\"minPage\"): "+model.getAttribute("minPage")+CC.RESET);
+		log.debug(CC.YOUN+"reservationController.reservationList() model.getAttribute(\"maxPage\"): "+model.getAttribute("maxPage")+CC.RESET);
 		
 		// 이동할 해당 뷰 페이지를 작성한다.
 		return "/reservation/reservationList";

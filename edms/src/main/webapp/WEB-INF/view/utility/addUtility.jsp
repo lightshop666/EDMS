@@ -45,6 +45,51 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
+	<script>
+		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
+			
+			// 입력 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('공용품 등록 실패');
+			    alert('공용품이 등록되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('공용품 등록 성공');
+			    alert('공용품이 등록되었습니다.');
+			}
+			
+			// 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('공용품리스트 페이지로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				if (result) {
+					window.location.href = '/utility/utilityList'; // utilityList으로 이동
+				}
+			});
+		});
+	</script>
+	
+	 <style>
+	 	/* 제목 가운데 정렬 */
+        #addScheduleForm .card-title {
+            text-align: center;
+        }
+        /* 취소, 저장 왼/오른쪽 정렬 */
+        #cancelBtn {
+		    float: left;
+		}
+		
+		#saveBtn {
+		    float: right;
+		}
+		/* 구분선 */
+		hr {
+		    border: solid 3px black;
+		    width: 100%;
+		    margin: 0; /* auto 가운데 정렬 */
+		}
+    </style>
 </head>
 
 <body>
@@ -105,35 +150,56 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
-	<form method="post" action="${pageContext.request.contextPath}/utility/addUtility" enctype="multipart/form-data">
-		<h1>공용품 추가</h1>
-		<table>
-			<tr>
-				<td>공용품종류</td>
-			    <td>
-			        <select name="utilityCategory">
-			            <option value="" selected>종류를 선택하세요</option>
-			            <option value="차량">차량</option>
-			            <option value="회의실">회의실</option>
-			        </select>
-			    </td>
-			</tr>
-			<tr>
-				<td>공용품명</td>
-				<td><textarea rows="3" cols="50" name="utilityName">공용품명을 입력해 주세요</textarea></td>
-			</tr>
-			<tr>
-				<td>공용품내용</td>
-				<td><textarea rows="3" cols="50" name="utilityInfo">공용품내용을 입력해 주세요</textarea></td>
-			</tr>
-			<tr>
-				<td>파일첨부</td>
-				<td><input type="file" name="singlepartFile"></td>
-			</tr>
-		</table>
-		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-		<button type="submit" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
-	</form>
+				<div class="row">
+                    <div class="col-8">
+                        <div class="card">
+                            <div class="card-body" id="addScheduleForm">
+                                <h3 class="card-title center" >공용품추가</h3>
+                                <h6 class="card-subtitle"></h6>
+                                <h6 class="card-title mt-5"><i
+                                        class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6>
+                                <div class="table-responsive">
+                                <form method="post" action="${pageContext.request.contextPath}/utility/addUtility" enctype="multipart/form-data">
+                                    <table class="table">
+                                        <tr>
+											<td>공용품종류</td>
+										    <td>
+										        <select name="utilityCategory" class="form-control">
+										            <option value="" selected>종류를 선택하세요</option>
+										            <option value="차량">차량</option>
+										            <option value="회의실">회의실</option>
+										        </select>
+										    </td>
+										</tr>
+										<tr>
+											<td>공용품명</td>
+											<td>
+												<textarea rows="3" cols="50" name="utilityName" class="form-control"></textarea>
+												<small id="textHelp_1" class="form-text text-muted">공용품명을 입력해 주세요</small>
+											</td>
+										</tr>
+										<tr>
+											<td>공용품내용</td>
+											<td>
+												<textarea rows="3" cols="50" name="utilityInfo" class="form-control"></textarea>
+												<small id="textHelp_2" class="form-text text-muted">공용품내용을 입력해 주세요</small>
+											</td>
+										</tr>
+										<tr>
+											<td>파일첨부</td>
+											<td><input type="file" name="singlepartFile" class="form-control"></td>
+										</tr>
+                                    </table>
+                                    <button type="button"
+                                        class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+                                    <button type="submit"
+                                        class="btn waves-effect waves-light btn-outline-dark" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               	</div>
 
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          

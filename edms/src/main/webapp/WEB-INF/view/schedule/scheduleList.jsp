@@ -1,5 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -49,6 +49,17 @@
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
+			// 삭제 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 수정 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('일정 삭제 실패');
+			    alert('일정이 삭제되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('일정 삭제 성공');
+			    alert('일정이 삭제되었습니다.');
+			}
+			
 			// 취소 버튼 클릭 시
 			$('#cancelBtn').click(function() {
 				let result = confirm('HOME으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
@@ -58,6 +69,30 @@
 			});
 		});
 	</script>
+	
+	<!-- 페이지네이션 버튼을 누를경우 매개변수를 컨트롤러로 POST 방식으로 보내는 폼이 활성화된다.-->
+	<!-- <script>
+	$(document).ready(function() {
+	    $('.prev-page, .next-page, .page-number').click(function(e) {
+	    	
+	        e.preventDefault();
+	        
+	     	// 클릭된 요소의 클래스 확인
+	        var isPrev = $(this).hasClass('prev-page');
+	        var isNext = $(this).hasClass('next-page');
+	        
+	        if (isPrev) { // 이전 버튼 클릭 시
+	            $('#currentPage').val($('#currentPage').val() - 1);
+	        } else if (isNext) { // 다음 버튼 클릭 시
+	            $('#currentPage').val(Number($('#currentPage').val()) + 1);
+	        } else { // 특정 페이지 번호 클릭 시
+	            $('#currentPage').val($(this).text());
+	        }
+	        
+	        $('#postParamForm').submit();
+	    });
+	});
+	</script> -->
 	
 	<style>
 		/* 구분선 */
@@ -187,7 +222,7 @@
 		        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
 		        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
 		        	조건이 거짓일 경우 빈 문자열('') -->
-		            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>신청일</option>
+		            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>등록일</option>
 		        </select>
 	        </div>
 	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
@@ -217,14 +252,17 @@
 	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
 	    </div>
 	</form>
+	
 	<br>
-				<!-- schedule table -->
+                
+                <!-- schedule table -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card" id="scheduleListForm">
-                            <div class="card-body">
-                                <h2 class="card-title center"></h2>
+                            <div class="card-body" id="addScheduleForm">
+                                <!-- <h2 class="card-title center"></h2>
                                 <h6 class="card-subtitle">&nbsp;</h6>
+                                <h6 class="card-title mt-5"><i class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6> -->
                                 <div class="table-responsive">
                                 <form method="post" action="${pageContext.request.contextPath}/schedule/delete">
                                 	<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
@@ -267,77 +305,67 @@
                             </div>
                         </div>
                     </div>
+               	</div>	
+               	
+               	<!-- 페이징 및 검색조건 적용시 POST 방식으로 컨트롤러로 데이터를 보내기 위함 -->
+              <%--  	<form id="postParamForm" method="post" action="${pageContext.request.contextPath}/schedule/scheduleList">
+				    <input type="hidden" name="currentPage" value="${i}" />
+				    <input type="hidden" name="startDate" value="${startDate}" />
+				    <input type="hidden" name="endDate" value="${endDate}" />
+				    <input type="hidden" name="searchCol" value="${searchCol}" />
+				    <input type="hidden" name="searchWord"value="${searchWord}"/>
+				    <input type="hidden" name ="col"value = "${col}"/>
+					<input type ="hidden"name ="ascDesc"value = "${ascDesc}"/>
+				
+				</form> --%>
+               	
+                <!-- [시작] 페이징 영역 가운데 정렬하기 위해 inline 속성적용 nav, ul 태그 -->
+                <div class="col-lg-12 mb-4" >
+                <h4 class="card-title"></h4>
+                <h6 class="card-subtitle"></h6>
+	                <nav aria-label="Page navigation example" style="text-align: center;">
+					    <ul class="pagination justify-content-center">
+					        <c:if test="${minPage > 1}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}"
+					                   aria-label="Previous">
+					                    <span aria-hidden="true">&lt;</span>
+					                    <span class="sr-only">Previous</span>
+					                </a>
+					            </li>
+					        </c:if>
+					        
+					        <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+					            <li class="page-item">
+					                <c:choose>
+					                    <c:when test="${i == currentPage}">
+					                        <span class="page-link">${i}</span>
+					                    </c:when>
+					                    <c:otherwise>
+					                        <a class="page-link"
+					                           href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">
+					                            ${i}
+					                        </a>
+					                    </c:otherwise>
+					                </c:choose>
+					            </li>
+					        </c:forEach>
+					        
+					        <c:if test="${lastPage > currentPage}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}"
+					                   aria-label="Next">
+					                    <span aria-hidden="true">&gt;</span>
+					                    <span class="sr-only">Next</span>
+					                </a>
+					            </li>
+					        </c:if>
+					    </ul>
+					</nav>
                 </div>
-                
-                <!-- [시작] 페이징 영역 -->
-				<c:if test="${minPage > 1 }">
-					<a href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">이전</a>
-				</c:if>
-				
-				<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-			    	<c:if test="${i == currentPage}">
-			        	${i}
-			        </c:if>
-			        <c:if test="${i != currentPage}">
-			        	<a  href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
-			    	</c:if>
-			    </c:forEach>
-				
-				<c:if test="${lastPage > currentPage}">
-					<a href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">다음</a>
-				</c:if>
 				<!-- [끝] 페이징 영역 -->
-	
-	<%-- <form method="post" action="${pageContext.request.contextPath}/schedule/delete">
-		<!-- [시작] 테이블 영역 -->
-		<table border="1">
-			<tr>
-				<th>선택</th>
-				<th>일정번호</th>
-				<th>시작시간</th>
-				<th>종료시간</th>
-				<th>내용</th>
-				<th>등록일</th>
-			</tr>
-			<c:forEach var="s" items="${scheduleList}">
-				<tr>
-					<!-- 각 리스트마다 체크박스를 생성 -->
-					<td>
-						<input type="checkbox" name="selectedItems" value="${s.scheduleNo}">
-					</td>
-					<td>${s.scheduleNo}</td>
-					<td>${s.scheduleStartTime}</td>
-					<td>${s.scheduleEndTime}</td>
-					<td>${s.scheduleContent}</td>
-					<td>${s.createdate}</td>
-				</tr>
-			</c:forEach>
-			<!-- [끝] 조건문 -->
-		</table>
-		<!-- [끝] 테이블 영역 -->
-		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
-		<button type="submit" id="deleteBtn">삭제</button> <!-- 오른쪽 정렬 -->
-	</form>
-	
-	<!-- [시작] 페이징 영역 -->
-	<c:if test="${minPage > 1 }">
-		<a href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">이전</a>
-	</c:if>
-	
-	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-    	<c:if test="${i == currentPage}">
-        	${i}
-        </c:if>
-        <c:if test="${i != currentPage}">
-        	<a  href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
-    	</c:if>
-    </c:forEach>
-	
-	<c:if test="${lastPage > currentPage}">
-		<a href="${pageContext.request.contextPath}/schedule/scheduleList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">다음</a>
-	</c:if>
-	<!-- [끝] 페이징 영역 --> --%>
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 

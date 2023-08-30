@@ -1,5 +1,7 @@
 package com.fit.controller;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +52,7 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 추가시 리스트로
 			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList";
+			return "redirect:/utility/utilityList?result=success";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
@@ -73,7 +75,6 @@ public class UtilityController {
 		log.debug(CC.YOUN+"utilityController.utilityList() rowPerPage: "+rowPerPage+CC.RESET);
 		log.debug(CC.YOUN+"utilityController.utilityList() utilityCategory: "+utilityCategory+CC.RESET);
 	    log.debug(CC.YOUN+"utilityController.utilityList() utilityNo: "+utilityNo+CC.RESET);
-		
 		
 		// 각 조건에 따른 전체 행 개수 
 		int totalCount = utilityService.getUtilityCount(utilityCategory);
@@ -127,7 +128,7 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=warning";
+			return "redirect:/utility/utilityList?result=success";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
@@ -172,7 +173,7 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 수정 성공시 리스트로
 			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList";
+			return "redirect:/utility/utilityList?result=success";
 		} else {
 			// 디버깅
 			// 공용품 수정 실패시 fail을 매개변수로 view에 전달

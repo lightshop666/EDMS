@@ -29,13 +29,51 @@
     <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 <![endif]-->
 
+	
+	<!-- 'defer' 속성이 추가된 스크립트 태그들입니다. -->
+	<!-- 'defer'는 브라우저가 HTML 문서를 파싱하면서 동시에 스크립트를 비동기적으로 로드하도록 지시합니다. -->
+	<!-- 이로 인해 페이지 렌더링이 차단되지 않고, 사용자에게 페이지 내용이 빠르게 표시됩니다. -->
+	<!-- 그리고 모든 HTML 문서 파싱이 완료되고 DOM이 완전히 구성된 직후에, 로드된 스크립트가 실행됩니다. -->
+	<!-- 따라서 이 스크립트들은 DOM 요소를 조작하는 코드를 포함하더라도 안전하게 실행할 수 있습니다. -->
+	
+	<!-- 기본 스크립트 외에 추가로 필요한 스크립트의 경우 defer 속성을 줘서 스크립트 파일의 충돌을 피한다. -->
+	<!-- ============================================================== -->
+    <!-- All Jquery -->
+    <!-- ============================================================== -->
+    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/extra-libs/taskboard/js/jquery.ui.touch-punch-improved.js" defer></script>
+    <script src="../assets/extra-libs/taskboard/js/jquery-ui.min.js" defer></script>
+    <script src="../assets/libs/popper.js/dist/umd/popper.min.js" defer></script>
+	
+	<!-- apps -->
+    <script src="../dist/js/app-style-switcher.js"></script>
+    <script src="../dist/js/feather.min.js"></script>
+    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+    <script src="../dist/js/sidebarmenu.js"></script>
+    <!--Custom JavaScript -->
+    <script src="../dist/js/custom.min.js"></script>
+    <!--This page JavaScript -->
+    <script src="../assets/libs/moment/min/moment.min.js" defer></script>
+    <script src="../assets/libs/fullcalendar/dist/fullcalendar.min.js" defer></script>
+    <!-- 사용자가 fullcalendar api를 설정하는 js 파일  -->
+    <script src="../dist/js/pages/calendar/cal-init.js" defer></script>
+    <script src="../assets/extra-libs/c3/d3.min.js"></script>
+	<script src="../assets/extra-libs/c3/c3.min.js"></script>
+	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
 	<!-- ScheduleController로부터 JSON 데이터를 전달받는다. -->
 	<script>
 	 	var scheduleEvents = ${scheduleEvents};
 	    var reservationEvents = ${reservationEvents};
 	</script>
 	
-	<script>
+	 <!-- Jquery 라이브러리가 추가된 후에 Jquery를 사용한다. -->
+    <script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
 			// 취소 버튼 클릭 시
@@ -47,40 +85,6 @@
 			});
 		});
 	</script>
-	
-	<!-- ============================================================== -->
-    <!-- All Jquery -->
-    <!-- ============================================================== -->
-    <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-    <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../assets/extra-libs/taskboard/js/jquery.ui.touch-punch-improved.js"></script>
-    <script src="../assets/extra-libs/taskboard/js/jquery-ui.min.js"></script>
-    <script src="../assets/libs/popper.js/dist/umd/popper.min.js"></script>
-	
-	<!-- 'defer' 속성이 추가된 스크립트 태그들입니다. -->
-	<!-- 'defer'는 브라우저가 HTML 문서를 파싱하면서 동시에 스크립트를 비동기적으로 로드하도록 지시합니다. -->
-	<!-- 이로 인해 페이지 렌더링이 차단되지 않고, 사용자에게 페이지 내용이 빠르게 표시됩니다. -->
-	<!-- 그리고 모든 HTML 문서 파싱이 완료되고 DOM이 완전히 구성된 직후에, 로드된 스크립트가 실행됩니다. -->
-	<!-- 따라서 이 스크립트들은 DOM 요소를 조작하는 코드를 포함하더라도 안전하게 실행할 수 있습니다. -->
-	<!-- apps -->
-    <script src="../dist/js/app-style-switcher.js" defer></script>
-    <script src="../dist/js/feather.min.js" defer></script>
-    <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js" defer></script>
-    <script src="../dist/js/sidebarmenu.js" defer></script>
-    <!--Custom JavaScript -->
-    <script src="../dist/js/custom.min.js" defer></script>
-    <!--This page JavaScript -->
-    <script src="../assets/libs/moment/min/moment.min.js" defer></script>
-    <script src="../assets/libs/fullcalendar/dist/fullcalendar.min.js" defer></script>
-    <!-- 사용자가 fullcalendar api를 설정하는 js 파일  -->
-    <script src="../dist/js/pages/calendar/cal-init.js" defer></script>
-    <script src="../assets/extra-libs/c3/d3.min.js" defer></script>
-	<script src="../assets/extra-libs/c3/c3.min.js" defer></script>
-	<script src="../assets/libs/chartist/dist/chartist.min.js" defer></script>
-	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js" defer></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js" defer></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js" defer></script>
-	<script src="../dist/js/pages/dashboards/dashboard1.min.js" defer></script>
 	
 	<style>
 	#cancelBtn {
@@ -112,9 +116,9 @@
         <!-- Topbar header - style you can find in pages.scss -->
         <!-- ============================================================== -->
         
-      <%--   <header class="topbar" data-navbarbg="skin6">
-		<jsp:include page="/WEB-INF/view/inc/header.jsp" />
-		</header> --%>
+        <header class="topbar" data-navbarbg="skin6">
+			<jsp:include page="/WEB-INF/view/inc/header.jsp" />
+		</header>
         
         <!-- ============================================================== -->
         <!-- End Topbar header -->
@@ -125,11 +129,9 @@
         
         <!-- 좌측 메인메뉴 인클루드 -->
 	
-		<%-- <aside class="left-sidebar" data-sidebarbg="skin6">
-		
+		<aside class="left-sidebar" data-sidebarbg="skin6">
 			<jsp:include page="/WEB-INF/view/inc/mainmenu.jsp" />
-		
-		</aside> --%>
+		</aside>
         
         
         <!-- ============================================================== -->
@@ -145,23 +147,55 @@
             <div class="page-breadcrumb">
                 <div class="row">
                     <div class="col-7 align-self-center">
-                        <h4 class="page-title text-truncate text-dark font-weight-medium mb-1">Calendar</h4>
+                    
+                    	<!-- 탭 형식으로 전체or일정or예약 리스트 조회 -->
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+						    <li class="nav-item" role="presentation">
+						    <c:choose>
+					            <c:when test="${empty param.tabCategory}">
+					                <!-- tabCategory 파라미터가 없거나 빈 문자열일 때 탭 선택상태 -->
+					                <a class="nav-link active category-tab" id="all-tab" data-category="" href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=">전체</a>
+					            </c:when>
+					            <c:otherwise>
+					                <!-- tabCategory 파라미터가 있을 때 탭 미선택상태 -->
+					                <a class="nav-link category-tab" id='all-tab' data-category="" href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=">전체</a>
+					            </c:otherwise>
+					        </c:choose>
+						    </li>
+						    <li class="nav-item" role="presentation">
+						    <c:choose>
+					            <c:when test="${param.tabCategory == '일정'}">
+					                <!-- tabCategory 파라미터가 '회의실'일 때 탭 선택상태-->
+					                <a class="nav-link active category-tab" id='schedule-tab' data-category='일정' href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=일정">일정</a>
+					            </c:when>
+					            <c:otherwise>
+					                <!-- utilityCategory 파라미터가 '회의실'이 아닐 때 탭 미선택상태-->
+					                <a class="nav-link category-tab" id='schedule-tab' data-category='일정' href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=일정">일정</a> 
+					            </c:otherwise>   
+					        </c:choose> 
+						    </li>
+						    <li class="nav-item" role="presentation">
+						    <c:choose>
+					            <c:when test="${param.tabCategory == '예약'}">
+					                <!-- utilityCategory 파라미터가 '회의실'일 때 탭 선택상태-->
+					                <a class="nav-link active category-tab" id='reservation-tab' data-category='예약' href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=예약">예약</a>
+					            </c:when>
+					            <c:otherwise>
+					                <!-- utilityCategory 파라미터가 '회의실'이 아닐 때 탭 미선택상태-->
+					                <a class="nav-link category-tab" id='reservation-tab' data-category='예약' href="${pageContext.request.contextPath}/schedule/schedule?tabCategory=예약">예약</a> 
+					            </c:otherwise>   
+					        </c:choose> 
+						    </li>
+						</ul>
+						
+                        <h4 class="page-title text-truncate text-dark font-weight-medium mb-1"></h4>
                         <div class="d-flex align-items-center">
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb m-0 p-0">
-                                    <li class="breadcrumb-item text-muted active" aria-current="page">Apps</li>
-                                    <li class="breadcrumb-item text-muted" aria-current="page">Calendar</li>
+                                    <!-- <li class="breadcrumb-item text-muted active" aria-current="page"></li>
+                                    <li class="breadcrumb-item text-muted" aria-current="page"></li> -->
                                 </ol>
                             </nav>
-                        </div>
-                    </div>
-                    <div class="col-5 align-self-center">
-                        <div class="customize-input float-end">
-                            <select class="custom-select custom-select-set form-control bg-white border-0 custom-shadow custom-radius">
-                                <option selected>Aug 23</option>
-                                <option value="1">July 23</option>
-                                <option value="2">Jun 23</option>
-                            </select>
                         </div>
                     </div>
                 </div>
@@ -213,6 +247,7 @@
                                     <div class="col-lg-9">
                                         <div class="card-body b-l calender-sidebar">
                                             <div id="calendar"></div>
+                                            
                                         </div>
                                     </div>
                                     <!-- [끝] 캘린더 출력부분 -->
@@ -222,6 +257,9 @@
                                 </div>
                             </div>
                         </div>
+                       
+                       <button type="button" class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">뒤로</button> <!-- 왼쪽 정렬 -->
+                       
                     </div>
                 </div>
             </div>
@@ -251,7 +289,5 @@
     <!-- End Wrapper -->
     <!-- ============================================================== -->
     
-   
 </body>
-
 </html>

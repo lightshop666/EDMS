@@ -13,7 +13,7 @@ public interface UtilityMapper {
 	UtilityDto selectUtilityOne(int utilityNo); // 공용품 상세 -> 공용품 추가 및 수정에 사용예정
 	
 	// param : Map<String, Object> map -> int beginRow int rowPerPage
-	List<UtilityDto> selectUtilityListByPage(Map<String, Object> map);
+	List<UtilityDto> selectUtilityListByPage(Map<String, Object> paramMap);
 	
 	// 차량, 회의실, 전체 행의 수
 	int selectUtilityCount(String utilityCategory);

@@ -53,7 +53,7 @@
 	    FROM schedule
 	    <where>
 	        <!-- 특정 일정번호를 입력받는 경우 해당 일정번호에 해당하는 리스트를 조회한다. -->
-	        <if test="scheduleNo != 0">
+	        <if test="scheduleNo != null and scheduleNo != ''">
 	            AND schedule_no = #{scheduleNo}
 	        </if>
 	        <if test="startDate != null and startDate != ''">

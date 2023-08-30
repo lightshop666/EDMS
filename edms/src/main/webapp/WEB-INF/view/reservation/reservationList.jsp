@@ -41,6 +41,26 @@
 	      }
 	    });
 	  });
+	  
+		// 예약 성공 or 실패 결과에 따른 alert
+		let result = '${param.result}'; // 예약 성공유무를 url의 매개값으로 전달
+		
+		if (result == 'fail') { // result의 값이 fail이면
+		    console.log('예약 등록 실패');
+		    alert('예약이 등록되지 않았습니다. 다시 시도해주세요.');
+		} else if (result == 'success') { // result의 값이 success이면
+			console.log('예약 등록 성공');
+		    alert('예약이 등록되었습니다.');
+		}
+		
+		// 취소 버튼 클릭 시
+		$('#cancelBtn').click(function() {
+			let result = confirm('home으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+			if (result) {
+				window.location.href = '/home'; // schedule으로 이동
+			}
+		});
+	  
 	});
 	</script>
 	
@@ -77,6 +97,39 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
+	<style>
+		/* 구분선 */
+		hr {
+		    border: solid 3px black;
+		    width: 20%;
+		    margin: 0; /* auto 가운데 정렬 */
+		}
+		/* 테이블 중앙 정렬 */
+		table {
+			text-align: center;
+		}
+		/* 제목 가운데 정렬 */
+        #reservationListForm .card-title {
+            text-align: center;
+        }
+        /* 취소, 저장 왼/오른쪽 정렬 */
+        #cancelBtn {
+		    float: left;
+		}
+		
+		#deleteBtn {
+		    float: right;
+		}
+		
+		#insertBtn {
+		    float: right;
+		}
+		
+		.btn-space {
+		    margin-bottom: 20px;
+		}
+	</style>
 </head>
 
 <body>
@@ -138,106 +191,175 @@
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
 	<!-- 탭 메뉴 형식으로 회사일정 or 공용품리스트 형식으로 나누면서 확인해야함 템플릿 이용 -->
-	<h1>예약리스트</h1>
+	<h1 style="text-align: center">예약리스트</h1>
+	
+	<br>
 	
 	<!-- 검색 조건 영역 -->
 	<form method="get" action="${pageContext.request.contextPath}/reservation/reservationList">
-	<!-- 날짜 조회 -->
-	 	<div class="date-area">
-	        <label class="date-label">검색 시작일</label>
-	        <input type="date" name="startDate" value="${startDate}">
-	        
-	        <label class="date-label">검색 종료일</label>
-	        <input type="date" name="endDate" value="${endDate}">
-	        
-	        <button type="submit">조회</button>
+	<!-- 날짜 조회 align-items: center; 속성은 해당 div안의 내용이 한 row에 출력되도록 함-->
+	 	<div class="date-area" style="display: flex; align-items: center;">
+	 		<div class="form-group" style="width: 100px;">
+		        <label class="date-label">검색 시작일</label>
+	 		</div>
+	 		<div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+		        <input type="date" name="startDate" value="${startDate}" class="form-control">
+	        </div>
+	        <div class="form-group" style="width: 100px;">
+		        <label class="date-label">검색 종료일</label>
+		    </div>
+	        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+		        <input type="date" name="endDate" value="${endDate}" class="form-control">
+	        </div>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="selectBtn">조회</button>
 		</div>
-
+	
+	<br>
+	
 	<!-- 정렬조건 영역 -->
-	    <div class="sort-area">
-	        <label class="sort-label">정렬</label>
-	        <select name="col">
-	        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
-	        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
-	        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
-	        	조건이 거짓일 경우 빈 문자열('') -->
-	            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>신청일</option>
-	        </select>
-	        <select name="ascDesc">
-	            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
-	            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
-	        </select>
-	        <button type="submit">정렬</button> 
+	    <div class="sort-area" style="display: flex; align-items: center;">
+	    	<div class="form-group" style="width: 100px;">
+	        	<label class="sort-label">정렬</label>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="col" class="form-control">
+		        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
+		        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
+		        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
+		        	조건이 거짓일 경우 빈 문자열('') -->
+		            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>등록일</option>
+		        </select>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="ascDesc" class="form-control">
+		            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+		            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+		        </select>
+	        </div>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="orderBtn">정렬</button>
 	    </div>
+	
+	<br>
 	    
    	<!-- 검색조건 영역 -->
-	    <div class="search-area">
-	        <label class="search-label">검색</label>
-	        <select name="searchCol">
-	            <option value="emp_name" ${searchCol eq 'emp_name' ? 'selected' : ''}>사원명</option>
-	            <option value="utility_category" ${searchCol eq 'utility_category' ? 'selected' : ''}>공용품종류</option>
-	        </select>
-	        <input type="text" name="searchWord" value="${searchWord}">
-	        <button type="submit">검색</button>
+	    <div class="search-area" style="display: flex; align-items: center;">
+	    	<div class="form-group" style="width: 100px;">
+	        	<label class="search-label">검색</label>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="searchCol" class="form-control">
+		            <option value="emp_name" ${searchCol eq 'emp_name' ? 'selected' : ''}>사원명</option>
+	            	<option value="utility_category" ${searchCol eq 'utility_category' ? 'selected' : ''}>공용품종류</option>
+		        </select>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+	        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
+	        </div>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
 	    </div>
 	</form>
 	
-	<form method="post" action="${pageContext.request.contextPath}/reservation/delete?reservationNo=${r.reservationNo}">
-		<!-- [시작] 테이블 영역 -->
-		<table border="1">
-			<tr>
-				<th>공용품 종류</th>
-				<th>사원명</th>
-				<th>공용품 번호</th>
-				<th>예약일</th>
-				<th>예약시간</th>
-				<th>신청일</th>
-				<th>취소</th>
-			</tr>
-			<c:forEach var="r" items="${reservationList}">
-			
-				<tr>
-					<td>${r.utilityCategory}</td>
-					<td>${r.empName}</td>
-					<td>${r.utilityNo}</td>
-					<td>${r.reservationDate}</td>
-					<td>${r.reservationTime}</td>
-					<td>${r.createdate}</td>
-					
-					<!-- 세션에서 멤버로그인ID(사원번호) 확인후 작성자사원번호와 일치할경우 취소태그가 보이도록 출력 비교할 값을 하나의 EL태그안에 넣어서 비교해줘야 조건식이 올바르게 작동한다. -->
-					<c:if test="${empNo == r.empNo}">
-						<td>
-							<!-- 취소 버튼 클릭 시 postRequest 함수 호출 -->
-                			<!-- data-reservation-no 속성으로 예약 번호 저장 -->
-							<button class='reservationCancelBtn' data-reservation-no='${r.reservationNo}'>예약취소</button>
-						</td>
-					</c:if> 
-				</tr>
-			</c:forEach>
-			<!-- [끝] 조건문 -->
-		</table>
-		<!-- [끝] 테이블 영역 -->
-		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-	</form>
+	<br>
 	
-	<!-- [시작] 페이징 영역 -->
-	<c:if test="${minPage > 1 }">
-		<a href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">이전</a>
-	</c:if>
+	<!-- schedule table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card" id="reservationListForm">
+                            <div class="card-body">
+                                <h2 class="card-title center"></h2>
+                                <h6 class="card-subtitle">&nbsp;</h6>
+                                <div class="table-responsive">
+                                <form method="post" action="${pageContext.request.contextPath}/reservation/delete?reservationNo=${r.reservationNo}">
+                                    <table id="zero_config_1" class="table border table-striped table-bordered text-nowrap">
+                                        <thead>
+                                            <tr>
+                                                <th>공용품 종류</th>
+												<th>사원명</th>
+												<th>공용품 번호</th>
+												<th>예약일</th>
+												<th>예약시간</th>
+												<th>신청일</th>
+												<th>취소</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                           <c:forEach var="r" items="${reservationList}">
+												<tr>
+													<td>${r.utilityCategory}</td>
+													<td>${r.empName}</td>
+													<td>${r.utilityNo}</td>
+													<td>${r.reservationDate}</td>
+													<td>${r.reservationTime}</td>
+													<td>${r.createdate}</td>
+													
+													<!-- 세션에서 멤버로그인ID(사원번호) 확인후 작성자사원번호와 일치할경우 취소태그가 보이도록 출력 비교할 값을 하나의 EL태그안에 넣어서 비교해줘야 조건식이 올바르게 작동한다. -->
+													<c:if test="${empNo == r.empNo}">
+														<td>
+															<!-- 취소 버튼 클릭 시 postRequest 함수 호출 -->
+								                			<!-- data-reservation-no 속성으로 예약 번호 저장 -->
+															<button class='reservationCancelBtn btn waves-effect waves-light btn-outline-dark' data-reservation-no='${r.reservationNo}'>예약취소</button>
+														</td>
+													</c:if> 
+												</tr>
+											</c:forEach>
+                                        </tbody>
+                                    </table>
+                                    <button type="button"
+                                    	class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 	
-	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-    	<c:if test="${i == currentPage}">
-        	${i}
-        </c:if>
-        <c:if test="${i != currentPage}">
-        	<a  href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
-    	</c:if>
-    </c:forEach>
-	
-	<c:if test="${lastPage > currentPage}">
-		<a href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">다음</a>
-	</c:if>
-	<!-- [끝] 페이징 영역 -->
+				<!-- [시작] 페이징 영역 가운데 정렬하기 위해 inline 속성적용 nav, ul 태그 -->
+                <div class="col-lg-12 mb-4" >
+                <h4 class="card-title"></h4>
+                <h6 class="card-subtitle"></h6>
+	                <nav aria-label="Page navigation example" style="text-align: center;">
+					    <ul class="pagination justify-content-center">
+					        <c:if test="${minPage > 1}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${encodedSearchWord}&col=${col}&ascDesc=${ascDesc}"
+					                   aria-label="Previous">
+					                    <span aria-hidden="true">&lt;</span>
+					                    <span class="sr-only">Previous</span>
+					                </a>
+					            </li>
+					        </c:if>
+					        
+					        <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+					            <li class="page-item">
+					                <c:choose>
+					                    <c:when test="${i == currentPage}">
+					                        <span class="page-link">${i}</span>
+					                    </c:when>
+					                    <c:otherwise>
+					                        <a class="page-link"
+					                           href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${encodedSearchWord}&col=${col}&ascDesc=${ascDesc}">
+					                            ${i}
+					                        </a>
+					                    </c:otherwise>
+					                </c:choose>
+					            </li>
+					        </c:forEach>
+					        
+					        <c:if test="${lastPage > currentPage}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/reservation/reservationList?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${encodedSearchWord}&col=${col}&ascDesc=${ascDesc}"
+					                   aria-label="Next">
+					                    <span aria-hidden="true">&gt;</span>
+					                    <span class="sr-only">Next</span>
+					                </a>
+					            </li>
+					        </c:if>
+					    </ul>
+					</nav>
+                </div>
+				<!-- [끝] 페이징 영역 -->
 
 
 

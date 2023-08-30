@@ -45,6 +45,64 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
+	<script>
+		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
+			
+			// 추가 성공 or 실패 결과에 따른 alert
+			let result = '${param.result}'; // 추가 성공유무를 url의 매개값으로 전달
+			
+			if (result == 'fail') { // result의 값이 fail이면
+			    console.log('공용품 추가 실패');
+			    alert('공용품이 추가되지 않았습니다. 다시 시도해주세요.');
+			} else if (result == 'success') { // result의 값이 success이면
+				console.log('공용품 추가 성공');
+			    alert('공용품이 추가되었습니다.');
+			}
+			
+			// 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('HOME으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+				if (result) {
+					window.location.href = '/home'; // Home으로 이동
+				}
+			});
+		});
+	</script>
+	
+	<style>
+		/* 구분선 */
+		hr {
+		    border: solid 3px black;
+		    width: 20%;
+		    margin: 0; /* auto 가운데 정렬 */
+		}
+		/* 테이블 중앙 정렬 */
+		table {
+			text-align: center;
+		}
+		/* 제목 가운데 정렬 */
+        #scheduleListForm .card-title {
+            text-align: center;
+        }
+        /* 취소, 저장 왼/오른쪽 정렬 */
+        #cancelBtn {
+		    float: left;
+		}
+		
+		#deleteBtn {
+		    float: right;
+		}
+		
+		#insertBtn {
+		    float: right;
+		}
+		
+		.btn-space {
+		    margin-bottom: 20px;
+		}
+	</style>
+	
 </head>
 
 <body>
@@ -106,79 +164,179 @@
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
 	<!-- 탭 메뉴 형식으로 회사일정 or 공용품리스트 형식으로 나누면서 확인해야함 템플릿 이용 -->
-	<h1>공용품리스트</h1>
-	<div>
-		<!-- 예약신청폼에서 utilityCategory를 검사하므로 매개변수로 넣어서 웹 브라우저에서 각각 다른 입력폼이 보이도록 한다. -->
-		<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=차량">차량 예약신청</a>
-		<a href="${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=회의실">회의실 예약신청</a>
-	</div>
-	<div>
-		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
-		<a href="${pageContext.request.contextPath}/utility/addUtility">공용품추가</a>
-	</div>	
-	<form action="${pageContext.request.contextPath}/utility/delete" method="post">
-		<!-- [시작] 테이블 영역 -->
-		<table border="1">
-			<tr>
-				<th>선택</th>
-				<th>공용품 번호</th>
-				<th>공용품 이미지</th>
-				<th>공용품 종류</th>
-				<th>공용품 이름</th>
-				<th>공용품 정보</th>
-				<th>등록일</th>
-				<th>수정일</th>
-				<th>수정</th>
-			</tr>
-			<c:forEach var="u" items="${utilityList}">
-					<tr>
-						<!-- 각 리스트마다 체크박스를 생성 -->
-						<td>
-							<input type="checkbox" name="selectedItems" value="${u.utilityNo}">
-						</td>
-						<td>${u.utilityNo}</td>
-						<td>
-							<!-- 공용품은 고정된 폴더에 저장되는것으로 생각하고 리스트에 사진을 출력한다. -->
-							<img class="thumbnail" alt="Utility Image"
-								src="/image/utility/${u.utilitySaveFilename}">
-						</td>
-						<td>${u.utilityCategory}</td>
-						<td>${u.utilityName}</td>
-						<td>${u.utilityInfo}</td>
-						<td>${u.createdate}</td>
-						<td>${u.updatedate}</td>
-						<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함  -->
-						<td>
-							<a href="${pageContext.request.contextPath}/utility/modifyUtility?utilityNo=${u.utilityNo}">수정</a>
-						</td>
-					</tr>
-			</c:forEach>
-			<!-- [끝] 조건문 -->
-		</table>
-		<!-- [끝] 테이블 영역 -->
-		<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-		<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
-		<button type="submit" id="deleteBtn">삭제</button> <!-- 오른쪽 정렬 -->
-	</form>
+	<h1 style="text-align: center">공용품리스트</h1>
 	
-	<!-- [시작] 페이징 영역 -->
-	<c:if test="${minPage > 1 }">
-		<a href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage - 1}">이전</a>
-	</c:if>
+	<!-- 탭 형식으로 전체or회의실or차량 리스트 조회 -->
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+	    <li class="nav-item" role="presentation">
+	    <c:choose>
+            <c:when test="${empty param.utilityCategory}">
+                <!-- utilityCategory 파라미터가 없거나 빈 문자열일 때 탭 선택상태 -->
+                <a class="nav-link active category-tab" id="all-tab" data-category="" href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=">전체</a>
+            </c:when>
+            <c:otherwise>
+                <!-- utilityCategory 파라미터가 있을 때 탭 미선택상태 -->
+                <a class="nav-link category-tab" id='all-tab' data-category="" href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=">전체</a>
+            </c:otherwise>
+        </c:choose>
+	    </li>
+	    <li class="nav-item" role="presentation">
+	    <c:choose>
+            <c:when test="${param.utilityCategory == '회의실'}">
+                <!-- utilityCategory 파라미터가 '회의실'일 때 탭 선택상태-->
+                <a class="nav-link active category-tab" id='meetingRoom-tab' data-category='회의실' href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=회의실">회의실</a>
+            </c:when>
+            <c:otherwise>
+                <!-- utilityCategory 파라미터가 '회의실'이 아닐 때 탭 미선택상태-->
+                <a class="nav-link category-tab" id='meetingRoom-tab' data-category='회의실' href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=회의실">회의실</a> 
+            </c:otherwise>   
+        </c:choose> 
+	    </li>
+	    <li class="nav-item" role="presentation">
+	    <c:choose>
+            <c:when test="${param.utilityCategory == '차량'}">
+                <!-- utilityCategory 파라미터가 '회의실'일 때 탭 선택상태-->
+                <a class="nav-link active category-tab" id='car-tab' data-category='차량' href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=차량">차량</a>
+            </c:when>
+            <c:otherwise>
+                <!-- utilityCategory 파라미터가 '회의실'이 아닐 때 탭 미선택상태-->
+                <a class="nav-link category-tab" id='car-tab' data-category='차량' href="${pageContext.request.contextPath}/utility/utilityList?utilityCategory=차량">차량</a> 
+            </c:otherwise>   
+        </c:choose> 
+	    </li>
+	</ul>
 	
-	<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-    	<c:if test="${i == currentPage}">
-        	${i}
-        </c:if>
-        <c:if test="${i != currentPage}">
-        	<a  href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${i}">${i}</a>
-    	</c:if>
-    </c:forEach>
-	
-	<c:if test="${lastPage > currentPage }">
-		<a href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage + 1}">다음</a>
-	</c:if>
-	<!-- [끝] 페이징 영역 -->
+	<br>
+                
+                <!-- utility table -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card" id="scheduleListForm">
+                            <div class="card-body" id="addScheduleForm">
+                                <!-- <h2 class="card-title center"></h2>
+                                <h6 class="card-subtitle">&nbsp;</h6>
+                                <h6 class="card-title mt-5"><i class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6> -->
+                                <div class="table-responsive">
+                                <form action="${pageContext.request.contextPath}/utility/delete" method="post">
+                                
+                                	<div style="float: right;">
+										<!-- 예약신청폼에서 utilityCategory를 검사하므로 매개변수로 넣어서 웹 브라우저에서 각각 다른 입력폼이 보이도록 한다. -->
+										<button type="button" class="btn waves-effect waves-light btn-outline-dark" 
+											onclick="window.location.href ='${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=차량'">차량 예약신청</button>
+										<button type="button" class="btn waves-effect waves-light btn-outline-dark" 
+											onclick="window.location.href ='${pageContext.request.contextPath}/reservation/addReservation?utilityCategory=회의실'">회의실 예약신청</button>
+									</div>
+									<div style="float: left; margin-bottom: 20px;">
+										<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
+										<button type="button" class="btn waves-effect waves-light btn-outline-dark" 
+											onclick="window.location.href ='${pageContext.request.contextPath}/utility/addUtility'">공용품추가</button>
+									</div>
+                                
+                                
+                                    <table id="zero_config_1" class="table border table-striped table-bordered text-nowrap" >
+                                        <tr>
+											<th>선택</th>
+											<th>공용품 번호</th>
+											<th>공용품 이미지</th>
+											<!-- <th>공용품 종류</th> -->
+											<th>공용품 이름</th>
+											<th>공용품 정보</th>
+											<th>등록일</th>
+											<th>수정일</th>
+											<th>수정</th>
+										</tr>
+										<!-- [시작] 조건문 -->
+										<c:forEach var="u" items="${utilityList}">
+												<tr>
+													<!-- 각 리스트마다 체크박스를 생성 -->
+													<td>
+														<input type="checkbox" name="selectedItems" value="${u.utilityNo}">
+													</td>
+													<td>${u.utilityNo}</td>
+													<td>
+														<!-- 공용품은 고정된 폴더에 저장되는것으로 생각하고 리스트에 사진을 출력한다. 조건절을 이용해서 공용품파일이 저장되지 않은 리스트가 있다면 기본이미지를 출력한다.-->
+														<c:choose>
+														    <c:when test="${empty u.utilitySaveFilename}">
+														        <img class="thumbnail" src="/image/utility/noImage.png" style="width: 150px; height: auto;">
+														    </c:when>
+														    <c:otherwise>
+														        <img class="thumbnail" src="/image/utility/${u.utilitySaveFilename}" style="width: 150px; height: auto;">
+														    </c:otherwise>
+														</c:choose>
+													</td>
+													<%-- <td>${u.utilityCategory}</td> --%>
+													<td>${u.utilityName}</td>
+													<td>${u.utilityInfo}</td>
+													<td>${u.createdate}</td>
+													<td>${u.updatedate}</td>
+													<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함  -->
+													<td>
+														<a href="${pageContext.request.contextPath}/utility/modifyUtility?utilityNo=${u.utilityNo}">수정</a>
+													</td>
+												</tr>
+										</c:forEach>
+										<!-- [끝] 조건문 -->
+                                    </table>
+                                    <button type="button"
+                                    	class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+									<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
+									<button type="submit"
+                                    	class="btn waves-effect waves-light btn-outline-dark" id="deleteBtn">삭제</button> <!-- 오른쪽 정렬 -->
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+               	</div>	
+               	
+                <!-- [시작] 페이징 영역 가운데 정렬하기 위해 inline 속성적용 nav, ul 태그 -->
+                <div class="col-lg-12 mb-4" >
+                <h4 class="card-title"></h4>
+                <h6 class="card-subtitle"></h6>
+	                <nav aria-label="Page navigation example" style="text-align: center;">
+					    <ul class="pagination justify-content-center">
+					        <c:if test="${minPage > 1}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage - 1}&utilityCategory=${param.utilityCategory}"
+					                   aria-label="Previous">
+					                    <span aria-hidden="true">&lt;</span>
+					                    <span class="sr-only">Previous</span>
+					                </a>
+					            </li>
+					        </c:if>
+					        
+					        <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+					            <li class="page-item">
+					                <c:choose>
+					                    <c:when test="${i == currentPage}">
+					                        <span class="page-link">${i}</span>
+					                    </c:when>
+					                    <c:otherwise>
+					                    	<!-- ${param.utilityCategory}는 현재 요청의 utilityCategory 파라미터 값을 가져온다. -> 페이지 이동시 선택한 카테고리가 유지되게끔 -->
+					                        <a class="page-link"
+					                           href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${i}&utilityCategory=${param.utilityCategory}">
+					                            ${i}
+					                        </a>
+					                    </c:otherwise>
+					                </c:choose>
+					            </li>
+					        </c:forEach>
+					        
+					        <c:if test="${lastPage > currentPage}">
+					            <li class="page-item">
+					                <a class="page-link"
+					                   href="${pageContext.request.contextPath}/utility/utilityList?currentPage=${currentPage + 1}&utilityCategory=${param.utilityCategory}"
+					                   aria-label="Next">
+					                    <span aria-hidden="true">&gt;</span>
+					                    <span class="sr-only">Next</span>
+					                </a>
+					            </li>
+					        </c:if>
+					    </ul>
+					</nav>
+                </div>
+				<!-- [끝] 페이징 영역 -->
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 

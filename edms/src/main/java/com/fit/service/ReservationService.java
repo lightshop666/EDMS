@@ -34,7 +34,7 @@ public class ReservationService {
 		// 널포인트익셉션 에러를 해결하기 위한 객체 생성 -> 달력출력시 null값이 입력되므로 처리
 		if (listParam == null) {
 			listParam = new HashMap<>();
-			listParam.put("startRow", 0); // 시작 페이지를 0으로 설정
+			listParam.put("beginRow", 0); // 시작 페이지를 0으로 설정
 		    listParam.put("rowPerPage", 10); // 한 페이지당 행 수를 10으로 설정
 		}
 		
