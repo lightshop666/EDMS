@@ -11,6 +11,7 @@
 			, fo.emp_name empName
 			, fo.employ_date employDate
 			, fo.dept_name deptName
+			, fo.emp_position empPosition
 		FROM
 			emp_no_list li
 			INNER JOIN emp_info fo ON li.emp_no = fo.emp_no

@@ -153,7 +153,8 @@
 	<update id="updateApproval">
 	    UPDATE approval
 	    SET mediate_approval = #{selectedMiddleApproverId},
-	        final_approval = #{selectedFinalApproverId}
+	        final_approval = #{selectedFinalApproverId},
+	        doc_title = #{docTitle}
 	    WHERE approval_no = #{approvalNo}
 	</update> 
     
@@ -204,7 +205,7 @@
    </insert>
    
    <!-- approval select by approvalNo, empNo -->
-   <!-- emp_info 테이블과 join하여 이름, 부서명도 함께 조회 -> DTO 사용 -->
+   <!-- emp_info 테이블과 join하여 이름, 부서명 (+직급) 도 함께 조회 -> DTO 사용 -->
    <select id="selectApprovalOne" parameterType="map" resultType="com.fit.vo.ApprovalJoinDto">
 		SELECT
 		    a.approval_no approvalNo,
@@ -221,15 +222,27 @@
 		    a.createdate createDate,
 		    CASE <!-- 해당 양식에 empNo가 어느 결재라인인지 출력합니다. -->
 		        WHEN a.first_approval = #{empNo} THEN '기안자'
+		        WHEN a.mediate_approval = #{empNo} AND a.final_approval = #{empNo} THEN '중간 및 최종승인자'
 		        WHEN a.mediate_approval = #{empNo} THEN '중간승인자'
 		        WHEN a.final_approval = #{empNo} THEN '최종승인자'
 		    END role, <!-- role -->
-		    e.emp_name firstEmpName, <!-- 기안자 이름 -->
-		    e.dept_name firstDeptName <!-- 기안자 부서명 -->
+		    e1.emp_name firstEmpName, <!-- 기안자 이름 -->
+		    e1.dept_name firstDeptName, <!-- 기안자 부서명 -->
+		    e1.emp_position firstEmpPosition, <!-- 기안자 직급 -->
+		    e2.emp_name mediateEmpName, <!-- 중간승인자 이름 -->
+		    e2.dept_name mediateDeptName, <!-- 중간승인자 부서명 -->
+		    e2.emp_position mediateEmpPosition, <!-- 중간승인자 직급 -->
+		    e3.emp_name finalEmpName, <!-- 최종승인자 이름 -->
+		    e3.dept_name finalDeptName, <!-- 최종승인자 부서명 -->
+		    e3.emp_position finalEmpPosition <!-- 최종승인자 직급 -->
 		FROM
 		    approval a
 		INNER JOIN
-			emp_info e ON a.emp_no = e.emp_no
+			emp_info e1 ON a.emp_no = e1.emp_no
+		LEFT JOIN
+			emp_info e2 ON a.mediate_approval = e2.emp_no
+		LEFT JOIN
+			emp_info e3 ON a.final_approval = e3.emp_no
 		WHERE
 		    approval_no = #{approvalNo}
    </select>
@@ -331,4 +344,42 @@
 			NOW()
 		)
    </insert>
+   
+   <!-- document_file delete by approvalNo -->
+   <delete id="deleteDocumentFile" parameterType="int">
+		DELETE FROM document_file
+		WHERE approval_no = #{approvalNo}
+   </delete>
+   
+   <!-- document_file insert by approvalNo -->
+   <insert id="insertDocumentFile" parameterType="map">
+		INSERT INTO document_file (
+			approval_no,
+			doc_ori_filename,
+			doc_save_filename,
+			doc_filetype,
+			doc_path,
+			createdate,
+			updatedate
+		) VALUES
+			<!-- 배열을 insert하기 위해 반복문을 이용하여 VALUES 구문을 작성합니다. -->
+	        <!-- separator을 쉼표(,)로 지정하여 구문이 끝날때마다 ,를 작성하여 각 행을 구분할 수 있습니다. -->
+	        <foreach collection="documentFileList" item="d" separator=",">
+				(#{approvalNo}, #{d.docOriFilename}, #{d.docSaveFilename}, #{d.docFiletype}, #{d.docPath}, NOW(), NOW())
+			</foreach>
+   </insert>
+   
+   <!-- vacation_draft update by approvalNo -->
+   <update id="updateVacationDraft" parameterType="com.fit.vo.VacationDraft">
+		UPDATE vacation_draft
+		SET doc_title = #{docTitle},
+			doc_content = #{docContent},
+			vacation_name = #{vacationName},
+			vacation_days = #{vacationDays},
+			vacation_start = #{vacationStart},
+			vacation_end = #{vacationEnd},
+			phone_number = #{phoneNumber},
+			updatedate = NOW()
+		WHERE approval_no = #{approvalNo}
+   </update>
 </mapper>

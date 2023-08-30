@@ -42,6 +42,7 @@
 	
 	   return tempPw;
 	}
+	
 	$(document).ready(function() {
 		
 		// 1. 비밀번호 초기화
@@ -133,7 +134,7 @@
 	         } else {
 	             alert('엑셀 파일 업로드에 실패했습니다. 엑셀 파일을 확인해주세요.'); // 이외 오류에 대해 엑셀 파일 재확인 알림
 	         }
-	     } else if (failParam == 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
+	     } else if (resultParam === 'success') { // success 파라미터 값이 있을 경우에만 알림 표시
 	         alert('엑셀 파일 업로드에 성공했습니다.');
 	     }
 	});

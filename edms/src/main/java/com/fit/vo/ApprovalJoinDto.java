@@ -19,8 +19,15 @@ public class ApprovalJoinDto {
     private String approvalField;
     private String createdate;
     // CASE~WHEN문 조회
-    private String role; // 기안자, 중간승인자, 최종승인자
+    private String role; // 기안자, 중간승인자, 최종승인자, 중간 및 최종승인자
     // emp_info join
     private String firstEmpName; // 기안자의 이름
     private String firstDeptName; // 기안자의 부서명
+    private String firstEmpPosition; // 기안자의 직급
+    private String mediateEmpName; // 중간승인자의 이름
+    private String mediateDeptName; // 중간승인자의 부서명
+    private String mediateEmpPosition; // 중간승인자의 부서명
+    private String finalEmpName; // 최종승인자의 이름
+    private String finalDeptName; // 최종승인자의 부서명
+    private String finalEmpPosition; // 최종승인자의 부서명
 }

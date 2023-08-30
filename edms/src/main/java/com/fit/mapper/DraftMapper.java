@@ -53,7 +53,7 @@ public interface DraftMapper {
 
     void deleteReceiveDrafts(int approvalNo);
 
-    void updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId);
+    void updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId, String docTitle);
     //정환 끝
     
     // 희진
@@ -71,5 +71,11 @@ public interface DraftMapper {
     
     int updateApprovalDetails(int approvalNo, String approvalState, String approvalField, String approvalReason); // 결재상태 업데이트
 
-    int insertVacationHistroy(VacationHistory vacationHistory);
+    int insertVacationHistroy(VacationHistory vacationHistory); // 휴가 히스토리 추가
+    
+    void deleteDocumentFile(int approvalNo); // 문서 파일 삭제
+    
+    int insertDocumentFile(int approvalNo, List<DocumentFile> documentFileList); // 문서 파일 추가
+    
+    int updateVacationDraft(VacationDraft vacationDraft); // 휴가신청서 수정
 }

@@ -34,11 +34,14 @@ public class MemberController {
 	public String addMember(HttpSession session,
 							@RequestParam(required = false, name = "empNo") Integer empNo,
 							Model model) {
-		// 로그인 상태면 home으로 리다이렉션
-		if(session.getAttribute("loginMemberId") != null) {
-			log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
-			return "redirect:/home";
-		}
+		/*
+			템플릿 적용 이슈로 주석 처리...
+			// 로그인 상태면 home으로 리다이렉션
+			if(session.getAttribute("loginMemberId") != null) {
+				log.debug(CC.HE + "MemberController.addMember() loginMemberId : " + session.getAttribute("loginMemberId") + CC.RESET);
+				return "redirect:/home";
+			}
+		*/
 		
 		// 매개값 empNo가 넘어오면 view에서 출력
 		if(empNo != null) {
