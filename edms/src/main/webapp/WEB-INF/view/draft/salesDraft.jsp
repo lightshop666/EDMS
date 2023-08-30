@@ -292,14 +292,14 @@
 						<tr>
 							<th>내역</th>
 							<td colspan="5">
-								<table id="detailsTable" class="table-bordered"> <!-- id명 수정 핊요 -->
+								<table id="detailsTable" class="table-bordered">
 									<tr>
 										<th>상품 카테고리</th>
-										<th>전월매출액</th>
+										<th>전월매출액</th> <!-- 조회해서 뿌려줄지..? -->
 										<th>당월매출액</th>
 										<th>목표액</th>
-										<th>목표달성률</th>
-										<th><button type="button" id="addDetailBtn">+</button></th> <!-- id명 수정 핊요 -->
+										<th>목표달성률</th> <!-- 동적으로 계산 예정.. -->
+										<th><button type="button" id="addDetailBtn">+</button></th>
 									</tr>
 									<!-- 내역 항목 -->
 									<tr>
@@ -316,7 +316,7 @@
 										<td><input type="number" name="currentSalse[]" required></td>
 										<td><input type="number" name="targetSales[]" required></td>
 										<td><input type="number" name="targetRate[]" required></td>
-										<td><button type="button" class="removeDetailBtn">-</button></td> <!-- id명 수정 핊요 -->
+										<td><button type="button" class="removeDetailBtn">-</button></td>
 									</tr>
 									
 								</table>
@@ -330,7 +330,7 @@
 						</tr>
 						<tr>
 							<th colspan="6">
-								위와 같이 휴가를 신청하오니, 결재 바랍니다. <br>
+								위와 같이 결재바랍니다. <br>
 								${year}년 ${month}월 ${day}일
 							</th>
 						</tr>
