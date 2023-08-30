@@ -6,8 +6,9 @@
 		3. 최종승인자 정보 출력 및 hidden에 값 주입
 		4. 수신참조자(int 배열) 정보 출력 및 hidden에 값 주입
 		5. 임시저장 -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(true), 폼 제출
-		5. 저장(기안) -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(false), 폼 제출
-		6. 문서 상세 페이지에서 클릭한 버튼에 따라 액션 분기 (결재 상태 업데이트)
+		6. 서명 이미지 조회 -> 유효성 검사, 서명이미지가 없으면 메세지창을 띄운 뒤 내 프로필 수정 페이지로 보내기
+		7. 저장(기안) -> 유효성 검사, 임시저장 유무(isSaveDraft) hidden 주입(false), 폼 제출
+		8. 문서 상세 페이지에서 클릭한 버튼에 따라 액션 분기 (결재 상태 업데이트)
 		
 		주의할점
 		- getApproverDetails() 에서 조회할 사원 목록 배열(JSON)을 해당 페이지에서 전역 스코프 변수(employeeListJson)로 선언해주세요.
@@ -97,6 +98,27 @@
 		console.log('선택한 수신참조자 정보 : ' + recipientsDetails);
 		// 수신참조자 출력
 		$('#receiveSpan').text(recipientsDetails);
+	}
+	
+	// 서명 이미지 조회
+	// 서명 이미지를 조회하여 존재하지 않으면 alert창 띄운 후 내 프로필 수정 페이지로 이동
+	function alertAndRedirectIfNoSign() {
+		// ajax로 서명 이미지 조회
+		$.ajax({
+			url : '/alertAndRedirectIfNoSign',
+			type : 'post',
+			success : function(response) {
+				console.log('서명 이미지 조회 결과 : ' + response);
+				
+				if (response == false) {
+					alert('등록된 서명 이미지가 없습니다. 서명 이미지 등록 페이지로 이동합니다.');
+					window.location.href = '/member/modifyMember'; // 내 프로필 수정 폼으로 이동
+				}
+			},
+			error : function(error) {
+				console.error('서명 이미지 조회 실패 : ' + error);
+			}
+		});
 	}
 	
 	// 임시저장 프로세스 // 임시저장 시 isSaveDraft 값을을 true로 주입합니다.

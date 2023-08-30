@@ -121,6 +121,8 @@
 		
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
+			// 페이지 로드 후 서명 이미지 조회 메서드 실행
+			alertAndRedirectIfNoSign(); // 공통 함수
 			
 			// 기안 실패시 alert
 			let result = '${param.result}'; // 기안 성공유무를 url의 매개값으로 전달

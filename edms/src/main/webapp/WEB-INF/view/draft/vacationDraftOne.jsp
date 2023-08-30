@@ -67,18 +67,20 @@
 			    alert('결재정보 업데이트에 실패하였습니다. 다시 시도해주세요.');
 			}
 			
-			// action 버튼 클릭시 이벤트 발생 // 이 부분 다시...
+			// action 버튼 클릭시 이벤트 발생
 			$('.actionBtn').click(function() {
-				// 1. actionType
+				// 1. 서명 이미지 검사
+				alertAndRedirectIfNoSign(); // 공통 함수 호출
+				// 2. actionType
 				let actionType = $(this).data("actiontype"); // HTML 데이터 속성은 소문자로 표기되기 때문에 대소문자 구분에 주의합니다.
 				$('#actionTypeHidden').val(actionType); // hidden에 값 주입
-				// 2. approvalReason
+				// 3. approvalReason
 				let approvalReason = ''; // 반려사유 기본값
 				if (actionType == 'reject') { // 반려 사유 입력 모달창의 저장 버튼 클릭시
 					approvalReason = $('#approvalReason').val(); // 반려사유 입력값 가져오기
 				}
 				$('#approvalReasonHidden').val(approvalReason); // hidden에 값 주입
-				// 3. role
+				// 4. role
 				let role = '${approval.role}';
 				handleApprovalAction(role, actionType); // 공통 함수 호출
 			});
