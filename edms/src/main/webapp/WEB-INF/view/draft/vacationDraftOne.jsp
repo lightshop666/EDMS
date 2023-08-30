@@ -27,11 +27,6 @@
 	<![endif]-->
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
-	<!-- jQuery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<!-- 부트스트랩 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- 공통 함수를 불러옵니다. -->
 	<script src="/draftFunction.js"></script>
 	<!-- ============================================================== -->
@@ -182,7 +177,20 @@
 			<!--------------------->
 			<div class="container pt-5">
 				<h1 style="text-align: center;">휴가신청서</h1>
-				<table>
+				<!-- 결재상태 출력 -->
+				<c:if test="${a.approvalState == '결재대기'}"> 
+					<div class="alert alert-light">결재 대기중인 문서입니다.</div>
+				</c:if>
+				<c:if test="${a.approvalState == '결재중'}"> 
+					<div class="alert alert-warning">결재 진행중인 문서입니다.</div>
+				</c:if>
+				<c:if test="${a.approvalState == '결재완료'}"> <!-- 결재일 출력 -->
+					<div class="alert alert-success">최종 승인일 : ${fn:substring(a.approvalDate, 0, 11)}</div>
+				</c:if>
+				<c:if test="${a.approvalState == '반려'}"> <!-- 반려사유 출력 -->
+					<div class="alert alert-danger">반려 사유 : ${a.approvalReason}</div>
+				</c:if>
+				<table class="table-bordered">
 					<tr>
 						<th rowspan="3" colspan="2">휴가신청서</th>
 						<th rowspan="3">결재</th>
@@ -195,25 +203,15 @@
 							<c:if test="${m.firstSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
 								<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}.${m.firstSign.memberFiletype}">
 							</c:if>
-							<c:if test="${m.firstSign.memberSaveFileName == null}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-								<!-- 해당 부분 문구가 아닌 다른 이미지로 출력할지 고민중.. -->
-								서명 이미지 미등록
-							</c:if>
 						</td>
 						<td>
 							<c:if test="${m.mediateSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
 								<img src="${m.mediateSign.memberPath}${m.mediateSign.memberSaveFileName}.${m.mediateSign.memberFiletype}">
 							</c:if>
-							<c:if test="${m.mediateSign.memberSaveFileName == null && a.approvalField != 'A'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-								서명 이미지 미등록
-							</c:if>
 						</td>
 						<td>
 							<c:if test="${m.finalSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
 								<img src="${m.finalSign.memberPath}${m.finalSign.memberSaveFileName}.${m.finalSign.memberFiletype}">
-							</c:if>
-							<c:if test="${m.finalSign.memberSaveFileName == null && a.approvalField == 'C'}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-								서명 이미지 미등록
 							</c:if>
 						</td>
 					</tr>
@@ -298,46 +296,43 @@
 					</tr>
 				</table>
 				<!-- 목록 버튼 --> <!-- 왼쪽 정렬 -->
-				<button type="button" class="actionBtn" data-actiontype="list">목록</button>
+				<button type="button" data-actiontype="list" class="actionBtn btn btn-secondary">목록</button>
 				<!-- 버튼 분기 --> <!-- 오른쪽 정렬 -->
 				<c:if test="${a.approvalField == 'A' && a.approvalState != '반려'}"> <!-- 결재대기 -->
 					<c:if test="${a.role == '기안자'}">
-						<button type="button" id="modifyBtn">수정</button> <!-- 수정 페이지는 양식에 따라 다르므로 view단에서 분기합니다. -->
-						<button type="button" class="actionBtn" data-actiontype="cancel">기안취소</button>
+						<button type="button" id="modifyBtn" class="btn btn-secondary">수정</button> <!-- 수정 페이지는 양식에 따라 다르므로 view단에서 분기합니다. -->
+						<button type="button" data-actiontype="cancel" class="actionBtn btn btn-secondary">기안취소</button>
 					</c:if>
 					<c:if test="${a.role == '중간승인자' || a.role == '중간 및 최종승인자'}">
-						<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+						<button type="button" data-actiontype="approve" class="actionBtn btn btn-secondary">승인</button>
 						<!-- 반려 사유 입력 모달 열림 -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal" class="btn btn-secondary">반려</button>
 					</c:if>
 				</c:if>
 				<c:if test="${a.approvalField == 'B'}"> <!-- 결재중 -->
 					<c:if test="${a.role == '중간승인자'}">
-						<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
+						<button type="button" data-actiontype="CancelApprove" class="actionBtn btn btn-secondary">승인취소</button>
 						<!-- 반려 사유 입력 모달 열림 -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal" class="btn btn-secondary">반려</button>
 					</c:if>
 					<c:if test="${a.role == '최종승인자'}">
-						<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+						<button type="button" data-actiontype="approve" class="actionBtn btn btn-secondary">승인</button>
 						<!-- 반려 사유 입력 모달 열림 -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal" class="btn btn-secondary">반려</button>
 					</c:if>
 					<c:if test="${a.role == '중간 및 최종승인자'}">
-						<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
-						<button type="button" class="actionBtn" data-actiontype="approve">승인</button>
+						<button type="button" data-actiontype="CancelApprove" class="actionBtn btn btn-secondary">승인취소</button>
+						<button type="button" data-actiontype="approve" class="actionBtn btn btn-secondary">승인</button>
 						<!-- 반려 사유 입력 모달 열림 -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal" class="btn btn-secondary">반려</button>
 					</c:if>
 				</c:if>
 				<c:if test="${a.approvalField == 'C'}"> <!-- 결재완료 -->
 					<c:if test="${a.role == '최종승인자' || a.role == '중간 및 최종승인자'}">
-						<button type="button" class="actionBtn" data-actiontype="CancelApprove">승인취소</button>
+						<button type="button" data-actiontype="CancelApprove" class="actionBtn btn btn-secondary">승인취소</button>
 						<!-- 반려 사유 입력 모달 열림 -->
-						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">반려</button>
+						<button type="button" data-bs-toggle="modal" data-bs-target="#rejectModal" class="btn btn-secondary">반려</button>
 					</c:if>
-				</c:if>
-				<c:if test="${a.approvalState == '반려'}"> <!-- 반려 -->
-					반려 사유 : ${a.approvalReason}
 				</c:if>
 				<!-- hidden input -->
 				<form action="/draft/updateApprovalState" method="post" id="DraftOneForm">
@@ -367,7 +362,7 @@
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
 							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-							<button type="button" class="actionBtn" data-actiontype="reject" data-bs-dismiss="modal">저장</button>
+							<button type="button" class="actionBtn btn btn-secondary" data-actiontype="reject" data-bs-dismiss="modal">저장</button>
 						</div>
 					</div>
 				</div>

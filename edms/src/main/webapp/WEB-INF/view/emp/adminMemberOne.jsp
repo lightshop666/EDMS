@@ -26,11 +26,6 @@
 	<![endif]-->
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
-	<!-- jQuery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<!-- 모달을 띄우기 위한 부트스트랩 라이브러리 추가 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- ============================================================== -->
 	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
 	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -202,7 +197,7 @@
 			<h1>개인정보 조회 - 관리자</h1>
 			<!-- 회원가입 유무에 따라 분기 -->
 			<c:if test="${member.empNo != null}">
-				<table border="1">
+				<table class="table-bordered">
 					<tr>
 						<td>사진</td>
 						<td>

@@ -362,7 +362,7 @@
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 			<h1>회원가입</h1>
 			<form action="/member/addMember" method="post">
-				<table border="1">
+				<table class="table-bordered">
 					<tr>
 						<td>사원번호</td>
 						<td>

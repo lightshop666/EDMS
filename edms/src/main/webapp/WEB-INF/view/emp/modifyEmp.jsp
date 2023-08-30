@@ -137,7 +137,7 @@
 			<h1>인사정보 수정(조회) - 관리자</h1>
 			<form action="/emp/modifyEmp" method="post">
 				<input type="hidden" name="empNo" value="${emp.empNo}">
-				<table border="1">
+				<table class="table-bordered">
 					<tr>
 						<td>사원번호</td>
 						<td>

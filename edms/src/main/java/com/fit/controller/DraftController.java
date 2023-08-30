@@ -117,6 +117,25 @@ public class DraftController {
 		return "/draft/tempDraft";
 	}
 	
+	// ----------------- 매출보고서 --------------------
+	// 매출보고서 작성 폼
+	@GetMapping("/draft/salesDraft")
+	public String addSalesDraft() {
+		return "/draft/salesDraft";
+	}
+	
+	// 매출보고서 수정 폼
+	@GetMapping("/draft/modifySalesDraft")
+	public String modifySalesDraft() {
+		return "/draft/modifySalesDraft";
+	}
+	
+	// 매출보고서 상세
+	@GetMapping("/draft/salesDraftOne")
+	public String salesDraftOne() {
+		return "/draft/salesDraftOne";
+	}
+	
 	
 	// ----------------- 휴가신청서 --------------------
 	// 휴가신청서 작성 폼

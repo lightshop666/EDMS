@@ -27,11 +27,6 @@
 	<![endif]-->
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
-	<!-- jQuery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-	<!-- 모달을 띄우기 위한 부트스트랩 라이브러리 추가 -->
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- 공통 함수를 불러옵니다. -->
 	<script src="/draftFunction.js"></script>
 	<!-- ============================================================== -->
@@ -264,7 +259,7 @@
 				<!-- id명 수정 필요... -->
 				<form action="/draft/modifyVacationDraft" method="post" id="draftForm">
 				<input type="hidden" name="approvalNo" value="${a.approvalNo}">
-					<table>
+					<table class="table-bordered">
 						<tr>
 							<th rowspan="3" colspan="2">휴가신청서</th>
 							<th rowspan="3">결재</th>
@@ -276,10 +271,6 @@
 							<td> 
 								<c:if test="${m.firstSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
 									<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}.${m.firstSign.memberFiletype}">
-								</c:if>
-								<c:if test="${m.firstSign.memberSaveFileName == null}"> <!-- 서명 이미지가 없으면 문구 출력 -->
-									<!-- 해당 부분 문구가 아닌 다른 이미지로 출력할지 고민중.. -->
-									서명 이미지 미등록
 								</c:if>
 							</td>
 							<td>
@@ -300,12 +291,12 @@
 								${a.firstEmpName}_${a.firstDeptName}_${a.firstEmpPosition}
 							</td>
 							<td>
-								<button type="button" data-bs-toggle="modal" data-bs-target="#mediateModal">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#mediateModal" class="btn btn-secondary">
 									검색 <!-- 중간승인자 검색 모달 버튼 -->
 								</button>
 							</td>
 							<td>
-								<button type="button" data-bs-toggle="modal" data-bs-target="#finalModal">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#finalModal" class="btn btn-secondary">
 									검색 <!-- 최종승인자 검색 모달 버튼 -->
 								</button>
 							</td>
@@ -313,7 +304,7 @@
 						<tr>
 							<th>
 								수신참조자
-								<button type="button" data-bs-toggle="modal" data-bs-target="#receiveModal">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#receiveModal" class="btn btn-secondary">
 									검색 <!-- 수신참조자 검색 모달 버튼 -->
 								</button>
 							</th>
@@ -382,25 +373,25 @@
 							</th>
 						</tr>
 					</table>
-					<button type="button" id="cancelBtn">취소</button>
-					<button type="button" id="submitBtn">저장</button>
+					<button type="button" id="cancelBtn" class="btn btn-secondary">취소</button>
+					<button type="button" id="submitBtn" class="btn btn-secondary">저장</button>
 				</form>
 			</div>
 			
 			<!-- 모달창 시작 -->
 			
 			<!-- 중간승인자 검색 모달 -->
-			<div class="modal" id="mediateModal">
+			<div class="modal" id="mediateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<!-- 모달 헤더 -->
-						<div class="modal-header">
+						<div class="modal-header modal-colored-header bg-primary">
 							<h4 class="modal-title">중간승인자 선택</h4>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button> <!-- x버튼 -->
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table>
+							<table class="table-bordered">
 								<tr>
 									<th>선택</th>
 									<th>사원번호</th>
@@ -431,8 +422,8 @@
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-							<button type="button" id="saveMediateBtn" data-bs-dismiss="modal">저장</button>
+							<button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-primary" id="saveMediateBtn" data-bs-dismiss="modal">저장</button>
 						</div>
 					</div>
 				</div>
@@ -440,17 +431,17 @@
 			<!-- 중간승인자 검색 모달 끝 -->
 			
 			<!-- 최종승인자 검색 모달 -->
-			<div class="modal" id="finalModal">
+			<div class="modal" id="finalModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<!-- 모달 헤더 -->
-						<div class="modal-header">
+						<div class="modal-header  modal-colored-header bg-primary">
 							<h4 class="modal-title">최종승인자 선택</h4>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button> <!-- x버튼 -->
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table>
+							<table class="table-bordered">
 								<tr>
 									<th>선택</th>
 									<th>사원번호</th>
@@ -481,8 +472,8 @@
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-							<button type="button" id="saveFinalBtn" data-bs-dismiss="modal">저장</button>
+							<button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-primary" id="saveFinalBtn" data-bs-dismiss="modal">저장</button>
 						</div>
 					</div>
 				</div>
@@ -490,17 +481,17 @@
 			<!-- 최종승인자 검색 모달 끝 -->
 			
 			<!-- 수신참조자 검색 모달 -->
-			<div class="modal" id="receiveModal">
+			<div class="modal" id="receiveModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" aria-hidden="true">
 				<div class="modal-dialog">
 					<div class="modal-content">
 						<!-- 모달 헤더 -->
-						<div class="modal-header">
+						<div class="modal-header modal-colored-header bg-primary">
 							<h4 class="modal-title">수신참조자 선택</h4>
-							<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+							<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button> <!-- x버튼 -->
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table>
+							<table class="table-bordered">
 								<tr>
 									<th>선택</th>
 									<th>사원번호</th>
@@ -538,8 +529,8 @@
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
-							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-							<button type="button" id="saveReceiveBtn" data-bs-dismiss="modal">저장</button>
+							<button type="button" class="btn btn-light" data-bs-dismiss="modal">닫기</button>
+							<button type="button" class="btn btn-primary" id="saveReceiveBtn" data-bs-dismiss="modal">저장</button>
 						</div>
 					</div>
 				</div>
