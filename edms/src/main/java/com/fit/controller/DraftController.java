@@ -120,7 +120,43 @@ public class DraftController {
 	// ----------------- 매출보고서 --------------------
 	// 매출보고서 작성 폼
 	@GetMapping("/draft/salesDraft")
-	public String addSalesDraft() {
+	public String addSalesDraft(HttpSession session, Model model) {
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
+		
+		// 1. 세션 정보 조회
+		// 사원번호, 이름, 부서명
+		int empNo = (int) session.getAttribute("loginMemberId");
+		String empName = (String) session.getAttribute("empName");
+		String deptName = (String) session.getAttribute("deptName");
+		String empPosition = (String) session.getAttribute("empPosition");
+		
+		// 2. 서명 이미지 - memberSign
+		MemberFile memberSign = draftService.selectMemberSign(empNo);
+		
+		// 3. 사원 리스트 메서드 호출 - employeeList
+		List<EmpInfo> employeeList = draftService.getAllEmp();
+		// JSON 형식의 데이터를 String으로 변환하여 추가
+		String employeeListJson = new Gson().toJson(employeeList);
+		
+		// 4. 오늘 날짜 - year, month, day
+		LocalDate today = LocalDate.now();
+		int year = today.getYear();
+		int month = today.getMonthValue();
+		int day = today.getDayOfMonth();
+		
+		model.addAttribute("empNo", empNo);
+		model.addAttribute("empName", empName);
+		model.addAttribute("deptName", deptName);
+		model.addAttribute("empPosition", empPosition);
+		model.addAttribute("employeeList", employeeList);
+		model.addAttribute("employeeListJson", employeeListJson);
+		model.addAttribute("sign", memberSign);
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
+		
 		return "/draft/salesDraft";
 	}
 	
