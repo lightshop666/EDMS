@@ -13,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fit.CC;
 import com.fit.service.MemberService;
@@ -60,6 +62,7 @@ public class MemberRest {
 		return result;
 	}
 	
+	
 	// 사원 서명 입력 // 비동기
 	@PostMapping("/member/uploadSign")
 	public String uploadSign(HttpSession session
@@ -83,9 +86,34 @@ public class MemberRest {
         
         // 리다이렉션 처리
         if ( row > 0 ) {
-        	return "/member/modifyMember?result=success&file=Success_Insert_Sign";
+        	return "/member/modifyMember?result=success";
         } else {
-        	return "/member/modifyMember?result=success&file=Fail_Insert_Sign";
+        	return "/member/modifyMember?result=success";
         }
+	}
+	
+	// 비밀번호 확인 액션
+	@PostMapping("/member/existingPwCheck")
+	public String existingPwCheck(HttpSession session
+						  , @RequestParam(required = false, name = "pw") String pw) {
+		String pwResult = "";
+		// 세션 사원번호를 받아 검사 메서드에 사용
+		int empNo = (int)session.getAttribute("loginMemberId");
+		log.debug(CC.HE + "MemberRest.existingPwCheck() 세션 empNo 값 : " + empNo + CC.RESET);
+	    
+		// 검사 메서드 실행(비밀번호 일치하는 사원 row를 반환)
+		int checkPw = memberService.checkPw(empNo, pw);
+	    log.debug(CC.HE + "MemberRest.existingPwCheck() checkPw: " + empNo + CC.RESET);
+	    
+	    // 비밀번호 일치/불일치에 따른 redirect 설정
+	    if (checkPw > 0) { // 비밀번호가 일치할 경우
+	    	log.debug(CC.HE + "MemberRest.existingPwCheck() checkPw : " + checkPw + CC.RESET);
+	    	pwResult = "success";
+	        return "redirect:/member/modifyMember?result=success&result=" + pwResult; // 수정폼으로 리디렉션
+	    } else { // 비밀번호가 불일치할 경우
+	    	log.debug(CC.HE + "MemberController.existingPwCheck() checkPw : " + checkPw + CC.RESET);
+	    	pwResult = "fail";
+	        return "redirect:/member/modifyMember?result=fail&pwResult=" + pwResult;
+	    }
 	}
 }

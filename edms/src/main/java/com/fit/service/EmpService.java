@@ -173,7 +173,7 @@ public class EmpService {
 	        enrichedEmp.put("remainDays", remainDays);
 	        log.debug(CC.YE + "EmpService.enrichedEmpList() remainDays : " + remainDays + CC.RESET);
 		    
-	        // 2) 회원가입 여부 확인
+	        // 2. 회원가입 여부 확인
 	        int memberInfoCnt = memberMapper.memberInfoCnt(emp.getEmpNo());
 	        enrichedEmp.put("isMember", memberInfoCnt > 0 ? "O" : "X");
 	        log.debug(CC.YE + "EmpService.enrichedEmpList() memberInfoCnt : " + memberInfoCnt + CC.RESET);

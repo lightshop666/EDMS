@@ -74,9 +74,10 @@
 		AND file_category = #{fileCategory}
 	</select>
 	
-	<!-- 개인정보 수정 -->
+	<!-- 내 프로필 수정 -->
 	<update id="modifyMember" parameterType="com.fit.vo.MemberInfo">
-	    UPDATE member_info
+	    UPDATE
+	    	member_info
 	    SET
 	        phone_number = #{phoneNumber},
 	        email = #{email},
@@ -86,7 +87,7 @@
 	    	emp_no = #{empNo}
 	</update>
 	
-	<!-- 개인정보 파일 입력 -->
+	<!-- 내 프로필 파일 입력 -->
 	<insert id="addMemberFile" parameterType="com.fit.vo.MemberFile">
 	    INSERT INTO
 	    	member_file (
@@ -110,6 +111,7 @@
 	    )
 	</insert>
 	
+	<!-- 내 프로필 파일 삭제 -->
 	<delete id="removeMemberFile" parameterType="map">
 	    DELETE FROM
 	    	member_file

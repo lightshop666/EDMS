@@ -62,8 +62,10 @@
 				}
 			}).open();
 		}
+		
+		// 페이지 로드
 		$(document).ready(function() {
-			// 저장 버튼 클릭시
+		// 1. 폼 저장 버튼 클릭시
 			$('#saveBtn').click(function(event) {
 		    	// 1) 주소값 가져오기
 				let postcode = $('#sample6_postcode').val(); // 우편번호
@@ -76,62 +78,150 @@
 				$('#address').val(fullAddress);
 			});
 			
-			// 취소 버튼 클릭 시
+		// 2. 폼 취소 버튼 클릭 시
 			$('#cancelBtn').click(function() {
 				let result = confirm('Home으로 이동하시겠습니까?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
 					window.location.href = '/home'; // 로그인 페이지로 이동
 				}
 			});
-			
-			// 서명 입력 시
+		
+			// 점 하나, 하나를 변환하여 배열에 저장
 			let goal = $('#goal')[0]; // 첫번째 배열값을 가져와서 goal 변수에 저장
-			let sign = new SignaturePad(goal, {minWidth:2, maxWidth:2, penColor:'rgb(0, 0, 0)'}); // SignaturePad 생성자
-			
-			// 점 하나, 하나를 변환
-			$('#clear').on("click", function() {
-				sign.clear();
-			});
-				
+			// SignaturePad 생성자
+			let sign = new SignaturePad(goal, {minWidth:2, maxWidth:2, penColor:'rgb(0, 0, 0)'});
+		
+		// 3. [서명 모달] 서명 입력 및 수정
+		
+			// 3-1. 저장 버튼 클릭 시
 			$('#save').click(function() {
 				if(sign.isEmpty()) {
-					alert("signature is required");
+					alert("서명이 필요합니다.");
 				} else {
 					let data = sign.toDataURL("image/png"); // url 가져오기
-					// window.open(data, "test", "width=600, height=200, scrollbars=no");
-					$('#target').attr('src', data); // data값을 src 값으로 채워줘
+					$('#target').attr('src', data); // data값을 src 값으로 채우기
 				}
 			});
+		
+			// 3-2. 삭제 버튼 클릭 시
+			$('#clear').on("click", function() {
+				sign.clear(); // 패드의 내용을 모두 삭제
+			});
 			
-			// Ajax를 사용해 데이터 가져오기
+			// 3-3. 수정 버튼 클릭 시(제출)
 			$('#send').click(function(){
-				console.log("send 버튼 클릭");
+				console.log("서명 send 버튼 클릭");
 				if (sign.isEmpty()) {
-					alert("내용이 없습니다.");
+					alert("서명 내용이 없습니다.");
 				} else {
 					console.log("send 전송");
-					$.ajax({
-						url : '/member/uploadSign', //addSign으로 보낼거다.
+					$.ajax({ // Ajax를 사용해 데이터 가져오기
+						url : '/member/uploadSign',
 						data : {sign : sign.toDataURL('image/png', 1.0)},
 						type : 'POST',
 						success : function(jsonData){ // 서버로부터 받은 응답 데이터 jsonData
-							alert('이미지 전송 성공 : ' + jsonData);
+							console.log("서명 업로드 성공 jsonData : " + jsonData);
+							alert('서명이 수정되었습니다.');
 							location.reload(); // 이미지 전송 성공 후 페이지 리로드
 						}
 					});
 				}	
 			});
-			
-			// 모달이 닫힐 때 서명 초기화
-	        $('#signModal').on('hide.bs.modal', function () {
-	            sign.clear();
+		
+			// 3-4. 닫기 버튼 클릭 시
+	        $('#signModal').on('hide.bs.modal', function () { // 모달창이 사라질 때
+	            sign.clear(); // 서명 초기화
 	        });
 			
+		// 4. 파라미터 값에 따른 알림
+			// 페이지 로딩 시 실행
+			var urlParams = new URLSearchParams(window.location.search);
+			var message = urlParams.get('file');
+			
+			if ( message === 'Success_Insert_Image' ) {
+				console.log("이미지 업로드 성공");
+		        alert('이미지 업로드 성공');
+		    } else if ( message === 'Fail_Insert_Image' ) {
+		    	console.log("이미지 업로드 실패");
+		    	alert('이미지 업로드 실패');
+		    }
+		// 5. [비밀번호 수정 모달] 정규식 검사 및 일치/불일치 검사
+			// 5-1. 현재 비밀번호 입력 필드의 blur 이벤트 처리
+		    $('#currentPassword').on('blur', function() {
+		    	// 현재 비밀번호 입력 값 가져오기
+				let currentPassword = $('#currentPassword').val();
+				let successMsg = '비밀번호 일치';
+				let errorMsg = '비밀번호 불일치';
+				
+			    // AJAX 비동기 요청 실행
+			    $.ajax({
+			        type: 'POST',
+			        url: '/member/existingPwCheck',
+			        data: { pw: currentPassword },
+			        success: function(pwResult) {
+			            // 결과 처리
+			            if (pwResult === 'success') {
+			                $('#currentPasswordMsg').text(successMsg).css('color', 'green');
+			            } else if (pwResult === 'fail') {
+			                $('#currentPasswordMsg').text(errorMsg).css('color', 'red');
+			            }
+			        },
+			        error: function() {
+			            // 오류 처리
+			            console.log('현재 비밀번호 확인 메서드 : 오류 발생');
+			        }
+			    });
+		    });
+		
+		    // 5-2. 새 비밀번호 입력 필드의 blur 이벤트 처리
+		    $('#newPassword').on('blur', function() {
+		    	// 정규식 패턴은 양 끝에 슬래시를 포함해야 한다
+				let pwPattern = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}:;<>,.?~[\]\-]).{8,}$/;
+				let newPw = $('#newPassword').val();
+				let successMsg = '사용 가능한 비밀번호입니다.';
+				let errorMsg = '최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.';
+				
+				if ( pwPattern.test(newPw) ) { // test 메서드는 해당 문자열이 정규식과 패턴이 일치하면 true를 반환
+					$('#pwMsg1').text(successMsg).css('color', 'green');
+					console.log('비밀번호 정규식 일치');
+					return true;
+				} else {
+					$('#pwMsg1').text(errorMsg).css('color', 'red');
+					console.log('비밀번호 정규식 불일치');
+					return false;
+				}
+		    });
+		
+		    // 5-3. 새 비밀번호 확인 입력 필드의 blur 이벤트 처리
+		    $('#confirmNewPassword').on('blur', function() {
+		    	let pw1 = $('#newPassword').val();
+				let pw2 = $('#confirmNewPassword').val();
+				let successMsg = '비밀번호가 일치합니다.';
+				let errorMsg = '비밀번호가 일치하지 않습니다.';
+				
+				if ( pw1 == pw2 ) { 
+					$('#pwMsg2').text(successMsg).css('color', 'green');
+					console.log('비밀번호 일치');
+					return true;
+				} else { 
+					$('#pwMsg2').text(errorMsg).css('color', 'red');
+					console.log('비밀번호 불일치')
+					return false;
+				}
+		    });
+		
 		});
+		
+		
 	</script>
 </head>
 <body>
-    <!-- 탭 네비게이션(개인정보 수정, 비밀번호 수정, 휴가정보) -->
+    <!--
+    	 탭 네비게이션
+    	  1. 개인정보 수정
+    	  2. 비밀번호 수정
+    	  3. 휴가정보
+    -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <a class="nav-link active" id="profile-tab" data-bs-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="true">개인정보 수정</a>
@@ -218,31 +308,24 @@
 				            <p>이미지가 없습니다.</p>
 				        </c:when>
 				        <c:otherwise>
-				            <img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
+				            <img src="${image.memberPath}${image.memberSaveFileName}">
 				        </c:otherwise>
 				    </c:choose>
-					<!-- 모달 푸터 - 사진 입력 및 수정 -->
+				    <!-- 모달 푸터 -->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-						<!-- 입력 메서드 실행 폼 - 이미지가 없는 경우 -->
-						<c:choose>
-					        <c:when test="${empty image.memberSaveFileName}">
-					            
-					            <form action="/member/uploadImage" method="post" enctype="multipart/form-data">
-					                <input type="hidden" name="empNo" value="${empNo}">
-					                <input type="file" name="multipartFile">
-					                <button type="submit" class="btn btn-primary">사진 입력</button>
-					            </form>
-					        </c:when>
-					        <c:otherwise>
-					            <form action="/member/updateImage" method="post" enctype="multipart/form-data">
-					                <input type="hidden" name="empNo" value="${empNo}">
-					                <input type="file" name="multipartFile">
-					                <button type="submit" class="btn btn-primary">사진 수정</button>
-					            </form>
-					        </c:otherwise>
-					    </c:choose>
-					
+			            <form action="/member/uploadImage" method="post" enctype="multipart/form-data">
+			                <input type="hidden" name="empNo" value="${empNo}">
+			                <input type="file" name="multipartFile">
+			                <c:choose>
+				                <c:when test="${empty image.memberSaveFileName}">
+				                	<button type="submit" class="btn btn-primary">입력</button>
+				                </c:when>
+				                <c:otherwise>
+				                	<button type="submit" class="btn btn-primary">수정</button>
+				                </c:otherwise>
+			                </c:choose>
+			            </form>
 					</div>
 				</div>
 			</div>
@@ -261,34 +344,36 @@
 					<!-- 모달 본문 -->
 					<div class="modal-body">
 						<c:choose>
-					        <c:when test="${empty image.memberPath}">
+					        <c:when test="${empty sign.memberPath}">
 					            <p>이미지가 없습니다.</p>
+					            <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
+				            	<div>
+									<button id="save">저장</button>
+									<button id="clear">삭제</button>
+									<button id="send">수정</button>
+								</div>
+								<div>
+									<img id="target" src = "" width=200, height=200>
+								</div>
 					        </c:when>
 					        <c:otherwise>
 				            	<img src="${sign.memberPath}${sign.memberSaveFileName}">
+				            	<br>
+				            	<canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
+				            	<div>
+									<button id="save">저장</button>
+									<button id="clear">삭제</button>
+									<button id="send">수정</button>
+								</div>
+								<div>
+									<img id="target" src = "" width=200, height=200>
+								</div>
 				            </c:otherwise>
 			            </c:choose>
 					</div>
 					<!-- 모달 푸터 -->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" id="signModal" data-bs-dismiss="modal">닫기</button>
-						<!-- 입력 메서드 실행 폼 - 이미지가 없는 경우 -->
-						<c:choose>
-							<c:when test="${empty image.memberPath}">
-					            <p>이미지가 없습니다.</p>
-					        </c:when>
-					        <c:otherwise>
-					                <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
-					            	<div>
-										<button id="save">Save</button>
-										<button id="clear">Clear</button>
-										<button id="send">Send</button>
-									</div>
-									<div>
-										<img id="target" src = "" width=200, height=200> <!-- 이 src를 사인패드로 채워주면 됨 -->
-									</div>
-					        </c:otherwise>
-					    </c:choose>
 					</div>
 				</div>
 			</div>
@@ -298,16 +383,26 @@
 <!-- 2. 비밀번호 수정 탭 -->
         <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
             <form>
+            	<!-- 현재 비밀번호 일치/불일치 검사 -->
                 <label for="currentPassword">현재 비밀번호:</label>
-                <input type="password" id="currentPassword" name="pw"><br>
-                <label for="newPassword">새 비밀번호:</label>
-                <input type="password" id="newPassword" name="newPw"><br>
-                <label for="confirmNewPassword">새 비밀번호 확인:</label>
-                <input type="password" id="confirmNewPassword" name="newPw2"><br>
-                <div id="passwordMatchMessage" class="text-success"></div>
-                <hr>
-                <button type="button" class="btn btn-secondary">취소</button>
-                <button type="button" class="btn btn-primary">저장</button>
+		        <input type="password" id="currentPassword" name="pw">
+		        <span id="currentPasswordMsg" class="validation-msg"></span><br>
+				<!-- 새 비밀번호 정규식 검사 -->
+		        <label for="newPassword">새 비밀번호:</label>
+		        <input type="password" id="newPassword" name="newPw">
+		        <span id="pwMsg1" class="validation-msg"></span><br>
+				<!-- 새 비밀번호 일치/불일치 검사 -->
+		        <label for="confirmNewPassword">새 비밀번호 확인:</label>
+		        <input type="password" id="confirmNewPassword" name="newPw2">
+		        <span id="pwMsg2" class="validation-msg"></span><br>
+		
+		        <div id="passwordMatchMessage" class="text-success"></div>
+		
+		        <hr>
+		
+		        <button type="button" class="btn btn-secondary">취소</button>
+		        <button type="button" class="btn btn-primary" id="saveButton">저장</button>
+
             </form>
         </div>
         

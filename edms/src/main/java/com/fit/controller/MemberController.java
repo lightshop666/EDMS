@@ -12,12 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fit.CC;
 import com.fit.service.EmpService;
 import com.fit.service.MemberService;
-import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,8 +76,7 @@ public class MemberController {
 	// 비밀번호 확인 액션
 	@PostMapping("/member/memberPwCheck")
 	public String checkPw(HttpSession session
-						  , @RequestParam(required = false, name = "pw") String pw
-						  , RedirectAttributes attributes) {
+						  , @RequestParam(required = false, name = "pw") String pw) {
 		String result = "";
 		// 세션 사원번호를 받아 검사 메서드에 사용
 		int empNo = (int)session.getAttribute("loginMemberId");
@@ -97,7 +94,7 @@ public class MemberController {
 	    } else { // 비밀번호가 불일치할 경우
 	    	log.debug(CC.HE + "MemberController.memberPwCheck() checkPw : " + checkPw + CC.RESET);
 	    	result = "fail";
-	        return "redirect:/member/memberPwCheck?result="+result; // redirect 대신, 현재 페이지를 유지하면서 메시지만 전달하도록 설정
+	        return "redirect:/member/memberPwCheck?result="+result;
 	    }
 	}
 	
@@ -170,19 +167,10 @@ public class MemberController {
 		
 		if(row > 0) {
 			log.debug(CC.YE + "MemberController.uploadImage() row : " + row + CC.RESET);
-			return "/member/modifyMember?result=success&file=Success_Insert_Image";
+			return "redirect:/member/modifyMember?result=success&file=Success_Insert_Image";
 		}
 		log.debug(CC.YE + "MemberController.uploadImage() row : " + row + CC.RESET);
-		return "/member/modifyMember?result=success&file=Fail_Insert_Image";
+		return "redirect:/member/modifyMember?result=success&file=Fail_Insert_Image";
 	}
-	
-	// 내 프로필 사진 수정 액션
-	@PostMapping("/member/modifyImage")
-	public String modifyImage(@RequestParam("empNo") int empNo
-			  				  , @RequestParam("multipartFile") MultipartFile file
-			  				  , HttpServletRequest request) {
-		return "";
-	}
-	
 	
 }
