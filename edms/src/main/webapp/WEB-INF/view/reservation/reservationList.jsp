@@ -42,20 +42,26 @@
 	    });
 	  });
 	  
-		// 예약 성공 or 실패 결과에 따른 alert
-		let result = '${param.result}'; // 예약 성공유무를 url의 매개값으로 전달
+		// 변경 성공 or 실패 결과에 따른 alert
+		let result = '${sessionScope.result}'; // 세션의 값 가져오기
 		
 		if (result == 'fail') { // result의 값이 fail이면
-		    console.log('예약 등록 실패');
-		    alert('예약이 등록되지 않았습니다. 다시 시도해주세요.');
-		} else if (result == 'success') { // result의 값이 success이면
+		    console.log('예약 변경사항 적용 실패');
+		    alert('예약이 변경되지 않았습니다. 다시 시도해주세요.');
+		    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
+		} else if (result == 'insert') { // result의 값이 insert이면
 			console.log('예약 등록 성공');
 		    alert('예약이 등록되었습니다.');
+		    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
+		} else if (result == 'delete') { // result의 값이 delete이면
+			console.log('예약 취소 성공');
+		    alert('예약이 취소되었습니다.');
+		    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
 		}
 		
 		// 취소 버튼 클릭 시
 		$('#cancelBtn').click(function() {
-			let result = confirm('home으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
+			let result = confirm('HOME으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
 			if (result) {
 				window.location.href = '/home'; // schedule으로 이동
 			}

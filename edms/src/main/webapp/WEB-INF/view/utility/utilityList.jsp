@@ -49,15 +49,26 @@
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
-			// 추가 성공 or 실패 결과에 따른 alert
-			let result = '${param.result}'; // 추가 성공유무를 url의 매개값으로 전달
+			// 변경 성공 or 실패 결과에 따른 alert
+			let result = '${sessionScope.result}'; // 세션의 값 가져오기
 			
 			if (result == 'fail') { // result의 값이 fail이면
-			    console.log('공용품 추가 실패');
-			    alert('공용품이 추가되지 않았습니다. 다시 시도해주세요.');
-			} else if (result == 'success') { // result의 값이 success이면
+			    console.log('공용품 변경사항 적용 실패');
+			    alert('공용품이 변경되지 않았습니다. 다시 시도해주세요.');
+			    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
+			    
+			} else if (result == 'insert') { // result의 값이 insert이면
 				console.log('공용품 추가 성공');
 			    alert('공용품이 추가되었습니다.');
+			    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
+			} else if (result == 'delete') { // result의 값이 delete이면
+				console.log('공용품 삭제 성공');
+			    alert('공용품이 삭제되었습니다.');
+			    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
+			} else if (result == 'update') { // result의 값이 update이면
+				console.log('공용품 수정 성공');
+			    alert('공용품이 수정되었습니다.');
+			    $.get('/clear-session'); // 알림 표시 후 정보 삭제 요청
 			}
 			
 			// 취소 버튼 클릭 시

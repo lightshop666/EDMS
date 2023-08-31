@@ -1,7 +1,5 @@
 package com.fit.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,12 +50,14 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 추가시 리스트로
 			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=success";
+			session.setAttribute("result", "insert");
+			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/utility/utilityList";
 		}
 	}
 	
@@ -106,11 +106,11 @@ public class UtilityController {
 		return "/utility/utilityList";
 	}
 	
-	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
+	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제, 삭제 유무의 결과를 세션을 통해 전달하여 view에서 경고창 출력
 	@PostMapping("/utility/delete")
-    public String deleteSelectedUtilities(
-    		// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
-    		@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
+    public String deleteSelectedUtilities(HttpSession session
+    		,	// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
+    			@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
 		
 		// 삭제 유무를 확인
 		int row = 0;
@@ -128,12 +128,14 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=success";
+			session.setAttribute("result", "delete");
+			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/utility/utilityList";
 		}
     }
 	
@@ -173,12 +175,14 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 수정 성공시 리스트로
 			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=success";
+			session.setAttribute("result", "update");
+			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 수정 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
-			return "redirect:/utility/utilityList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/utility/utilityList";
 		}
 	}
 	

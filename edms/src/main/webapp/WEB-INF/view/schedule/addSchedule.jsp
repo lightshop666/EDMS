@@ -70,7 +70,25 @@
 		});
 	</script>
 	
-	 <style>
+	<!-- 입력 태그중 필수 입력사항 미입력시 경고창 출력 -->
+	<script>
+	$(document).ready(function() {
+	    $('#addScheduleForm').submit(function(e) {
+	        // 필수입력사항 선택되었는지 확인합니다.
+	        var scheduleStartTime = $('input[name="scheduleStartTime"]').val();
+	        var scheduleEndTime = $('input[name="scheduleEndTime"]').val();
+			var scheduleContent = $('textarea[name="scheduleContent"]').val();		
+
+	        if (!scheduleStartTime || !scheduleEndTime || !scheduleContent) {
+	            // 필수 항목이 비어 있다면 경고창을 보여주고, 폼 제출을 중단합니다.
+	            alert('필수 입력 항목을 작성해주세요.');
+	            e.preventDefault();
+	        }
+	    });
+	});
+	</script>
+	
+	<style>
 	 	/* 제목 가운데 정렬 */
         #addScheduleForm .card-title {
             text-align: center;
@@ -82,6 +100,10 @@
 		
 		#saveBtn {
 		    float: right;
+		}
+		/* 필수입력표시 오른쪽 정렬 */
+		#markRequiredInput {
+			float: right;
 		}
 		/* 구분선 */
 		hr {
@@ -160,25 +182,29 @@
                                 <h6 class="card-title mt-5"><i
                                         class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6>
                                 <div class="table-responsive">
-                                <form method="post" action="${pageContext.request.contextPath}/schedule/addSchedule">
+                                <form id="addScheduleForm" method="post" action="${pageContext.request.contextPath}/schedule/addSchedule">
+                                	<!-- 필수입력사항 표시 -->
+									<div id="markRequiredInput">
+										<label class="form-label">* 필수입력표시</label>
+									</div>
                                     <table class="table">
                                         <thead>
                                             <tr>
-                                            	<td>시작시간</td>
+                                            	<td>시작시간 *</td>
 											    <td>
-											    	<input type="datetime-local" id="start" name="scheduleStartTime" class="form-control" value="2000-01-01T22:30:00">
+											    	<input type="datetime-local" id="start" name="scheduleStartTime" class="form-control" value="">
 											    </td>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr>
-                                            	<td>종료시간</td>
+                                            	<td>종료시간 *</td>
 												<td>
-													<input type="datetime-local" id="end" name="scheduleEndTime" class="form-control" value="2000-01-01T23:00:00">
+													<input type="datetime-local" id="end" name="scheduleEndTime" class="form-control" value="">
 												</td>
                                             </tr>
                                             <tr>
-                                            	<td>내용</td>
+                                            	<td>내용 *</td>
 												<td>
 													<textarea class="form-control" rows="3" cols="50" name="scheduleContent"></textarea>
 									                <small id="textHelp" class="form-text text-muted">일정 내용을 작성해주세요</small>

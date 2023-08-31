@@ -111,19 +111,21 @@ public class ReservationController {
 			// 디버깅
 			// 예약 신청 성공시 리스트로
 			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
-			return "redirect:/reservation/reservationList?result=success";
+			session.setAttribute("result", "insert");
+			return "redirect:/reservation/reservationList";
 		} else {
 			// 디버깅
 			// 예약 신청 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
-			return "redirect:/reservation/reservationList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/reservation/reservationList";
 		}
 	}
 	
 	// View로부터 삭제 요청을 받았을 경우 동작한다.
 	@PostMapping("/reservation/delete")
-	public String deleteReservation(
-			@RequestParam(name = "reservationNo", required = false, defaultValue = "0") int reservationNo) {
+	public String deleteReservation(HttpSession session
+			,	@RequestParam(name = "reservationNo", required = false, defaultValue = "0") int reservationNo) {
 		
 		// 디버깅
 		log.debug(CC.YOUN+"reservationController.deleteReservation() reservationNo: "+reservationNo+CC.RESET);
@@ -135,12 +137,14 @@ public class ReservationController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/reservation/reservationList?result=success";
+			session.setAttribute("result", "delete");
+			return "redirect:/reservation/reservationList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			return "redirect:/reservation/reservationList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/reservation/reservationList";
 		}
 	}
 	

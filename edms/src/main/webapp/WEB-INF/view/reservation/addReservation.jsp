@@ -70,6 +70,23 @@
 		});
 	</script>
 	
+	<!-- 입력 태그중 필수 입력사항 미입력시 경고창 출력 -->
+	<script>
+	$(document).ready(function() {
+	    $('#addReservationForm').submit(function(e) {
+	        // 필수입력사항 선택되었는지 확인합니다.
+	        var utilityNo = $('select[name="utilityNo"]').val();
+	        var reservationDate = $('input[name="reservationDate"]').val();
+	
+	        if (!utilityNo || !reservationDate) {
+	            // 필수 항목이 비어 있다면 경고창을 보여주고, 폼 제출을 중단합니다.
+	            alert('필수 입력 항목을 작성해주세요.');
+	            e.preventDefault();
+	        }
+	    });
+	});
+	</script>
+	
 	 <style>
 	 	/* 제목 가운데 정렬 */
         #addScheduleForm .card-title {
@@ -82,6 +99,10 @@
 		
 		#saveBtn {
 		    float: right;
+		}
+		/* 필수입력표시 오른쪽 정렬 */
+		#markRequiredInput {
+			float: right;
 		}
 		/* 구분선 */
 		hr {
@@ -134,13 +155,9 @@
 	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
 	<!-- ============================================================== -->
         
-        
-        
         <!-- ============================================================== -->
         <!-- Page wrapper  -->
         <!-- ============================================================== -->
-        
-        
         
 	<div class="page-wrapper">
 	<!-- ============================================================== -->
@@ -159,9 +176,13 @@
                                 <h6 class="card-title mt-5"><i
                                         class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6>
                                 <div class="table-responsive">
-                                <form method="post" action="${pageContext.request.contextPath}/reservation/addReservation">
+                                <form id="addReservationForm" method="post" action="${pageContext.request.contextPath}/reservation/addReservation">
                                 	<!-- 필요한 정보들 hidden 타입으로 보내기 -->
 									<input type="hidden" name="empNo" value="${empNo}" class="form-control">
+									<!-- 필수입력사항 표시 -->
+									<div id="markRequiredInput">
+										<label class="form-label">* 필수입력표시</label>
+									</div>
                                     <table class="table">
                                         <!-- 세션을 통해 값을 가져와서 value 값으로 출력 및 readonly -->
 										<tr>
@@ -183,7 +204,7 @@
 										</tr>
 										<!-- 차량 or 회의실에 해당하는 공용품명들이 출력되고 해당 항목을 선택시 해당 공용품번호가 넘어간다. -->
 										<tr>
-											<td>공용품</td>
+											<td>공용품 *</td>
 											<td>
 										        <select name="utilityNo" class="form-control">
 										            <option value="" selected>선택하세요</option>
@@ -194,7 +215,7 @@
 										    </td>
 										</tr>
 										<tr>
-											<td>예약일</td>
+											<td>예약일 *</td>
 											<td><input type="date" name="reservationDate" class="form-control"></td>
 										</tr>
 										<tr>

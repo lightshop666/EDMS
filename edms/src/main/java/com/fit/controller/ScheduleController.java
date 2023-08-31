@@ -1,7 +1,5 @@
 package com.fit.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -186,12 +184,14 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 추가시 달력으로
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList?result=success";
+			session.setAttribute("result", "insert");
+			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
 			// 일정 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/schedule/scheduleList";
 		}
 	}
 	
@@ -283,9 +283,9 @@ public class ScheduleController {
 	
 	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
 	@PostMapping("/schedule/delete")
-    public String deleteSelectedSchedules(
-    		// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
-    		@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
+    public String deleteSelectedSchedules(HttpSession session
+    		,	// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
+    			@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
 		
 		// 삭제 유무를 확인
 		int row = 0;
@@ -303,12 +303,14 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList?result=success";
+			session.setAttribute("result", "delete");
+			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
 			// 일정 삭제 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
-			return "redirect:/schedule/scheduleList?result=fail";
+			session.setAttribute("result", "fail");
+			return "redirect:/schedule/scheduleList";
 		}
     }
 }
