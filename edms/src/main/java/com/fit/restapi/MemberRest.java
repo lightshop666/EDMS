@@ -1,11 +1,17 @@
 package com.fit.restapi;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,13 +60,32 @@ public class MemberRest {
 		return result;
 	}
 	
-	// 비밀번호 검사 // 비동기
-	@PostMapping("/checkPw")
-	public boolean checkPw(HttpSession session, @RequestParam(required = false, name = "pw") String pw) {
-	    
-		int empNo = (int)session.getAttribute("loginMemberId");
-	    int checkPw = memberService.checkPw(empNo, pw);
-	    
-	    return checkPw > 0; // 비밀번호가 일치하면 true, 아니면 false 반환
+	// 사원 서명 입력 // 비동기
+	@PostMapping("/member/uploadSign")
+	public String uploadSign(HttpSession session
+										     , @RequestParam("sign") String signImageData
+                                             , HttpServletRequest request) {
+		log.debug(CC.HE + "MemberRest.uploadSign() 메서드 실행" + CC.RESET);
+		
+		// 실행 결과 값을 view로 반환
+		String resultParam;
+		
+		// empNo
+		int empNo = (int) session.getAttribute("loginMemberId");
+		log.debug(CC.HE + "MemberRest.uploadSign() empNo" + empNo + CC.RESET);
+		
+		// 파일 저장 경로 설정
+		String path = request.getServletContext().getRealPath("/image/member/"); // 실제 파일 시스템 경로
+		log.debug(CC.HE + "MemberRest.uploadSign() path" + path + CC.RESET);
+		
+        // 이미지 저장 후 DB 업데이트 처리
+        int row = memberService.addMemberFileSign(empNo, signImageData, path);
+        
+        // 리다이렉션 처리
+        if ( row > 0 ) {
+        	return "/member/modifyMember?result=success&file=Success_Insert_Sign";
+        } else {
+        	return "/member/modifyMember?result=success&file=Fail_Insert_Sign";
+        }
 	}
 }

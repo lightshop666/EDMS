@@ -1,11 +1,10 @@
 package com.fit.service;
 
 import java.io.File;
-
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -16,10 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.mapper.MemberMapper;
-import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
-import com.fit.vo.MemberInfoDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -107,84 +104,125 @@ public class MemberService {
 	}
 	
 	// 내 프로필 수정
-	public int modifyMember(int empNo) {
-		int modifyMemberRow = memberMapper.modifyMember(empNo);
+	public int modifyMember(MemberInfo memberInfo) {
+		int modifyMemberRow = memberMapper.modifyMember(memberInfo);
 		log.debug(CC.YE + "memberService.selectMemberOne() modifyMemberRow : " + modifyMemberRow + CC.RESET);
 		
 		return modifyMemberRow;
 		
 	}
-	
-	// 내 프로필 파일 수정
-	public void modifyMemberFile(MemberFile memberFile) {
-		// 최종 수정 값
-		MemberFile modifyFileOne;
+	// 내 프로필 사진 입력
+	public int addMemberFileImage(int empNo, MultipartFile file, String path) {
+
+		// 삽입된 행의 수를 나타낼 변수
+	    int insertedRowCount = 0;
+	    
+	    // 메소드에 사용할 매개변수 객체 만들기
+	    MemberFile newMemberFile = new MemberFile();
+		// 파일 카테고리를 이미지로 설정			
+		newMemberFile.setFileCategory("Image");
+		log.debug(CC.YE + "memberService.addMemberFileImage() fileCategory"+ CC.RESET);
+		// empNo
+		newMemberFile.setEmpNo(empNo);
+		log.debug(CC.YE + "memberService.addMemberFileImage() empNo : " + empNo + CC.RESET);
+		// multipartFile를 이용해 originalFilename 받기
+		newMemberFile.setMemberOriFileName(file.getOriginalFilename()); // 파일 원본이름
+		log.debug(CC.YE + "memberService.addMemberFileImage() mf.getOriginalFilename : " + newMemberFile.getMemberOriFileName() + CC.RESET);
+		// multipartFile를 이용해 contentType 받기
+		newMemberFile.setMemberFiletype(file.getContentType()); // 파일타입
+		log.debug(CC.YE + "memberService.addMemberFileImage() mf.getContentType : " + newMemberFile.getMemberFiletype() + CC.RESET);
+		// path
+		newMemberFile.setMemberPath("/image/member/");
+		log.debug(CC.YE + "memberService.addMemberFileImage() path : " + path + CC.RESET);
 		
-		// existingFile 매개값
-		Integer empNo = memberFile.getEmpNo();
-	    String fileCategory = memberFile.getFileCategory();
-	    
-	    // member_file 테이블에서 해당 파일 정보 조회
-	    MemberFile existingFile = memberMapper.selectMemberFile(empNo, fileCategory);
-	    
-	    // empNo의 파일이 없다면
-	    if (existingFile == null) {
-	    	// insert 문 실행
-	    	// 파일 정보 업데이트 성공한 경우에만 파일 저장 및 관련 작업 수행
-	    	MemberInfoDto fileListInstance = new MemberInfoDto();
-	    	List<MultipartFile> fileList = fileListInstance.getMultipartFile();
-    		
-            if (fileList != null && fileList.size() >= 1) {
-                for (MultipartFile mf : fileList) {
-                    if (mf.getSize() > 0) {
-                        String originalFileName = mf.getOriginalFilename();
-                        String fileExtension = originalFileName.substring(originalFileName.lastIndexOf("."));
-                        
-                        // 저장될 파일 이름 생성 (UUID 활용)
-                        String saveFileName = UUID.randomUUID().toString().replace("-", "") + fileExtension;
-                        
-                        // 파일 저장 경로
-                        String filePath = "/path/to/save/files/" + saveFileName;
-                        
-                        // 파일을 저장하는 코드
-                        try {
-                            mf.transferTo(new File(filePath));
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                            // 파일 저장 실패 시 예외 처리 로직 추가
-                            throw new RuntimeException("File storage failed.");
-                        }
-                        
-                        // member_file 테이블에 파일 정보 업데이트
-                        MemberFile addFile = new MemberFile();
-                        addFile.setEmpNo(empNo);
-                        addFile.setFileCategory(fileCategory);
-                        addFile.setMemberOriFileName(originalFileName);
-                        addFile.setMemberSaveFileName(saveFileName);
-                        addFile.setMemberFiletype(mf.getContentType());
-                        addFile.setMemberPath(filePath);
-                        
-                        int addFileRow = memberMapper.addMemberFile(addFile);
-                		log.debug(CC.YE + "memberService.selectMemberOne() addMemberFile : " + addFileRow + CC.RESET);
-                        
-                        if (addFileRow != 1) {
-                            // 파일 정보 업데이트 실패 시 예외 처리 로직 추가
-                            throw new RuntimeException("Failed to update file information.");
-                        }
-                    }
-                }
-            // 파일이 있을 시 수정(delete -> insert)
-            } else {
-		    	//int modifyFileRow = memberMapper.removeMemberFile(empNo, fileCategory);
-	    		//log.debug(CC.YE + "memberService.selectMemberOne() modifyFileRow : " + modifyFileRow + CC.RESET);
-	    		
-	    		//int addFileRow = memberMapper.addMemberFile(addFile);
-        		//log.debug(CC.YE + "memberService.selectMemberOne() addMemberFile : " + addFileRow + CC.RESET);
-                
-	        }
-	            
-	    }
-	    
+	// 저장될 파일 이름
+		// 확장자 (고유성을 지킬 수 있으며, 일반적인 파일 이름 형식을 준수할 수 있음)
+		String ext = newMemberFile.getMemberOriFileName().substring(file.getOriginalFilename().lastIndexOf(".")); //마지막 점(.)의 위치부터 끝까지 자르는 코드
 		
+		// UUID클래스에서 random한 이름 구하기		
+		newMemberFile.setMemberSaveFileName(UUID.randomUUID().toString().replace("-","") + ext);
+		log.debug(CC.YE + "memberService.addMemberFileImage() memberSaveFileName: " + newMemberFile.getMemberSaveFileName() + CC.RESET);
+		
+		// addMemberFile 메서드 실행
+		insertedRowCount = memberMapper.addMemberFile(newMemberFile);
+		log.debug(CC.YE + "memberService.addMemberFileImage() newMemberFile : " + newMemberFile + CC.RESET);
+		
+	// 파일 저장(저장 위치 필요 -> path 변수)
+		// path 위치에 저장파일 이름으로 빈 파일을 생성(0byte)
+		File f = new File(path+newMemberFile.getMemberSaveFileName());
+		log.debug(CC.YE + "memberService.addMemberFileImage() newMemberFile : " + newMemberFile + CC.RESET);
+		
+		try {
+			file.transferTo(f); // 빈 파일에 첨부된 파일의 스트림을 주입
+		} catch(IllegalStateException | IOException e) {
+			
+			e.printStackTrace();
+			// 트랜잭션 작동을 위해 예외(try..catch를 강용하지 않는 예외 ex: RuntimeException)를 발생하는 게 필요하다.
+			throw new RuntimeException();
+		}
+		
+		return insertedRowCount; // 삽입된 행의 수 반환
 	}
+	
+	// 내 프로필 서명 입력
+	public int addMemberFileSign(int empNo, String sign, String path) {
+		
+		// 삽입된 행의 수를 나타낼 변수
+	    int insertedSignRowCount = 0;
+		
+		String type = sign.split(",")[0].split(";")[0].split(":")[1];
+		log.debug(CC.YE + "SignService.addMemberFileSign() type : " + type + CC.RESET);
+		
+		String data = sign.split(",")[1];
+		log.debug(CC.YE + "SignService.addMemberFileSign() data : " + data + CC.RESET);
+		
+		byte[] image = Base64.getDecoder().decode(data);
+		log.debug(CC.YE + "SignService.addMemberFileSign() image : " + image + CC.RESET);
+		
+		// 저장시 사용할 파일 이름
+		String saveFilename = UUID.randomUUID().toString().replace("-", "") + ".png";
+		log.debug(CC.YE + "SignService.addMemberFileSign() saveFilename : " + saveFilename + CC.RESET);
+		
+		// sign 객체에 데이터 저장
+		// 메소드에 사용할 매개변수 객체 만들기
+	    MemberFile newMemberFile = new MemberFile();
+		// 파일 카테고리를 이미지로 설정			
+		newMemberFile.setFileCategory("Sign");
+		log.debug(CC.YE + "memberService.addMemberFileImage() fileCategory" + CC.RESET);
+		// empNo
+		newMemberFile.setEmpNo(empNo);
+		log.debug(CC.YE + "memberService.addMemberFileImage() empNo : " + empNo + CC.RESET);
+		// multipartFile를 이용해 originalFilename 받기
+		newMemberFile.setMemberOriFileName(saveFilename); // 파일 원본이름
+		log.debug(CC.YE + "memberService.addMemberFileImage() oriFilename : " + newMemberFile.getMemberOriFileName() + CC.RESET);
+		// multipartFile를 이용해 saveFileName 받기
+		newMemberFile.setMemberSaveFileName(saveFilename); // 파일 원본이름
+		log.debug(CC.YE + "memberService.addMemberFileImage() saveFilename : " + newMemberFile.getMemberSaveFileName() + CC.RESET);
+		// multipartFile를 이용해 contentType 받기
+		newMemberFile.setMemberFiletype(type); // 파일타입
+		log.debug(CC.YE + "memberService.addMemberFileImage() getContentType : " + newMemberFile.getMemberFiletype() + CC.RESET);
+		// path
+		newMemberFile.setMemberPath("/image/member/");
+		log.debug(CC.YE + "memberService.addMemberFileImage() path : " + path + CC.RESET);
+		
+		// DB에 정보 저장
+		memberMapper.addMemberFile(newMemberFile);
+		
+		// 빈 파일 생성
+		File f = new File(path+saveFilename);
+
+		try {
+			// 빈 파일에 이미지 파일 주입
+			FileOutputStream fileOutputStream = new FileOutputStream(f);
+			fileOutputStream.write(image);
+			fileOutputStream.close();
+			log.debug("SignService.addMemberFileSign() f.length() : " + f.length());
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+			// 트랜잭션 작동을 위해 예외(try/catch를 강요하지 않는 예외: RuntimeException) 발생이 필요
+			throw new RuntimeException();
+		}
+		return insertedSignRowCount; // 삽입된 행의 수 반환
+	}
+	
 }

@@ -224,7 +224,7 @@
 	<hr><!-- 구분선 -->
 	
 <!-- 엑셀 공통 양식 다운로드 -->
-	<a href="/file/defaultTemplate.xlsx" download="defaultTemplate.xlsx">사원 등록 공통 양식</a>
+	<a href="/file/defaultTemplate.xlsx" download="defaultTemplate.xlsx">기존 사원 등록 공통 양식</a>
 
 
 <!-- [시작] 파일 업로드 ------->

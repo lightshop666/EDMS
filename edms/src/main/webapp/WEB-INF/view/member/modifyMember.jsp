@@ -10,6 +10,10 @@
 	<!-- 모달을 띄우기 위한 부트스트랩 라이브러리 -->
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- 다음 카카오 도로명 주소 API 사용 -->
+	<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+	<!--사인을 이미지로 바꾸는 라이브러리 -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/1.5.3/signature_pad.min.js"></script>
 	
 	<script>
 		// 도로명 주소 찾기 함수
@@ -58,37 +62,7 @@
 				}
 			}).open();
 		}
-		
-		// 페이지 로드 시
 		$(document).ready(function() {
-		    // 비밀번호 확인용 모달을 JavaScript로 제어
-		    const passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
-	
-		    // 비밀번호 확인 모달을 열기
-		    passwordModal.show();
-	
-		 	// "확인" 버튼 클릭 시 비밀번호 확인 로직 처리
-		    $('#confirmPasswordButton').click(function() {
-		        const pw = $('#pw').val();
-	
-		     	// 비밀번호 확인 API 호출
-		        $.post('/checkPw', { pw: pw })
-		        .done(function(result) {
-		            if (result) { // 서버에서 true 반환시 모달 닫기
-		                passwordModal.hide(); // 모달 닫기
-		            } else {
-		                // 비밀번호가 일치하지 않다는 오류 메시지 표시
-		                $('#passwordErrorMessage').text('비밀번호가 일치하지 않습니다.');
-		            }
-		        });
-		    });
-		    
-			// "닫기" 버튼 클릭 시 홈으로 이동
-	        $('.modal-footer .btn-secondary').click(function() {
-	            window.location.href = '/home'; // 홈 페이지 주소로 변경
-	        });
-			
-	     	
 			// 저장 버튼 클릭시
 			$('#saveBtn').click(function(event) {
 		    	// 1) 주소값 가져오기
@@ -99,7 +73,7 @@
 				let fullAddress = postcode + ' ' + address + ' ' + detailAddress;
 				console.log('주소 : ' + fullAddress);
 				// hidden input에 주소값 저장
-				$('#fullAddress').val(fullAddress);
+				$('#address').val(fullAddress);
 			});
 			
 			// 취소 버튼 클릭 시
@@ -109,36 +83,54 @@
 					window.location.href = '/home'; // 로그인 페이지로 이동
 				}
 			});
-		
+			
+			// 서명 입력 시
+			let goal = $('#goal')[0]; // 첫번째 배열값을 가져와서 goal 변수에 저장
+			let sign = new SignaturePad(goal, {minWidth:2, maxWidth:2, penColor:'rgb(0, 0, 0)'}); // SignaturePad 생성자
+			
+			// 점 하나, 하나를 변환
+			$('#clear').on("click", function() {
+				sign.clear();
+			});
+				
+			$('#save').click(function() {
+				if(sign.isEmpty()) {
+					alert("signature is required");
+				} else {
+					let data = sign.toDataURL("image/png"); // url 가져오기
+					// window.open(data, "test", "width=600, height=200, scrollbars=no");
+					$('#target').attr('src', data); // data값을 src 값으로 채워줘
+				}
+			});
+			
+			// Ajax를 사용해 데이터 가져오기
+			$('#send').click(function(){
+				console.log("send 버튼 클릭");
+				if (sign.isEmpty()) {
+					alert("내용이 없습니다.");
+				} else {
+					console.log("send 전송");
+					$.ajax({
+						url : '/member/uploadSign', //addSign으로 보낼거다.
+						data : {sign : sign.toDataURL('image/png', 1.0)},
+						type : 'POST',
+						success : function(jsonData){ // 서버로부터 받은 응답 데이터 jsonData
+							alert('이미지 전송 성공 : ' + jsonData);
+							location.reload(); // 이미지 전송 성공 후 페이지 리로드
+						}
+					});
+				}	
+			});
+			
+			// 모달이 닫힐 때 서명 초기화
+	        $('#signModal').on('hide.bs.modal', function () {
+	            sign.clear();
+	        });
+			
 		});
 	</script>
 </head>
 <body>
-    <!-- 페이지 로드시 비밀번호 확인 모달창 -->
-    <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="passwordModalLabel">비밀번호 확인</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label for="passwordInput" class="form-label">비밀번호를 입력하세요:</label>
-                            <input type="password" class="form-control" id="pw" name="pw">
-                        </div>
-                    </form>
-                </div>
-			    <div class="modal-footer">
-			        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-			        <button type="button" class="btn btn-primary" id="confirmPasswordButton">확인</button>
-			    </div>
-			    <div id="passwordErrorMessage" class="text-danger"></div>
-            </div>
-        </div>
-    </div>
-
     <!-- 탭 네비게이션(개인정보 수정, 비밀번호 수정, 휴가정보) -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
@@ -161,12 +153,13 @@
             <form>
             	<!-- 사진 클릭 시 모달로 이미지 출력 -->
             	<label>사진</label>
-				<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
+				<img src="${image.memberPath}${image.memberSaveFileName}" width="200" height="200"
 					 data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
             </form>
             <!-- 사원번호와 사원명 변경 불가 -->
             	<p>사원번호 ${empNo}</p>
             	<p>사원명 ${empName}</p>
+            	<p>성별 ${member.gender}</p>
             <!-- 서명 수정 -->
             <form>
             	<label>서명</label>
@@ -174,14 +167,7 @@
             </form>
             <!-- 개인정보 수정 폼 -->
             <form action="/member/modifyMember" method="post">
-                <label>성별</label>
-			    <input type="radio" id="M" name="gender" value="M" <c:if test="${member.gender == 'M'}">checked</c:if>>
-			    <label for="male">남성</label>
-			    <input type="radio" id="F" name="gender" value="F" <c:if test="${member.gender == 'F'}">checked</c:if>>
-			    <label for="female">여성</label>
-			    
-			    <br>
-			    
+            	<input type="hidden" name="empNo" value="${empNo}">
 			    <label for="phoneNumber">전화번호</label>
                 <input type="text" id="phoneNumber" name="phoneNumber" value="${member.phoneNumber}"><br>
                 
@@ -190,22 +176,28 @@
                 <label for="email">이메일</label>
                 <input type="email" id="email" name="email" value="${member.email}"><br>
                 
-                <label for="address">주소</label>
-                <input type="text" id="existingAddress" name="existingAddress" value="${member.address}"><br>
-                <input type="text" id="sample6_postcode" placeholder="우편번호">
-				<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
-				<input type="text" id="sample6_address" placeholder="주소"><br>
-				<input type="text" id="sample6_detailAddress" placeholder="상세주소">
-				<input type="text" id="sample6_extraAddress" placeholder="참고항목">
-				<input type="hidden" name="address" id="fullAddress"><br>
-                
+                <!-- 기존 주소 표시 -->
+			    <label for="existingAddress">주소</label>
+			    <input type="text" id="existingAddress" name="existingAddress" value="${member.address}" readonly><br>
+			
+			    <!-- 새 주소 입력 -->
+			    <div>
+			        <input type="text" id="sample6_postcode" placeholder="우편번호">
+			        <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+			        <input type="text" id="sample6_address" placeholder="주소"><br>
+			        <input type="text" id="sample6_detailAddress" placeholder="상세주소">
+			        <input type="text" id="sample6_extraAddress" placeholder="참고항목">
+			    </div>
+			    <input type="hidden" name="address" id="address"><br>
+    
                 <label for="createdate">가입일</label>
-                <input type="date" id="createdate" name="createdate" value="${member.createdate}"><br>
+                <input type="text" id="createdate" name="createdate" value="${member.createdate}" readonly><br>
                 
-                <label for="updatedate">수정일</label>
-                <input type="date" id="updatedate" name="updatedate" value="${member.updatedate}"><br>
+                <label for="updatedate">최종 수정일</label>
+                <input type="text" id="updatedate" name="updatedate" value="${member.updatedate}" readonly><br>
                 
                 <hr>
+                
                 <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
                 <button type="submit" class="btn btn-primary" id="saveBtn">저장</button>
             </form>
@@ -217,16 +209,40 @@
 				<div class="modal-content">
 					<!-- 모달 헤더 -->
 					<div class="modal-header">
-						<h4 class="modal-title">사원 사진</h4>
+						<h4 class="modal-title">사진</h4>
 						<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 					</div>
 					<!-- 모달 본문 -->
-					<div class="modal-body">
-						<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
-					</div>
-					<!-- 모달 푸터 -->
+					<c:choose>
+				        <c:when test="${empty image.memberPath}">
+				            <p>이미지가 없습니다.</p>
+				        </c:when>
+				        <c:otherwise>
+				            <img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
+				        </c:otherwise>
+				    </c:choose>
+					<!-- 모달 푸터 - 사진 입력 및 수정 -->
 					<div class="modal-footer">
 						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+						<!-- 입력 메서드 실행 폼 - 이미지가 없는 경우 -->
+						<c:choose>
+					        <c:when test="${empty image.memberSaveFileName}">
+					            
+					            <form action="/member/uploadImage" method="post" enctype="multipart/form-data">
+					                <input type="hidden" name="empNo" value="${empNo}">
+					                <input type="file" name="multipartFile">
+					                <button type="submit" class="btn btn-primary">사진 입력</button>
+					            </form>
+					        </c:when>
+					        <c:otherwise>
+					            <form action="/member/updateImage" method="post" enctype="multipart/form-data">
+					                <input type="hidden" name="empNo" value="${empNo}">
+					                <input type="file" name="multipartFile">
+					                <button type="submit" class="btn btn-primary">사진 수정</button>
+					            </form>
+					        </c:otherwise>
+					    </c:choose>
+					
 					</div>
 				</div>
 			</div>
@@ -244,11 +260,35 @@
 					</div>
 					<!-- 모달 본문 -->
 					<div class="modal-body">
-						<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+						<c:choose>
+					        <c:when test="${empty image.memberPath}">
+					            <p>이미지가 없습니다.</p>
+					        </c:when>
+					        <c:otherwise>
+				            	<img src="${sign.memberPath}${sign.memberSaveFileName}">
+				            </c:otherwise>
+			            </c:choose>
 					</div>
 					<!-- 모달 푸터 -->
 					<div class="modal-footer">
-						<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+						<button type="button" class="btn btn-secondary" id="signModal" data-bs-dismiss="modal">닫기</button>
+						<!-- 입력 메서드 실행 폼 - 이미지가 없는 경우 -->
+						<c:choose>
+							<c:when test="${empty image.memberPath}">
+					            <p>이미지가 없습니다.</p>
+					        </c:when>
+					        <c:otherwise>
+					                <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
+					            	<div>
+										<button id="save">Save</button>
+										<button id="clear">Clear</button>
+										<button id="send">Send</button>
+									</div>
+									<div>
+										<img id="target" src = "" width=200, height=200> <!-- 이 src를 사인패드로 채워주면 됨 -->
+									</div>
+					        </c:otherwise>
+					    </c:choose>
 					</div>
 				</div>
 			</div>
@@ -305,7 +345,6 @@
 		        <thead class="table-active">
 		            <tr>
 		                <th>휴가 번호</th>
-		                <th>사원 번호</th>
 		                <th>휴가 종류</th>
 		                <th>휴가 일수(+/-)</th>
 		                <th>휴가 일수</th>
@@ -316,7 +355,6 @@
 		            <c:forEach var="history" items="${vacationHistoryList}">
 						<tr>
 						    <td>${history.vacationHistoryNo}</td>
-						    <td>${history.empNo}</td>
 						    <td>${history.vacationName}</td>
 						    <td>${history.vacationPm}</td>
 						    <td>${history.vacationDays}</td>
