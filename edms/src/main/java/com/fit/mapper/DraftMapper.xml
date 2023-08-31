@@ -382,4 +382,11 @@
 			updatedate = NOW()
 		WHERE approval_no = #{approvalNo}
    </update>
+   
+   <!-- sales_draft by sales_date -->
+   <select id="selectSalesDateList" parameterType="String" resultType="java.lang.String">
+		SELECT DISTINCT sales_date
+		FROM sales_draft
+		WHERE sales_date IN (#{today}, #{previousMonth}, #{previousMonthBefore})
+   </select>
 </mapper>

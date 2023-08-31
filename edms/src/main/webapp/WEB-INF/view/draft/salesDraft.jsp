@@ -73,6 +73,32 @@
 			    alert('매출보고서가 기안되지 않았습니다. 다시 시도해주세요.');
 			}
 			
+			// salesDate 옵션 동적으로 생성
+			// 오늘 날짜를 기준으로 전전월, 전월, 당월 옵션을 YYYY년 MM월 형태로 옵션을 출력합니다.
+			// 모델에 담아 보낸 오늘 날짜 정보를 가져와서 Date 객체 생성
+			let year = '${year}';
+			let month = '${month}';
+			let day = '${day}';
+			let today = new Date(year, month - 1, day); // 자바스크립트의 월은 0월부터 시작합니다.
+			console.log('today : ' + today);
+			generateOptionsForSelect(today); // 공통함수 호출
+			
+			// + 버튼 클릭시 이벤트 발생
+			$('#addDetailBtn').click(function() { // + 버튼 클릭시 이벤트 발생
+				addNewRowForSalesDraft(); // 공통 함수 호출
+			});
+			
+			// - 버튼 클릭시 내역 제거
+			// 동적으로 생성되는 내역을 다루기 때문에 $(document)를 이용하여 문서 전체를 가리킵니다.
+			$(document).on('click', '.removeDetailBtn', function() {
+			    $(this).closest("tr").remove();
+			});
+			
+			// 매출액과 목표액 input에 값이 입력될 때 이벤트 발생
+			$(document).on('input',
+					'#detailsTable input[name="currentSalse[]"], #detailsTable input[name="targetSales[]"]',
+					updateSalesRate); // 공통 함수 호출
+			
 			// 모달창에서 중간승인자 저장 버튼 클릭시
 			$('#saveMediateBtn').click(function() {
 				setMediateApproval(); // 공통 함수 호출
@@ -104,34 +130,6 @@
 				if (result) {
 					location.reload(); // 현재 페이지 새로고침
 				}
-			});
-			
-			// 내역 추가
-			$('#addDetailBtn').click(function() { // + 버튼 클릭시 이벤트 발생
-				let newRow = `
-					<tr>
-						<td>
-							<select name="productCategory" required>
-								<option value="스탠드">스탠드</option>
-								<option value="무드등">무드등</option>
-								<option value="실내조명">실내조명</option>
-								<option value="실외조명">실외조명</option>
-								<option value="포인트조명">포인트조명</option>
-							</select>
-						</td>
-						<td><input type="number" name="previousSales[]" required></td>
-						<td><input type="number" name="currentSalse[]" required></td>
-						<td><input type="number" name="targetSales[]" required></td>
-						<td><input type="number" name="targetRate[]" required></td>
-						<td><button type="button" class="removeDetailBtn">-</button></td> <!-- id명 수정 핊요 -->
-					</tr>
-				`;
-				$('#detailsTable').append(newRow); // 테이블에 내역(newRow) 추가
-			});
-			
-			// 내역 제거
-			$(document).on('click', '.removeDetailBtn', function() {
-			    $(this).closest("tr").remove();
 			});
 		});
 	</script>
@@ -216,8 +214,8 @@
 			<div class="container pt-5">
 				<h1 style="text-align: center;">매출보고서</h1>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
-				<form action="/draft/salesDraft" method="post" id="draftForm">
-					<input type="hidden" name="empNo" value="${empNo}">
+				<form action="/draft/salesDraft" method="post" id="draftForm" enctype="multipart/form-data">
+					<input type="hidden" name="empNo" value="${empNo}"> <!-- deptNo로 바꿔야함 -->
 					<table class="table-bordered">
 						<tr>
 							<th rowspan="3" colspan="2">매출보고서</th>
@@ -276,17 +274,15 @@
 							<td>${deptName}</td>
 							<th>기준년월</th>
 							<td>
-								<select name="salesDate"> <!-- 전전월, 전월, 당월 출력 예정.. -->
-									<option>YYYY년 MM월</option>
-									<option>YYYY년 MM월</option>
-									<option>YYYY년 MM월</option>
+								<select name="salesDate" id="salesDateSelect">
+									<!-- 현재 날짜를 기준으로 전전월, 전월, 당월 옵션을 동적으로 생성합니다. -->
 								</select>
 							</td>
 						</tr>
 						<tr>
 							<th>제목</th>
 							<td colspan="5">
-								<input type="text" name="docTitle" placeholder="ex) 매출 보고서 - YYYY-MM-DD" id="docTitle">
+								<input type="text" name="docTitle" placeholder="ex) 매출 보고서 - YYYY년 MM월" id="docTitle">
 							</td>
 						</tr>
 						<tr>
@@ -295,10 +291,9 @@
 								<table id="detailsTable" class="table-bordered">
 									<tr>
 										<th>상품 카테고리</th>
-										<th>전월매출액</th> <!-- 조회해서 뿌려줄지..? -->
-										<th>당월매출액</th>
 										<th>목표액</th>
-										<th>목표달성률</th> <!-- 동적으로 계산 예정.. -->
+										<th>매출액</th>
+										<th>목표달성률</th> <!-- 입력된 매출액과 목표액에 따라 동적으로 계산하여 출력 -->
 										<th><button type="button" id="addDetailBtn">+</button></th>
 									</tr>
 									<!-- 내역 항목 -->
@@ -312,20 +307,34 @@
 												<option value="포인트조명">포인트조명</option>
 											</select>
 										</td>
-										<td><input type="number" name="previousSales[]" required></td>
-										<td><input type="number" name="currentSalse[]" required></td>
-										<td><input type="number" name="targetSales[]" required></td>
-										<td><input type="number" name="targetRate[]" required></td>
-										<td><button type="button" class="removeDetailBtn">-</button></td>
+										<!-- 
+											pattern="\d*" => \d*를 이용하여 숫자만 입력받을 수 있습니다.
+											oninput => 입력필드의 내용이 변경될 때 해당 이벤트가 발생합니다.
+											this.value => 입력필드의 현재 입력값을 나타냅니다.
+											replace(a,b) => a로 지정된 패턴을 입력값에서 찾아 b로 대체합니다. 현재 코드에서는 '' 빈 문자열로 대체합니다.
+											따라서 해당 속성이 있는 input태그는 숫자만 입력이 가능하며, 숫자 이외의 값이 입력되더라도 ''로 대체하게 됩니다.				
+										-->
+										<td>
+											<input type="number" name="targetSales[]" required>
+										</td>
+										<td>
+											<input type="number" name="currentSalse[]" required>
+										</td>
+										<td>
+											<span class="rate"></span>
+											<input type="hidden" name="targetRate[]">
+										</td>
+										<td>
+											<button type="button" class="removeDetailBtn">-</button>
+										</td>
 									</tr>
-									
 								</table>
 							</td>
 						</tr>
 						<tr>
 							<th>파일첨부</th>
 							<td colspan="5">
-								<input type="file" name="documentFile"> <!-- 파일 첨부 예정.. -->
+								<input type="file" name="multipartFile" multiple> <!-- 파일 첨부 예정.. -->
 							</td>
 						</tr>
 						<tr>

@@ -194,183 +194,302 @@
 		}
 	}
 	
+	// Date 객체의 날짜 정보를 YYYY-MM-00 형식으로 포맷팅하는 함수
+	function formatDateToISO(date) {
+		// Date 객체는 Thu Aug 31 2023 00:00:00 GMT+0900 (한국 표준시) 와 같은 정보를 가지고 있습니다.
+		// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-30T15:00:00.000Z
+		// substr() 원하는 문자열만 가져옵니다.
+		let stringDate = date.toISOString().substr(0, 8) + "00";
+		console.log('formatDateToISO() : ' + stringDate);
+		
+		return stringDate;
+	}
+	
+	// Date 객체의 날짜 정보를 YYYY년 MM월 형식으로 포맷팅하는 함수
+	function formatDateToKorean(date) {
+		let stringYear = date.toISOString().substr(0, 4) + "년"; // YYYY년
+		let stringMonth = date.toISOString().substr(5, 2) + "월"; // MM월
+		console.log('formatDate() : ' + stringYear + " " + stringMonth);
+		
+		return stringYear + " " + stringMonth;
+	}
+	
+	// -------------- 매출보고서 함수 -----------------
+	// 매출보고서에서 동적으로 생성 또는 제거되는 input 태그 관련 함수들입니다.
+	function generateOptionsForSelect(today) {
+		/*
+			해당 함수는 현재 날짜를 기준으로 전전월, 전월, 당월의 옵션을 동적으로 생성하여 selectbox에 주입합니다.
+			단, ajax로 데이터를 조회하여 이미 데이터가 존재하는 기준년월일 경우 주입을 생략합니다.
+		*/
+		// 전월 Date 객체 생성
+		let previousMonth = new Date(today); 
+		previousMonth.setMonth(today.getMonth() - 1);
+		console.log('previousMonth : ' + previousMonth);
+		// 전전월 Date 객체 생성
+		let previousMonthBefore = new Date(today); 
+		previousMonthBefore.setMonth(today.getMonth() - 2);
+		console.log('previousMonthBefore : ' + previousMonthBefore);
+		
+		// 1. ajax로 해당 기준년월의 데이터가 존재하는지 조회
+		$.ajax({
+			url : '/getExistingSalesDates',
+			type : 'post',
+			data : {
+				today : formatDateToISO(today), // formatDateToISO() 공통 함수 호출
+				previousMonth : formatDateToISO(previousMonth),
+				previousMonthBefore : formatDateToISO(previousMonthBefore)
+			},
+			success : function(response) {
+				// 2. YYYY년 MM월 형식으로 포맷팅하여 옵션 생성 
+				let selectElement = $('#salesDateSelect'); // selectbox
+				let options = [
+					{ value : formatDateToISO(today), text : formatDateToKorean(today) }, // formatDateToKorean() 공통 함수 호출
+					{ value : formatDateToISO(previousMonth), text : formatDateToKorean(previousMonth) },
+					{ value : formatDateToISO(previousMonthBefore), text : formatDateToKorean(previousMonthBefore) }
+				]; // option 배열 생성
+				
+				// 3. ajax로 조회한 결과를 기반으로 생성한 옵션을 주입 또는 생략
+				$.each(options, function(index, option) {
+					/*
+						includes() 메서드는 자바스트립트에서 사용되는 배열(Array)의 메서드입니다.
+						해당 배열에 특정 요소가 존재하는지 여부를 확인할 수 있습니다.
+						존재하면 true, 존재하지 않으면 false를 반환합니다.
+					*/
+					if (response.includes(option.value)) {
+						/*
+							response 즉, 반환된 List에 해당 옵션의 value가 포함되어 있으면
+							이미 데이터에 존재하는 기준년월이므로 옵션을 주입하지 않고 return 합니다.
+						*/
+						return;
+					}
+					// 위 조건에 해당되지 않는다면, 해당 옵션을 selectbox에 주입.
+					selectElement.append($('<option>', {
+						value : option.value,
+						text : option.text
+					}));
+				});
+			},
+			error : function(error) {
+				console.log('error : ' + error);
+			}
+		});
+	}
+	
+	// 목표달성률 동적 계산
+	// 목표달성률을 계산하여 hidden에 주입하고, 백분율로 환산하여 출력합니다.
+	function updateSalesRate() {
+		let row = $(this).closest('tr'); // 현재 이벤트가 발생한 요소, 즉 입력한 'input'요소의 가장 가까운 'tr' 요소를 선택합니다.
+		// find()로 해당 요소의 currentSalse 입력값과 targetSales 입력값을 찾아옵니다.
+		let currentSales = row.find('input[name="currentSalse[]"]').val();
+		let targetSales = row.find('input[name="targetSales[]"]').val();
+		// 목표달성률을 계산
+		let targetRate = (currentSales / targetSales);
+		// 계산된 목표달성률을 해당 요소의 targetRate에 주입합니다.
+		row.find('input[name="targetRate[]"]').val(targetRate);
+		// 목표달성률을 백분율(%)로 환산하여 출력 // toFixed()로 소숫점 아래 2자리로 자를 수 있습니다.
+		let rate = (targetRate * 100).toFixed(2) + '%';
+		row.find('.rate').text(rate);
+	}
+	
+	// 내역 추가
+	function addNewRowForSalesDraft() {
+		let newRow = `
+			<tr>
+				<td>
+					<select name="productCategory" required>
+						<option value="스탠드">스탠드</option>
+						<option value="무드등">무드등</option>
+						<option value="실내조명">실내조명</option>
+						<option value="실외조명">실외조명</option>
+						<option value="포인트조명">포인트조명</option>
+					</select>
+				</td>
+				<td><input type="number" name="targetSales[]" required></td>
+				<td><input type="number" name="currentSalse[]" required></td>
+				<td><span class="rate"></span><input type="hidden" name="targetRate[]"></td>
+				<td><button type="button" class="removeDetailBtn">-</button></td>
+			</tr>
+		`;
+		$('#detailsTable').append(newRow); // 테이블에 내역(newRow) 추가
+	}
+	
+	
 	// -------------- 휴가신청서 함수 -----------------
 	// 휴가 종류 선택에 따라 동적으로 등장하는 input 태그 관련 함수들입니다.
-		// 휴가 반차 선택 시 input 태그 출력
-		function halfVactionInput(remainDays) {
-			if (remainDays < 0.5) { // 남은 휴가 일수가 0.5일보다 작으면 신청 불가
-				let InputMsg = '신청 가능한 반차 휴가 일수가 없습니다.';
-				$('#vacationInput').html(InputMsg);
-			} else {
-				let InputTag = `
-					<input type="date" name="vacationStart" id="vacationStart">
-					<input type="hidden" name="vacationDays" value="0.5"> <!-- 반차는 0.5일이 고정값으로 들어간다 -->
-					<input type="radio" name="vacationTime" value="오전반차" id="amHalfDay">
-						오전반차 09:00~13:00
-					<input type="radio" name="vacationTime" value="오후반차" id="pmHalfDay">
-						오후반차 14:00~18:00
-				`;
-				$('#vacationInput').html(InputTag);
-			}
+	// 휴가 반차 선택 시 input 태그 출력
+	function halfVactionInput(remainDays) {
+		if (remainDays < 0.5) { // 남은 휴가 일수가 0.5일보다 작으면 신청 불가
+			let InputMsg = '신청 가능한 반차 휴가 일수가 없습니다.';
+			$('#vacationInput').html(InputMsg);
+		} else {
+			let InputTag = `
+				<input type="date" name="vacationStart" id="vacationStart">
+				<input type="hidden" name="vacationDays" value="0.5"> <!-- 반차는 0.5일이 고정값으로 들어간다 -->
+				<input type="radio" name="vacationTime" value="오전반차" id="amHalfDay">
+					오전반차 09:00~13:00
+				<input type="radio" name="vacationTime" value="오후반차" id="pmHalfDay">
+					오후반차 14:00~18:00
+			`;
+			$('#vacationInput').html(InputTag);
 		}
-			
-		// 휴가 연차 또는 보상 선택 시 input 태그 출력
-		function longVacationInput(vacationName, remainDays) {
-			if (remainDays < 1) { // 남은 휴가 일수가 1보다 작으면 신청 불가
-				let InputMsg = '신청 가능한 ' + vacationName + ' 휴가 일수가 없습니다.';
-				$('#vacationInput').html(InputMsg);
-			} else {
-				let InputTag = `
-					<label for="vacationDays"> 휴가일수 : </label>
-					<select name="vacationDays" id="vacationDays">
-					<!-- 옵션들은 vacationDaysSelect()를 호출하여 남은 휴가 일수만큼 동적으로 생성할 것입니다. -->
-					</select>
-							
-					<label for="vacationStart"> 휴가 시작일 : </label>
-					<input type="date" name="vacationStart" id="vacationStart">
-							
-					<label for="vacationEnd"> 휴가 종료일 : </label>
-					<span id="vacationEndSpan"></span> <!-- 휴가 종료일은 수정이 불가능하며, 출력만 가능합니다. -->
-					<input type="hidden" name="vacationEnd" id="vacationEndInput"> <!-- hidden 으로 값을 넘깁니다. -->
-				`;
-				$('#vacationInput').html(InputTag);
-			}
-		}
+	}
 		
-		// 휴가일수(vacationDays) selectbox의 옵션 출력
-		// ajax로 조회한 남은 휴가 일수(remainDays)만큼 동적으로 옵션을 생성합니다.
-		function vacationDaysSelect(remainDays) {
-			$('#vacationDays').empty(); // 기존 옵션들을 초기화
-			
-			for (let i = 1; i <= remainDays; i++) {
-				// append()를 이용하여 새로운 옵션 태그를 생성합니다.
-				$('#vacationDays').append($('<option>', {
-					value : i, // 옵션태그의 값
-					text : i + '일' // 옵션태그의 출력부분
-				}));
-			}
+	// 휴가 연차 또는 보상 선택 시 input 태그 출력
+	function longVacationInput(vacationName, remainDays) {
+		if (remainDays < 1) { // 남은 휴가 일수가 1보다 작으면 신청 불가
+			let InputMsg = '신청 가능한 ' + vacationName + ' 휴가 일수가 없습니다.';
+			$('#vacationInput').html(InputMsg);
+		} else {
+			let InputTag = `
+				<label for="vacationDays"> 휴가일수 : </label>
+				<select name="vacationDays" id="vacationDays">
+				<!-- 옵션들은 vacationDaysSelect()를 호출하여 남은 휴가 일수만큼 동적으로 생성할 것입니다. -->
+				</select>
+						
+				<label for="vacationStart"> 휴가 시작일 : </label>
+				<input type="date" name="vacationStart" id="vacationStart">
+						
+				<label for="vacationEnd"> 휴가 종료일 : </label>
+				<span id="vacationEndSpan"></span> <!-- 휴가 종료일은 수정이 불가능하며, 출력만 가능합니다. -->
+				<input type="hidden" name="vacationEnd" id="vacationEndInput"> <!-- hidden 으로 값을 넘깁니다. -->
+			`;
+			$('#vacationInput').html(InputTag);
 		}
-		
-		// 휴가 종료일 지정
-		// 선택한 휴가일수와 휴가 시작일에 따라 동적으로 휴가 종료일을 지정합니다.
-		function vacationEndInput() {
-			let selectedVacationDays = parseInt($('#vacationDays').val()); // 선택한 휴가일수를 정수로 반환
-			console.log('선택한 휴가일수 : ' + selectedVacationDays);
-			
-			// 날짜 정보를 다루기 위한 JavaScript의 객체인 Date 객체를 사용합니다.
-			let startDate = new Date( $('#vacationStart').val() ); // 선택한 휴가 시작일
-			let endDate = new Date(startDate) // 휴가 종료일 선언
-			// 휴가 종료일을 selectedVacationDays만큼 지정합니다.
-			// selectedVacationDays가 1일 경우 당일(시작일과 종료일이 동일)이므로 selectedVacationDays-1을 해줍니다.
-			endDate.setDate(startDate.getDate() + selectedVacationDays - 1);
-			
-			// Date 객체는 날짜와 시간 등 다양한 정보를 담고 있으므로 필요한 정보만 가져옵니다.
-			// ex) Wed Aug 09 2023 09:00:00 GMT+0900 (한국 표준시)
-			// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-09T00:00:00.000Z
-			// substr()으로 날짜 정보만 가져옵니다. ex) 2023-08-09
-			let endDateString = endDate.toISOString().substr(0, 10);
-			
-			$('#vacationEndSpan').text(endDateString);
-			$('#vacationEndInput').val(endDateString);
-			console.log('휴가 종료일 : ' + endDateString);
-		}
-		
-		// 선택한 휴가 종류의 남은 일수 출력 (AJAX)
-		function getRemainDaysByVacationName(vacationName) {
-			// 1. ajax로 선택한 휴가 종류의 남은 일수 출력
-			$.ajax({
-				url : '/getRemainDaysByVacationName',
-				type : 'post',
-				data : {vacationName : vacationName},
-				success : function(response) {
-					console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
-					$('#remainDays').text(response + '일');
-					
-					// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
-					if (vacationName == '반차') {
-						halfVactionInput(response); // 반차 input 출력
-					} else { // 연차 또는 보상일 경우
-						longVacationInput(vacationName, response); // 연차 or 보상 input 출력
-						vacationDaysSelect(response); // 연차 or 보상의 남은 휴가일수 selectbox 출력
-						
-						// 휴가 시작일 지정시 이벤트 발생
-						$('#vacationStart').change(function() {
-							vacationEndInput(); // 휴가 종료일 지정
-						});
-						
-						// 휴가 일수 변경시 이벤트 발생
-						$('#vacationDays').change(function() {
-							let vacationStart = $('#vacationStart').val();
-							if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
-								vacationEndInput(); // 휴가 종료일 지정
-							}
-						});
-					}
-				},
-				error : function(error) {
-					console.error('남은 휴가 일수 조회 실패 : ' + error);
-				}
-			});
-		}
-		
-		// 휴가 종류 기존 선택값 조회 및 셋팅 (ajax)
-		function getRemainDaysByVacationNameAndSet(vacationName, vacationStart, vacationDays, vacationTime) {
-			console.log('getRemainDaysByVacationNameAndSet() vacationName : ' + vacationName);
-			console.log('getRemainDaysByVacationNameAndSet() vacationStart : ' + vacationStart);
-			console.log('getRemainDaysByVacationNameAndSet() vacationDays : ' + vacationDays);
-			console.log('getRemainDaysByVacationNameAndSet() vacationTime : ' + vacationTime);
-			
-			// 1. ajax로 선택한 휴가 종류의 남은 일수 출력
-			$.ajax({
-				url : '/getRemainDaysByVacationName',
-				type : 'post',
-				data : {vacationName : vacationName},
-				success : function(response) {
-					console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
-					$('#remainDays').text(response + '일');
-					
-					// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
-					if (vacationName == '반차') {
-						halfVactionInput(response); // 반차 input 출력
-						
-						// 기존값 주입
-						if (vacationTime == '오전반차') {
-							$('#amHalfDay').prop("checked", true);
-						} else if (vacationTime == '오후반차') {
-							$('#pmHalfDay').prop("checked", true);
-						}
-						
-						if (vacationStart != '0000-00-00 00:00:00') {
-							$('#vacationStart').val(vacationStart.substr(0, 10));
-						}
-					} else { // 연차 또는 보상일 경우
-						longVacationInput(vacationName, response); // 연차 or 보상 input 출력
-						vacationDaysSelect(response); // 연차 or 보상의 남은 휴가일수 selectbox 출력
-						
-						// 기존값 주입
-						if (vacationStart != '0000-00-00 00:00:00') {
-							$('#vacationStart').val(vacationStart.substr(0, 10));
-							$('#vacationDays').val(vacationDays);
-							vacationEndInput();
-						}
-						
-						// 휴가 시작일 지정시 이벤트 발생
-						$('#vacationStart').change(function() {
-							vacationEndInput(); // 휴가 종료일 지정
-						});
-						
-						// 휴가 일수 변경시 이벤트 발생
-						$('#vacationDays').change(function() {
-							let vacationStart = $('#vacationStart').val();
-							if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
-								vacationEndInput(); // 휴가 종료일 지정
-							}
-						});
-					}
-				},
-				error : function(error) {
-					console.error('남은 휴가 일수 조회 실패 : ' + error);
-				}
-			});
-		}
+	}
 	
+	// 휴가일수(vacationDays) selectbox의 옵션 출력
+	// ajax로 조회한 남은 휴가 일수(remainDays)만큼 동적으로 옵션을 생성합니다.
+	function vacationDaysSelect(remainDays) {
+		$('#vacationDays').empty(); // 기존 옵션들을 초기화
+		
+		for (let i = 1; i <= remainDays; i++) {
+			// append()를 이용하여 새로운 옵션 태그를 생성합니다.
+			$('#vacationDays').append($('<option>', {
+				value : i, // 옵션태그의 값
+				text : i + '일' // 옵션태그의 출력부분
+			}));
+		}
+	}
+	
+	// 휴가 종료일 지정
+	// 선택한 휴가일수와 휴가 시작일에 따라 동적으로 휴가 종료일을 지정합니다.
+	function vacationEndInput() {
+		let selectedVacationDays = parseInt($('#vacationDays').val()); // 선택한 휴가일수를 정수로 반환
+		console.log('선택한 휴가일수 : ' + selectedVacationDays);
+		
+		// 날짜 정보를 다루기 위한 JavaScript의 객체인 Date 객체를 사용합니다.
+		let startDate = new Date( $('#vacationStart').val() ); // 선택한 휴가 시작일
+		let endDate = new Date(startDate) // 휴가 종료일 선언
+		// 휴가 종료일을 selectedVacationDays만큼 지정합니다.
+		// selectedVacationDays가 1일 경우 당일(시작일과 종료일이 동일)이므로 selectedVacationDays-1을 해줍니다.
+		endDate.setDate(startDate.getDate() + selectedVacationDays - 1);
+		
+		// Date 객체는 날짜와 시간 등 다양한 정보를 담고 있으므로 필요한 정보만 가져옵니다.
+		// ex) Wed Aug 09 2023 09:00:00 GMT+0900 (한국 표준시)
+		// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-09T00:00:00.000Z
+		// substr()으로 날짜 정보만 가져옵니다. ex) 2023-08-09
+		let endDateString = endDate.toISOString().substr(0, 10);
+		
+		$('#vacationEndSpan').text(endDateString);
+		$('#vacationEndInput').val(endDateString);
+		console.log('휴가 종료일 : ' + endDateString);
+	}
+	
+	// 선택한 휴가 종류의 남은 일수 출력 (AJAX)
+	function getRemainDaysByVacationName(vacationName) {
+		// 1. ajax로 선택한 휴가 종류의 남은 일수 출력
+		$.ajax({
+			url : '/getRemainDaysByVacationName',
+			type : 'post',
+			data : {vacationName : vacationName},
+			success : function(response) {
+				console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
+				$('#remainDays').text(response + '일');
+				
+				// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
+				if (vacationName == '반차') {
+					halfVactionInput(response); // 반차 input 출력
+				} else { // 연차 또는 보상일 경우
+					longVacationInput(vacationName, response); // 연차 or 보상 input 출력
+					vacationDaysSelect(response); // 연차 or 보상의 남은 휴가일수 selectbox 출력
+					
+					// 휴가 시작일 지정시 이벤트 발생
+					$('#vacationStart').change(function() {
+						vacationEndInput(); // 휴가 종료일 지정
+					});
+					
+					// 휴가 일수 변경시 이벤트 발생
+					$('#vacationDays').change(function() {
+						let vacationStart = $('#vacationStart').val();
+						if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
+							vacationEndInput(); // 휴가 종료일 지정
+						}
+					});
+				}
+			},
+			error : function(error) {
+				console.error('남은 휴가 일수 조회 실패 : ' + error);
+			}
+		});
+	}
+	
+	// 휴가 종류 기존 선택값 조회 및 셋팅 (ajax)
+	function getRemainDaysByVacationNameAndSet(vacationName, vacationStart, vacationDays, vacationTime) {
+		console.log('getRemainDaysByVacationNameAndSet() vacationName : ' + vacationName);
+		console.log('getRemainDaysByVacationNameAndSet() vacationStart : ' + vacationStart);
+		console.log('getRemainDaysByVacationNameAndSet() vacationDays : ' + vacationDays);
+		console.log('getRemainDaysByVacationNameAndSet() vacationTime : ' + vacationTime);
+		
+		// 1. ajax로 선택한 휴가 종류의 남은 일수 출력
+		$.ajax({
+			url : '/getRemainDaysByVacationName',
+			type : 'post',
+			data : {vacationName : vacationName},
+			success : function(response) {
+				console.log('남은 휴가 일수 조회 성공 : ' + response + '개');
+				$('#remainDays').text(response + '일');
+				
+				// 2. 휴가 종류에 따라 input 태그를 출력할 메서드 호출
+				if (vacationName == '반차') {
+					halfVactionInput(response); // 반차 input 출력
+					
+					// 기존값 주입
+					if (vacationTime == '오전반차') {
+						$('#amHalfDay').prop("checked", true);
+					} else if (vacationTime == '오후반차') {
+						$('#pmHalfDay').prop("checked", true);
+					}
+					
+					if (vacationStart != '0000-00-00 00:00:00') {
+						$('#vacationStart').val(vacationStart.substr(0, 10));
+					}
+				} else { // 연차 또는 보상일 경우
+					longVacationInput(vacationName, response); // 연차 or 보상 input 출력
+					vacationDaysSelect(response); // 연차 or 보상의 남은 휴가일수 selectbox 출력
+					
+					// 기존값 주입
+					if (vacationStart != '0000-00-00 00:00:00') {
+						$('#vacationStart').val(vacationStart.substr(0, 10));
+						$('#vacationDays').val(vacationDays);
+						vacationEndInput();
+					}
+					
+					// 휴가 시작일 지정시 이벤트 발생
+					$('#vacationStart').change(function() {
+						vacationEndInput(); // 휴가 종료일 지정
+					});
+					
+					// 휴가 일수 변경시 이벤트 발생
+					$('#vacationDays').change(function() {
+						let vacationStart = $('#vacationStart').val();
+						if (vacationStart != '') { // 휴가 시작일이 지정되어있다면
+							vacationEndInput(); // 휴가 종료일 지정
+						}
+					});
+				}
+			},
+			error : function(error) {
+				console.error('남은 휴가 일수 조회 실패 : ' + error);
+			}
+		});
+	}

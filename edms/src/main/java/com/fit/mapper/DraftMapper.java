@@ -78,4 +78,6 @@ public interface DraftMapper {
     int insertDocumentFile(int approvalNo, List<DocumentFile> documentFileList); // 문서 파일 추가
     
     int updateVacationDraft(VacationDraft vacationDraft); // 휴가신청서 수정
+    
+    List<String> selectSalesDateList(String today, String previousMonth, String previousMonthBefore); // 해당 날짜의 기준년월 데이터가 존재하는지 조회
 }

@@ -19,10 +19,11 @@ import com.fit.CC;
 import com.fit.service.DraftService;
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
-import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
+import com.fit.vo.SalesDraftContent;
+import com.fit.vo.SalesDraftDto;
 import com.fit.vo.VacationDraft;
 import com.fit.websocket.AlarmService;
 import com.google.gson.Gson;
@@ -158,6 +159,37 @@ public class DraftController {
 		model.addAttribute("day", day);
 		
 		return "/draft/salesDraft";
+	}
+	
+	// 매출보고서 작성 액션
+	@PostMapping("/draft/salesDraft")
+	public String addSalesDraft(@ModelAttribute Approval approvalFormData,
+								@ModelAttribute SalesDraftDto salesDraftDtoFormData, // 해당 DTO에 파일 리스트가 포함됩니다.
+								@RequestParam(required = false) int[] recipients, // 해당 DTO에 내역 리스트가 포함됩니다.
+								@RequestParam boolean isSaveDraft) {
+		
+		// @ModelAttribute -> form 입력값을 가져올 때 vo 타입과 자동으로 매핑하여 vo 타입 객체로 가져올 수 있습니다.
+		// 디버깅..
+		log.debug(CC.HE + "DraftController.addSalesDraft() approvalFormData : " + approvalFormData + CC.RESET);
+		/*
+ 			Approval(approvalNo=0, empNo=1000000, docTitle=휴가 신청합니다 테스트중, firstApproval=1000000,
+ 				mediateApproval=1111112, finalApproval=2008001, approvalDate=null, approvalReason=null,
+ 				approvalState=null, documentCategory=null, approvalField=null, createdate=null)
+		*/
+		log.debug(CC.HE + "DraftController.addSalesDraft() SalesDraftDto : " + salesDraftDtoFormData + CC.RESET);
+		/*
+			VacationDraft(documentNo=0, approvalNo=0, empNo=1000000, docTitle=휴가 신청합니다 테스트중,
+				docContent=테스트중입니다, vacationName=연차, vacationDays=6.0, vacationStart=2023-08-24,
+				vacationEnd=2023-08-29, phoneNumber=010-1234-5678, createdate=null, updatedate=null)
+		*/
+		log.debug(CC.HE + "DraftController.addSalesDraft() recipients : " + recipients + CC.RESET); // 수신참조자 정수 배열
+		for (int i = 0; i < recipients.length; i++) {
+		    log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
+		    // recipients[0] : 2016001, recipients[1] : 2016002, recipients[2] : 2016003
+		}
+		log.debug(CC.HE + "DraftController.addSalesDraft() isSaveDraft : " + isSaveDraft + CC.RESET); // 임시저장 유무
+		
+		return "";
 	}
 	
 	// 매출보고서 수정 폼
