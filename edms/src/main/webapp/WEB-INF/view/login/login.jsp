@@ -55,7 +55,7 @@
 <div class="auth-wrapper d-flex no-block justify-content-center align-items-center position-relative" 
 	style="background:url(../assets/images/big/auth-bg.jpg) no-repeat center center;">
 <div class="auth-box row">
-	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(../assets/images/big/3.jpg);"> </div>
+	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(../assets/images/big/mainLogin-1.jpg);"> </div>
 	<div class="col-lg-5 col-md-7 bg-white">
 		<div class="p-3">
 			<div class="text-center">
@@ -81,7 +81,8 @@
 						</div>
 						<div class="col-lg-12 text-center">
 							<div align="left">
-								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장				
+								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장
+								<br>비밀번호 분실시 관리자에게 문의			
 							</div>
 						    <button type="submit" class="btn w-100 btn-dark">로그인</button>
 						</div>

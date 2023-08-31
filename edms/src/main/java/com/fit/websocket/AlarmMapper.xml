@@ -22,7 +22,7 @@
 	FROM
 		alarm
 	WHERE
-		#{empNo} AND alarm_check='N';	
+		emp_no = #{empNo} AND alarm_check = 'N';	
 </select>
 
 <!-- 알림 확인 -->

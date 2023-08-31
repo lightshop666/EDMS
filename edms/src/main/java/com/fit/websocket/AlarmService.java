@@ -14,16 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AlarmService {
 	@Autowired
-    private final AlarmMapper alarmMapper;
+    private  AlarmMapper alarmMapper;
 	@Autowired
-    private final SimpMessagingTemplate messagingTemplate;
+    private  SimpMessagingTemplate messagingTemplate;
    
-    public AlarmService(AlarmMapper alarmMapper, SimpMessagingTemplate messagingTemplate) {
-        this.alarmMapper = alarmMapper;
-        this.messagingTemplate = messagingTemplate;
-    }
 
-    //유저에게 알림을 보내주는 서비스 
+    //알림 DB 저장 + 메시지 발송  
 	//사용자ID, 알림 내용 enum '기안알림','일정알림','공지알림', 구독 주제 (/topic/draftAlarm)
 	public void sendAlarmToUser(int empNo,String alarmContent, String prefixContent) {
 	    // 알림 정보를 생성
