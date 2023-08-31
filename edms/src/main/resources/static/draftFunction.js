@@ -280,12 +280,12 @@
 	function updateSalesRate() {
 		let row = $(this).closest('tr'); // 현재 이벤트가 발생한 요소, 즉 입력한 'input'요소의 가장 가까운 'tr' 요소를 선택합니다.
 		// find()로 해당 요소의 currentSalse 입력값과 targetSales 입력값을 찾아옵니다.
-		let currentSales = row.find('input[name="currentSalse[]"]').val();
-		let targetSales = row.find('input[name="targetSales[]"]').val();
+		let currentSales = row.find('input[name="currentSalse"]').val();
+		let targetSales = row.find('input[name="targetSales"]').val();
 		// 목표달성률을 계산
 		let targetRate = (currentSales / targetSales);
 		// 계산된 목표달성률을 해당 요소의 targetRate에 주입합니다.
-		row.find('input[name="targetRate[]"]').val(targetRate);
+		row.find('input[name="targetRate"]').val(targetRate);
 		// 목표달성률을 백분율(%)로 환산하여 출력 // toFixed()로 소숫점 아래 2자리로 자를 수 있습니다.
 		let rate = (targetRate * 100).toFixed(2) + '%';
 		row.find('.rate').text(rate);
@@ -304,9 +304,9 @@
 						<option value="포인트조명">포인트조명</option>
 					</select>
 				</td>
-				<td><input type="number" name="targetSales[]" required></td>
-				<td><input type="number" name="currentSalse[]" required></td>
-				<td><span class="rate"></span><input type="hidden" name="targetRate[]"></td>
+				<td><input type="number" name="targetSales" required></td>
+				<td><input type="number" name="currentSalse" required></td>
+				<td><span class="rate"></span><input type="hidden" name="targetRate"></td>
 				<td><button type="button" class="removeDetailBtn">-</button></td>
 			</tr>
 		`;

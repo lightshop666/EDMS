@@ -17,7 +17,4 @@ public class SalesDraftDto {
 	
 	// 파일첨부 DTO
 	private List<MultipartFile> multipartFile;
-	
-	// 내역 DTO
-	List<SalesDraftContent> salesDraftContentList;
 }

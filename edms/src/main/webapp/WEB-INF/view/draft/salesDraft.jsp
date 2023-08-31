@@ -96,7 +96,7 @@
 			
 			// 매출액과 목표액 input에 값이 입력될 때 이벤트 발생
 			$(document).on('input',
-					'#detailsTable input[name="currentSalse[]"], #detailsTable input[name="targetSales[]"]',
+					'#detailsTable input[name="currentSalse"], #detailsTable input[name="targetSales"]',
 					updateSalesRate); // 공통 함수 호출
 			
 			// 모달창에서 중간승인자 저장 버튼 클릭시
@@ -315,14 +315,14 @@
 											따라서 해당 속성이 있는 input태그는 숫자만 입력이 가능하며, 숫자 이외의 값이 입력되더라도 ''로 대체하게 됩니다.				
 										-->
 										<td>
-											<input type="number" name="targetSales[]" required>
+											<input type="number" name="targetSales" required>
 										</td>
 										<td>
-											<input type="number" name="currentSalse[]" required>
+											<input type="number" name="currentSalse" required>
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate[]">
+											<input type="hidden" name="targetRate">
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>

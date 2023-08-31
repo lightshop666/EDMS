@@ -1,6 +1,7 @@
 package com.fit.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -164,32 +165,58 @@ public class DraftController {
 	// 매출보고서 작성 액션
 	@PostMapping("/draft/salesDraft")
 	public String addSalesDraft(@ModelAttribute Approval approvalFormData,
-								@ModelAttribute SalesDraftDto salesDraftDtoFormData, // 해당 DTO에 파일 리스트가 포함됩니다.
-								@RequestParam(required = false) int[] recipients, // 해당 DTO에 내역 리스트가 포함됩니다.
-								@RequestParam boolean isSaveDraft) {
-		
-		// @ModelAttribute -> form 입력값을 가져올 때 vo 타입과 자동으로 매핑하여 vo 타입 객체로 가져올 수 있습니다.
-		// 디버깅..
-		log.debug(CC.HE + "DraftController.addSalesDraft() approvalFormData : " + approvalFormData + CC.RESET);
-		/*
- 			Approval(approvalNo=0, empNo=1000000, docTitle=휴가 신청합니다 테스트중, firstApproval=1000000,
- 				mediateApproval=1111112, finalApproval=2008001, approvalDate=null, approvalReason=null,
- 				approvalState=null, documentCategory=null, approvalField=null, createdate=null)
-		*/
-		log.debug(CC.HE + "DraftController.addSalesDraft() SalesDraftDto : " + salesDraftDtoFormData + CC.RESET);
-		/*
-			VacationDraft(documentNo=0, approvalNo=0, empNo=1000000, docTitle=휴가 신청합니다 테스트중,
-				docContent=테스트중입니다, vacationName=연차, vacationDays=6.0, vacationStart=2023-08-24,
-				vacationEnd=2023-08-29, phoneNumber=010-1234-5678, createdate=null, updatedate=null)
-		*/
-		log.debug(CC.HE + "DraftController.addSalesDraft() recipients : " + recipients + CC.RESET); // 수신참조자 정수 배열
-		for (int i = 0; i < recipients.length; i++) {
-		    log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
-		    // recipients[0] : 2016001, recipients[1] : 2016002, recipients[2] : 2016003
-		}
-		log.debug(CC.HE + "DraftController.addSalesDraft() isSaveDraft : " + isSaveDraft + CC.RESET); // 임시저장 유무
-		
-		return "";
+	                            @ModelAttribute SalesDraftDto salesDraftDtoFormData, // 해당 DTO에 파일 리스트가 포함됩니다.
+	                            @RequestParam List<String> productCategory,
+	                            @RequestParam List<Double> targetSales,
+	                            @RequestParam List<Double> currentSalse,
+	                            @RequestParam List<Double> targetRate,
+	                            @RequestParam(required = false) int[] recipients,
+	                            @RequestParam boolean isSaveDraft) {
+	    
+	    // @ModelAttribute -> form 입력값을 가져올 때 vo 타입과 자동으로 매핑하여 vo 타입 객체로 가져올 수 있습니다.
+	    // 디버깅..
+	    log.debug(CC.HE + "DraftController.addSalesDraft() approvalFormData : " + approvalFormData + CC.RESET);
+	    /*
+			Approval(approvalNo=0, firstApprovalName=null, mediateApprovalName=null, finalApprovalName=null,
+				empNo=1000000, docTitle=매출 보고서 테스트, firstApproval=1000000, mediateApproval=2016001, finalApproval=2008001,
+				approvalDate=null, approvalReason=null, approvalState=null, documentCategory=null, approvalField=null, createdate=null)
+	     */
+	    log.debug(CC.HE + "DraftController.addSalesDraft() SalesDraftDto : " + salesDraftDtoFormData + CC.RESET);
+	    /*
+			SalesDraftDto(documentNo=0, approvalNo=0, deptNo=0, docTitle=매출 보고서 테스트, salesDate=2023-07-00, updatedate=null,
+				createdate=null, multipartFile=[org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
+				StandardMultipartFile@1f4605d5, org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
+				StandardMultipartFile@4987f91a, org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
+				StandardMultipartFile@508d0e74])
+	     */
+	    log.debug(CC.HE + "DraftController.addSalesDraft() recipients : " + recipients + CC.RESET); // 수신참조자 정수 배열
+	    for (int i = 0; i < recipients.length; i++) {
+	        log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
+	        // recipients[0] : 2016001, recipients[1] : 2016002, recipients[2] : 2016003
+	    }
+	    log.debug(CC.HE + "DraftController.addSalesDraft() isSaveDraft : " + isSaveDraft + CC.RESET); // 임시저장 유무
+	    
+	    // 받아온 배열을 SalesDraftContent 타입의 List로 변환
+	    List<SalesDraftContent> salesDraftContents = new ArrayList<>();
+	    for (int i = 0; i < productCategory.size(); i++) {
+	        SalesDraftContent content = new SalesDraftContent();
+	        content.setProductCategory(productCategory.get(i));
+	        content.setTargetSales(targetSales.get(i));
+	        content.setCurrentSalse(currentSalse.get(i));
+	        content.setTargetRate(targetRate.get(i));
+	        salesDraftContents.add(content);
+	    }
+	    log.debug(CC.HE + "DraftController.addSalesDraft() salesDraftContents : " + salesDraftContents + CC.RESET);
+	    
+	    // 매개값을 하나의 Map에 담습니다.
+ 		Map<String, Object> paramMap = new HashMap<>();
+ 		paramMap.put("approval", approvalFormData);
+ 		paramMap.put("salesDraftDto", salesDraftDtoFormData);
+ 		paramMap.put("recipients", recipients);
+ 		paramMap.put("salesDraftContents", salesDraftContents);
+ 		paramMap.put("isSaveDraft", isSaveDraft);
+    
+	    return "";
 	}
 	
 	// 매출보고서 수정 폼

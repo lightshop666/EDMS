@@ -19,6 +19,7 @@ import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
+import com.fit.vo.SalesDraftDto;
 import com.fit.vo.VacationDraft;
 import com.fit.vo.VacationHistory;
 
@@ -414,6 +415,26 @@ public class DraftService {
     	}
     }
     
+    // ----------- 매출보고서 --------------
+    // 매출보고서 기안하기 (+ 임시저장)
+    // 매출보고서 기안 insert 순서 // approval -> sales_draft -> document_file(선택) -> sales_draft_content -> receive_draft(선택)
+    @Transactional
+    public int addSalesDraft(Map<String, Object> paramMap) {
+    	// 1. approval 테이블
+    	Approval approval = (Approval) paramMap.get("approval"); // map에서 approval 객체 가져오기
+        boolean isSaveDraft = (boolean) paramMap.get("isSaveDraft"); // map에서 임시저장 유무 가져오기
+        approval.setDocumentCategory("매출보고서"); // 메서드 호출 전 양식 셋팅
+        int approvalKey = addApprovalAndReturnKey(approval, isSaveDraft); // 메서드 호출하여 키값 가져오기
+        
+        // 2. sales_draft 테이블
+    	SalesDraftDto salesDraftDto = (SalesDraftDto) paramMap.get("salesDraftDto");
+    	if (approvalKey != 0) {
+    		// 이어서 작업 예정..
+    	}
+        
+    	return 0;
+    }
+    
     // ----------- 휴가신청서 --------------
     // 휴가신청서 기안하기 (+ 임시저장)
     // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)
@@ -577,7 +598,7 @@ public class DraftService {
     	return row;
     }
     
-    // 휴가신청서 수정 // approvalNo 반환
+    // 휴가신청서 수정
     @Transactional
     public int modifyVacationDraft(Map<String, Object> paramMap) {
     	int row = 0;
