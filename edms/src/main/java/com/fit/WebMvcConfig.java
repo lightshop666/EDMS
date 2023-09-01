@@ -17,6 +17,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // AuthInterceptor 클래스를 새로운 인스턴스로 생성하여 인터셉터로 등록
 		registry.addInterceptor(new AuthInterceptor())
 				// 인터셉터가 적용될 URL 패턴 설정 (모든 URL에 적용)
+				.addPathPatterns("/reservation/**")
+				.addPathPatterns("/schedule/**")
+				.addPathPatterns("/utility/**")
 				.addPathPatterns("/home");
 	}
 	

@@ -76,6 +76,29 @@
 		});
 	</script>
 	
+	<!-- a태그와 button태그의 경우 세션의 권한을 비교하여 권한이 부족할 경우 동작을 멈추는 jQuery -->
+	<script>
+	$(document).ready(function() {
+		$(".delete-link, .insert-link").click(function(event) {
+			console.log("Clicked!");
+			event.preventDefault(); // 기본 링크 동작 취소
+			
+			let requiredAccessLevel = $(this).data("access-level");				// 이 링크의 엑세스 제한 레벨 가져오기
+			let userAccessLevel = <%= session.getAttribute("accessLevel") %>;	// 세션에서 사용자의 엑세스 레벨 가져오기
+			
+			if (userAccessLevel < requiredAccessLevel) {
+				alert("권한이 없는 사용자입니다."); // 팝업 메시지 띄우기
+			} else {
+	            if ($(this).hasClass('update-link') || $(this).hasClass('insert-link')) {
+	                window.location.href = $(this).attr("href"); // 권한이 있을 경우 해당 링크로 이동
+	            } else if ($(this).hasClass('delete-link')) {
+	                $(this).closest('form').submit();  // 권한이 있을 경우 폼 제출
+	            } 
+	        }
+		});
+	});
+	</script>
+	
 	<!-- 페이지네이션 버튼을 누를경우 매개변수를 컨트롤러로 POST 방식으로 보내는 폼이 활성화된다.-->
 	<!-- <script>
 	$(document).ready(function() {
@@ -272,8 +295,10 @@
                                 <div class="table-responsive">
                                 <form method="post" action="${pageContext.request.contextPath}/schedule/delete">
                                 	<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
-									<button type="button" onclick="window.location.href='${pageContext.request.contextPath}/schedule/addSchedule'"
-							        	class="btn waves-effect waves-light btn-outline-dark btn-space" id="insertBtn">일정추가</button>
+									<%-- <button type="button" onclick="window.location.href='${pageContext.request.contextPath}/schedule/addSchedule'"
+							        	class="btn waves-effect waves-light btn-outline-dark btn-space" id="insertBtn">일정추가</button> --%>
+							        <a class="btn waves-effect waves-light btn-outline-dark insert-link" data-access-level="1"
+							        	id="insertBtn" href="${pageContext.request.contextPath}/schedule/addSchedule">일정추가</a>
                                     <table id="zero_config_1" class="table border table-striped table-bordered text-nowrap">
                                         <thead>
                                             <tr>
@@ -303,9 +328,9 @@
                                     </table>
                                     <button type="button"
                                     	class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-									<!-- 관리자(권한 1~3)만 보이게끔 세팅해야 함-->
+									<!-- 관리자(권한 1~3)만 동작이 가능함 -->
 									<button type="submit"
-                                    	class="btn waves-effect waves-light btn-outline-dark" id="deleteBtn">삭제</button> <!-- 오른쪽 정렬 -->
+                                    	class="btn waves-effect waves-light btn-outline-dark delete-link" data-access-level="1" id="deleteBtn">삭제</button> <!-- 오른쪽 정렬 -->
                                 </form>
                                 </div>
                             </div>

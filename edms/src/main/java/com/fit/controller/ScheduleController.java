@@ -182,13 +182,13 @@ public class ScheduleController {
 		
 		if(row == 1) {
 			// 디버깅
-			// 일정 추가시 달력으로
+			// 일정 추가시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
 			session.setAttribute("result", "insert");
 			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
-			// 일정 추가 실패시 fail을 매개변수로 view에 전달
+			// 일정 추가 실패시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
 			session.setAttribute("result", "fail");
 			return "redirect:/schedule/scheduleList";
@@ -301,13 +301,13 @@ public class ScheduleController {
         
         if(row >= 1) {
 			// 디버깅
-			// 일정 삭제시 데이터를 보낸다
+			// 일정 삭제시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
 			session.setAttribute("result", "delete");
 			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
-			// 일정 삭제 실패시 fail을 매개변수로 view에 전달
+			// 일정 삭제 실패시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
 			session.setAttribute("result", "fail");
 			return "redirect:/schedule/scheduleList";
