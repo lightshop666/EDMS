@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.service.DraftService;
@@ -23,8 +25,8 @@ import com.fit.vo.ApprovalJoinDto;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
+import com.fit.vo.SalesDraft;
 import com.fit.vo.SalesDraftContent;
-import com.fit.vo.SalesDraftDto;
 import com.fit.vo.VacationDraft;
 import com.fit.websocket.AlarmService;
 import com.google.gson.Gson;
@@ -164,59 +166,64 @@ public class DraftController {
 	
 	// 매출보고서 작성 액션
 	@PostMapping("/draft/salesDraft")
-	public String addSalesDraft(@ModelAttribute Approval approvalFormData,
-	                            @ModelAttribute SalesDraftDto salesDraftDtoFormData, // 해당 DTO에 파일 리스트가 포함됩니다.
-	                            @RequestParam List<String> productCategory,
-	                            @RequestParam List<Double> targetSales,
-	                            @RequestParam List<Double> currentSalse,
-	                            @RequestParam List<Double> targetRate,
-	                            @RequestParam(required = false) int[] recipients,
-	                            @RequestParam boolean isSaveDraft) {
-	    
-	    // @ModelAttribute -> form 입력값을 가져올 때 vo 타입과 자동으로 매핑하여 vo 타입 객체로 가져올 수 있습니다.
-	    // 디버깅..
-	    log.debug(CC.HE + "DraftController.addSalesDraft() approvalFormData : " + approvalFormData + CC.RESET);
-	    /*
-			Approval(approvalNo=0, firstApprovalName=null, mediateApprovalName=null, finalApprovalName=null,
-				empNo=1000000, docTitle=매출 보고서 테스트, firstApproval=1000000, mediateApproval=2016001, finalApproval=2008001,
-				approvalDate=null, approvalReason=null, approvalState=null, documentCategory=null, approvalField=null, createdate=null)
-	     */
-	    log.debug(CC.HE + "DraftController.addSalesDraft() SalesDraftDto : " + salesDraftDtoFormData + CC.RESET);
-	    /*
-			SalesDraftDto(documentNo=0, approvalNo=0, deptNo=0, docTitle=매출 보고서 테스트, salesDate=2023-07-00, updatedate=null,
-				createdate=null, multipartFile=[org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
-				StandardMultipartFile@1f4605d5, org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
-				StandardMultipartFile@4987f91a, org.springframework.web.multipart.support.StandardMultipartHttpServletRequest$
-				StandardMultipartFile@508d0e74])
-	     */
+	public String addSalesDraft(@ModelAttribute Approval approval,
+	                            @ModelAttribute SalesDraft salesDraft,
+	                            @RequestParam List<MultipartFile> multipartFile, // DocumentFileList
+	                            @RequestParam List<String> productCategory, // SalesDraftContentList
+	                            @RequestParam List<Double> targetSales, // SalesDraftContentList
+	                            @RequestParam List<Double> currentSales, // SalesDraftContentList
+	                            @RequestParam List<Double> targetRate, // SalesDraftContentList
+	                            @RequestParam(required = false) int[] recipients, // receiveDraftList
+	                            @RequestParam boolean isSaveDraft,
+	                            HttpServletRequest request) { // request api를 직접호출 하여 path값을 구하기 위해 매개값으로 request 객체를 받는다
+	    log.debug(CC.HE + "DraftController.addSalesDraft() approval : " + approval + CC.RESET);
+	    log.debug(CC.HE + "DraftController.addSalesDraft() multipartFile : " + multipartFile + CC.RESET);
+	    log.debug(CC.HE + "DraftController.addSalesDraft() salesDraft : " + salesDraft + CC.RESET);
 	    log.debug(CC.HE + "DraftController.addSalesDraft() recipients : " + recipients + CC.RESET); // 수신참조자 정수 배열
 	    for (int i = 0; i < recipients.length; i++) {
 	        log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
-	        // recipients[0] : 2016001, recipients[1] : 2016002, recipients[2] : 2016003
 	    }
 	    log.debug(CC.HE + "DraftController.addSalesDraft() isSaveDraft : " + isSaveDraft + CC.RESET); // 임시저장 유무
 	    
 	    // 받아온 배열을 SalesDraftContent 타입의 List로 변환
-	    List<SalesDraftContent> salesDraftContents = new ArrayList<>();
-	    for (int i = 0; i < productCategory.size(); i++) {
+	    List<SalesDraftContent> salesDraftContent = new ArrayList<>();
+    	for (int i = 0; i < productCategory.size(); i++) {
 	        SalesDraftContent content = new SalesDraftContent();
 	        content.setProductCategory(productCategory.get(i));
 	        content.setTargetSales(targetSales.get(i));
-	        content.setCurrentSalse(currentSalse.get(i));
+	        content.setCurrentSales(currentSales.get(i));
 	        content.setTargetRate(targetRate.get(i));
-	        salesDraftContents.add(content);
+	        salesDraftContent.add(content);
 	    }
-	    log.debug(CC.HE + "DraftController.addSalesDraft() salesDraftContents : " + salesDraftContents + CC.RESET);
+	    log.debug(CC.HE + "DraftController.addSalesDraft() salesDraftContent : " + salesDraftContent + CC.RESET);
+	    
+	    // 파일업로드를 위한 path 구하기
+	    String path = request.getServletContext().getRealPath("/file/document/");
+	    log.debug(CC.HE + "DraftController.addSalesDraft() path : " + path + CC.RESET);
 	    
 	    // 매개값을 하나의 Map에 담습니다.
  		Map<String, Object> paramMap = new HashMap<>();
- 		paramMap.put("approval", approvalFormData);
- 		paramMap.put("salesDraftDto", salesDraftDtoFormData);
+ 		paramMap.put("approval", approval);
+ 		paramMap.put("multipartFile", multipartFile);
+ 		paramMap.put("salesDraft", salesDraft);
  		paramMap.put("recipients", recipients);
- 		paramMap.put("salesDraftContents", salesDraftContents);
+ 		paramMap.put("salesDraftContent", salesDraftContent);
  		paramMap.put("isSaveDraft", isSaveDraft);
+ 		paramMap.put("path", path);
+ 		
+ 		int approvalKey = draftService.addSalesDraft(paramMap);
     
-	    return "";
+ 		// 성공 유무에 따라 분기
+		if (approvalKey != 0 && !isSaveDraft) { // 성공시 상세 페이지로.. approvalKey 값 필요, result=success
+			log.debug(CC.HE + "DraftController.addSalesDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
+			return "redirect:/draft/salesDraftOne?result=success&approvalNo=" + approvalKey;
+		} else if (approvalKey != 0 && isSaveDraft) { // 성공시 임시저장함으로.., result=success
+			log.debug(CC.HE + "DraftController.addSalesDraft() 임시저장 성공 approvalKey : " + approvalKey + CC.RESET);
+			return "redirect:/draft/tempDraft?result=success";
+		} else { // 실패시 작성 페이지로.. result=fail
+			log.debug(CC.HE + "DraftController.addSalesDraft() 기안 실패 approvalKey : " + approvalKey + CC.RESET);
+			return "redirect:/draft/salesDraft?result=fail";
+		}
 	}
 	
 	// 매출보고서 수정 폼
@@ -227,7 +234,9 @@ public class DraftController {
 	
 	// 매출보고서 상세
 	@GetMapping("/draft/salesDraftOne")
-	public String salesDraftOne() {
+	public String salesDraftOne(@RequestParam(required = false) Integer approvalNo, Model model) {
+		model.addAttribute("approvalNo", approvalNo);
+		
 		return "/draft/salesDraftOne";
 	}
 	

@@ -260,7 +260,7 @@
 						<tr>
 							<td> 
 								<c:if test="${sign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-									<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+									<img src="${sign.memberPath}${sign.memberSaveFileName}">
 								</c:if>
 								<input type="hidden" name="firstApproval" value="${empNo}"> <!-- 기안자 정보 hidden 주입 -->
 							</td>

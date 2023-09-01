@@ -201,17 +201,17 @@
 					<tr>
 						<td>
 							<c:if test="${m.firstSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-								<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}.${m.firstSign.memberFiletype}">
+								<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}">
 							</c:if>
 						</td>
 						<td>
 							<c:if test="${m.mediateSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-								<img src="${m.mediateSign.memberPath}${m.mediateSign.memberSaveFileName}.${m.mediateSign.memberFiletype}">
+								<img src="${m.mediateSign.memberPath}${m.mediateSign.memberSaveFileName}">
 							</c:if>
 						</td>
 						<td>
 							<c:if test="${m.finalSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-								<img src="${m.finalSign.memberPath}${m.finalSign.memberSaveFileName}.${m.finalSign.memberFiletype}">
+								<img src="${m.finalSign.memberPath}${m.finalSign.memberSaveFileName}">
 							</c:if>
 						</td>
 					</tr>

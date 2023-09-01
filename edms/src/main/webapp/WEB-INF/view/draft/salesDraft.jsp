@@ -52,11 +52,72 @@
 		// 사원 목록 배열로 받는 변수 선언 (JSON)
 		let employeeListJson = ${employeeListJson};
 		
+		// 목표액, 당월매출액, 목표달성률이 빈값이면 0으로 입력합니다.
+		function handleEmptyFields() {
+			$('#detailsTable tr:not(:first)').each(function () {
+				let $row = $(this);
+				let targetSales = $row.find('.targetSales').val();
+				let currentSales = $row.find('.currentSales').val();
+				let targetRate = $row.find('.targetRate').val();
+
+				// 값이 비어있으면 0으로 설정
+				if (!targetSales) {
+					$row.find('.targetSales').val(0);
+				}
+				if (!currentSales) {
+					$row.find('.currentSales').val(0);
+				}
+				if (!targetRate) {
+					$row.find('.targetRate').val(0);
+				}
+			});	
+		}
+		
 		// 유효성 검사 함수
 		function validateInputs() {
 			let isValid = true;
 			
-			// 수정예정..
+			// 각 input 입력값 가져오기 // 수신참조와 파일은 필수값이 아니므로 제외합니다.
+			let mediateHidden = $('#mediateHidden').val();
+			let finalHidden = $('#finalHidden').val();
+			let salesDate = $('#salesDateSelect').val();
+			let docTitle = $('#docTitle').val();
+			handleEmptyFields(); // 금액필드 빈값 0으로 설정
+			
+			if (mediateHidden == '') {
+				alert('중간승인자를 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (finalHidden == '') {
+				alert('최종승인자를 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (salesDate == undefined) {
+				alert('기준년월을 선택해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			if (docTitle == '') {
+				alert('제목을 작성해주세요.');
+				isValid = false;
+				return isValid;
+			}
+			$('.targetSales').each(function() {
+				if ($(this).val() == 0) {
+					alert('목표액을 작성해주세요.');
+					isValid = false;
+					return isValid;
+				}
+			});
+			$('.currentSales').each(function() {
+				if ($(this).val() == 0) {
+					alert('매출액을 작성해주세요.');
+					isValid = false;
+					return isValid;
+				}
+			});
 			
 			return isValid;
 		}
@@ -96,7 +157,7 @@
 			
 			// 매출액과 목표액 input에 값이 입력될 때 이벤트 발생
 			$(document).on('input',
-					'#detailsTable input[name="currentSalse"], #detailsTable input[name="targetSales"]',
+					'#detailsTable input[name="currentSales"], #detailsTable input[name="targetSales"]',
 					updateSalesRate); // 공통 함수 호출
 			
 			// 모달창에서 중간승인자 저장 버튼 클릭시
@@ -116,7 +177,13 @@
 			
 			// 임시저장 버튼 클릭시
 			$('#saveBtn').click(function() {
-				setDraftSave(); // 공통 함수 호출
+				let salesDate = $('#salesDateSelect').val();
+				if (salesDate == undefined) {
+					alert('기준년월을 선택해주세요.');
+				} else {
+					handleEmptyFields(); // 금액필드 빈값 0으로 설정
+					setDraftSave(); // 공통 함수 호출
+				}
 			});
 			
 			// 저장 버튼 클릭시
@@ -215,7 +282,7 @@
 				<h1 style="text-align: center;">매출보고서</h1>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
 				<form action="/draft/salesDraft" method="post" id="draftForm" enctype="multipart/form-data">
-					<input type="hidden" name="empNo" value="${empNo}"> <!-- deptNo로 바꿔야함 -->
+				<input type="hidden" name="empNo" value="${empNo}">
 					<table class="table-bordered">
 						<tr>
 							<th rowspan="3" colspan="2">매출보고서</th>
@@ -227,7 +294,7 @@
 						<tr>
 							<td> 
 								<c:if test="${sign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-									<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+									<img src="${sign.memberPath}${sign.memberSaveFileName}">
 								</c:if>
 								<input type="hidden" name="firstApproval" value="${empNo}"> <!-- 기안자 정보 hidden 주입 -->
 							</td>
@@ -274,15 +341,17 @@
 							<td>${deptName}</td>
 							<th>기준년월</th>
 							<td>
-								<select name="salesDate" id="salesDateSelect">
-									<!-- 현재 날짜를 기준으로 전전월, 전월, 당월 옵션을 동적으로 생성합니다. -->
-								</select>
+								<div id="salesDateArea">
+									<select name="salesDate" id="salesDateSelect">
+										<!-- 현재 날짜를 기준으로 전전월, 전월, 당월 옵션을 동적으로 생성합니다. -->
+									</select>
+								</div>
 							</td>
 						</tr>
 						<tr>
 							<th>제목</th>
 							<td colspan="5">
-								<input type="text" name="docTitle" placeholder="ex) 매출 보고서 - YYYY년 MM월" id="docTitle">
+								<input type="text" name="docTitle" placeholder="ex) 매출 보고서" id="docTitle">
 							</td>
 						</tr>
 						<tr>
@@ -299,7 +368,7 @@
 									<!-- 내역 항목 -->
 									<tr>
 										<td>
-											<select name="productCategory" required>
+											<select name="productCategory">
 												<option value="스탠드">스탠드</option>
 												<option value="무드등">무드등</option>
 												<option value="실내조명">실내조명</option>
@@ -307,22 +376,87 @@
 												<option value="포인트조명">포인트조명</option>
 											</select>
 										</td>
-										<!-- 
-											pattern="\d*" => \d*를 이용하여 숫자만 입력받을 수 있습니다.
-											oninput => 입력필드의 내용이 변경될 때 해당 이벤트가 발생합니다.
-											this.value => 입력필드의 현재 입력값을 나타냅니다.
-											replace(a,b) => a로 지정된 패턴을 입력값에서 찾아 b로 대체합니다. 현재 코드에서는 '' 빈 문자열로 대체합니다.
-											따라서 해당 속성이 있는 input태그는 숫자만 입력이 가능하며, 숫자 이외의 값이 입력되더라도 ''로 대체하게 됩니다.				
-										-->
 										<td>
-											<input type="number" name="targetSales" required>
+											<input type="number" name="targetSales" class="targetSales">
 										</td>
 										<td>
-											<input type="number" name="currentSalse" required>
+											<input type="number" name="currentSales" class="currentSales">
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate">
+											<input type="hidden" name="targetRate" class="targetRate">
+										</td>
+										<td>
+											<button type="button" class="removeDetailBtn">-</button>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<select name="productCategory">
+												<option value="스탠드">스탠드</option>
+												<option value="무드등">무드등</option>
+												<option value="실내조명">실내조명</option>
+												<option value="실외조명">실외조명</option>
+												<option value="포인트조명">포인트조명</option>
+											</select>
+										</td>
+										<td>
+											<input type="number" name="targetSales" class="targetSales">
+										</td>
+										<td>
+											<input type="number" name="currentSales" class="currentSales">
+										</td>
+										<td>
+											<span class="rate"></span>
+											<input type="hidden" name="targetRate" class="targetRate">
+										</td>
+										<td>
+											<button type="button" class="removeDetailBtn">-</button>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<select name="productCategory">
+												<option value="스탠드">스탠드</option>
+												<option value="무드등">무드등</option>
+												<option value="실내조명">실내조명</option>
+												<option value="실외조명">실외조명</option>
+												<option value="포인트조명">포인트조명</option>
+											</select>
+										</td>
+										<td>
+											<input type="number" name="targetSales" class="targetSales">
+										</td>
+										<td>
+											<input type="number" name="currentSales" class="currentSales">
+										</td>
+										<td>
+											<span class="rate"></span>
+											<input type="hidden" name="targetRate" class="targetRate">
+										</td>
+										<td>
+											<button type="button" class="removeDetailBtn">-</button>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<select name="productCategory">
+												<option value="스탠드">스탠드</option>
+												<option value="무드등">무드등</option>
+												<option value="실내조명">실내조명</option>
+												<option value="실외조명">실외조명</option>
+												<option value="포인트조명">포인트조명</option>
+											</select>
+										</td>
+										<td>
+											<input type="number" name="targetSales" class="targetSales">
+										</td>
+										<td>
+											<input type="number" name="currentSales" class="currentSales">
+										</td>
+										<td>
+											<span class="rate"></span>
+											<input type="hidden" name="targetRate" class="targetRate">
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>
@@ -334,7 +468,7 @@
 						<tr>
 							<th>파일첨부</th>
 							<td colspan="5">
-								<input type="file" name="multipartFile" multiple> <!-- 파일 첨부 예정.. -->
+								<input type="file" name="multipartFile" multiple> <!-- 파일 첨부 -->
 							</td>
 						</tr>
 						<tr>

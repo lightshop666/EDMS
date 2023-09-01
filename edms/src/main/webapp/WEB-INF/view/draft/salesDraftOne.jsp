@@ -7,5 +7,6 @@
 </head>
 <body>
 	<h1>매출보고서 상세</h1>
+	${approvalNo}번 문서
 </body>
 </html>

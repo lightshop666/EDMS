@@ -1,12 +1,16 @@
 package com.fit.service;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.mapper.DraftMapper;
@@ -19,7 +23,8 @@ import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
-import com.fit.vo.SalesDraftDto;
+import com.fit.vo.SalesDraft;
+import com.fit.vo.SalesDraftContent;
 import com.fit.vo.VacationDraft;
 import com.fit.vo.VacationHistory;
 
@@ -404,20 +409,62 @@ public class DraftService {
     	}
   
     	// 3. document_file
-    	List<DocumentFile> documentFileList = (List<DocumentFile>) paramMap.get("documentFileList"); // map에서 객체 가져오기
+    	List<MultipartFile> multipartFile = (List<MultipartFile>) paramMap.get("multipartFile"); // map에서 객체 가져오기
+    	String path = (String) paramMap.get("path");
     	// delete mapper 호출
     	draftMapper.deleteDocumentFile(approvalNo);
     	log.debug(CC.HE + "DraftService.updateDraftOne() document_file delete 실행 "+ CC.RESET);
-    	if (documentFileList != null) { // 빈 배열이 아니면 insert
-    		// insert mapper 호출
-    		int documentFileListRow = draftMapper.insertDocumentFile(approvalNo, documentFileList);
-    		log.debug(CC.HE + "DraftService.updateDraftOne() document_file insert 실행 row : " + documentFileListRow + CC.RESET);
+    	if (!multipartFile.isEmpty()) { // 빈 리스트가 아니면 insert
+    		// insert 메서드 호출
+    		int documentFileRow = addDocumentFile(multipartFile, path, approvalNo);
+    		log.debug(CC.HE + "DraftService.updateDraftOne() document_file insert 실행 row : " + documentFileRow + CC.RESET);
     	}
+    }
+    
+    // document_file insert 메서드
+    // 파일을 실제 저장소에 업로드한 후, DB에도 insert 하는 메서드입니다.
+    @Transactional
+    public int addDocumentFile(List<MultipartFile> multipartFile, String path, int approvalNo) {
+    	int row = 0;
+    	for (MultipartFile mf : multipartFile) {
+    		// DocumentFile vo에 값 셋팅
+    		DocumentFile df = new DocumentFile();
+    		df.setApprovalNo(approvalNo); // 가져온 부모키값
+    		df.setDocOriFilename(mf.getOriginalFilename()); // 파일 원본 이름
+    		df.setDocFiletype(mf.getContentType()); // 파일 타입
+    		df.setDocPath("/file/document/"); // 저장 폴더 위치
+    		// 저장할 파일의 이름 구하기 (+ 확장자명을 포함)
+    		// 1) 파일의 확장자
+    		// lastIndexOf() 메서드를 이용하여 "."을 기준으로 확장자명을 잘라낸다
+			String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf("."));
+			// 2) 파일의 이름
+			// 중복되지 않는 유일한 식별자를 랜덤으로 생성하기 위해 UUID 클래스의 randomUUID() 메서드 사용
+			// UUID로 식별자 생성시 중간에 "-"가 들어가기 때문에 replace() 메서드를 이용하여 없애준다
+			String newFilename = UUID.randomUUID().toString().replace("-", "") + ext;
+			df.setDocSaveFilename(newFilename);
+			
+			// 최종적으로 저장
+			// 1. 데이터 테이블에 저장 (mapper 호출)
+			row = row + draftMapper.insertDocumentFile(df);
+			// 2. 실제 저장소에 저장
+			File f = new File(path + df.getDocSaveFilename()); // path에 저장된 파일 이름으로 빈 파일을 생성
+			// transferTo() 메서드를 이용하여 생성한 빈 파일에 첨부된 파일의 스트림을 주입한다
+			try {
+				mf.transferTo(f);
+			} catch (IllegalStateException | IOException e) {
+				e.printStackTrace();
+				
+				// 트랜잭션이 정상적으로 작동할 수 있도록 try..catch를 강요하지 않는 예외 발생이 필요하다
+				throw new RuntimeException();
+			}
+    	}
+    	
+    	return row;
     }
     
     // ----------- 매출보고서 --------------
     // 매출보고서 기안하기 (+ 임시저장)
-    // 매출보고서 기안 insert 순서 // approval -> sales_draft -> document_file(선택) -> sales_draft_content -> receive_draft(선택)
+    // 매출보고서 기안 insert 순서 // approval -> sales_draft -> sales_draft_content -> receive_draft(선택) -> document_file(선택)
     @Transactional
     public int addSalesDraft(Map<String, Object> paramMap) {
     	// 1. approval 테이블
@@ -426,13 +473,43 @@ public class DraftService {
         approval.setDocumentCategory("매출보고서"); // 메서드 호출 전 양식 셋팅
         int approvalKey = addApprovalAndReturnKey(approval, isSaveDraft); // 메서드 호출하여 키값 가져오기
         
-        // 2. sales_draft 테이블
-    	SalesDraftDto salesDraftDto = (SalesDraftDto) paramMap.get("salesDraftDto");
+        // 2. sales_draft, sales_draft_content 테이블
+        SalesDraft salesDraft = (SalesDraft) paramMap.get("salesDraft");
+        List<SalesDraftContent> salesDraftContent = (List<SalesDraftContent>) paramMap.get("salesDraftContent");
+        int row = 0;
     	if (approvalKey != 0) {
-    		// 이어서 작업 예정..
+    		// 2-1. sales_draft
+    		salesDraft.setApprovalNo(approvalKey); // 1번에서 반환된 부모키값으로 셋팅
+    		row = draftMapper.insertSalesDraft(salesDraft); // mapper 호출
+            log.debug(CC.HE + "DraftService.insertSalesDraft() row : " + row + CC.RESET);
+            int documentNo = salesDraft.getDocumentNo(); // 키값 가져오기
+            log.debug(CC.HE + "DraftService.insertSalesDraft() documentNo : " + documentNo + CC.RESET);
+            // 2-2. sales_draft_content
+            if (salesDraftContent.size() != 0) {
+            	row = draftMapper.insertSalesDraftContent(documentNo, salesDraftContent);
+                log.debug(CC.HE + "DraftService.insertSalesDraftContent() row : " + row + CC.RESET);
+            }
     	}
+    	
+    	// 3. receive_draft 테이블
+        int[] recipients = (int[]) paramMap.get("recipients");
+        if (recipients.length != 0) { // 수신참조자를 선택했을 경우
+           if (row != 0) { // 이전 과정이 정상적으로 수행되었을 경우
+              row = draftMapper.insertReceiveDrafts(approvalKey, recipients); // mapper 호출
+              log.debug(CC.HE + "DraftService.insertReceiveDrafts() row : " + row + CC.RESET);
+           }
+        }
         
-    	return 0;
+        // 4. document_file 테이블
+        List<MultipartFile> multipartFile = (List<MultipartFile>) paramMap.get("multipartFile");
+        String path = (String) paramMap.get("path");
+        if (multipartFile.isEmpty()) { // 파일을 첨부했을 경우
+        	if (row != 0) { // 이전 과정이 정상적으로 수행되었을 경우
+        		row = addDocumentFile(multipartFile, path, approvalKey);
+        	}
+        }
+        
+    	return approvalKey;
     }
     
     // ----------- 휴가신청서 --------------
