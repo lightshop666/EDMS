@@ -200,33 +200,61 @@
 			</foreach>
    </insert>
    
+   <!-- sales_draft select by approvalNo -->
+   <select id="selectSalesDraftOne" parameterType="int" resultType="com.fit.vo.SalesDraft">
+		SELECT
+			document_no documentNo,
+			approval_no approvalNo,
+			doc_title docTitle,
+			sales_date salesDate,
+			updatedate,
+			createdate
+		FROM sales_draft
+		WHERE approval_no = #{approvalNo}
+   </select>
+   
+   <!-- sales_draft_content select by documentNo -->
+   <select id="selectSalesDraftContentList" parameterType="int" resultType="com.fit.vo.SalesDraftContent">
+   		SELECT
+   			content_no contentNo,
+			document_no documentNo,
+			product_category productCategory,
+			target_sales targetSales,
+			current_sales currentSales,
+			target_rate targetRate,
+			updatedate,
+			createdate
+		FROM sales_draft_content
+		WHERE document_no = #{documentNo}
+   </select>
+   
    <!-- vacation_draft insert -->
    <insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
-      INSERT INTO vacation_draft (
-         approval_no,
-         emp_no,
-         doc_title,
-         doc_content,
-         vacation_name,
-         vacation_days,
-         vacation_start,
-         vacation_end,
-         phone_number,
-         createdate,
-         updatedate
-      ) VALUES (
-         #{approvalNo},
-         #{empNo},
-         #{docTitle},
-         #{docContent},
-         #{vacationName},
-         #{vacationDays},
-         #{vacationStart},
-         #{vacationEnd},
-         #{phoneNumber},
-         NOW(),
-         NOW()
-      )   
+		INSERT INTO vacation_draft (
+			approval_no,
+         	emp_no,
+         	doc_title,
+         	doc_content,
+         	vacation_name,
+         	vacation_days,
+         	vacation_start,
+         	vacation_end,
+         	phone_number,
+        	createdate,
+         	updatedate
+      	) VALUES (
+         	#{approvalNo},
+         	#{empNo},
+         	#{docTitle},
+         	#{docContent},
+         	#{vacationName},
+         	#{vacationDays},
+         	#{vacationStart},
+         	#{vacationEnd},
+         	#{phoneNumber},
+         	NOW(),
+         	NOW()
+      	)   
    </insert>
    
    <!-- receive_draft insert -->

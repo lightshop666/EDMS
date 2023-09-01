@@ -22,6 +22,7 @@ import com.fit.CC;
 import com.fit.service.DraftService;
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
+import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
@@ -45,7 +46,8 @@ public class DraftController {
 	
 	// 결재 상태 업데이트 // 상세페이지에서 클릭한 버튼에 따라 결재상태를 업데이트
 	@PostMapping("/draft/updateApprovalState")
-	public String updateApprovalState(@RequestParam(required = false) Integer approvalNo,
+	public String updateApprovalState(@RequestParam(required = false) String documentCategory,
+									@RequestParam(required = false) Integer approvalNo,
 									@RequestParam(required = false) String role,
 									@RequestParam(required = false) String actionType,
 									@RequestParam(required = false) String approvalField,
@@ -107,12 +109,31 @@ public class DraftController {
 		if (row != 0) {
 			if (actionType.equals("cancel")) {
 				return "redirect:/draft/tempDraft?result=success"; // 성공시 임시저장함으로 이동
-			} else {
-				return "redirect:/draft/vacationDraftOne?approvalNo=" + approvalNo; // 문서 상세페이지로 이동
 			}
+			// 문서 상세페이지로 이동
+			if (documentCategory.equals("휴가신청서")) {
+				return "redirect:/draft/vacationDraftOne?approvalNo=" + approvalNo; 
+			} else if (documentCategory.equals("매출보고서")) {
+				return "redirect:/draft/salesDraftOne?approvalNo=" + approvalNo; 
+			} else if (documentCategory.equals("기안서")) {
+				return "redirect:/home"; // 수정 예정
+			} else if (documentCategory.equals("지출결의서")) {
+				return "redirect:/draft/expenseDraftOne?approvalNo=" + approvalNo; 
+			} 
 		} else {
-			return "redirect:/draft/vacationDraftOne?result=fail";
+			// 문서 상세페이지로 이동
+			if (documentCategory.equals("휴가신청서")) {
+				return "redirect:/draft/vacationDraftOne?result=fail";
+			} else if (documentCategory.equals("매출보고서")) {
+				return "redirect:/draft/salesDraftOne?result=fail"; 
+			} else if (documentCategory.equals("기안서")) {
+				return "redirect:/home"; // 수정 예정
+			} else if (documentCategory.equals("지출결의서")) {
+				return "redirect:/draft/expenseDraftOne?result=fail"; 
+			} 
 		}
+		
+		return "redirect:/home";
 	}
 	
 	// 임시저장함 목록
@@ -226,18 +247,54 @@ public class DraftController {
 		}
 	}
 	
+	// 매출보고서 상세
+	@GetMapping("/draft/salesDraftOne")
+	public String salesDraftOne(HttpSession session,
+								@RequestParam(required = false) Integer approvalNo,
+								Model model) {
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
+		
+		// approvalNo 값이 없으면 분기
+//		if (approvalNo == null) {
+//			return "redirect:/home";
+//		}
+		// 세션에서 사원번호 가져오기
+		int empNo = (int) session.getAttribute("loginMemberId");
+		
+		// 서비스 호출
+		Map<String, Object> result = draftService.selectSalesDraftOne(empNo, approvalNo);
+		ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+		
+		if (approval == null) {
+			log.debug(CC.HE + "DraftController.salesDraftOne() 존재하지 않는 approvalNo"+ CC.RESET);
+			return "redirect:/home";
+		} else if (approval.getApprovalState().equals("임시저장") && !approval.getRole().equals("기안자")) {
+			log.debug(CC.HE + "DraftController.salesDraftOne() 임시저장중인 문서는 기안자 외 접근 불가"+ CC.RESET);
+			return "redirect:/home";
+		}
+		
+		List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
+    	List<DocumentFile> documentFileList = (List<DocumentFile>) result.get("documentFileList");
+    	SalesDraft selectSalesDraft = (SalesDraft) result.get("selectSalesDraft");
+    	List<SalesDraftContent> salesDraftContentList = (List<SalesDraftContent>) result.get("salesDraftContentList");
+    	Map<String, Object> memberSignMap = (Map) result.get("memberSignMap");
+		
+    	model.addAttribute("approval", approval);
+		model.addAttribute("receiveList", receiveList);
+		model.addAttribute("documentFileList", documentFileList);
+		model.addAttribute("selectSalesDraft", selectSalesDraft);
+		model.addAttribute("salesDraftContentList", salesDraftContentList);
+		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
+    
+    	return "/draft/salesDraftOne";
+	}
+	
 	// 매출보고서 수정 폼
 	@GetMapping("/draft/modifySalesDraft")
 	public String modifySalesDraft() {
 		return "/draft/modifySalesDraft";
-	}
-	
-	// 매출보고서 상세
-	@GetMapping("/draft/salesDraftOne")
-	public String salesDraftOne(@RequestParam(required = false) Integer approvalNo, Model model) {
-		model.addAttribute("approvalNo", approvalNo);
-		
-		return "/draft/salesDraftOne";
 	}
 	
 	

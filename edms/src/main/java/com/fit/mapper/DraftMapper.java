@@ -61,6 +61,10 @@ public interface DraftMapper {
     // 희진
     int insertSalesDraft(SalesDraft salesDraft); // 매출보고서 테이블 insert
     
+    SalesDraft selectSalesDraftOne(int approvalNo); // 매출보고서 상세 조회
+    
+    List<SalesDraftContent> selectSalesDraftContentList(int documentNo); // 매출보고서 내역 테이블 조회
+    
     int insertSalesDraftContent(int documentNo, List<SalesDraftContent> salesDraftContent); // 매출보고서 내역 테이블 insert
     
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 테이블 insert

@@ -305,7 +305,7 @@
 		// 계산된 목표달성률을 해당 요소의 targetRate에 주입합니다.
 		row.find('input[name="targetRate"]').val(targetRate);
 		// 목표달성률을 백분율(%)로 환산하여 출력 // toFixed()로 소숫점 아래 2자리로 자를 수 있습니다.
-		let rate = (targetRate * 100).toFixed(2) + '%';
+		let rate = (targetRate * 100).toFixed(2);
 		row.find('.rate').text(rate);
 	}
 	
@@ -322,9 +322,9 @@
 						<option value="포인트조명">포인트조명</option>
 					</select>
 				</td>
-				<td><input type="number" name="targetSales" required></td>
-				<td><input type="number" name="currentSales" required></td>
-				<td><span class="rate"></span><input type="hidden" name="targetRate"></td>
+				<td>₩ <input type="number" name="targetSales" required></td>
+				<td>₩ <input type="number" name="currentSales" required></td>
+				<td><span class="rate"></span><input type="hidden" name="targetRate"> %</td>
 				<td><button type="button" class="removeDetailBtn">-</button></td>
 			</tr>
 		`;

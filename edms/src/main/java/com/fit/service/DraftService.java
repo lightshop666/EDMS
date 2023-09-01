@@ -512,6 +512,46 @@ public class DraftService {
     	return approvalKey;
     }
     
+    // 매출보고서 상세 조회
+    @Transactional
+    public Map<String, Object> selectSalesDraftOne(int empNo, int approvalNo) {
+    	Map<String, Object> resultMap = new HashMap<>();
+    	
+    	// 1. 결재정보 조회 // approval, receive_draft, document_file 테이블
+    	Map<String, Object> result = selectApprovalOne(empNo, approvalNo); // 메서드 호출
+    	log.debug(CC.HE + "DraftService.selectSalesDraftOne() result : " + result + CC.RESET);
+    	// 반환값 추출
+    	ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+    	List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
+    	List<DocumentFile> documentFileList = (List<DocumentFile>) result.get("documentFileList");
+    	
+    	if (approval != null) {
+    		// 2. sales_draft 테이블 조회
+    		SalesDraft selectSalesDraft = draftMapper.selectSalesDraftOne(approvalNo);
+        	// 2-1. sales_date 값 지정
+    		String year = selectSalesDraft.getSalesDate().substring(0, 4);
+    		String month = selectSalesDraft.getSalesDate().substring(5, 7);
+    		String salesDate = year + "년 " + month + "월";
+    		selectSalesDraft.setSalesDate(salesDate);
+    		
+    		// 3. sales_draft_content 테이블 조회
+        	int documentNo = selectSalesDraft.getDocumentNo();
+        	List<SalesDraftContent> salesDraftContentList = draftMapper.selectSalesDraftContentList(documentNo);
+    		
+    		// 4. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
+        	Map<String, Object> memberSignMap = getApprovalSign(approval);
+        	
+        	resultMap.put("approval", approval);
+        	resultMap.put("receiveList", receiveList);
+        	resultMap.put("documentFileList", documentFileList);
+        	resultMap.put("selectSalesDraft", selectSalesDraft);
+        	resultMap.put("salesDraftContentList", salesDraftContentList);
+        	resultMap.put("memberSignMap", memberSignMap);
+    	}
+
+    	return resultMap;
+    }
+    
     // ----------- 휴가신청서 --------------
     // 휴가신청서 기안하기 (+ 임시저장)
     // 휴가신청서 기안 insert 순서 // approval -> vacation_draft -> receive_draft(선택)

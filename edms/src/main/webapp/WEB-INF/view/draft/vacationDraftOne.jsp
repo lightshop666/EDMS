@@ -336,6 +336,7 @@
 				</c:if>
 				<!-- hidden input -->
 				<form action="/draft/updateApprovalState" method="post" id="DraftOneForm">
+					<input type="hidden" name="documentCategory" value="휴가신청서">
 					<input type="hidden" name="approvalNo" value="${a.approvalNo}">
 					<input type="hidden" name="role" value="${a.role}">
 					<input type="hidden" name="approvalField" value="${a.approvalField}">

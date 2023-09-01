@@ -377,14 +377,14 @@
 											</select>
 										</td>
 										<td>
-											<input type="number" name="targetSales" class="targetSales">
+											₩ <input type="number" name="targetSales" class="targetSales">
 										</td>
 										<td>
-											<input type="number" name="currentSales" class="currentSales">
+											₩ <input type="number" name="currentSales" class="currentSales">
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate" class="targetRate">
+											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>
@@ -401,14 +401,14 @@
 											</select>
 										</td>
 										<td>
-											<input type="number" name="targetSales" class="targetSales">
+											₩ <input type="number" name="targetSales" class="targetSales">
 										</td>
 										<td>
-											<input type="number" name="currentSales" class="currentSales">
+											₩ <input type="number" name="currentSales" class="currentSales">
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate" class="targetRate">
+											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>
@@ -425,14 +425,14 @@
 											</select>
 										</td>
 										<td>
-											<input type="number" name="targetSales" class="targetSales">
+											₩ <input type="number" name="targetSales" class="targetSales">
 										</td>
 										<td>
-											<input type="number" name="currentSales" class="currentSales">
+											₩ <input type="number" name="currentSales" class="currentSales">
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate" class="targetRate">
+											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>
@@ -449,14 +449,14 @@
 											</select>
 										</td>
 										<td>
-											<input type="number" name="targetSales" class="targetSales">
+											₩ <input type="number" name="targetSales" class="targetSales">
 										</td>
 										<td>
-											<input type="number" name="currentSales" class="currentSales">
+											₩ <input type="number" name="currentSales" class="currentSales">
 										</td>
 										<td>
 											<span class="rate"></span>
-											<input type="hidden" name="targetRate" class="targetRate">
+											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
 											<button type="button" class="removeDetailBtn">-</button>
