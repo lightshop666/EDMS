@@ -11,6 +11,8 @@ import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.ReceiveJoinDraft;
+import com.fit.vo.SalesDraft;
+import com.fit.vo.SalesDraftContent;
 import com.fit.vo.VacationDraft;
 import com.fit.vo.VacationHistory;
 
@@ -57,6 +59,10 @@ public interface DraftMapper {
     //정환 끝
     
     // 희진
+    int insertSalesDraft(SalesDraft salesDraft); // 매출보고서 테이블 insert
+    
+    int insertSalesDraftContent(int documentNo, List<SalesDraftContent> salesDraftContent); // 매출보고서 내역 테이블 insert
+    
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 테이블 insert
     
     int insertReceiveDrafts(int approvalNo, int[] recipients); // 수신참조자 테이블 insert
@@ -75,7 +81,7 @@ public interface DraftMapper {
     
     void deleteDocumentFile(int approvalNo); // 문서 파일 삭제
     
-    int insertDocumentFile(int approvalNo, List<DocumentFile> documentFileList); // 문서 파일 추가
+    int insertDocumentFile(DocumentFile documentFile); // 문서 파일 추가
     
     int updateVacationDraft(VacationDraft vacationDraft); // 휴가신청서 수정
     

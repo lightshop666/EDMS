@@ -270,7 +270,7 @@
 						<tr>
 							<td> 
 								<c:if test="${m.firstSign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
-									<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}.${m.firstSign.memberFiletype}">
+									<img src="${m.firstSign.memberPath}${m.firstSign.memberSaveFileName}">
 								</c:if>
 							</td>
 							<td>

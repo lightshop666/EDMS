@@ -202,7 +202,7 @@
 						<td>사진</td>
 						<td>
 							<!-- 사진 클릭 시 모달로 이미지 출력 -->
-							<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}" width="200" height="200"
+							<img src="${image.memberPath}${image.memberSaveFileName}" width="200" height="200"
 								data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
 						</td>
 					</tr>
@@ -273,7 +273,7 @@
 							</div>
 							<!-- 모달 본문 -->
 							<div class="modal-body">
-								<img src="${image.memberPath}${image.memberSaveFileName}.${image.memberFiletype}">
+								<img src="${image.memberPath}${image.memberSaveFileName}">
 							</div>
 							<!-- 모달 푸터 -->
 							<div class="modal-footer">
@@ -295,7 +295,7 @@
 							</div>
 							<!-- 모달 본문 -->
 							<div class="modal-body">
-								<img src="${sign.memberPath}${sign.memberSaveFileName}.${sign.memberFiletype}">
+								<img src="${sign.memberPath}${sign.memberSaveFileName}">
 							</div>
 							<!-- 모달 푸터 -->
 							<div class="modal-footer">

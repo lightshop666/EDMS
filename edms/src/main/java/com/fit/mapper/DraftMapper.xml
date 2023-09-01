@@ -161,6 +161,45 @@
    <!-- 정환 끝 -->
    
    <!-- 희진 -->
+   <!-- sales_draft insert -->
+   <insert id="insertSalesDraft" parameterType="com.fit.vo.SalesDraft">
+   	  <selectKey order="AFTER" keyProperty="documentNo" resultType="int">
+      <!-- order : AFTER로 설정하면, insert 구문을 실행한 뒤 키 값을 조회 -->
+      <!-- keyProperty : selectKey 구문의 결과가 셋팅될 대상 프로퍼티 -->
+      <!-- resultType : 조회될 키의 타입 -->
+         SELECT last_insert_id()
+      </selectKey>
+      INSERT INTO sales_draft (
+         approval_no,
+         doc_title,
+         sales_date,
+         createdate,
+         updatedate
+      ) VALUES (
+         #{approvalNo},
+         #{docTitle},
+         #{salesDate},
+         NOW(),
+         NOW()
+      )   
+   </insert>
+   
+   <!-- sales_draft_content insert -->
+   <insert id="insertSalesDraftContent" parameterType="map">
+		INSERT INTO sales_draft_content (
+			document_no,
+			product_category,
+			target_sales,
+			current_sales,
+			target_rate,
+			createdate,
+			updatedate
+		) VALUES
+			<foreach collection="salesDraftContent" item="sd" separator=",">
+				(#{documentNo}, #{sd.productCategory}, #{sd.targetSales}, #{sd.currentSales}, #{sd.targetRate}, NOW(), NOW())
+			</foreach>
+   </insert>
+   
    <!-- vacation_draft insert -->
    <insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
       INSERT INTO vacation_draft (
@@ -352,7 +391,7 @@
    </delete>
    
    <!-- document_file insert by approvalNo -->
-   <insert id="insertDocumentFile" parameterType="map">
+   <insert id="insertDocumentFile" parameterType="com.fit.vo.DocumentFile">
 		INSERT INTO document_file (
 			approval_no,
 			doc_ori_filename,
@@ -361,12 +400,15 @@
 			doc_path,
 			createdate,
 			updatedate
-		) VALUES
-			<!-- 배열을 insert하기 위해 반복문을 이용하여 VALUES 구문을 작성합니다. -->
-	        <!-- separator을 쉼표(,)로 지정하여 구문이 끝날때마다 ,를 작성하여 각 행을 구분할 수 있습니다. -->
-	        <foreach collection="documentFileList" item="d" separator=",">
-				(#{approvalNo}, #{d.docOriFilename}, #{d.docSaveFilename}, #{d.docFiletype}, #{d.docPath}, NOW(), NOW())
-			</foreach>
+		) VALUES (
+			#{approvalNo},
+			#{docOriFilename},
+			#{docSaveFilename},
+			#{docFiletype},
+			#{docPath},
+			NOW(),
+			NOW()
+		)
    </insert>
    
    <!-- vacation_draft update by approvalNo -->

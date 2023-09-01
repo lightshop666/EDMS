@@ -196,6 +196,8 @@
 	
 	// Date 객체의 날짜 정보를 YYYY-MM-00 형식으로 포맷팅하는 함수
 	function formatDateToISO(date) {
+		// 자바는 0월부터 시작하므로 +1 해줍니다.
+		date.setMonth(date.getMonth() + 1);
 		// Date 객체는 Thu Aug 31 2023 00:00:00 GMT+0900 (한국 표준시) 와 같은 정보를 가지고 있습니다.
 		// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-30T15:00:00.000Z
 		// substr() 원하는 문자열만 가져옵니다.
@@ -229,24 +231,30 @@
 		let previousMonthBefore = new Date(today); 
 		previousMonthBefore.setMonth(today.getMonth() - 2);
 		console.log('previousMonthBefore : ' + previousMonthBefore);
+		// formatDateToISO() 공통 함수 호출
+		let todayString = formatDateToISO(today);
+		let previousMonthString = formatDateToISO(previousMonth);
+		let previousMonthBeforeString = formatDateToISO(previousMonthBefore);
 		
 		// 1. ajax로 해당 기준년월의 데이터가 존재하는지 조회
 		$.ajax({
 			url : '/getExistingSalesDates',
 			type : 'post',
 			data : {
-				today : formatDateToISO(today), // formatDateToISO() 공통 함수 호출
-				previousMonth : formatDateToISO(previousMonth),
-				previousMonthBefore : formatDateToISO(previousMonthBefore)
+				today : todayString, 
+				previousMonth : previousMonthString,
+				previousMonthBefore : previousMonthBeforeString
 			},
 			success : function(response) {
 				// 2. YYYY년 MM월 형식으로 포맷팅하여 옵션 생성 
 				let selectElement = $('#salesDateSelect'); // selectbox
 				let options = [
-					{ value : formatDateToISO(today), text : formatDateToKorean(today) }, // formatDateToKorean() 공통 함수 호출
-					{ value : formatDateToISO(previousMonth), text : formatDateToKorean(previousMonth) },
-					{ value : formatDateToISO(previousMonthBefore), text : formatDateToKorean(previousMonthBefore) }
+					{ value : todayString, text : formatDateToKorean(today) }, // formatDateToKorean() 공통 함수 호출
+					{ value : previousMonthString, text : formatDateToKorean(previousMonth) },
+					{ value : previousMonthBeforeString, text : formatDateToKorean(previousMonthBefore) }
 				]; // option 배열 생성
+				
+				let optionsCreated = false; // 옵션 생성 여부 확인
 				
 				// 3. ajax로 조회한 결과를 기반으로 생성한 옵션을 주입 또는 생략
 				$.each(options, function(index, option) {
@@ -267,7 +275,13 @@
 						value : option.value,
 						text : option.text
 					}));
+					optionsCreated = true; // 옵션 생성
 				});
+				
+				if (!optionsCreated) { // 옵션이 생성되지 않았을 경우
+					$('#salesDateArea').empty(); // 기존 요소 제거
+					$('#salesDateArea').text('최근 3개월의 매출보고서가 이미 작성되었습니다.');
+				}
 			},
 			error : function(error) {
 				console.log('error : ' + error);
@@ -279,11 +293,15 @@
 	// 목표달성률을 계산하여 hidden에 주입하고, 백분율로 환산하여 출력합니다.
 	function updateSalesRate() {
 		let row = $(this).closest('tr'); // 현재 이벤트가 발생한 요소, 즉 입력한 'input'요소의 가장 가까운 'tr' 요소를 선택합니다.
-		// find()로 해당 요소의 currentSalse 입력값과 targetSales 입력값을 찾아옵니다.
-		let currentSales = row.find('input[name="currentSalse"]').val();
+		// find()로 해당 요소의 currentSales 입력값과 targetSales 입력값을 찾아옵니다.
+		let currentSales = row.find('input[name="currentSales"]').val();
 		let targetSales = row.find('input[name="targetSales"]').val();
 		// 목표달성률을 계산
 		let targetRate = (currentSales / targetSales);
+		// 값이 NaN 또는 Infinity인 경우 0으로 설정
+		if (isNaN(targetRate) || !isFinite(targetRate)) {
+			targetRate = 0;
+		}
 		// 계산된 목표달성률을 해당 요소의 targetRate에 주입합니다.
 		row.find('input[name="targetRate"]').val(targetRate);
 		// 목표달성률을 백분율(%)로 환산하여 출력 // toFixed()로 소숫점 아래 2자리로 자를 수 있습니다.
@@ -305,7 +323,7 @@
 					</select>
 				</td>
 				<td><input type="number" name="targetSales" required></td>
-				<td><input type="number" name="currentSalse" required></td>
+				<td><input type="number" name="currentSales" required></td>
 				<td><span class="rate"></span><input type="hidden" name="targetRate"></td>
 				<td><button type="button" class="removeDetailBtn">-</button></td>
 			</tr>
