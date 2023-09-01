@@ -1,8 +1,5 @@
 package com.fit.restapi;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,14 +7,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.fit.CC;
 import com.fit.service.MemberService;
@@ -70,9 +64,6 @@ public class MemberRest {
                                              , HttpServletRequest request) {
 		log.debug(CC.HE + "MemberRest.uploadSign() 메서드 실행" + CC.RESET);
 		
-		// 실행 결과 값을 view로 반환
-		String resultParam;
-		
 		// empNo
 		int empNo = (int) session.getAttribute("loginMemberId");
 		log.debug(CC.HE + "MemberRest.uploadSign() empNo" + empNo + CC.RESET);
@@ -94,26 +85,50 @@ public class MemberRest {
 	
 	// 비밀번호 확인 액션
 	@PostMapping("/member/existingPwCheck")
+	@ResponseBody
 	public String existingPwCheck(HttpSession session
-						  , @RequestParam(required = false, name = "pw") String pw) {
+						  , @RequestParam(required = true, name = "pw") String pw) {
 		String pwResult = "";
 		// 세션 사원번호를 받아 검사 메서드에 사용
 		int empNo = (int)session.getAttribute("loginMemberId");
-		log.debug(CC.HE + "MemberRest.existingPwCheck() 세션 empNo 값 : " + empNo + CC.RESET);
+		log.debug(CC.YE + "MemberRest.existingPwCheck() 세션 empNo 값 : " + empNo + CC.RESET);
 	    
 		// 검사 메서드 실행(비밀번호 일치하는 사원 row를 반환)
 		int checkPw = memberService.checkPw(empNo, pw);
-	    log.debug(CC.HE + "MemberRest.existingPwCheck() checkPw: " + empNo + CC.RESET);
+	    log.debug(CC.YE + "MemberRest.existingPwCheck() checkPw: " + empNo + CC.RESET);
 	    
 	    // 비밀번호 일치/불일치에 따른 redirect 설정
 	    if (checkPw > 0) { // 비밀번호가 일치할 경우
-	    	log.debug(CC.HE + "MemberRest.existingPwCheck() checkPw : " + checkPw + CC.RESET);
+	    	log.debug(CC.YE + "MemberRest.existingPwCheck() checkPw > 0 : " + checkPw + CC.RESET);
 	    	pwResult = "success";
-	        return "redirect:/member/modifyMember?result=success&result=" + pwResult; // 수정폼으로 리디렉션
+	        return pwResult; // 수정폼으로 리디렉션
 	    } else { // 비밀번호가 불일치할 경우
-	    	log.debug(CC.HE + "MemberController.existingPwCheck() checkPw : " + checkPw + CC.RESET);
+	    	log.debug(CC.YE + "MemberController.existingPwCheck() checkPw < 0 : " + checkPw + CC.RESET);
 	    	pwResult = "fail";
-	        return "redirect:/member/modifyMember?result=fail&pwResult=" + pwResult;
+	        return pwResult;
 	    }
+	}
+	
+	// 비밀번호 수정 액션
+	@PostMapping("/member/modifyPw")
+	@ResponseBody
+	public String modifyPw(HttpSession session
+						  , @RequestParam(required = false, name = "newPw2") String newPw2 ) {
+		// 반환값 변수 지정
+		String modifyPwResult;
+		
+		// empNo 세션값 활용
+		int empNo = (int)session.getAttribute("loginMemberId");
+		// 비밀번호 수정 메서드 실행
+		int modifyPwRow = memberService.modifyPw(empNo, newPw2);
+		log.debug(CC.YE + "MemberController.modifyPw() row : " + modifyPwRow + CC.RESET);
+		
+		if(modifyPwRow > 0) {
+			modifyPwResult = "success";
+		} else {
+			modifyPwResult = "fail";
+		}
+		
+		return modifyPwResult;
 	}
 }

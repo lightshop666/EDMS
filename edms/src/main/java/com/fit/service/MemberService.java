@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -17,6 +18,7 @@ import com.fit.CC;
 import com.fit.mapper.MemberMapper;
 import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
+import com.fit.vo.VacationHistory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -26,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberService {
 	@Autowired
 	private MemberMapper memberMapper;
+	
+	@Autowired
+	private CommonPagingService commonPagingService;
 	
 	// 사원번호 검사
 	public Map<String, Object> checkEmpNo(int empNo) {
@@ -281,4 +286,51 @@ public class MemberService {
 		return insertedSignRowCount; // 삽입된 행의 수 반환
 	}
 	
+	// 비밀번호 변경
+	public int modifyPw(int empNo, String newPw2) {
+		int modifyPwCnt = memberMapper.modifyPw(empNo, newPw2);
+		return modifyPwCnt;
+	}
+	
+	// 내 프로필 휴가정보 조회
+	public Map<String, Object> getVacationHistoryList(Map<String, Object> param) {
+        
+		int currentPage = (int) param.get("currentPage");
+		
+		int rowPerPage = 10;
+    	int beginRow = (currentPage - 1) * rowPerPage;
+        
+        param.put("beginRow", beginRow);
+        param.put("rowPerPage", rowPerPage);
+        
+        // 휴가 내역 조회
+        List<VacationHistory> vacationHistoryList = memberMapper.memberVacationHistory(param);
+        
+        // 반환할 Map
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("vacationHistoryList", vacationHistoryList);
+        
+        // 4. 페이징
+    	// 4-1. 검색어가 적용된 리스트의 전체 행 개수를 구해주는 메서드 실행
+        int totalCount = memberMapper.memberVacationHistoryPaging(param);
+		log.debug(CC.YE + "MemberService.vacationHistoryList totalCount: " + totalCount + CC.RESET);
+		// 4.2. 마지막 페이지 계산
+		int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage);
+		log.debug(CC.YE + "MemberService.vacationHistoryList() lastPage: " + lastPage + CC.RESET);
+		// 4.3. 페이지네이션에 표기될 쪽 개수
+		int pagePerPage = 5;
+		// 4.4. 페이지네이션에서 사용될 가장 작은 페이지 범위
+		int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+		log.debug(CC.YE + "MemberService.vacationHistoryList() minPage: " + minPage + CC.RESET);
+		// 4.5. 페이지네이션에서 사용될 가장 큰 페이지 범위
+		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
+		log.debug(CC.YE + "MemberService.vacationHistoryList() maxPage: " + maxPage + CC.RESET);
+		
+		resultMap.put("lastPage", lastPage); // 마지막 페이지
+		resultMap.put("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
+		resultMap.put("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
+	    
+        return resultMap;
+    }
+
 }

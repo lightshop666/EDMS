@@ -117,7 +117,7 @@ $(document).ready(function() {
 				</li>
 						
 				<li class="sidebar-item"> 
-					<a class="sidebar-link" href="${pageContext.request.contextPath}/member/memberPwCheck" aria-expanded="false" data-access-level="1">
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/emp/empList" aria-expanded="false" data-access-level="1">
 						<i data-feather="grid" class="feather-icon"></i>
 							<span class="hide-menu">사원목록</span>
 					</a>

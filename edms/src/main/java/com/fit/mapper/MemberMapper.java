@@ -1,11 +1,13 @@
 package com.fit.mapper;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
 import com.fit.vo.MemberFile;
 import com.fit.vo.MemberInfo;
+import com.fit.vo.VacationHistory;
 
 @Mapper
 public interface MemberMapper {
@@ -36,4 +38,12 @@ public interface MemberMapper {
 	// 비밀번호 확인
 	int checkPw(int empNo, String pw);
 	
+	// 비밀번호 수정
+	int modifyPw(int empNo, String newPw2);
+	
+	// 내 프로필 휴가정보 조회
+	List<VacationHistory> memberVacationHistory(Map<String, Object> param);
+	
+	// 내 프로필 휴가정보 조회 페이징
+	int memberVacationHistoryPaging(Map<String, Object> param);
 }

@@ -131,4 +131,49 @@
 			AND pw = password(#{pw})
 	</select>
 	
+	<!-- 비밀번호 수정 -->
+	<update id="modifyPw" parameterType="map">
+	    UPDATE
+	    	member_info
+	    SET
+	    	pw = password(#{newPw2})
+	    WHERE
+	    	emp_no = #{empNo}
+	</update>
+	
+	<!-- 나의 휴가정보 조회  -->
+    <select id="memberVacationHistory" parameterType="map" resultType="com.fit.vo.VacationHistory">
+        SELECT
+	        vacation_name vacationName
+	        , vacation_pm vacationPm
+	        , vacation_days vacationDays
+	        , createdate
+        FROM vacation_history
+        WHERE
+        	emp_no = #{empNo}
+            <if test="startDate != '' and endDate != ''">
+                AND createdate BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="vacationName != '' and vacationName != null">
+                AND vacation_name = #{vacationName}
+            </if>
+        ORDER BY createdate DESC
+        LIMIT #{beginRow}, #{rowPerPage}
+    </select>
+    
+    <!-- 휴가 내역 데이터 총 행수 조회 -->
+    <select id="memberVacationHistoryPaging" parameterType="map" resultType="int">
+        SELECT
+        	COUNT(*) 
+        FROM
+        	vacation_history
+        WHERE
+        	emp_no = #{empNo}
+            <if test="startDate != '' and endDate != ''">
+                AND createdate BETWEEN #{startDate} AND #{endDate}
+            </if>
+            <if test="vacationName != '' and vacationName != null">
+                AND vacation_name = #{vacationName}
+            </if>
+    </select>
 </mapper>
