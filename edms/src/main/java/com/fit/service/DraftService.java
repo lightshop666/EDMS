@@ -381,7 +381,8 @@ public class DraftService {
     // 양식들의 공통 테이블인 approval, receive_draft, document_file에 대한 수정 작업을 수행합니다.
     @Transactional
     public void updateDraftOne(Map<String, Object> paramMap) {
-    	// 복수의 행을 가지는 receive_draft, document_file 테이블은 delete 후 insert 작업을 수행합니다.
+    	// 복수의 행을 가지는 receive_draft 테이블은 delete 후 insert 작업을 수행합니다.
+    	// document_file 테이블은 수정 form에서 기존 파일 삭제 기능을 제공하므로 insert 작업을 수행합니다.
     	// 단일행을 가지는 approval 테이블은 update 작업을 수행합니다.
     	// 1. approval 테이블
     	Approval approval = (Approval) paramMap.get("approval"); // map에서 객체 가져오기
@@ -411,10 +412,8 @@ public class DraftService {
     	// 3. document_file
     	List<MultipartFile> multipartFile = (List<MultipartFile>) paramMap.get("multipartFile"); // map에서 객체 가져오기
     	String path = (String) paramMap.get("path");
-    	// delete mapper 호출
-    	draftMapper.deleteDocumentFile(approvalNo);
     	log.debug(CC.HE + "DraftService.updateDraftOne() document_file delete 실행 "+ CC.RESET);
-    	if (!multipartFile.isEmpty()) { // 빈 리스트가 아니면 insert
+    	if (multipartFile != null) { // 빈 리스트가 아니면 insert
     		// insert 메서드 호출
     		int documentFileRow = addDocumentFile(multipartFile, path, approvalNo);
     		log.debug(CC.HE + "DraftService.updateDraftOne() document_file insert 실행 row : " + documentFileRow + CC.RESET);
@@ -459,6 +458,29 @@ public class DraftService {
 			}
     	}
     	
+    	return row;
+    }
+    
+    // document_file delete 메서드
+    // 문서 파일을 실제 저장소와 db에서 삭제합니다.
+    @Transactional
+    public int removeDocumentFile(String path, int docFileNo, String docSaveFilename) {
+    	// 1. 실제 저장소에서 삭제
+    	File f = new File(path + docSaveFilename);
+		if (f.exists()) { // 파일이 존재하는지 확인합니다.
+            if (f.delete()) {
+            	log.debug(CC.HE + "DraftService.removeDocumentFile() 파일이 성공적으로 삭제되었습니다. "+ CC.RESET);
+            } else {
+            	log.debug(CC.HE + "DraftService.removeDocumentFile() 파일 삭제 실패 "+ CC.RESET);
+            }
+        } else {
+        	log.debug(CC.HE + "DraftService.removeDocumentFile() 파일이 존재하지 않습니다. "+ CC.RESET);
+        }
+		
+		// 2. db에서 파일 삭제
+		int row = draftMapper.deleteDocumentFile(docFileNo);
+		log.debug(CC.HE + "DraftService.removeDocumentFile() row : " + row + CC.RESET);
+		
     	return row;
     }
     
@@ -527,15 +549,15 @@ public class DraftService {
     	
     	if (approval != null) {
     		// 2. sales_draft 테이블 조회
-    		SalesDraft selectSalesDraft = draftMapper.selectSalesDraftOne(approvalNo);
+    		SalesDraft salesDraft = draftMapper.selectSalesDraftOne(approvalNo);
         	// 2-1. sales_date 값 지정
-    		String year = selectSalesDraft.getSalesDate().substring(0, 4);
-    		String month = selectSalesDraft.getSalesDate().substring(5, 7);
+    		String year = salesDraft.getSalesDate().substring(0, 4);
+    		String month = salesDraft.getSalesDate().substring(5, 7);
     		String salesDate = year + "년 " + month + "월";
-    		selectSalesDraft.setSalesDate(salesDate);
+    		salesDraft.setSalesDate(salesDate);
     		
     		// 3. sales_draft_content 테이블 조회
-        	int documentNo = selectSalesDraft.getDocumentNo();
+        	int documentNo = salesDraft.getDocumentNo();
         	List<SalesDraftContent> salesDraftContentList = draftMapper.selectSalesDraftContentList(documentNo);
     		
     		// 4. 결재 상태에 따라 서명 이미지를 조회하는 메서드 호출
@@ -544,12 +566,40 @@ public class DraftService {
         	resultMap.put("approval", approval);
         	resultMap.put("receiveList", receiveList);
         	resultMap.put("documentFileList", documentFileList);
-        	resultMap.put("selectSalesDraft", selectSalesDraft);
+        	resultMap.put("salesDraft", salesDraft);
         	resultMap.put("salesDraftContentList", salesDraftContentList);
         	resultMap.put("memberSignMap", memberSignMap);
     	}
 
     	return resultMap;
+    }
+    
+    // 매출보고서 수정
+    @Transactional
+    public int modifySalesDraft(Map<String, Object> paramMap) {
+    	int row = 0;
+    	
+    	// 1. approval, receive_draft, document_file 를 수정하는 공통 메서드 호출
+    	updateDraftOne(paramMap);
+    	
+    	// 2. sales_draft 테이블 수정
+    	SalesDraft salesDraft = (SalesDraft) paramMap.get("salesDraft");  // map에서 salesDraft 객체 가져오기
+    	row = draftMapper.updateSalesDraft(salesDraft);
+    	log.debug(CC.HE + "DraftService.updateSalesDraft() row : " + row + CC.RESET);
+    	
+    	// 3. sales_draft_content 테이블 수정
+    	int documentNo = salesDraft.getDocumentNo();
+    	List<SalesDraftContent> salesDraftContent = (List<SalesDraftContent>) paramMap.get("salesDraftContent"); // map에서 salesDraftContent 객체 가져오기
+        // 3-1. delete mapper 호출
+    	row = draftMapper.deleteSalesDraftContent(documentNo);
+    	log.debug(CC.HE + "DraftService.deleteSalesDraftContent() row : " + row + CC.RESET);
+    	// 3-2. 빈 리스트가 아니면 insert
+    	if (salesDraftContent.size() != 0) {
+    		row = draftMapper.insertSalesDraftContent(documentNo, salesDraftContent);
+    		log.debug(CC.HE + "DraftService.insertSalesDraftContent() row : " + row + CC.RESET);
+    	}
+    	
+    	return row;
     }
     
     // ----------- 휴가신청서 --------------

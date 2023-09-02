@@ -67,6 +67,10 @@ public interface DraftMapper {
     
     int insertSalesDraftContent(int documentNo, List<SalesDraftContent> salesDraftContent); // 매출보고서 내역 테이블 insert
     
+    int updateSalesDraft(SalesDraft salesDraft); // 매출보고서 수정
+    
+    int deleteSalesDraftContent(int documentNo); // 매출보고서 내역 삭제
+    
     int insertVactionDraft(VacationDraft vacationDraft); // 휴가신청서 테이블 insert
     
     int insertReceiveDrafts(int approvalNo, int[] recipients); // 수신참조자 테이블 insert
@@ -83,7 +87,7 @@ public interface DraftMapper {
 
     int insertVacationHistroy(VacationHistory vacationHistory); // 휴가 히스토리 추가
     
-    void deleteDocumentFile(int approvalNo); // 문서 파일 삭제
+    int deleteDocumentFile(int docFileNo); // 문서 파일 삭제
     
     int insertDocumentFile(DocumentFile documentFile); // 문서 파일 추가
     

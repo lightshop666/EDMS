@@ -174,7 +174,7 @@
 			<c:set var="a" value="${approval}"></c:set>
 			<c:set var="r" value="${receiveList}"></c:set>
 			<c:set var="df" value="${documentFileList}"></c:set>
-			<c:set var="s" value="${selectSalesDraft}"></c:set>
+			<c:set var="s" value="${salesDraft}"></c:set>
 			<c:set var="sc" value="${salesDraftContentList}"></c:set>
 			<c:set var="m" value="${memberSignMap}"></c:set>
 			<!--------------------->

@@ -228,6 +228,20 @@
 		WHERE document_no = #{documentNo}
    </select>
    
+   <!-- sales_draft update -->
+   <update id="updateSalesDraft" parameterType="com.fit.vo.SalesDraft">
+   		UPDATE sales_draft
+		SET doc_title = #{docTitle},
+			updatedate = NOW()
+		WHERE approval_no = #{approvalNo}
+   </update>
+   
+   <!-- sales_draft_content delete by documentNo -->
+   <delete id="deleteSalesDraftContent">
+  		DELETE FROM sales_draft_content
+		WHERE document_no = #{documentNo}
+   </delete>
+   
    <!-- vacation_draft insert -->
    <insert id="insertVactionDraft" parameterType="com.fit.vo.VacationDraft">
 		INSERT INTO vacation_draft (
@@ -412,10 +426,10 @@
 		)
    </insert>
    
-   <!-- document_file delete by approvalNo -->
+   <!-- document_file delete by docFileNo -->
    <delete id="deleteDocumentFile" parameterType="int">
 		DELETE FROM document_file
-		WHERE approval_no = #{approvalNo}
+		WHERE doc_file_no = #{docFileNo}
    </delete>
    
    <!-- document_file insert by approvalNo -->
@@ -455,8 +469,15 @@
    
    <!-- sales_draft by sales_date -->
    <select id="selectSalesDateList" parameterType="String" resultType="java.lang.String">
-		SELECT DISTINCT sales_date
-		FROM sales_draft
-		WHERE sales_date IN (#{today}, #{previousMonth}, #{previousMonthBefore})
+		SELECT
+			DISTINCT sd.sales_date
+		FROM
+			sales_draft sd
+		INNER JOIN
+			approval a ON sd.approval_no = a.approval_no
+		WHERE
+			sales_date IN (#{today}, #{previousMonth}, #{previousMonthBefore})
+			AND a.approval_state != '임시저장' <!-- 임시저장인 문서일 경우 옵션을 출력합니다. -->
+			AND a.approval_state != '반려'; <!-- 반려인 문서일 경우 옵션을 출력합니다. -->
    </select>
 </mapper>

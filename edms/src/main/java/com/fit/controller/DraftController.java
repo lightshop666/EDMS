@@ -257,9 +257,9 @@ public class DraftController {
 		// 권한 분기 -> 메인메뉴에서 처리
 		
 		// approvalNo 값이 없으면 분기
-//		if (approvalNo == null) {
-//			return "redirect:/home";
-//		}
+		if (approvalNo == null) {
+			return "redirect:/home";
+		}
 		// 세션에서 사원번호 가져오기
 		int empNo = (int) session.getAttribute("loginMemberId");
 		
@@ -277,14 +277,14 @@ public class DraftController {
 		
 		List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
     	List<DocumentFile> documentFileList = (List<DocumentFile>) result.get("documentFileList");
-    	SalesDraft selectSalesDraft = (SalesDraft) result.get("selectSalesDraft");
+    	SalesDraft salesDraft = (SalesDraft) result.get("salesDraft");
     	List<SalesDraftContent> salesDraftContentList = (List<SalesDraftContent>) result.get("salesDraftContentList");
     	Map<String, Object> memberSignMap = (Map) result.get("memberSignMap");
 		
     	model.addAttribute("approval", approval);
 		model.addAttribute("receiveList", receiveList);
 		model.addAttribute("documentFileList", documentFileList);
-		model.addAttribute("selectSalesDraft", selectSalesDraft);
+		model.addAttribute("salesDraft", salesDraft);
 		model.addAttribute("salesDraftContentList", salesDraftContentList);
 		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
     
@@ -293,8 +293,111 @@ public class DraftController {
 	
 	// 매출보고서 수정 폼
 	@GetMapping("/draft/modifySalesDraft")
-	public String modifySalesDraft() {
+	public String modifySalesDraft(HttpSession session,
+								@RequestParam(required = false) Integer approvalNo,
+								Model model) {
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
+		
+		// approvalNo 값이 없으면 분기
+		if (approvalNo == null) {
+			return "redirect:/home";
+		}
+		// 세션에서 사원번호 가져오기
+		int empNo = (int) session.getAttribute("loginMemberId");
+		
+		// 서비스 호출
+		Map<String, Object> result = draftService.selectSalesDraftOne(empNo, approvalNo);
+		ApprovalJoinDto approval = (ApprovalJoinDto) result.get("approval");
+		
+		if (approval == null) {
+			log.debug(CC.HE + "DraftController.salesDraftOne() 존재하지 않는 approvalNo"+ CC.RESET);
+			return "redirect:/home";
+		} else if (approval.getApprovalState().equals("임시저장") && !approval.getRole().equals("기안자")) {
+			log.debug(CC.HE + "DraftController.salesDraftOne() 임시저장중인 문서는 기안자 외 접근 불가"+ CC.RESET);
+			return "redirect:/home";
+		}
+		
+		List<ReceiveJoinDraft> receiveList = (List<ReceiveJoinDraft>) result.get("receiveList");
+    	List<DocumentFile> documentFileList = (List<DocumentFile>) result.get("documentFileList");
+    	SalesDraft salesDraft = (SalesDraft) result.get("salesDraft");
+    	List<SalesDraftContent> salesDraftContentList = (List<SalesDraftContent>) result.get("salesDraftContentList");
+    	Map<String, Object> memberSignMap = (Map) result.get("memberSignMap");
+		
+    	// 사원 리스트 메서드 호출 - employeeList
+		List<EmpInfo> employeeList = draftService.getAllEmp();
+		// JSON 형식의 데이터를 String으로 변환하여 추가
+		String employeeListJson = new Gson().toJson(employeeList);
+		
+    	model.addAttribute("approval", approval);
+		model.addAttribute("receiveList", receiveList);
+		model.addAttribute("documentFileList", documentFileList);
+		model.addAttribute("salesDraft", salesDraft);
+		model.addAttribute("salesDraftContentList", salesDraftContentList);
+		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
+		model.addAttribute("employeeList", employeeList);
+		model.addAttribute("employeeListJson", employeeListJson);
+				
 		return "/draft/modifySalesDraft";
+	}
+	
+	// 매출보고서 수정 액션
+	@PostMapping("/draft/modifySalesDraft")
+	public String modifySalesDraft(@ModelAttribute Approval approval,
+					            @ModelAttribute SalesDraft salesDraft,
+					            @RequestParam List<MultipartFile> multipartFile, // DocumentFileList
+					            @RequestParam List<String> productCategory, // SalesDraftContentList
+					            @RequestParam List<Double> targetSales, // SalesDraftContentList
+					            @RequestParam List<Double> currentSales, // SalesDraftContentList
+					            @RequestParam List<Double> targetRate, // SalesDraftContentList
+					            @RequestParam(required = false) int[] recipients, // receiveDraftList
+					            HttpServletRequest request) {
+		log.debug(CC.HE + "DraftController.modifySalesDraft() approval : " + approval + CC.RESET);
+	    log.debug(CC.HE + "DraftController.modifySalesDraft() multipartFile : " + multipartFile + CC.RESET);
+	    log.debug(CC.HE + "DraftController.modifySalesDraft() salesDraft : " + salesDraft + CC.RESET);
+	    log.debug(CC.HE + "DraftController.modifySalesDraft() recipients : " + recipients + CC.RESET); // 수신참조자 정수 배열
+	    for (int i = 0; i < recipients.length; i++) {
+	        log.debug(CC.HE + "recipients[" + i + "] : " + recipients[i] + CC.RESET);
+	    }
+	    
+	    // 받아온 배열을 SalesDraftContent 타입의 List로 변환
+	    List<SalesDraftContent> salesDraftContent = new ArrayList<>();
+    	for (int i = 0; i < productCategory.size(); i++) {
+	        SalesDraftContent content = new SalesDraftContent();
+	        content.setProductCategory(productCategory.get(i));
+	        content.setTargetSales(targetSales.get(i));
+	        content.setCurrentSales(currentSales.get(i));
+	        content.setTargetRate(targetRate.get(i));
+	        salesDraftContent.add(content);
+	    }
+	    log.debug(CC.HE + "DraftController.modifySalesDraft() salesDraftContent : " + salesDraftContent + CC.RESET);
+	    
+	    // 파일업로드를 위한 path 구하기
+	    String path = request.getServletContext().getRealPath("/file/document/");
+	    log.debug(CC.HE + "DraftController.modifySalesDraft() path : " + path + CC.RESET);
+	    
+	    // 매개값을 하나의 Map에 담습니다.
+ 		Map<String, Object> paramMap = new HashMap<>();
+ 		paramMap.put("approval", approval);
+ 		paramMap.put("multipartFile", multipartFile);
+ 		paramMap.put("salesDraft", salesDraft);
+ 		paramMap.put("recipients", recipients);
+ 		paramMap.put("salesDraftContent", salesDraftContent);
+ 		paramMap.put("path", path);
+ 		
+ 		// 서비스 호출
+		int row = draftService.modifySalesDraft(paramMap);
+		int approvalNo = approval.getApprovalNo();
+		
+		// 성공 유무에 따라 분기
+		if (row != 0) {
+			log.debug(CC.HE + "DraftController.modifySalesDraft() 수정 성공 row : " + row + CC.RESET);
+			return "redirect:/draft/salesDraftOne?result=success&approvalNo=" + approvalNo;
+		} else {
+			log.debug(CC.HE + "DraftController.modifySalesDraft() 수정 실패 row : " + row + CC.RESET);
+			return "redirect:/draft/modifySalesDraft?result=fail&approvalNo=" + approvalNo;
+		}
 	}
 	
 	

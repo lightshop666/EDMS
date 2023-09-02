@@ -282,7 +282,7 @@
 				<h1 style="text-align: center;">매출보고서</h1>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
 				<form action="/draft/salesDraft" method="post" id="draftForm" enctype="multipart/form-data">
-				<input type="hidden" name="empNo" value="${empNo}">
+					<input type="hidden" name="empNo" value="${empNo}">
 					<table class="table-bordered">
 						<tr>
 							<th rowspan="3" colspan="2">매출보고서</th>

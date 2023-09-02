@@ -258,7 +258,7 @@
 				<h1 style="text-align: center;">휴가신청서</h1>
 				<!-- id명 수정 필요... -->
 				<form action="/draft/modifyVacationDraft" method="post" id="draftForm">
-				<input type="hidden" name="approvalNo" value="${a.approvalNo}">
+					<input type="hidden" name="approvalNo" value="${a.approvalNo}">
 					<table class="table-bordered">
 						<tr>
 							<th rowspan="3" colspan="2">휴가신청서</th>

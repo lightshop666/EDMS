@@ -2,6 +2,7 @@ package com.fit.restapi;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +52,19 @@ public class DraftRest {
 		log.debug(CC.HE + "DraftRest.getExistingSalesDates() salesDateList : " + salesDateList + CC.RESET);
 	
 		return salesDateList;
+	}
+	
+	// 기존 파일 삭제 (document_file)
+	@PostMapping("/deleteDocumentFile")
+	public int deleteDocumentFile(HttpServletRequest request, int docFileNo, String docSaveFilename) {
+		String path = request.getServletContext().getRealPath("/file/document/");
+		log.debug(CC.HE + "DraftRest.deleteDocumentFile() path : " + path + CC.RESET);
+		log.debug(CC.HE + "DraftRest.deleteDocumentFile() docFileNo param : " + docFileNo + CC.RESET);
+		log.debug(CC.HE + "DraftRest.deleteDocumentFile() docSaveFilename param : " + docSaveFilename + CC.RESET);
+		
+		// 파일 삭제 서비스 호출
+		int row = draftService.removeDocumentFile(path, docFileNo, docSaveFilename);
+		
+		return row;
 	}
 }

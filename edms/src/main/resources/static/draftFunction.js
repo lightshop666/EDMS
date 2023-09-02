@@ -195,25 +195,61 @@
 	}
 	
 	// Date 객체의 날짜 정보를 YYYY-MM-00 형식으로 포맷팅하는 함수
-	function formatDateToISO(date) {
-		// 자바는 0월부터 시작하므로 +1 해줍니다.
-		date.setMonth(date.getMonth() + 1);
-		// Date 객체는 Thu Aug 31 2023 00:00:00 GMT+0900 (한국 표준시) 와 같은 정보를 가지고 있습니다.
-		// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-30T15:00:00.000Z
-		// substr() 원하는 문자열만 가져옵니다.
-		let stringDate = date.toISOString().substr(0, 8) + "00";
-		console.log('formatDateToISO() : ' + stringDate);
+	function formatDateToYYYYMM(date) {
+		let year = date.getFullYear(); // 년도를 가져옵니다.
+		let month = date.getMonth() + 1; // 자바의 월은 0부터 시작하므로 +1 해줍니다.
+		let formattedMonth = month < 10 ? `0${month}` : `${month}`; // 월이 10미만일 경우 앞에 0을 붙여 MM형식을 유지합니다.
+		let formattedDate = `${year}-${formattedMonth}-00`; // DD는 00으로 표시합니다.
+		console.log('formatDateToYYYYMM() : ' + formattedDate);
 		
-		return stringDate;
+		return formattedDate;
 	}
 	
 	// Date 객체의 날짜 정보를 YYYY년 MM월 형식으로 포맷팅하는 함수
 	function formatDateToKorean(date) {
-		let stringYear = date.toISOString().substr(0, 4) + "년"; // YYYY년
-		let stringMonth = date.toISOString().substr(5, 2) + "월"; // MM월
-		console.log('formatDate() : ' + stringYear + " " + stringMonth);
+		let formattedDate = formatDateToYYYYMM(date);
+	    // 날짜를 '-'를 기준으로 분할
+	    let dateParts  = formattedDate.split('-');
+	    
+	    // 년, 월 부분 추출
+	    let year = dateParts [0];
+	    let month = dateParts [1];
+	    
+	    // "년"과 "월"을 포함한 문자열 생성
+	    var transformedString  = year + "년 " + month + "월";
+	    console.log('formatDateToKorean() : ' + transformedString);
+	    
+	    return transformedString;
+	}
+	
+	// 기존 파일(document_file)을 삭제하는 함수 (AJAX)
+	function deleteDocumentFile(docFileNo, docSaveFilename) {
+		let result = confirm('삭제 시 복구할 수 없습니다. 파일을 삭제할까요?');
 		
-		return stringYear + " " + stringMonth;
+		if (result) {
+			console.log('docFileNo : ' + docFileNo);
+			console.log('docSaveFilename : ' + docSaveFilename);
+			
+			$.ajax({
+				url : '/deleteDocumentFile',
+				type : 'post',
+				data : {
+					docFileNo : docFileNo,
+					docSaveFilename : docSaveFilename
+				},
+				success : function(response) {
+					if (response != 0) {
+						// 삭제 성공시 해당 파일을 view에서 삭제합니다.
+						// 해당 docFileNo의 값을 가지고 있는 div(file-item)를 통째로 제거합니다.
+						$('.file-item[data-docFileNo="' + docFileNo + '"]').remove();
+						console.log(docFileNo + '번 파일 삭제 성공');
+					}
+				},
+				error : function(error) {
+					console.log('error : ' + error);
+				}
+			});	
+		}
 	}
 	
 	// -------------- 매출보고서 함수 -----------------
@@ -231,10 +267,10 @@
 		let previousMonthBefore = new Date(today); 
 		previousMonthBefore.setMonth(today.getMonth() - 2);
 		console.log('previousMonthBefore : ' + previousMonthBefore);
-		// formatDateToISO() 공통 함수 호출
-		let todayString = formatDateToISO(today);
-		let previousMonthString = formatDateToISO(previousMonth);
-		let previousMonthBeforeString = formatDateToISO(previousMonthBefore);
+		// formatDateToYYYYMM() 공통 함수 호출
+		let todayString = formatDateToYYYYMM(today);
+		let previousMonthString = formatDateToYYYYMM(previousMonth);
+		let previousMonthBeforeString = formatDateToYYYYMM(previousMonthBefore);
 		
 		// 1. ajax로 해당 기준년월의 데이터가 존재하는지 조회
 		$.ajax({
@@ -402,11 +438,10 @@
 		// selectedVacationDays가 1일 경우 당일(시작일과 종료일이 동일)이므로 selectedVacationDays-1을 해줍니다.
 		endDate.setDate(startDate.getDate() + selectedVacationDays - 1);
 		
-		// Date 객체는 날짜와 시간 등 다양한 정보를 담고 있으므로 필요한 정보만 가져옵니다.
-		// ex) Wed Aug 09 2023 09:00:00 GMT+0900 (한국 표준시)
-		// toISOString()를 이용하여 해당 정보를 다루기 편한 문자열로 변환합니다. ex) 2023-08-09T00:00:00.000Z
-		// substr()으로 날짜 정보만 가져옵니다. ex) 2023-08-09
-		let endDateString = endDate.toISOString().substr(0, 10);
+		// 휴가 종료일 포맷팅
+		let endDateFomatted = formatDateToYYYYMM(endDate); // 기존 함수 사용 -> YYYY-MM-00 형식으로 포맷팅하는 기존 함수를 호출합니다.
+		let endDateDay = endDate.getDate(endDate); // 휴가종료일의 '일'정보를 가져옵니다.
+		let endDateString = endDateFomatted.slice(0, -2) + endDateDay; // slice()로 00을 잘라내고 '일'정보를 합칩니다.
 		
 		$('#vacationEndSpan').text(endDateString);
 		$('#vacationEndInput').val(endDateString);
