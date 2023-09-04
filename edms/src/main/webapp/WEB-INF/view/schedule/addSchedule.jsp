@@ -10,14 +10,14 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<!-- Favicon icon -->
-	<link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
 	<title>addSchedule</title>
 	<!-- Custom CSS -->
-	<link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
-	<link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-	<link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
 	<!-- Custom CSS -->
-	<link href="../dist/css/style.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -27,24 +27,24 @@
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
 	<!-- ============================================================== -->
-	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- apps -->
 	<!-- apps -->
-	<script src="../dist/js/app-style-switcher.js"></script>
-	<script src="../dist/js/feather.min.js"></script>
-	<script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-	<script src="../dist/js/sidebarmenu.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/app-style-switcher.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/feather.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/sidebarmenu.js"></script>
 	<!--Custom JavaScript -->
-	<script src="../dist/js/custom.min.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/custom.min.js"></script>
 	<!--This page JavaScript -->
-	<script src="../assets/extra-libs/c3/d3.min.js"></script>
-	<script src="../assets/extra-libs/c3/c3.min.js"></script>
-	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
-	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/d3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
