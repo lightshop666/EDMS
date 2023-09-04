@@ -18,10 +18,10 @@ import com.fit.mapper.DraftMapper;
 import com.fit.mapper.MemberMapper;
 import com.fit.vo.Approval;
 import com.fit.vo.ApprovalJoinDto;
+import com.fit.vo.BasicDraft;
 import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
-import com.fit.vo.BasicDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
@@ -621,7 +621,6 @@ public class DraftService {
     	// 3. document_file
     	List<MultipartFile> multipartFile = (List<MultipartFile>) paramMap.get("multipartFile"); // map에서 객체 가져오기
     	String path = (String) paramMap.get("path");
-    	log.debug(CC.HE + "DraftService.updateDraftOne() document_file delete 실행 "+ CC.RESET);
     	if (multipartFile != null) { // 빈 리스트가 아니면 insert
     		// insert 메서드 호출
     		int documentFileRow = addDocumentFile(multipartFile, path, approvalNo);
@@ -992,5 +991,11 @@ public class DraftService {
         log.debug(CC.HE + "DraftService.modifyVacationDraft() row : " + row + CC.RESET);
         
     	return row;
+    }
+    
+    // ----------- 내 결재함 리스트 --------------
+    @Transactional
+    public List<Approval> getApprovalDraftList(Map<String, Object> paramMap, int empNo) {
+    	return null;
     }
 }

@@ -136,12 +136,6 @@ public class DraftController {
 		return "redirect:/home";
 	}
 	
-	// 임시저장함 목록
-	@GetMapping("/draft/tempDraft")
-	public String tempDraftList() {
-		return "/draft/tempDraft";
-	}
-	
 	// ----------------- 매출보고서 --------------------
 	// 매출보고서 작성 폼
 	@GetMapping("/draft/salesDraft")

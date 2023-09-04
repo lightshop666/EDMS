@@ -188,4 +188,66 @@ public class DraftListController {
 		    model.addAttribute("approvalsaveCount", approvalsaveCount);
 		    return "draft/receiveDraft"; // submitDraft.jsp 페이지로 포워딩
 	}
+	
+	// 결재함 리스트
+	@GetMapping("/draft/approvalDraft")
+	public String approvalDraftList(HttpSession session
+			, @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage
+			, @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage
+			, @RequestParam(name = "startDate", required = false, defaultValue = "") String startDate
+			, @RequestParam(name= "endDate", required = false, defaultValue = "") String endDate
+			, @RequestParam(name= "searchCol", required = false, defaultValue = "") String searchCol
+			, @RequestParam(name= "searchWord", required = false, defaultValue = "") String searchWord
+			, @RequestParam(name= "col", required = false, defaultValue = "") String col
+			, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
+			, Model model) {
+		/*
+			1. 세션 사원번호
+			2. 해당 사원번호가 중간승인자 or 최종승인자인 approval 문서 전부 조회, 단 결재상태가 임시저장인 것은 조회하면 안됨
+			3. 리스트 조회 내용 -> 양식종류, 기안자, 제목, 결재상태, 기안일
+			4. + 검색조건 -> 기간별, 정렬, 항목별 검색단어
+			5. 결재상태별 cnt
+		*/
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
+		
+		// 1. 세션 정보 조회
+		int empNo = (int) session.getAttribute("loginMemberId");
+		// 2. 검색조건 및 페이징 조건을 map에 담기
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("startDate", startDate);
+	    paramMap.put("endDate", endDate);
+	    paramMap.put("col", col);
+	    paramMap.put("ascDesc", ascDesc);
+	    paramMap.put("searchCol", searchCol);
+	    paramMap.put("searchWord", searchWord);
+	    paramMap.put("beginRow", (currentPage - 1) * rowPerPage); // 시작 행
+	    paramMap.put("rowPerPage", rowPerPage); // 페이지당 행 수
+	    
+	    // 3. 서비스 호출
+	    List<Approval> draftList = draftService.getFilteredReceiveDrafts(paramMap, empNo);
+	    
+	    // 4. 페이징을 위한 처리
+	    int totalCount = draftService.getTotalReceiveCount(paramMap, empNo); // 전체 게시물 수를 구하는 서비스 호출
+	    // 페이징 처리를 위한 필요한 변수들 계산 // commonPagingService 사용
+	    int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage); // 마지막 페이지
+	    int pagePerPage = 5;
+	    int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+	    int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
+	    
+	    model.addAttribute("draftList", draftList);
+	    model.addAttribute("currentPage", currentPage);
+	    model.addAttribute("minPage", minPage);
+	    model.addAttribute("maxPage", maxPage);
+	    model.addAttribute("lastPage", lastPage);
+		
+		return "";
+	}
+	
+	// 임시저장함 리스트
+	@GetMapping("/draft/tempDraft")
+	public String tempDraftList() {
+		return "/draft/tempDraft";
+	}
 }

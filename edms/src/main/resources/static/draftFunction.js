@@ -173,10 +173,12 @@
 			result = confirm('목록으로 이동할까요?');
 			if (result) {
 				if (role == '기안자') {
-					window.location.href = ''; // 내 문서함의 기안탭으로.. 구현예정
+					window.location.href = '/draft/submitDraft'; 
+				} else if (role == '수신참조자') {
+					window.location.href = '/draft/receiveDraft'; 
 				} else {
-					window.location.href = ''; // 내 문서함의 결재탭으로.. 구현예정
-				} // 수신함으로 이동시키기 구현예정..
+					window.location.href = '/draft/approvalDraft'; 
+				}
 			}
 		} else {
 			if (actionType == 'approve') {
@@ -348,8 +350,8 @@
 	// 내역 추가
 	function addNewRowForSalesDraft() {
 		let newRow = `
-			<tr>
-				<td>
+			<tr style="border: 1px solid black;">
+				<td style="border: 1px solid black;">
 					<select name="productCategory" required>
 						<option value="스탠드">스탠드</option>
 						<option value="무드등">무드등</option>
@@ -358,10 +360,10 @@
 						<option value="포인트조명">포인트조명</option>
 					</select>
 				</td>
-				<td>₩ <input type="number" name="targetSales" required></td>
-				<td>₩ <input type="number" name="currentSales" required></td>
-				<td><span class="rate"></span><input type="hidden" name="targetRate"> %</td>
-				<td><button type="button" class="removeDetailBtn">-</button></td>
+				<td style="border: 1px solid black;">₩ <input type="number" name="targetSales" required></td>
+				<td style="border: 1px solid black;">₩ <input type="number" name="currentSales" required></td>
+				<td style="border: 1px solid black;"><span class="rate"></span><input type="hidden" name="targetRate"> %</td>
+				<td style="border: 1px solid black;"><button type="button" class="removeDetailBtn">-</button></td>
 			</tr>
 		`;
 		$('#detailsTable').append(newRow); // 테이블에 내역(newRow) 추가
