@@ -10,10 +10,10 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
     <title>GoodeeFit Login</title>
     <!-- Custom CSS -->
-    <link href="../dist/css/style.min.css" rel="stylesheet">
+    <link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
     
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script>
@@ -53,13 +53,13 @@
 <!-- Login box.scss -->
 <!-- ============================================================== -->
 <div class="auth-wrapper d-flex no-block justify-content-center align-items-center position-relative" 
-	style="background:url(../assets/images/big/auth-bg.jpg) no-repeat center center;">
+	style="background:url(${pageContext.request.contextPath}/assets/images/big/auth-bg.jpg) no-repeat center center;">
 <div class="auth-box row">
-	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(../assets/images/big/mainLogin-1.jpg);"> </div>
+	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(${pageContext.request.contextPath}/assets/images/big/mainLogin-1.jpg);"> </div>
 	<div class="col-lg-5 col-md-7 bg-white">
 		<div class="p-3">
 			<div class="text-center">
-				<img src="../assets/images/big/icon.png" alt="wrapkit">
+				<img src="${pageContext.request.contextPath}/assets/images/big/icon.png" alt="wrapkit">
 			</div>
 			<h2 class="mt-3 text-center">Sign In</h2>
 			<p class="text-center">GoodeeFit 전자결재 시스템</p>

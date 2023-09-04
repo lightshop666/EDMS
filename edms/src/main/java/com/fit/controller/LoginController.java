@@ -69,7 +69,7 @@ public class LoginController {
 
 	    if (loginSessionMap == null) {
 	        model.addAttribute("loginError", "사원번호와 비밀번호를 확인해주세요"); // 에러 메시지 설정
-	        return "/login/login"; // 로그인 실패 시 로그인 페이지 다시 보여줌
+	        return "redirect:/login"; // 로그인 실패 시 로그인 페이지 다시 보여줌
 	    }
 
 		// 로그인 성공시 세션에 정보를 저장합니다.

@@ -20,6 +20,10 @@ public class LoginService {
 		Map<String, Object> loginSessionMap = loginMapper.selectEmpForSession(memberId, memberPw);
 		log.debug(CC.WOO + "로긴서비스.loginSessionMap :  " + loginSessionMap + CC.RESET);
 		
+		if (loginSessionMap == null) {
+			log.debug(CC.WOO + "로긴서비스.로긴세션맵이 널입니다(=없는 사용자입니다)" + CC.RESET);
+			return null;
+		}
 		// DB에서 날짜값을 받아오면 String 타입으로 형변환이 필요합니다.
 		log.debug(CC.WOO + "로긴서비스.loginSessionMap employDate의 형변환 전 타입 :  " + loginSessionMap.get("employDate").getClass() + CC.RESET);
 		java.sql.Date employDate = (java.sql.Date) loginSessionMap.get("employDate");
