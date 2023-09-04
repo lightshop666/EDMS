@@ -1,5 +1,6 @@
 package com.fit.service;
 
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import com.fit.vo.ApprovalJoinDto;
 import com.fit.vo.DocumentFile;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraft;
+import com.fit.vo.BasicDraft;
 import com.fit.vo.ExpenseDraftContent;
 import com.fit.vo.MemberFile;
 import com.fit.vo.ReceiveJoinDraft;
@@ -41,10 +43,36 @@ public class DraftService {
 
 
     //------------------------------정환 시작---------------------------------------------
+    public List<Approval> getFilteredDrafts(Map<String, Object> filterParams, int empNo) {
+        filterParams.put("empNo", empNo);
+        
+        log.debug("filterParamsa: {}", filterParams);
+        return draftMapper.selectFilteredDrafts(filterParams);
+    }
+
+    public int getTotalDraftCount(Map<String, Object> filterParams,int empNo) {
+    	filterParams.put("empNo", empNo);
+    	return draftMapper.selectTotalDraftCount(filterParams);
+    }
+    
+
+    public int getTotalReceiveCount(Map<String, Object> filterParams,int empNo) {
+    	filterParams.put("empNo", empNo);
+    	return draftMapper.selectTotalReceiveCount(filterParams);
+    }
+   
+    public List<Approval> getFilteredReceiveDrafts(Map<String, Object> filterParams, int empNo) {
+        filterParams.put("empNo", empNo);
+        
+        log.debug("filterParamsa: {}", filterParams);
+        return draftMapper.selectFilteredReceiveDrafts(filterParams);
+    }
+   
     public List<EmpInfo> getAllEmp() {
         return draftMapper.getAllEmp();
     }
 
+    //지출결의서 service 매서드
     @Transactional
     public int processExpenseSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
        String draftState = null;  
@@ -107,8 +135,8 @@ public class DraftService {
            for (int empNo : selectedRecipientsIds) {
                 draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
             }
-           return 1;
         }
+        return 1;
     }
     
     //expenseDraftOne
@@ -122,9 +150,9 @@ public class DraftService {
         expenseDraftData.put("firstApprovalName", String.valueOf(approval.getFirstApprovalName()));
         expenseDraftData.put("mediateApprovalName", String.valueOf(approval.getMediateApprovalName()));
         expenseDraftData.put("finalApprovalName", String.valueOf(approval.getFinalApprovalName()));
-        expenseDraftData.put("firstApproval", String.valueOf(approval.getFirstApproval()));
-        expenseDraftData.put("mediateApproval", String.valueOf(approval.getMediateApproval()));
-        expenseDraftData.put("finalApproval", String.valueOf(approval.getFinalApproval()));
+        expenseDraftData.put("firstApproval", Integer.parseInt(String.valueOf(approval.getFirstApproval())));
+        expenseDraftData.put("mediateApproval", Integer.parseInt(String.valueOf(approval.getMediateApproval())));
+        expenseDraftData.put("finalApproval", Integer.parseInt(String.valueOf(approval.getFinalApproval())));
         expenseDraftData.put("status", String.valueOf(approval.getApprovalField()));
        
         
@@ -151,60 +179,24 @@ public class DraftService {
         List<String> selectedRecipientsIds = draftMapper.selectRecipientIdsByApprovalNo(approvalNo);
         expenseDraftData.put("selectedRecipientsIds", selectedRecipientsIds);
         
+        Map<String, Object> memberSignMap = getApproverSign(approval); 
+        expenseDraftData.put("memberSignMap", memberSignMap); 
+        
         
         log.debug(CC.JUNG + "[DEBUG] Expense Draft Data: {}", expenseDraftData + CC.RESET);
         
         return expenseDraftData;
     }
     
-    
-    // 역할을 결정하는 로직 분리
-       private String determineRole(Approval approval, int empNo) {
-           if (empNo == approval.getFirstApproval()) {
-               return "drafter";
-           } else if (empNo == approval.getMediateApproval()) {
-               return "middleApprover";
-           } else if (empNo == approval.getFinalApproval()) {
-               return "finalApprover";
-           } else {
-               return "unknown"; // 혹은 다른 기본 역할 처리
-           }
-       }
-       
-       //
-       public void cancelDraft(int approvalNo) {
-           draftMapper.updateApprovalState(approvalNo, "임시저장");
-       }
-
-       public void approveDraft(int approvalNo, String role) {
-           if ("middleApprover".equals(role)) {
-               draftMapper.updateApprovalStateAndField(approvalNo, "결재중", "B");
-           } else if ("finalApprover".equals(role)) {
-               draftMapper.updateApprovalStateAndField(approvalNo, "결재완료", "C");
-           }
-       }
-
-       public void rejectDraft(int approvalNo) {
-           draftMapper.updateApprovalStateAndField(approvalNo, "반려","A");
-       }
-
-       public void cancelApproval(int approvalNo, String role) {
-           if ("finalApprover".equals(role)) {
-               draftMapper.updateApprovalStateAndField(approvalNo, "결재중", "B");
-           }else {
-              draftMapper.updateApprovalStateAndField(approvalNo, "결재대기", "A");
-           }   
-           // 중간승인자일 경우의 처리도 추가할 수 있음
-       }
        
        public int modifyExpenseDraft(Map<String, Object> submissionData, List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
            // 1. 수정하려는 지출 결의서의 approvalNo 가져오기
            int approvalNo = (int) submissionData.get("approvalNo");
 
            // 2. ExpenseDraft 테이블의 docTitle과 마감일 업데이트
-           String newDocTitle = (String) submissionData.get("documentTitle");
-           String newPaymentDate = (String) submissionData.get("paymentDate");
-           draftMapper.updateExpenseDraft(approvalNo, newDocTitle, newPaymentDate);
+           String docTitle = (String) submissionData.get("documentTitle");
+           String paymentDate = (String) submissionData.get("paymentDate");
+           draftMapper.updateExpenseDraft(approvalNo, docTitle, paymentDate);
 
            // 3. expense_draft_content 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
            draftMapper.deleteExpenseDraftContents(approvalNo);
@@ -221,22 +213,239 @@ public class DraftService {
            // 5. receive_draft 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
            draftMapper.deleteReceiveDrafts(approvalNo);
 
+           log.debug("selectedRecipientsIds: {}", selectedRecipientsIds);
            // 6. receive_draft 테이블에 수정된 데이터 insert
-           if (selectedRecipientsIds != null && !selectedRecipientsIds.isEmpty()) {
-               for (int empNo : selectedRecipientsIds) {
+           
+           List<Integer> selectedRecipientsId = selectedRecipientsIds;
+           log.debug("selectedRecipientsId: {}", selectedRecipientsId);
+           if (selectedRecipientsId != null && !selectedRecipientsId.isEmpty()) {
+               for (int empNo : selectedRecipientsId) {
                    draftMapper.insertReceiveDraft(approvalNo, empNo);
                }
            }
 
            // 7. approval 테이블 수정
-           int selectedMiddleApproverId = (int) submissionData.get("selectedMiddleApproverId");
-           int selectedFinalApproverId = (int) submissionData.get("selectedFinalApproverId");
-           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId, newDocTitle);
+           
+           String isSave = (String) submissionData.get("isSave");
+           
+           int selectedMiddleApproverId = Integer.parseInt((String) submissionData.get("selectedMiddleApproverId"));
+           int selectedFinalApproverId = Integer.parseInt((String) submissionData.get("selectedFinalApproverId"));
+           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId,docTitle);
 
 
            return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
        }
    
+       //기본 기안서 basicDraft service 매서드
+       public int processBasicSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds) {
+          String 
+                  draftState = "결재대기";      
+          
+           String basicCategory = "기안서";
+           String approvalField = "A";
+          //임시번호 
+           int empNotest = 2008001;
+
+           log.debug("processBasicSubmission() Start");
+
+           // 전달받은 submissionData 출력
+           log.debug("Submission Data: {}", submissionData);
+           
+        
+           log.debug("Selected Middle Approver ID: {}", submissionData.get("selectedMiddleApproverId"));
+           log.debug("Selected Final Approver ID: {}", submissionData.get("selectedFinalApproverId"));
+           log.debug("Approval Date: {}", submissionData.get("approvalDate"));
+           // approval 테이블에 데이터 입력
+           Approval approval = new Approval();
+           approval.setEmpNo(empNotest);
+           approval.setDocTitle((String) submissionData.get("documentTitle"));
+           approval.setFirstApproval(empNotest);
+           approval.setMediateApproval(Integer.parseInt((String) submissionData.get("selectedMiddleApproverId")));
+           approval.setFinalApproval(Integer.parseInt((String) submissionData.get("selectedFinalApproverId")));
+           approval.setApprovalDate("");
+           approval.setApprovalReason("");
+           approval.setApprovalState(draftState);
+           approval.setDocumentCategory(basicCategory);
+           approval.setApprovalField(approvalField);
+           int insertResult = draftMapper.insertApproval(approval);
+
+           log.debug("insertResult:", insertResult);   
+           
+           // basic_draft 테이블에 데이터 입력
+           BasicDraft basicDraft = new BasicDraft();
+           basicDraft.setApprovalNo(draftMapper.selectLastInsertedApprovalNo());
+           basicDraft.setDocContent((String) submissionData.get("docContent"));
+           basicDraft.setDocTitle((String) submissionData.get("documentTitle"));
+           // 기타 필드들 설정
+           draftMapper.insertBasicDraft(basicDraft);
+
+           
+           if (selectedRecipientsIds == null || selectedRecipientsIds.isEmpty()) {
+               return 1; // 수신참조자가 없는 경우를 나타내는 코드 또는 상수값
+           }else {
+              for (int empNo : selectedRecipientsIds) {
+                   draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
+               }
+              return 1;
+           }   
+       }
+       
+       // 결재상태에 따른 서명이미지 조회
+       private Map<String, Object> getApproverSign(Approval approval) {
+       	Map<String, Object> memberSignMap = new HashMap<>();
+       	
+       	// 기안자의 서명은 무조건 조회
+       	int firstEmpNo = approval.getFirstApproval(); // 기안자의 사원번호 조회
+   		memberSignMap.put("firstSign", selectMemberSign(firstEmpNo)); // 기존 메서드 사용
+   		// 결재상태에 따라 해당 결재자의 서명 이미지를 조회합니다.
+   		String approvalField = approval.getApprovalField();
+       	if ( approvalField.equals("B") ) { // 결재중
+       		int mediateEmpNo = approval.getMediateApproval(); // 중간승인자의 사원번호 조회
+       		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo)); 
+       	} else if ( approvalField.equals("C") ) { // 결재완료
+       		int mediateEmpNo = approval.getMediateApproval(); // 중간승인자의 사원번호 조회
+       		int finalEmpNo = approval.getFinalApproval(); // 중간승인자의 사원번호 조회
+       		memberSignMap.put("mediateSign", selectMemberSign(mediateEmpNo));
+       		memberSignMap.put("finalSign", selectMemberSign(finalEmpNo));
+       	}
+       	
+       	return memberSignMap;
+       }
+       
+       
+       //basicDraftOne
+       public Map<String, Object> getBasicDraftDataByApprovalNo(int approvalNo,int empNo) {
+           Map<String, Object> basicDraftData = new HashMap<>();
+           
+           
+           // approval 테이블에서 데이터 조회
+           Approval approval = draftMapper.selectApprovalByApprovalNo(approvalNo);
+           basicDraftData.put("approvalNo", approvalNo);
+           basicDraftData.put("firstApprovalName", String.valueOf(approval.getFirstApprovalName()));
+           basicDraftData.put("mediateApprovalName", String.valueOf(approval.getMediateApprovalName()));
+           basicDraftData.put("finalApprovalName", String.valueOf(approval.getFinalApprovalName()));
+           basicDraftData.put("firstApproval", Integer.parseInt(String.valueOf(approval.getFirstApproval())));
+           basicDraftData.put("mediateApproval", Integer.parseInt(String.valueOf(approval.getMediateApproval())));
+           basicDraftData.put("finalApproval", Integer.parseInt(String.valueOf(approval.getFinalApproval())));
+           basicDraftData.put("status", String.valueOf(approval.getApprovalField()));
+          
+           
+           //역할부여
+           String role = determineRole(approval, empNo);
+           
+           log.debug("Role Determined: {}", role); // 디버깅용 로그 추가
+           basicDraftData.put("role", role);
+           
+           // basic_draft 테이블에서 데이터 조회
+           BasicDraft basicDraft = draftMapper.selectBasicDraftByApprovalNo(approvalNo);
+           basicDraftData.put("docContent", basicDraft.getDocContent());
+           basicDraftData.put("docTitle", basicDraft.getDocTitle()); // 이 부분 추가
+           
+           log.debug(CC.JUNG + "[DEBUG] Basic Draft Data: {}", basicDraftData + CC.RESET);
+           
+           
+           // receive_draft 테이블에서 데이터 조회
+           List<String> selectedRecipientsIds = draftMapper.selectRecipientIdsByApprovalNo(approvalNo);
+           basicDraftData.put("selectedRecipientsIds", selectedRecipientsIds);
+           
+           
+           // 5. Signature Images
+           Map<String, Object> memberSignMap = getApproverSign(approval); 
+           basicDraftData.put("memberSignMap", memberSignMap); 
+           
+           log.debug(CC.JUNG + "[DEBUG] Basic Draft Data: {}", basicDraftData + CC.RESET);
+           
+           return basicDraftData;
+       }
+       
+       
+       //공통 서비스
+       
+       // 역할을 결정하는 로직 분리
+       private String determineRole(Approval approval, int empNo) {
+           if (empNo == approval.getFirstApproval()) {
+               return "drafter";
+           } else if (empNo == approval.getMediateApproval()) {
+               return "middleApprover";
+           } else if (empNo == approval.getFinalApproval()) {
+               return "finalApprover";
+           } else {
+               return "unknown"; // 혹은 다른 기본 역할 처리
+           }
+       }
+       
+       //
+       public void cancelDraft(int approvalNo) { //기안취소 버튼 클릭시
+           draftMapper.updateApprovalState(approvalNo, "임시저장");
+       }
+
+       public void approveDraft(int approvalNo, String role) {//승인 버튼 클릭시
+    	   String A = "A";
+           String B = "B";
+           String C = "C";
+    	   if ("middleApprover".equals(role)) {
+               draftMapper.updateApprovalStateAndField(approvalNo, "결재중", B);
+           } else if ("finalApprover".equals(role)) {
+               draftMapper.updateApprovalStateAndField(approvalNo, "결재완료", C);
+           }
+       }
+
+       public int rejectDraft(int approvalNo,String rejectionReason) { //반려 버튼 클릭시
+           String A = "A";
+           String B = "B";
+           String C = "C";
+    	   draftMapper.updateApprovalStateAndField(approvalNo, "반려",A);
+           draftMapper.updateApprovalReason(approvalNo,rejectionReason);
+       
+           return 1;
+       }
+
+       public void cancelApproval(int approvalNo, String role) {
+    	   String A = "A";
+           String B = "B";
+           String C = "C";
+    	   
+    	   if ("finalApprover".equals(role)) {	//승인취소 버튼 클릭시
+               draftMapper.updateApprovalStateAndField(approvalNo, "결재중", B);
+           }else {
+              draftMapper.updateApprovalStateAndField(approvalNo, "결재대기", A);
+           }   
+         
+       }
+       
+       public int modifyBasicDraft(Map<String, Object> submissionData, List<Integer> selectedRecipientsIds) {
+           // 1. 수정하려는 지출 결의서의 approvalNo 가져오기
+           int approvalNo = (int) submissionData.get("approvalNo");
+
+           // 2. BasicDraft 테이블의 docTitle과 마감일 업데이트
+           String docTitle = (String) submissionData.get("documentTitle");
+           String docContent = (String) submissionData.get("docContent");
+           draftMapper.updateBasicDraft(approvalNo, docTitle, docContent);
+
+           // 3. receive_draft 테이블에서 해당 approvalNo에 해당하는 데이터 삭제
+           draftMapper.deleteReceiveDrafts(approvalNo);
+
+           log.debug("selectedRecipientsIds: {}", selectedRecipientsIds);
+           // 4. receive_draft 테이블에 수정된 데이터 insert
+           
+           List<Integer> selectedRecipientsId = selectedRecipientsIds;
+           log.debug("selectedRecipientsId: {}", selectedRecipientsId);
+           if (selectedRecipientsId != null && !selectedRecipientsId.isEmpty()) {
+               for (int empNo : selectedRecipientsId) {
+                   draftMapper.insertReceiveDraft(approvalNo, empNo);
+               }
+           }
+
+           // 5. approval 테이블 수정
+           int selectedMiddleApproverId = Integer.parseInt((String) submissionData.get("selectedMiddleApproverId"));
+           int selectedFinalApproverId = Integer.parseInt((String) submissionData.get("selectedFinalApproverId"));
+           String isSave = (String) submissionData.get("isSave");
+           
+           draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId,docTitle);
+
+
+           return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
+       }
     //------------------------------정환 끝---------------------------------------------   
     //------------------------------희진 시작--------------------------------------------
     // 작성 폼에서 출력될 기안자의 서명 이미지 조회

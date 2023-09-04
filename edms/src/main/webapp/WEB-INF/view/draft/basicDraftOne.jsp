@@ -4,8 +4,11 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>지출결의서 작성</title>
-      <style>
+    <title>기안서 상세</title>
+    <head>
+    <meta charset="UTF-8">
+    <title>기안서 상세</title>
+    <style>
         table {
             border-collapse: collapse;
             width: 100%;
@@ -56,16 +59,15 @@
 </head>
 <body>
 	<c:set var="m" value="${memberSignMap}"></c:set>
-    <h2>지출결의서 상세</h2>
-    <form action="${pageContext.request.contextPath}/draft/expenseDraftOne" method="post">
+    <h2>기안서 상세</h2>
+    <form action="${pageContext.request.contextPath}/draft/basicDraftOne" method="post">
         <table>
-        	
             <tr>
                 <th rowspan="3" colspan="2">
-                    지출결의서
-                    <input type="hidden" id="role" name="role" value="${expenseDraftData.role}">
-                    <input type="hidden" id="status" name="status" value="${expenseDraftData.status}">
-                    <input type="hidden" id="approvalNo" name="approvalNo" value="${expenseDraftData.approvalNo}">
+                    기안서
+                    <input type="hidden" id="role" name="role" value="${basicDraftData.role}">
+                    <input type="hidden" id="status" name="status" value="${basicDraftData.status}">
+                    <input type="hidden" id="approvalNo" name="approvalNo" value="${basicDraftData.approvalNo}">
                 </th>
                 <th rowspan="3">결재</th>
                 <th>기안자</th>
@@ -91,24 +93,20 @@
 			</tr>
             <tr>
                 <td >
-                    <span id="firstApproval">${expenseDraftData.firstApprovalName}</span>
+                    <span id="firstApproval">${basicDraftData.firstApprovalName}</span>
                 </td>
                 <td>
-                    <span id="selectedMiddleApprover">${expenseDraftData.mediateApprovalName}</span>
+                    <span id="selectedMiddleApprover">${basicDraftData.mediateApprovalName}</span>
                 </td>
                 <td>
-                    <span id="selectedFinalApprover">${expenseDraftData.finalApprovalName}</span>	
+                    <span id="selectedFinalApprover">${basicDraftData.finalApprovalName}</span>	
                 </td>
             </tr>
             <tr>
-                <td>마감일</td>
-                <td colspan="5">${expenseDraftData.paymentDate}</td>
-            </tr>
-                        <tr>
                 <td>수신참조</td>
                 <td colspan="5">
                     <span id="selectedRecipients">
-                        <c:forEach items="${expenseDraftData.selectedRecipientsIds}" var="recipientId">
+                        <c:forEach items="${basicDraftData.selectedRecipientsIds}" var="recipientId">
                             ${recipientId},
                         </c:forEach>
                     </span>
@@ -116,29 +114,11 @@
             </tr>
             <tr>
                 <td>제목</td>
-                <td colspan="5">${expenseDraftData.docTitle}</td>
+                <td colspan="5">${basicDraftData.docTitle}</td>
             </tr>
             <tr>
-                <td>내역</td>
-                <td colspan="5">
-                
-                    <table id="expenseDetailsTable">
-                        <tr>
-                            <th>카테고리</th>
-                            <th>금액</th>
-                            <th>내용</th>
-                           
-                        </tr>
-                        <!-- 내역 항목 -->
-                        <c:forEach items="${expenseDraftData.expenseDraftContentList}" var="expenseDetail">
-                            <tr>
-                                <td>${expenseDetail.expenseCategory}</td>
-                                <td>${expenseDetail.expenseCost}</td>
-                                <td>${expenseDetail.expenseInfo}</td>
-                            </tr>
-                        </c:forEach>
-                    </table>
-                </td>
+                <td>내용</td>
+                <td colspan="5">${basicDraftData.docContent}</td>
             </tr>
         </table>
         
@@ -146,29 +126,30 @@
             <label>파일첨부</label>
         </div>
         
-		<div id="buttonArea">
-		    <!-- 여기에 동적으로 생성된 버튼들이 나열됨 -->
-		</div>
-		<input type="hidden" id="action" name="action" value="">
-		<input type="hidden" id="rejectionReason" name="rejectionReason" value="">
+        <div id="buttonArea">
+            <!-- 여기에 동적으로 생성된 버튼들이 나열됨 -->
+        </div>
+        <input type="hidden" id="action" name="action" value="">
+        <input type="hidden" id="rejectionReason" name="rejectionReason" value="">
     </form>
     <div id="rejectionModal" class="modal">
-	    <div class="modal-content">
-	        <h3>반려 사유 입력</h3>
-	        <textarea id="rejectionReasonInput" rows="4" cols="50" placeholder="반려 사유를 입력하세요"></textarea>
-	        
-	        <button id="closeRejectionModal">취소</button>
-	        <button id="submitApprovalReason" class="approval-button" data-action="reject">반려</button>
-	    </div>	
- 	</div>
+    <div class="modal-content">
+        <h3>반려 사유 입력</h3>
+        <textarea id="rejectionReasonInput" rows="4" cols="50" placeholder="반려 사유를 입력하세요"></textarea>
+        
+        <button id="closeRejectionModal">취소</button>
+        <button id="submitApprovalReason" class="approval-button" data-action="reject">반려</button>
+    </div>
+</div>
+ <!-- 버튼 클릭 시 폼 제출 -->
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             // 예시 데이터 (실제 데이터에 맞게 수정해야 함)
-            const role = "${expenseDraftData.role}"; // 기안자, 중간승인자, 최종승인자 등의 역할 정보
-            const status = "${expenseDraftData.status}"; // 결재 상태 정보 (A: 기안, B: 중간승인, C: 최종승인 등)
-            const approvalNo = "${expenseDraftData.approvalNo}"; // 결재 번호 등의 정보
+            const role = "${basicDraftData.role}"; // 기안자, 중간승인자, 최종승인자 등의 역할 정보
+            const status = "${basicDraftData.status}"; // 결재 상태 정보 (A: 기안, B: 중간승인, C: 최종승인 등)
+            const approvalNo = "${basicDraftData.approvalNo}"; // 결재 번호 등의 정보
 
             // 버튼 추가 함수
             function addButton(buttonId, buttonText,actionValue) {
@@ -209,25 +190,27 @@
             if ($("#buttonArea").children().length > 0) {
                 $("#buttonArea").show();
             }
-
-        // '반려 사유 입력' 모달 내부의 '반려' 버튼을 클릭할 때 작업을 수행합니다.
-        $("#submitRejectionReason").click(function() {
-            const action = "reject"; // 액션은 'reject'로 설정
-            const rejectionReason = $("#rejectionReason").val(); // 입력된 반려 사유
-            
-            // 숨겨진 입력 필드에 액션과 반려 사유를 설정합니다.
-            $("#action").val(action);
-            $("#approvalReason").val(rejectionReason);
-            
-            // 폼을 제출합니다.
-            $("form").submit();
-            
-            // '반려 사유 입력' 모달을 숨깁니다.
-            $("#rejectionModal").hide();
         });
         
         $("#closeRejectionModal").click(function() {
             $("#rejectionModal").hide();
+        });
+
+        // '반려 사유 입력' 모달 내부의 '반려' 버튼을 클릭할 때 작업을 수행합니다.
+        $("#submitRejectionReason").click(function() {
+        	const action = "reject"; // 액션은 'reject'로 설정
+            const rejectionReason = $("#rejectionReasonInput").val(); // 입력된 반려 사유
+
+            // 숨겨진 입력 필드에 액션과 반려 사유를 설정합니다.
+            $("#action").val(action);
+            $("#rejectionReason").val(rejectionReason);
+            
+         // '반려 사유 입력' 모달을 숨깁니다.
+            $("#rejectionModal").hide();
+            
+            // 폼을 제출합니다.
+            $("form").submit();
+           
         });
         
         $(document).on("click", ".approval-button", function() {
@@ -240,11 +223,10 @@
             } else {
                 // 'rejectButton'인 경우에는 '반려 사유 입력' 모달을 표시
                 $("#rejectionModal").show();
+                
+                event.preventDefault();
             }
         });
-        
-        
-    });  
     </script>
 </body>
 </html>

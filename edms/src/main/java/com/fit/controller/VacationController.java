@@ -1,7 +1,10 @@
 package com.fit.controller;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.CC;
+import com.fit.service.CommonPagingService;
 import com.fit.service.VacationPaymentService;
 import com.fit.service.VacationService;
+import com.fit.vo.Approval;
 import com.fit.vo.VacationHistory;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,72 +28,65 @@ import lombok.extern.slf4j.Slf4j;
 public class VacationController {
 	@Autowired
 	private VacationService vacationService;
+	@Autowired CommonPagingService commonPagingService;	
 
 	@Autowired
 	private VacationPaymentService vacationPaymentService;  
 
 
-    @GetMapping("/vacationHistory")
+    @GetMapping("/vacation/vacationHistory")
     public String getVacationHistoryList(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam (required = false, defaultValue = "1000000") int empNo,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) String col,
-            @RequestParam(required = false) String ascDesc,
-            @RequestParam(required = false) String vacationName,
-            Model model) {
+    		Model model, HttpSession session
+    		, @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage
+    		, @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage
+    		, @RequestParam(name = "startDate", required = false, defaultValue = "") String startDate
+    		, @RequestParam(name= "endDate", required = false, defaultValue = "") String endDate
+    		, @RequestParam(name= "searchCol", required = false, defaultValue = "") String searchCol
+    		, @RequestParam(name= "searchWord", required = false, defaultValue = "") String searchWord
+    		, @RequestParam(name= "col", required = false, defaultValue = "") String col
+    		, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
+    		, @RequestParam(required = false) String vacationName
+    		) {
 
+    	int empNo = (int) session.getAttribute("loginMemberId");
         log.debug(CC.JUNG + "[DEBUG] getVacationHistoryList() Start" + CC.RESET);
-        log.debug("currentPage: " + page + ", empNo: " + empNo + ", startDate: " + startDate + ", endDate: " + endDate +
+        log.debug("currentPage: " + currentPage + ", empNo: " + empNo + ", startDate: " + startDate + ", endDate: " + endDate +
                   ", col: " + col + ", ascDesc: " + ascDesc + ", vacationName: " + vacationName);
-
-        // 휴가 내역 리스트 조회
-        Map<String, Object> resultMap = vacationService.getVacationHistoryList(
-                page, empNo, startDate, endDate, col, ascDesc, vacationName);
-
-        List<VacationHistory> vacationHistoryList = (List<VacationHistory>) resultMap.get("vacationHistoryList");
-
-        int minPage = (int) resultMap.get("minPage");
-        int maxPage = (int) resultMap.get("maxPage");
-
-        model.addAttribute("vacationHistoryList", vacationHistoryList);
-
-
-        model.addAttribute("minPage", minPage);
-        model.addAttribute("maxPage", maxPage);
-
-        // 기존 파라미터들도 모델에 추가
-        model.addAttribute("empNo", empNo);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("col", col);
-        model.addAttribute("ascDesc", ascDesc);
-        model.addAttribute("vacationName", vacationName);
+	    
+	 // 검색 조건을 포함한 목록을 가져오도록 수정
+	    Map<String, Object> filterParams = new HashMap<>();
+	    filterParams.put("startDate", startDate);
+	    filterParams.put("endDate", endDate);
+	    filterParams.put("col", col);
+	    filterParams.put("vacationName", vacationName);
+	    filterParams.put("ascDesc", ascDesc);
+	    filterParams.put("searchCol", searchCol);
+	    filterParams.put("searchWord", searchWord);
+	    filterParams.put("beginRow", (currentPage - 1) * rowPerPage); // 시작 행
+	    filterParams.put("rowPerPage", rowPerPage); //
+	    
+	    // 페이징 처리를 위한 필요한 변수들 계산
+	    int totalCount = vacationService.getTotalHistoryCount(filterParams,empNo); // 전체 게시물 수
+	    int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage); // 마지막 페이지
+	    int pagePerPage = 5;
+	    int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+	    int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
+	    
+	    List<VacationHistory> vacationHistoryList = vacationService.getFilteredHistory(filterParams, empNo);
+	    model.addAttribute("vacationHistoryList", vacationHistoryList);
+	    model.addAttribute("currentPage", currentPage);
+	    model.addAttribute("minPage", minPage);
+	    model.addAttribute("maxPage", maxPage);
+	    model.addAttribute("lastPage", lastPage);
+	    model.addAttribute("empNo", empNo);
 
         log.debug(CC.JUNG + "[DEBUG] getVacationHistoryList() End" + CC.RESET);
 
         return "/vacation/vacationHistory";
     }
-
-
-    @PostMapping("/vacationHistory")
-    public String postVacationHistoryList(
-            @RequestParam(required = false, defaultValue = "1") int page,
-            @RequestParam (required = false, defaultValue = "1000000") int empNo,
-            @RequestParam(required = false) String startDate,
-            @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) String col,
-            @RequestParam(required = false) String ascDesc,
-            @RequestParam(required = false) String vacationName,
-            Model model) {
-
-        return "redirect:/vacationHistory?page=" + page + "&empNo=" + empNo + "&startDate=" + startDate
-                + "&endDate=" + endDate + "&col=" + col + "&ascDesc=" + ascDesc + "&vacationName=" + vacationName;
-    }
     
     
-    @GetMapping("/adminAddVacation")
+    @GetMapping("/vacation/adminAddVacation")
     public String getVacationForm(
             @RequestParam int empNo,
             Model model) {
@@ -106,8 +104,7 @@ public class VacationController {
     	 vacationPaymentService.addVacation(empNo, vacationName, vacationPm, vacationDays);
         
         // 휴가 추가 후에 필요한 작업 수행 (예: 휴가 내역 다시 조회 등)
-        // ...
 
-        return "redirect:/vacationHistory";
+        return "redirect:/vacation/vacationHistory";
     }
 }

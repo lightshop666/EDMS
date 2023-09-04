@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>지출결의서 작성</title>
-         <style>
+    <title>기안서 수정</title>
+     <style>
        table {
             border-collapse: collapse;
             width: 100%;
@@ -55,26 +56,27 @@
     </style>
 </head>
 <body>
-    <h2>지출결의서 작성</h2>
-    <form action="${pageContext.request.contextPath}/expenseDraft" method="post">
+    <h2>기안서 수정</h2>
+    <form action="${pageContext.request.contextPath}/modifyBasic" method="post">
+    
         <table>
-            <tr>
-				<th rowspan="3" colspan="2">지출결의서</th>
+        	 <tr>
+				<th rowspan="3" colspan="2">기안서 </th>
 				<th rowspan="3">결재</th>
 				<th>기안자</th>
 				<th>중간승인자</th>
 				<th>최종승인자</th>
+				<td><input type="hidden" id="approvalNo" name="approvalNo" value="${basicDraftData.approvalNo}"></td>
 			</tr>
-         
-            <tr>
+			<tr>
                 <td rowspan="2">
-                    ${empName}
+                  <span id="firstApproval">${basicDraftData.firstApprovalName}</span>
                 </td>
                 <td>    
-                    <span id="selectedMiddleApprover"></span> 
+                    <span id="selectedMiddleApprover">${basicDraftData.mediateApprovalName}</span> 
                 </td>
                 <td>    
-                    <span id="selectedFinalApprover"></span>	
+                    <span id="selectedFinalApprover">${basicDraftData.finalApprovalName}</span>	
                     <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
                     <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
                 </td>
@@ -92,62 +94,44 @@
 					</td>
 			</tr>
             <tr>
-                <td>수신참조 <button type="button" id="recipientsBtn">선택</button></td>
+                <td>수신참조<button type="button" id="recipientsBtn">선택</button></td>
                 <td colspan="5">
-                    
-                    <span id="selectedRecipients"></span>
+                    <span id="selectedRecipients">
+                        <c:forEach items="${basicDraftData.selectedRecipientsIds}" var="recipientId">
+                            ${recipientId},
+                        </c:forEach>
+                    </span>
                     <input type="hidden" id="selectedRecipientsIds" name="recipients[]" value="">
                 </td>
             </tr>
-            <!-- 마감일 -->
-            <tr>
-                <td>마감일</td>
-                <td colspan="5"><input type="date" name="paymentDate" required></td>
-            </tr>
-            <!-- 제목 -->
             <tr>
                 <td>제목</td>
-                <td colspan="5"><input type="text" name="documentTitle" required></td>
+                <td colspan="5"><input type="text" name="documentTitle" value="${basicDraftData.docTitle}" required></td>
             </tr>
-            <!-- 내역 항목 -->
-            <tr>
-                <td>
-                	내역
-                </td>
-                <td colspan="5">
-                    <table id="expenseDetailsTable">
-                        <tr>
-                            <th>카테고리</th>
-                            <th>금액</th>
-                            <th>내용</th>
-                            <th><button type="button" id="addExpenseDetailBtn">+</button></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <select name="expenseCategory[]" required>
-                                    <option value="교통비">교통비</option>
-                                    <option value="식비">식비</option>
-                                    <option value="통신비">통신비</option>
-                                    <option value="사무용품비">사무용품비</option>
-                                </select>
-                            </td>
-                            <td><input type="number" name="expenseCost[]" required></td>
-                            <td><input type="text" name="expenseInfo[]" required></td>
-                            <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
-                        </tr>
-                    </table>
-                </td>
+             <tr>
+                <td>내용</td>
+                <td colspan="5"><textarea name="docContent" rows="5" required>${basicDraftData.docContent}</textarea></td>
             </tr>
         </table>
-
-        <!-- 버튼 그룹 -->
+        
+        <div>
+            <label>파일첨부</label>
+            <input type="file" name="documentFile">
+        </div>
+        
         <div class="buttons">
-            <button type="submit" id="saveDraftBtn">임시저장</button>
-            <button type="submit" id="submitBtn">기안하기</button>
+            <c:choose>
+			    <c:when test="${isSave == null or isSave == 'true'}">
+			        <button type="submit" id="saveDraftBtn">저장</button>
+			    </c:when>
+			    <c:otherwise>
+			        <button type="submit" id="submitBtn">기안</button>
+			    </c:otherwise>
+			</c:choose>
         </div>
     </form>
 
-   <!-- 중간승인자 검색 모달 -->
+ <!-- 중간승인자 검색 모달 -->
    <div class="modal" id="middleApproverModal" style="display: none;">
        <div class="modal-dialog">
            <div class="modal-content">
@@ -169,7 +153,8 @@
                        <c:forEach var="employee" items="${employeeList}">
                            <tr>
                                <td>
-                                   <input type="radio" value="${employee.empNo}" name="selectedMiddleApprover">
+                                   <input type="radio" name="selectedMiddleApprover" value="${employee.empNo}"
+                                	${employee.empNo == basicDraftData.mediateApproval ? 'checked' : ''}>
                                </td>
                                <td>
                                    ${employee.empNo}
@@ -187,16 +172,17 @@
                        </c:forEach>
                    </table>
                </div>
-               <!-- 모달 푸터 -->
+             <!-- 모달 푸터 -->
                <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
                    <button type="button" id="selectMiddleApproverBtn">선택</button>
+            		<button type="button" onclick="closeMiddleApproverModal()">닫기</button>
                </div>
            </div>
        </div>
    </div>
+        
 
-    <!-- 최종승인자 검색 모달 -->
+            <!-- 최종승인자 검색 모달 -->
    <div class="modal" id="finalApproverModal" style="display: none;">
        <div class="modal-dialog">
            <div class="modal-content">
@@ -218,7 +204,8 @@
                        <c:forEach var="employee" items="${employeeList}">
                            <tr>
                                <td>
-                                   <input type="radio" value="${employee.empNo}" name="selectedFinalApprover">
+                                   <input type="radio" name="selectedFinalApprover" value="${employee.empNo}"
+                                ${employee.empNo == basicDraftData.finalApproval ? 'checked' : ''}>
                                </td>
                                <td>
                                    ${employee.empNo}
@@ -236,15 +223,16 @@
                        </c:forEach>
                    </table>
                </div>
-               <!-- 모달 푸터 -->
+              <!-- 모달 푸터 -->
                <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                   <button type="button" id="selectFinalApproverBtn">선택</button>
+                    <button type="button" id="selectFinalApproverBtn">선택</button>
+            		<button type="button" onclick="closeFinalApproverModal()">닫기</button>
                </div>
            </div>
        </div>
    </div>
-   <!-- 수신참조자 검색 모달 -->
+
+		<!-- 수신참조자 검색 모달 -->
    <div class="modal" id="recipientsModal" style="display: none;">
        <div class="modal-dialog">
            <div class="modal-content">
@@ -264,7 +252,8 @@
                        <c:forEach var="employee" items="${employeeList}">
                            <tr>
                                <td>
-                                   <input type="checkbox" value="${employee.empNo}" name="selectedRecipients">
+                                   <input type="checkbox" name="recipients[]" value="${employee.empNo}"
+                                ${basicDraftData.selectedRecipientsIds.contains(employee.empName) ? 'checked' : ''}>
                                </td>
                                <td>
                                    ${employee.empNo}
@@ -277,18 +266,17 @@
                    </table>
                </div>
                <!-- 모달 푸터 -->
-               <div class="modal-footer">
-                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                   <button type="button" id="selectRecipientsBtn">선택</button>
-               </div>
+           	<div class="modal-footer">
+            	<button type="button" id="selectRecipientsBtn">선택</button>
+            	<button type="button" onclick="closeModal('recipients')">닫기</button>
+             </div>
            </div>
        </div>
    </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-        	 // 중간승인자 모달 열기
+            // 중간승인자 모달 열기
             function openMiddleApproverModal() {
                 $("#middleApproverModal").show();
             }
@@ -313,7 +301,9 @@
                 $("#recipientsModal").hide();
             }
             
-            
+            $(".btn-close").click(function() {
+                $(this).closest(".modal").hide();
+            });
 
             // 중간승인자 선택 처리
             function selectMiddleApprover() {
@@ -372,55 +362,23 @@
                 
                 closeRecieveModal();
             }
+	
 
-            
-         // 내역 항목 추가
-            $("#addExpenseDetailBtn").click(function() {
-                var newRow = `
-                    <tr>
-                        <td>
-                            <select name="expenseCategory[]" required>
-                                <option value="교통비">교통비</option>
-                                <option value="식비">식비</option>
-                                <option value="통신비">통신비</option>
-                                <option value="사무용품비">사무용품비</option>
-                            </select>
-                        </td>
-                        <td><input type="number" name="expenseCost[]" required></td>
-                        <td><input type="text" name="expenseInfo[]" required></td>
-                        <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
-                    </tr>
-                `;
-                $("#expenseDetailsTable").append(newRow);
-            });
-
-            // 내역 항목 제거
-            $(document).on("click", ".removeExpenseDetailBtn", function() {
-                $(this).closest("tr").remove();
-            });
-
-         // 공통적으로 사용하는 데이터 수집 및 전송 함수
+            // 공통적으로 사용하는 데이터 수집 및 전송 함수
             function sendData(isSaveDraft) {
-                // 필요한 데이터 수집
                 var selectedMiddleApproverId = $("#selectedMiddleApproverId").val();
                 var selectedFinalApproverId = $("#selectedFinalApproverId").val();
-                var paymentDate = $("input[name='paymentDate']").val();
                 var documentTitle = $("input[name='documentTitle']").val();
+                var docContent = $("textarea[name='docContent']").val();
                 
                 var selectedRecipientsIds = [];
                 $("#recipientsModal input:checked").each(function() {
                     var recipientEmpNo = parseInt($(this).val());
                     selectedRecipientsIds.push(recipientEmpNo);
                 });
-                
-                // 유효성 검사 - 기안하기와 임시저장 모두 결재라인 데이터가 필요함
+
                 if (!selectedMiddleApproverId || !selectedFinalApproverId) {
                     alert("승인자를 선택해주세요.");
-                    return false;
-                }
-
-                if (!paymentDate) {
-                    alert("마감일을 입력해주세요.");
                     return false;
                 }
 
@@ -429,71 +387,54 @@
                     return false;
                 }
 
-                
-
-               // 내역 항목 데이터 가져오기
-               var expenseDetails = [];
-               $("#expenseDetailsTable tr:gt(0)").each(function() {
-                   var category = $(this).find("select[name^='expenseCategory']").val();
-                   var cost = $(this).find("input[name^='expenseCost']").val();
-                   var info = $(this).find("input[name^='expenseInfo']").val();
-                   expenseDetails.push({ category: category, cost: cost, info: info });
-               });
-                    
-               // 기안하기 버튼 클릭 시에만 추가 데이터 수집
-               if (!isSaveDraft) {
-
-
-                    if (expenseDetails.length === 0) {
-                        alert("내역 항목을 추가해주세요.");
-                        return false;
-                    }
+                if (!docContent) {
+                    alert("내용을 입력해주세요.");
+                    return false;
                 }
+                
+                var selectedRecipientsIds = [];
+                $("#recipientsModal input:checked").each(function() {
+                    var recipientEmpNo = parseInt($(this).val());
+                    selectedRecipientsIds.push(recipientEmpNo);
+                });
 
-                // JSON 형식으로 변환하여 전송할 데이터 생성
                 var dataToSend = {
                     selectedMiddleApproverId: selectedMiddleApproverId,
                     selectedFinalApproverId: selectedFinalApproverId,
-                    paymentDate: paymentDate,
                     documentTitle: documentTitle,
                     selectedRecipientsIds: selectedRecipientsIds,
-                    expenseDetails: expenseDetails,
-                    isSaveDraft: isSaveDraft
-                    // 추가로 필요한 데이터 추가
+                    docContent: docContent,
+                    isSaveDraft: isSaveDraft,
+                    approvalNo: ${basicDraftData.approvalNo}
                 };
 
-                // 폼 제출
                 $.ajax({
                     type: "POST",
-                    url: "${pageContext.request.contextPath}/draft/expenseDraft",
+                    url: "${pageContext.request.contextPath}/draft/modifyBasic",
                     contentType: "application/json",
                     data: JSON.stringify(dataToSend),
                     success: function(response) {
                         if (isSaveDraft) {
                             console.log("임시저장 서버 응답: ", response);
-                            // 임시저장 완료 메시지 등의 동작
                         } else {
                             console.log("기안하기 서버 응답: ", response);
-                            // 기안하기 완료 메시지 등의 동작
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error("에러 발생: ", error);
-                        // 에러 메시지 표시 등의 동작
                     } 
                 });
             }
 
             // 기안하기 버튼 클릭 시
-        $("#saveDraftBtn").click(function() {
-            sendData(true);
-        });
+            $("#saveDraftBtn").click(function() {
+                sendData(true);
+            });
 
-        // 기안하기 버튼 클릭 시 호출되는 함수
-        $("#submitBtn").click(function() {
-            sendData(false);
-        });
-
+            // 기안하기 버튼 클릭 시 호출되는 함수
+            $("#submitBtn").click(function() {
+                sendData(false);
+            });
 
             // 버튼 이벤트 핸들러 설정
             $("#middleApproverBtn").click(openMiddleApproverModal);
@@ -502,7 +443,6 @@
             $("#selectFinalApproverBtn").click(selectFinalApprover);
             $("#recipientsBtn").click(openRecipientsModal);
             $("#selectRecipientsBtn").click(selectRecipients);
-            $("#addExpenseDetailBtn").click(addExpenseDetail);
         });
     </script>
 </body>

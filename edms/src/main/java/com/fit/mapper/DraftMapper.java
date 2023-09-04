@@ -1,6 +1,7 @@
 package com.fit.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,49 +15,80 @@ import com.fit.vo.ReceiveJoinDraft;
 import com.fit.vo.SalesDraft;
 import com.fit.vo.SalesDraftContent;
 import com.fit.vo.VacationDraft;
+import com.fit.vo.BasicDraft;
 import com.fit.vo.VacationHistory;
 
 @Mapper
 public interface DraftMapper {
 
-    List<EmpInfo> getAllEmp();
     
+    //공통매서드
+	
+	List<EmpInfo> getAllEmp();
+	
     int insertApproval(Approval approval);
     
-    int insertExpenseDraft(ExpenseDraft expenseDraft);
-    
-    int insertExpenseDraftContent(ExpenseDraftContent expenseDetail);
-
     int insertReceiveDraft(int approvalNo, int empNo);
     
     int selectLastInsertedApprovalNo();
     
     int selectLastInsertedDocumentNo();
     
-    ExpenseDraft selectExpenseDraftByApprovalNo(int approvalNo);
+    Approval selectApprovalByApprovalNo(int approvalNo); // 추가됨
     
-    List<ExpenseDraftContent> selectExpenseDraftContentsByApprovalNo(int approvalNo);
+    int selectDocumentNoByApprovalNo(int approvalNo);
+    
+    int deleteReceiveDrafts(int approvalNo);
+
+    int updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId, String docTitle);//docTitle 추가필요
     
     List<String> selectRecipientIdsByApprovalNo(int approvalNo);
-    
-    Approval selectApprovalByApprovalNo(int approvalNo); // 추가됨
     
     int updateApprovalState(int approvalNo, String approvalState);
 
     int updateApprovalStateAndField(int approvalNo,String approvalState, String approvalField);
     
-    int selectDocumentNoByApprovalNo(int approvalNo);
+    int updateApprovalReason(int approvalNo, String rejectionReason);
+    
+    //기안함 List
+    
+    List<Approval> selectFilteredDrafts(Map<String, Object> filter);
 
-    void updateExpenseDraft(int approvalNo, String newDocTitle, String newPaymentDate);
+    int selectTotalDraftCount(Map<String, Object> filter);
+    
+    //결재상태별 갯수 조회
+    List<Map<String, Object>> getApprovalStatusByEmpNo(int empNo);
+    
+    // 수신함 List
+    List<Approval> selectFilteredReceiveDrafts(Map<String, Object> filter);
+    
+    int selectTotalReceiveCount(Map<String, Object> filter);
+    
+    //Expense Mapper
+    
+    int insertExpenseDraft(ExpenseDraft expenseDraft);
+    
+    int insertExpenseDraftContent(ExpenseDraftContent expenseDetail);
+    
+    ExpenseDraft selectExpenseDraftByApprovalNo(int approvalNo);
+    
+    List<ExpenseDraftContent> selectExpenseDraftContentsByApprovalNo(int approvalNo);
+    
+    int updateExpenseDraft(int approvalNo, String docTitle, String paymentDate);
 
-    void deleteExpenseDraftContents(int approvalNo);
+    int deleteExpenseDraftContents(int approvalNo);
 
-    void insertExpenseDraftContent(int documentNo, String expenseCategory, double expenseCost, String expenseInfo);
 
-    void deleteReceiveDrafts(int approvalNo);
-
-    void updateApproval(int approvalNo, int selectedMiddleApproverId, int selectedFinalApproverId, String docTitle);
-    //정환 끝
+    //Basic Mapper
+    
+    int insertBasicDraft(BasicDraft basicDraft);
+    
+    BasicDraft selectBasicDraftByApprovalNo(int approvalNo);
+    
+    int updateBasicDraft(int approvalNo, String docTitle, String docContent);
+    
+    
+    //-------------------------정환 끝------------------------------------------------------
     
     // 희진
     int insertSalesDraft(SalesDraft salesDraft); // 매출보고서 테이블 insert

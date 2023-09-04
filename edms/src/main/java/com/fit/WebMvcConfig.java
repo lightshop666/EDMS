@@ -20,6 +20,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				.addPathPatterns("/reservation/**")
 				.addPathPatterns("/schedule/**")
 				.addPathPatterns("/utility/**")
+				.addPathPatterns("/draft/**")
 				.addPathPatterns("/home");
 	}
 	

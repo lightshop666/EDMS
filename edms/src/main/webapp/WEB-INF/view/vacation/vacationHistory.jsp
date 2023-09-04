@@ -11,25 +11,29 @@
 	<div align="center">
 	    <a href="${pageContext.request.contextPath}/adminAddVacation?empNo=${empNo}" class="btn btn-primary">보상휴가 지급</a>
 	</div>
-    <form method="post" action="${pageContext.request.contextPath}/vacationHistory">
-        <div class="search-area">
-            <label class="search-label">기간검색</label>
-            <input type="date" name="startDate">
-            <input type="date" name="endDate">
-            <button type="submit">검색</button>
-        </div>      
-		<div class="sort-area">
-		    <label class="sort-label">정렬</label>
-		    <select name="col">
-		        <option value="createdate">발생 일자</option>
-		        <option value="vacationHistoryNo">휴가 번호</option>
-		    </select>
-		    <select name="ascDesc">
-		        <option value="ASC">오름차순</option>
-		        <option value="DESC">내림차순</option>
-		    </select>
-		    <button type="submit">정렬</button>
-		</div>
+    <form method="get" action="${pageContext.request.contextPath}/vacationHistory">
+        <div class="date-area">
+            <label class="date-label">검색 시작일</label>
+            <input type="date" name="startDate" value="${startDate}">
+            
+            <label class="date-label">검색 종료일</label>
+            <input type="date" name="endDate" value="${endDate}">
+            
+            <button type="submit">조회</button>
+        </div>
+
+        <div class="sort-area">
+            <label class="sort-label">정렬</label>
+            <select name="col">
+                <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>작성일</option>
+            </select>
+            <select name="ascDesc">
+                <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+                <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+            </select>
+            <button type="submit">정렬</button>
+        </div>
+        
     </form>
     
     <div align="center">
@@ -62,16 +66,22 @@
         </tbody>
     </table>
     
-    <nav class="pagination justify-content-center">
-        <ul class="pagination">
-            <c:forEach var="page" begin="${minPage}" end="${maxPage}">
-                <li class="page-item ${currentPage eq page ? 'active' : ''}">
-                    <a class="page-link" href="${pageContext.request.contextPath}/vacationHistory?currentPage=${page}&empNo=${empNo}&startDate=${startDate}&endDate=${endDate}&vacationName=${vacationName}&ascDesc=${ascDesc}">
-                        ${page}
-                    </a>
-                </li>
-            </c:forEach>
-        </ul>
-    </nav>
+    <!-- 페이징 영역 -->
+    <c:if test="${minPage > 1 }">
+        <a href="${pageContext.request.contextPath}/vacationHistory?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">이전</a>
+    </c:if>
+    
+    <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+        <c:if test="${i == currentPage}">
+            ${i}
+        </c:if>
+        <c:if test="${i != currentPage}">
+            <a href="${pageContext.request.contextPath}/vacationHistory?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
+        </c:if>
+    </c:forEach>
+    
+    <c:if test="${lastPage > currentPage}">
+        <a href="${pageContext.request.contextPath}/vacationHistory?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">다음</a>
+    </c:if>
 </body>
 </html>
