@@ -223,13 +223,7 @@ public class ReservationController {
 		model.addAttribute("maxPage", maxPage);
 		model.addAttribute("startDate", startDate);
 		model.addAttribute("endDate", endDate);
-		// 검색의 경우 한글로 검색할 경우 url에서 한글 깨짐이 발생할 수 있으므로 URL인코딩을 이용해서 VIEW에 전달한다.
-			try {
-				model.addAttribute("encodedSearchWord", URLEncoder.encode(searchWord, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		model.addAttribute("encodedSearchWord",searchWord);
 		model.addAttribute("searchCol", searchCol);
 		model.addAttribute("col", col);
 		model.addAttribute("ascDesc", ascDesc);

@@ -75,7 +75,7 @@
 			$('#cancelBtn').click(function() {
 				let result = confirm('HOME으로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
-					window.location.href = '/home'; // Home으로 이동
+					window.location.href = '${pageContext.request.contextPath}/home'; // Home으로 이동
 				}
 			});
 		});
@@ -239,7 +239,6 @@
         </c:choose> 
 	    </li>
 	</ul>
-	
 	<br>
                 
                 <!-- utility table -->
@@ -292,10 +291,10 @@
 														<!-- 공용품은 고정된 폴더에 저장되는것으로 생각하고 리스트에 사진을 출력한다. 조건절을 이용해서 공용품파일이 저장되지 않은 리스트가 있다면 기본이미지를 출력한다.-->
 														<c:choose>
 														    <c:when test="${empty u.utilitySaveFilename}">
-														        <img class="thumbnail" src="/image/utility/noImage.png" style="width: 150px; height: auto;">
+														        <img class="thumbnail" src="${pageContext.request.contextPath}/image/utility/noImage.png" style="width: 150px; height: auto;">
 														    </c:when>
 														    <c:otherwise>
-														        <img class="thumbnail" src="/image/utility/${u.utilitySaveFilename}" style="width: 150px; height: auto;">
+														        <img class="thumbnail" src="${pageContext.request.contextPath}/image/utility/${u.utilitySaveFilename}" style="width: 150px; height: auto;">
 														    </c:otherwise>
 														</c:choose>
 													</td>

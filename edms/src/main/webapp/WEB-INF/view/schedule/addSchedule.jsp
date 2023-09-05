@@ -64,7 +64,7 @@
 			$('#cancelBtn').click(function() {
 				let result = confirm('schedule로 이동할까요?'); // 사용자 선택 값에 따라 true or false 반환
 				if (result) {
-					window.location.href = '/schedule/schedule'; // schedule으로 이동
+					window.location.href = '${pageContext.request.contextPath}/schedule/schedule'; // schedule으로 이동
 				}
 			});
 		});
