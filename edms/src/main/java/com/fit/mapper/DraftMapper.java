@@ -131,5 +131,9 @@ public interface DraftMapper {
     
     int selectApprovalDraftCnt(Map<String, Object> paramMap); // 내 결제함 전체 수
     
-    List<Map<String, Object>> getApprovalCountsByState(int empNo); // 내 결재함의 결재상태별 갯수 조회
+    List<Map<String, Object>> selectApprovalCountsByState(int empNo); // 내 결재함의 결재상태별 갯수 조회
+    
+    List<Approval> selectTempDraftList(Map<String, Object> paramMap); // 임시저장함 리스트 조회
+    
+    int selectTempDraftCnt(Map<String, Object> paramMap); // 임시저장함 전체 수
 }

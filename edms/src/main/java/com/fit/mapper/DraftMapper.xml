@@ -698,7 +698,7 @@
    </select>
    
    <!-- 내 결재함의 결재상태별 갯수 조회 -->
-   <select id="getApprovalCountsByState" parameterType="int" resultType="java.util.Map">
+   <select id="selectApprovalCountsByState" parameterType="int" resultType="java.util.Map">
 	   SELECT
 	        approval_state approvalState,
 	        COUNT(*) count
@@ -709,5 +709,54 @@
 	        OR final_approval = #{empNo}
 	    GROUP BY
 	        approval_state
-	</select> 
+	</select>
+	
+	<!-- approval select by emp_no and approval_state -->
+   <select id="selectTempDraftList" parameterType="java.util.Map" resultType="com.fit.vo.Approval">
+		SELECT
+			approval_no approvalNo,
+			doc_title docTitle,
+			createdate createdate,
+			document_category documentCategory
+		FROM approval
+		<where>
+	        emp_no = #{empNo}
+	        AND approval_state = '임시저장'
+	        <if test="searchCol != '' and searchWord != ''">
+	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
+	        </if>
+	        <if test="startDate != ''">
+	            AND createdate &gt;= #{startDate}
+	        </if>
+	        <if test="endDate != ''">
+	            AND createdate &lt;= #{endDate}
+	        </if>
+	    </where>
+	    <choose>
+	        <when test="col != '' and ascDesc != ''">
+	            ORDER BY ${col} ${ascDesc}
+	        </when>
+	        <otherwise>ORDER BY createdate DESC</otherwise>
+	    </choose>
+	    LIMIT #{beginRow}, #{rowPerPage}
+   </select>
+   
+   <!-- approval cnt by emp_no and approval_state -->
+   <select id="selectTempDraftCnt" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*)
+		FROM approval 
+		<where>
+	        emp_no = #{empNo}
+	        AND approval_state = '임시저장'
+	        <if test="searchCol != '' and searchWord != ''">
+	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
+	        </if>
+	        <if test="startDate != ''">
+	            AND createdate &gt;= #{startDate}
+	        </if>
+	        <if test="endDate != ''">
+	            AND createdate &lt;= #{endDate}
+	        </if>
+	    </where>
+   </select>
 </mapper>

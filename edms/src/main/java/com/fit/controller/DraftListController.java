@@ -240,7 +240,7 @@ public class DraftListController {
 	    paramMap.put("rowPerPage", rowPerPage); // 페이지당 행 수
 	    
 	    // 3. 서비스 호출
-	    Map<String, Object> result = draftService.getApprovalDraftList(paramMap, empNo);
+	    Map<String, Object> result = draftService.getApprovalDraftList(paramMap);
 	    List<Approval> approvalDraftList = (List<Approval>) result.get("approvalDraftList");
 	    int approvalDraftCnt = (int) result.get("approvalDraftCnt");
 	    int approvalDraftCount = (int) result.get("approvalDraftCount");
@@ -277,7 +277,54 @@ public class DraftListController {
 	
 	// 임시저장함 리스트
 	@GetMapping("/draft/tempDraft")
-	public String tempDraftList() {
+	public String tempDraftList(HttpSession session
+			, @RequestParam(name = "currentPage", required = false, defaultValue = "1") int currentPage
+			, @RequestParam(name = "rowPerPage", required = false, defaultValue = "10") int rowPerPage
+			, @RequestParam(name = "startDate", required = false, defaultValue = "") String startDate
+			, @RequestParam(name= "endDate", required = false, defaultValue = "") String endDate
+			, @RequestParam(name= "searchCol", required = false, defaultValue = "") String searchCol
+			, @RequestParam(name= "searchWord", required = false, defaultValue = "") String searchWord
+			, @RequestParam(name= "col", required = false, defaultValue = "") String col
+			, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
+			, Model model) {
+		
+		// 1. 세션 정보 조회
+		int empNo = (int) session.getAttribute("loginMemberId");
+		// 2. 검색조건 및 페이징 조건을 map에 담기
+	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("empNo", empNo);
+	    paramMap.put("startDate", startDate);
+	    paramMap.put("endDate", endDate);
+	    paramMap.put("col", col);
+	    paramMap.put("ascDesc", ascDesc);
+	    paramMap.put("searchCol", searchCol);
+	    paramMap.put("searchWord", searchWord);
+	    paramMap.put("beginRow", (currentPage - 1) * rowPerPage); // 시작 행
+	    paramMap.put("rowPerPage", rowPerPage); // 페이지당 행 수
+	    
+	    // 3. 서비스호출
+	    Map<String, Object> result = draftService.getTempDraftList(paramMap);
+	    List<Approval> tempDraftList = (List<Approval>) result.get("tempDraftList");
+	    int tempDraftCnt = (int) result.get("tempDraftCnt");
+	    
+	    // 페이징 처리를 위한 필요한 변수들 계산 // commonPagingService 사용
+	    int lastPage = commonPagingService.getLastPage(tempDraftCnt, rowPerPage); // 마지막 페이지
+	    int pagePerPage = 5;
+	    int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
+	    int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
+	    
+	    model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("col", col);
+	    model.addAttribute("ascDesc", ascDesc);
+	    model.addAttribute("searchCol", searchCol);
+	    model.addAttribute("searchWord", searchWord);
+	    model.addAttribute("tempDraftList", tempDraftList);
+	    model.addAttribute("currentPage", currentPage);
+	    model.addAttribute("minPage", minPage);
+	    model.addAttribute("maxPage", maxPage);
+	    model.addAttribute("lastPage", lastPage);
+	    
 		return "/draft/tempDraft";
 	}
 }

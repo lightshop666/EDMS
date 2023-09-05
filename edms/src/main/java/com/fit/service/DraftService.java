@@ -995,7 +995,7 @@ public class DraftService {
     
     // ----------- 내 결재함 리스트 --------------
     @Transactional
-    public Map<String, Object> getApprovalDraftList(Map<String, Object> paramMap, int empNo) {
+    public Map<String, Object> getApprovalDraftList(Map<String, Object> paramMap) {
     	Map<String, Object> result = new HashMap<>();
     	
     	// 검색조건으로 리스트 조회
@@ -1003,7 +1003,8 @@ public class DraftService {
     	// 검색조건으로 전체 수 조회
     	int approvalDraftCnt = draftMapper.selectApprovalDraftCnt(paramMap);
     	// 결재상태별 갯수 조회
-    	List<Map<String, Object>> countState = draftMapper.getApprovalCountsByState(empNo);
+    	int empNo = (int) paramMap.get("empNo");
+    	List<Map<String, Object>> countState = draftMapper.selectApprovalCountsByState(empNo);
 
 	    int approvalDraftCount = 0;
 	    int approvalInProgressCount = 0;
@@ -1042,6 +1043,22 @@ public class DraftService {
     	result.put("approvalRejectCount", approvalRejectCount);
     	result.put("approvalsaveCount", approvalsaveCount);
     	
+    	return result;
+    }
+    
+    // 임시저장함 리스트
+    @Transactional
+    public Map<String, Object> getTempDraftList(Map<String, Object> paramMap) {
+    	Map<String, Object> result = new HashMap<>();
+    	
+    	// 검색조건으로 리스트 조회
+    	List<Approval> tempDraftList = draftMapper.selectTempDraftList(paramMap);
+    	// 검색조건으로 전체 수 조회
+    	int tempDraftCnt = draftMapper.selectTempDraftCnt(paramMap);
+    	
+    	result.put("tempDraftList", tempDraftList);
+    	result.put("tempDraftCnt", tempDraftCnt);
+	    
     	return result;
     }
 }
