@@ -759,4 +759,26 @@
 	        </if>
 	    </where>
    </select>
+   
+   <!-- approval delete by approvalNo -->
+   <delete id="deleteApprovalTempDrafts" parameterType="int[]">
+		DELETE FROM approval
+		WHERE approval_no IN
+		<foreach collection="approvalNo" item="item" open="(" close=")" separator=",">
+			#{item}
+		</foreach>
+   </delete>
+   
+   <!-- document_file select by approvalNo -->
+   <select id="selectDocumentFileByApprovalNo" parameterType="int[]" resultType="com.fit.vo.DocumentFile">
+   		SELECT
+   			approval_no approvalNo,
+   			doc_file_no docFileNo,
+   			doc_save_filename docSaveFilename
+   		FROM document_file
+   		WHERE approval_no IN
+   		<foreach collection="approvalNo" item="item" open="(" close=")" separator=",">
+   			#{item}
+   		</foreach>
+   </select>
 </mapper>

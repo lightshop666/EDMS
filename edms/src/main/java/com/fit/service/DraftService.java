@@ -634,36 +634,38 @@ public class DraftService {
     public int addDocumentFile(List<MultipartFile> multipartFile, String path, int approvalNo) {
     	int row = 0;
     	for (MultipartFile mf : multipartFile) {
-    		// DocumentFile vo에 값 셋팅
-    		DocumentFile df = new DocumentFile();
-    		df.setApprovalNo(approvalNo); // 가져온 부모키값
-    		df.setDocOriFilename(mf.getOriginalFilename()); // 파일 원본 이름
-    		df.setDocFiletype(mf.getContentType()); // 파일 타입
-    		df.setDocPath("/file/document/"); // 저장 폴더 위치
-    		// 저장할 파일의 이름 구하기 (+ 확장자명을 포함)
-    		// 1) 파일의 확장자
-    		// lastIndexOf() 메서드를 이용하여 "."을 기준으로 확장자명을 잘라낸다
-			String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf("."));
-			// 2) 파일의 이름
-			// 중복되지 않는 유일한 식별자를 랜덤으로 생성하기 위해 UUID 클래스의 randomUUID() 메서드 사용
-			// UUID로 식별자 생성시 중간에 "-"가 들어가기 때문에 replace() 메서드를 이용하여 없애준다
-			String newFilename = UUID.randomUUID().toString().replace("-", "") + ext;
-			df.setDocSaveFilename(newFilename);
-			
-			// 최종적으로 저장
-			// 1. 데이터 테이블에 저장 (mapper 호출)
-			row = row + draftMapper.insertDocumentFile(df);
-			// 2. 실제 저장소에 저장
-			File f = new File(path + df.getDocSaveFilename()); // path에 저장된 파일 이름으로 빈 파일을 생성
-			// transferTo() 메서드를 이용하여 생성한 빈 파일에 첨부된 파일의 스트림을 주입한다
-			try {
-				mf.transferTo(f);
-			} catch (IllegalStateException | IOException e) {
-				e.printStackTrace();
-				
-				// 트랜잭션이 정상적으로 작동할 수 있도록 try..catch를 강요하지 않는 예외 발생이 필요하다
-				throw new RuntimeException();
-			}
+    		if (!mf.isEmpty() && mf.getSize() > 0) { // 파일을 첨부했는지 검사합니다.
+    			// DocumentFile vo에 값 셋팅
+        		DocumentFile df = new DocumentFile();
+        		df.setApprovalNo(approvalNo); // 가져온 부모키값
+        		df.setDocOriFilename(mf.getOriginalFilename()); // 파일 원본 이름
+        		df.setDocFiletype(mf.getContentType()); // 파일 타입
+        		df.setDocPath("/file/document/"); // 저장 폴더 위치
+        		// 저장할 파일의 이름 구하기 (+ 확장자명을 포함)
+        		// 1) 파일의 확장자
+        		// lastIndexOf() 메서드를 이용하여 "."을 기준으로 확장자명을 잘라낸다
+    			String ext = mf.getOriginalFilename().substring(mf.getOriginalFilename().lastIndexOf("."));
+    			// 2) 파일의 이름
+    			// 중복되지 않는 유일한 식별자를 랜덤으로 생성하기 위해 UUID 클래스의 randomUUID() 메서드 사용
+    			// UUID로 식별자 생성시 중간에 "-"가 들어가기 때문에 replace() 메서드를 이용하여 없애준다
+    			String newFilename = UUID.randomUUID().toString().replace("-", "") + ext;
+    			df.setDocSaveFilename(newFilename);
+    			
+    			// 최종적으로 저장
+    			// 1. 데이터 테이블에 저장 (mapper 호출)
+    			row = row + draftMapper.insertDocumentFile(df);
+    			// 2. 실제 저장소에 저장
+    			File f = new File(path + df.getDocSaveFilename()); // path에 저장된 파일 이름으로 빈 파일을 생성
+    			// transferTo() 메서드를 이용하여 생성한 빈 파일에 첨부된 파일의 스트림을 주입한다
+    			try {
+    				mf.transferTo(f);
+    			} catch (IllegalStateException | IOException e) {
+    				e.printStackTrace();
+    				
+    				// 트랜잭션이 정상적으로 작동할 수 있도록 try..catch를 강요하지 않는 예외 발생이 필요하다
+    				throw new RuntimeException();
+    			}
+    		}
     	}
     	
     	return row;
@@ -723,6 +725,7 @@ public class DraftService {
     	
     	// 3. receive_draft 테이블
         int[] recipients = (int[]) paramMap.get("recipients");
+        log.debug(CC.HE + "DraftService.insertSalesDraftContent() recipients.length : " + recipients.length + CC.RESET);
         if (recipients.length != 0) { // 수신참조자를 선택했을 경우
            if (row != 0) { // 이전 과정이 정상적으로 수행되었을 경우
               row = draftMapper.insertReceiveDrafts(approvalKey, recipients); // mapper 호출
@@ -733,10 +736,10 @@ public class DraftService {
         // 4. document_file 테이블
         List<MultipartFile> multipartFile = (List<MultipartFile>) paramMap.get("multipartFile");
         String path = (String) paramMap.get("path");
-        if (multipartFile.isEmpty()) { // 파일을 첨부했을 경우
-        	if (row != 0) { // 이전 과정이 정상적으로 수행되었을 경우
-        		row = addDocumentFile(multipartFile, path, approvalKey);
-        	}
+        // MultipartFile은 파일이 첨부되지 않은 경우에도 빈 MultipartFile 객체가 포함된 크기가 1인 리스트를 반환하기 떄문에
+        // multipartFile에 대한 파일 첨부 유무 검사는 addDocumentFile() 메소드 내 반복문에서 실행합니다.
+    	if (row != 0) { // 이전 과정이 정상적으로 수행되었을 경우
+    		row = addDocumentFile(multipartFile, path, approvalKey);
         }
         
     	return approvalKey;
@@ -1046,7 +1049,7 @@ public class DraftService {
     	return result;
     }
     
-    // 임시저장함 리스트
+    // ----------- 임시저장함 리스트 --------------
     @Transactional
     public Map<String, Object> getTempDraftList(Map<String, Object> paramMap) {
     	Map<String, Object> result = new HashMap<>();
@@ -1060,5 +1063,26 @@ public class DraftService {
     	result.put("tempDraftCnt", tempDraftCnt);
 	    
     	return result;
+    }
+    
+    // 임시저장 문서 일괄 삭제
+    @Transactional
+    public int removeTempDraft(Map<String, Object> paramMap) {
+    	int[] approvalNo = (int[]) paramMap.get("approvalNo");
+    	String path = (String) paramMap.get("path");
+    	
+    	// 1. 해당 문서번호 배열의 파일 정보 조회
+    	List<DocumentFile> documentFileList = draftMapper.selectDocumentFileByApprovalNo(approvalNo);
+    	log.debug(CC.HE + "DraftService.removeTempDraft() documentFileList : " + documentFileList + CC.RESET);
+    	// 2. approval 테이블 mapper 호출 (ON DELETE CASCADE)
+    	int row = draftMapper.deleteApprovalTempDrafts(approvalNo);
+    	log.debug(CC.HE + "DraftService.removeTempDraft() row : " + row + CC.RESET);
+    	// 3. 해당 리스트로 파일 삭제 메서드를 반복문으로 호출
+    	for (DocumentFile df : documentFileList) {
+    		log.debug(CC.HE + "DraftService.removeTempDraft() df.getDocFileNo() : " + df.getDocFileNo() + CC.RESET);
+    		removeDocumentFile(path, df.getDocFileNo(), df.getDocSaveFilename());
+    	}
+    	
+    	return row;
     }
 }

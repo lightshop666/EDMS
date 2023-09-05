@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -287,7 +288,9 @@ public class DraftListController {
 			, @RequestParam(name= "col", required = false, defaultValue = "") String col
 			, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
 			, Model model) {
-		
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
 		// 1. 세션 정보 조회
 		int empNo = (int) session.getAttribute("loginMemberId");
 		// 2. 검색조건 및 페이징 조건을 map에 담기
@@ -326,5 +329,34 @@ public class DraftListController {
 	    model.addAttribute("lastPage", lastPage);
 	    
 		return "/draft/tempDraft";
+	}
+	
+	// 임시저장 문서 일괄 삭제
+	@PostMapping("/draft/tempDraft")
+	public String removeTempDraft(@RequestParam(name = "approvalNo") int[] approvalNo,
+            					HttpServletRequest request) {
+		// 세션 정보 조회하여 로그인 유무 및 권한 조회 후 분기 예정
+		// 로그인 유무 -> 인터셉터 처리
+		// 권한 분기 -> 메인메뉴에서 처리
+		log.debug(CC.HE + "DraftListController.removeTempDraft() approvalNo.length : " + approvalNo.length + "개" + CC.RESET);
+		for(int i = 0; i < approvalNo.length; i++) {
+			log.debug(CC.HE + "DraftListController.removeTempDraft() approvalNo[" + i + "] param : " + approvalNo[i] + CC.RESET);
+		}
+		// 파일 삭제를 위한 경로 구하기
+		String path = request.getServletContext().getRealPath("/file/document/");
+		// 모든 매개값 map에 담기
+		Map<String, Object> paramMap = new HashMap<>();
+		paramMap.put("approvalNo", approvalNo);
+		paramMap.put("path", path);
+		// 서비스 호출
+		int row = draftService.removeTempDraft(paramMap);
+		// 서비스 결과에 따라 분기
+		if (row != 0) {
+			log.debug(CC.HE + "DraftListController.removeTempDraft() 삭제 성공 row : " + row + CC.RESET);
+			return "redirect:/draft/tempDraft?result=success";
+		} else {
+			log.debug(CC.HE + "DraftListController.removeTempDraft() 삭제 실패" + CC.RESET);
+			return "redirect:/draft/tempDraft?result=fail";
+		}
 	}
 }

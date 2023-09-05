@@ -136,4 +136,8 @@ public interface DraftMapper {
     List<Approval> selectTempDraftList(Map<String, Object> paramMap); // 임시저장함 리스트 조회
     
     int selectTempDraftCnt(Map<String, Object> paramMap); // 임시저장함 전체 수
+    
+    int deleteApprovalTempDrafts(int[] approvalNo); // 임시 저장 문서 일괄 삭제 - approval 테이블
+    
+    List<DocumentFile> selectDocumentFileByApprovalNo(int[] approvalNo); // 해당 문서번호 배열의 파일 정보 조회
 }

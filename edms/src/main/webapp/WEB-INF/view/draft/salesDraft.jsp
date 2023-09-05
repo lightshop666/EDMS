@@ -27,7 +27,7 @@
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
 	<!-- 공통 함수를 불러옵니다. -->
-	<script src="/draftFunction.js"></script>
+	<script src="${pageContext.request.contextPath}/draftFunction.js"></script>
 	<!-- ============================================================== -->
 	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

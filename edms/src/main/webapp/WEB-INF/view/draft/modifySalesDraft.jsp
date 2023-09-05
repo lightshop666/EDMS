@@ -178,9 +178,14 @@
 			// 취소 버튼 클릭시
 			$('#cancelBtn').click(function() {
 				let result = confirm('작성중인 내용이 모두 사라집니다. 정말 취소하시겠습니까?');
+				let approvalNo = ${approval.approvalNo};
+				let approvalState = '${approval.approvalState}';
 				if (result) {
-					let approvalNo = ${approval.approvalNo};
-					window.location.href = "/draft/salesDraftOne?approvalNo=" + approvalNo; // 상세페이지로 이동
+					if (approvalState == '임시저장') {
+						window.location.href = '/draft/tempDraft';
+					} else {						
+						window.location.href = '/draft/salesDraftOne?approvalNo=' + approvalNo; // 상세페이지로 이동
+					}
 				}
 			});
 		});

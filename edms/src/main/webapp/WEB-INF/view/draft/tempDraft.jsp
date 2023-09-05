@@ -49,40 +49,41 @@
 	<script>
 	$(document).ready(function() {
 		// 체크박스 전체선택/해제
-		let chkList = $('input[name=approvalNo]'); // 체크박스 버튼
 		let chkAll = $('#checkAll'); // 전체선택박스 버튼
+		let chkList = $('input[name=approvalNo]'); // 체크박스 버튼
 		let total = chkList.length; // 체크박스 전체 수
+		// console.log(total + "<- total");
 		let checked = 0; // 선택된 체크박스 수
 		
 		chkAll.click(function() { // 전체선택박스 버튼 클릭시
-			if(chkAll.is(":checked")) { // is(":checked") -> 체크되어있으면 true 반환
-				chkList.prop("checked", true); // prop("checked") -> 마찬가지로 체크되어있으면 true 반환 // 대신 prop는 값을 바꿀 수도 있다
+			if(chkAll.is(':checked')) { // 체크되어있으면 true 반환
+				chkList.prop('checked', true); // 마찬가지로 체크되어있으면 true 반환 // 대신 prop는 값을 바꿀 수도 있다
 			} else {
-				chkList.prop("checked", false);
+				chkList.prop('checked', false);
 			}
-			checked = chkList.filter(":checked").length; // filter(":checked") -> 체크되어있는 체크박스만 필터링해준다
+			checked = chkList.filter(':checked').length; // filter(":checked") -> 체크되어있는 체크박스만 필터링해준다
 			// console.log(checked + "<- checked");
 		});
+
 		chkList.click(function() { // 체크박스 버튼 클릭시
+			checked = chkList.filter(':checked').length;
 			if(total == checked) { // 선택된 체크박스 수가 체크박스 전체 수와 같다면
-				chkAll.prop("checked", true); // 전체선택박스도 체크
+				chkAll.prop('checked', true); // 전체선택박스도 체크
 			} else {
-				chkAll.prop("checked", false);
+				chkAll.prop('checked', false);
 			}
-			checked = chkList.filter(":checked").length;
 			// console.log(checked + "<- checked");
 		});
 		
 		// 삭제 버튼 유효성 검사
 		$('#delBtn').click(function(event) {
 			if(checked == 0) { // 체크박스가 하나도 선택되지 않았을 경우
-				alert("삭제할 내역을 선택해주세요");
-				event.preventDefault(); // form 제출 막기
+				alert('삭제할 내역을 선택해주세요');
 				return;
 			}
-			let result = confirm('정말 삭제하시겠습니까?'); // 확인(true) or 취소(false) 반환
-			if(result == false) {
-				event.preventDefault(); // form 제출 막기
+			let result = confirm('삭제 후 복구할 수 없습니다. 정말 삭제하시겠습니까?'); // 확인(true) or 취소(false) 반환
+			if(result == true) {
+				$('#deleteForm').submit(); // 삭제 폼 제출
 				return;
 			}
 		});
@@ -186,51 +187,76 @@
 		        </div> <br>
 		    </form>
 		    <div style="text-align: right;">
-		    	<button type="button" class="btn btn-secondary btn-lg">삭제</button>
+		    	<button type="button" class="btn btn-secondary btn-lg" id="delBtn">삭제</button>
 		    </div> <br>
 		    
 		    <!-- 문서 제출 목록 출력 -->
-		    <table class="table table-hover table-primary">
-		    	<thead class="text-white">
-			        <tr>
-			        	<th class="bg-primary"><input type="checkbox" id="checkAll"></th>
-			            <th class="bg-primary">문서 양식</th>
-			            <th class="bg-primary">문서 제목</th>
-			            <th class="bg-primary">작성일</th>
-			        </tr>
-			     </thead>
-			     <tbody>
-			        <c:forEach var="draft" items="${tempDraftList}">
-			            <tr>
-			            	<td>
-			            		<!-- 다중 삭제 기능을 위해 배열로 넘깁니다. -->
-			            		<input type="checkbox" name="approvalNo" value="${draft.approvalNo}">
-			            	</td>
-			                <td>${draft.documentCategory}</td>
-			                <td>
-			                    <c:choose>
-			                        <c:when test="${draft.documentCategory eq '지출결의서'}">
-			                            <a href="${pageContext.request.contextPath}/draft/modifyExpenseDraftOne?approvalNo=${draft.approvalNo}">${draft.docTitle}</a>
-			                        </c:when>
-			                        <c:when test="${draft.documentCategory eq '기안서'}">
-			                            <a href="${pageContext.request.contextPath}/draft/modifyBasicDraftOne?approvalNo=${draft.approvalNo}">${draft.docTitle}</a>
-			                        </c:when>
-			                        <c:when test="${draft.documentCategory eq '매출보고서'}">
-			                            <a href="${pageContext.request.contextPath}/draft/modifySalesDraftOne?approvalNo=${draft.approvalNo}">${draft.docTitle}</a>
-			                        </c:when>
-			                        <c:when test="${draft.documentCategory eq '휴가신청서'}">
-			                            <a href="${pageContext.request.contextPath}/draft/modifyVacationDraftOne?approvalNo=${draft.approvalNo}">${draft.docTitle}</a>
-			                        </c:when>
-			                        <c:otherwise>
-			                            ${draft.docTitle}
-			                        </c:otherwise>
-			                    </c:choose>
-			                </td>
-			                <td>${draft.createdate}</td>
-			            </tr>
-			        </c:forEach>
-		        </tbody>
-		    </table>
+		    <form action="${pageContext.request.contextPath}/draft/tempDraft" method="post" id="deleteForm">
+			    <table class="table table-hover table-primary">
+			    	<thead class="text-white">
+				        <tr>
+				        	<th class="bg-primary"><input type="checkbox" id="checkAll"></th>
+				            <th class="bg-primary">문서 양식</th>
+				            <th class="bg-primary">문서 제목</th>
+				            <th class="bg-primary">작성일</th>
+				        </tr>
+				     </thead>
+				     <tbody>
+				        <c:forEach var="draft" items="${tempDraftList}">
+				            <tr>
+				            	<td>
+				            		<!-- 일괄 삭제 기능을 위해 배열로 넘깁니다. -->
+				            		<input type="checkbox" name="approvalNo" value="${draft.approvalNo}">
+				            	</td>
+				                <td>${draft.documentCategory}</td>
+				                <td>
+				                    <c:choose>
+				                        <c:when test="${draft.documentCategory eq '지출결의서'}">
+				                            <a href="${pageContext.request.contextPath}/draft/modifyExpenseDraft?approvalNo=${draft.approvalNo}">
+				                            	<c:if test="${empty draft.docTitle}">
+				                            		제목이 없습니다.
+				                            	</c:if>
+				                            	${draft.docTitle}
+				                            </a>
+				                        </c:when>
+				                        <c:when test="${draft.documentCategory eq '기안서'}">
+				                            <a href="${pageContext.request.contextPath}/draft/modifyBasicDraft?approvalNo=${draft.approvalNo}">
+				                            	<c:if test="${empty draft.docTitle}">
+				                            		제목이 없습니다.
+				                            	</c:if>
+				                            	${draft.docTitle}
+				                            </a>
+				                        </c:when>
+				                        <c:when test="${draft.documentCategory eq '매출보고서'}">
+				                            <a href="${pageContext.request.contextPath}/draft/modifySalesDraft?approvalNo=${draft.approvalNo}">
+				                            	<c:if test="${empty draft.docTitle}">
+				                            		제목이 없습니다.
+				                            	</c:if>
+				                            	${draft.docTitle}
+				                            </a>
+				                        </c:when>
+				                        <c:when test="${draft.documentCategory eq '휴가신청서'}">
+				                            <a href="${pageContext.request.contextPath}/draft/modifyVacationDraft?approvalNo=${draft.approvalNo}">
+				                            	<c:if test="${empty draft.docTitle}">
+				                            		제목이 없습니다.
+				                            	</c:if>
+				                            	${draft.docTitle}
+				                            </a>
+				                        </c:when>
+				                        <c:otherwise>
+				                            <c:if test="${empty draft.docTitle}">
+			                            		제목이 없습니다.
+			                            	</c:if>
+			                            	${draft.docTitle}
+				                        </c:otherwise>
+				                    </c:choose>
+				                </td>
+				                <td>${draft.createdate}</td>
+				            </tr>
+				        </c:forEach>
+			        </tbody>
+			    </table>
+		    </form>
 		    
 		    <!-- 페이징 영역 -->
 		    <c:if test="${minPage > 1 }">
