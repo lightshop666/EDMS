@@ -113,7 +113,7 @@ public class MemberRest {
 	@PostMapping("/member/modifyPw")
 	@ResponseBody
 	public String modifyPw(HttpSession session
-						  , @RequestParam(required = false, name = "newPw2") String newPw2 ) {
+						   , @RequestParam(required = false, name = "newPw2") String newPw2 ) {
 		// 반환값 변수 지정
 		String modifyPwResult;
 		

@@ -39,18 +39,30 @@ public class BoardRest {
 		addBoardResultMap.put("boardFileNo", resultMap.get("boardFileNo"));
 		log.debug(CC.YE + "BoardService.uploadSummernoteImageFile() addBoardResultMap boardFileNo : " + resultMap.get("boardFileNo") + CC.RESET);
 		
-		addBoardResultMap.put("savePath", "/file/board/" + resultMap.get("boardSaveFileName"));
+		addBoardResultMap.put("savePath", request.getContextPath() + "/file/board/" + resultMap.get("boardSaveFileName"));
 		log.debug(CC.YE + "BoardService.uploadSummernoteImageFile() addBoardResultMap savePath : " + path+resultMap.get("boardSaveFileName") + CC.RESET);
 		
 		return addBoardResultMap;
 	}
 	
 	// 파일 삭제
-	@PostMapping
-	public int removeSummernoteImageFile(int boardFileNo, MultipartFile file, String path) {
-
-		int removeFileRow = boardService.removeFile(boardFileNo, file, path);
+	@PostMapping("/removeSummernoteimageFile")
+	public String removeSummernoteImageFile(int boardFileNo) {
+		String result = "undefined";  // 초기값 지정
 		
-		return removeFileRow;
+		int removeFileRow = boardService.removeFile(boardFileNo);
+		log.debug(CC.YE + "BoardRest.removeSummernoteImageFile removeFileRow : " + removeFileRow + CC.RESET);
+		
+		if(removeFileRow == 0) {
+			result = "dismatch";
+		} else if(removeFileRow == -1) {
+			result = "fail";
+		} else if (removeFileRow == 1) {
+			result = "success";
+		} else if (removeFileRow == -2) {
+			result = "none";
+		}
+		
+		return result;
 	}
 }

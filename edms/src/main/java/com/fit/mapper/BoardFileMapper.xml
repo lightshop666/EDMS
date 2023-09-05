@@ -43,7 +43,7 @@
 	</select>
 	
 	<!-- 파일 삭제 -->
-	<delete id="removeSaveFile" parameterType="com.fit.vo.BoardFile">
+	<delete id="removeBoardFile" parameterType="com.fit.vo.BoardFile">
 			DELETE FROM
 				board_file
 			WHERE

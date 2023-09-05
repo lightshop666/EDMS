@@ -15,5 +15,5 @@ public interface BoardFileMapper {
 	BoardFile selectBoardFileOne(int boardFileNo);
 	
 	// 파일 삭제
-	int removeSaveFile(BoardFile boardFile);
+	int removeBoardFile(int boardNo, int boardFileNo);
 }

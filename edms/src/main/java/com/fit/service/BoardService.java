@@ -74,23 +74,38 @@ public class BoardService {
 	}
 	
 	// boardContent 내 파일'만' 삭제하는 메서드
-	public void removeFile(int boardFileNo, MultipartFile file, String path) {
+	public int removeFile(int boardFileNo) {
 		
-		// 파일 존재 여부 확인
-		BoardFile boardFile = boardFileMapper.selectBoardFileOne(boardFileNo);
-		
-		if (boardFile == null) {
-            log.debug(CC.YE + "BoardService.removeFile file remove fail" + CC.RESET);
-    		
+		// 1. boardFileNo로 데이터베이스에서 파일 정보를 조회
+        BoardFile boardFileOne = boardFileMapper.selectBoardFileOne(boardFileNo);
+        
+	        // boardFileNo에 해당하는 board 정보가 없을 경우
+	        if (boardFileOne == null) {
+	            return 0; // 파일 정보가 없으면 0 반환
+	        }
+        
+        // 2. 메서드 매개값들 확인
+	    String path = "/file/board/";
+        String boardSaveFileName = boardFileOne.getBoardSaveFileName();
+        String fullFilePath = path + boardSaveFileName;
+        
+        int boardNo = boardFileOne.getBoardNo();
+        
+        // 3. 실제 파일 삭제 로직
+        File f = new File(fullFilePath);
+        if (f.exists()) {
+            if (f.delete()) {
+                // 성공적으로 파일을 삭제했다면, 이제 데이터베이스에서도 삭제합니다.
+                int removeRow = boardFileMapper.removeBoardFile(boardNo, boardFileNo);
+                log.debug(CC.YE + "BoardService.removeFile() removeRow : " + removeRow + CC.RESET);
+                return 1; // 성공
+            } else {
+            	log.debug(CC.YE + "BoardService.removeFile() File deletion failed"+ CC.RESET);
+            	return -1; // 파일 삭제 실패
+            }
+        } else {
+        	log.debug(CC.YE + "BoardService.removeFile() File does not exist"+ CC.RESET);
+        	return -2; // 파일이 존재하지 않음
         }
-		
-		//
-		
-	}
-	
-	// boardFileNo에 따른 boardFile 정보 조회
-	public BoardFile selectBoardFile(int boardFileNo) {
-		
-		return 
-	}
+    }
 }

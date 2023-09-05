@@ -81,14 +81,15 @@
 		  			data : data,
 		  		  dataType: 'json',
 		  			type : "POST",
-		  			url : "/uploadSummernoteImageFile",
+		  			url : "/goodeeFit/uploadSummernoteImageFile",
 		  			contentType : false,
 		  			processData : false,
 		  			success : function(data) {
 		  				// 1. 서버에서 받은 값을 변수에 할당
 		  	            var boardFileNo = data.boardFileNo;
 		  	            var savePath = data.savePath;
-		  	            
+		  	         	console.log("SavePath:", savePath);
+		  	         	
 		  				// 2. boardFileNo 값을 가져와서 hidden input 필드를 생성
 						var input = $('<input>').attr({
 							type: 'hidden',
@@ -113,13 +114,16 @@
 		  	}
 			
 			// 3. 이미지 삭제 감지 후 controller 호출
-			$(".summernote").on("summernote.media.delete", function(we, target, editor) {
-			    // target에서 필요한 정보를 추출 (예를 들어, 파일 아이디)
+			$("#summernote").on("summernote.media.delete", function(we, target, editor) {
+				
+				console.log("Event triggered"); // 이 로그가 출력되는지 확인
+				
+				// target에서 필요한 정보를 추출 (예를 들어, 파일 아이디)
 			    var boardFileNo = $(target).data("boardFileNo");
 			    
 			    // 서버에 삭제 요청
 			    $.ajax({
-			        url: "/removeSummernoteImageFile", // 백엔드에서 파일을 삭제하는 URL
+			        url: "/goodeeFit/removeSummernoteImageFile", // 백엔드에서 파일을 삭제하는 URL
 			        type: "POST",
 			        data: { "boardFileNo": boardFileNo }, // 필요한 데이터
 			        success: function(response) {
@@ -138,7 +142,7 @@
 			$('#cancelBtn').click(function() {
 			   let result = confirm('HOME으로 이동할까요?');
 			   if (result) {
-			      window.location.href = '/home'; // home으로 이동
+			      window.location.href = '/goodeeFit/home'; // home으로 이동
 			   }
 			});
 		});
@@ -147,7 +151,7 @@
 </head>
 <body>
 <h1>공지글 추가</h1>
-<form method="POST" id="addBoardFileNo" action="/board/addBoard" enctype="multipart/form-data">
+<form method="POST" id="addBoardFileNo" action="/goodeeFit/board/addBoard" enctype="multipart/form-data">
 	<input type="hidden" name="empNo" value="${empNo}">
 	<table>
 		<tr>
