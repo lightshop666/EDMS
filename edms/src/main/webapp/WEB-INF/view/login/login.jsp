@@ -16,34 +16,44 @@
     <link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
     
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script>
-		// 페이지가 로드될 때 실행
-		$(document).ready(function() {
-			// 쿠키에 "loginId" 존재할 경우 체크박스를 체크되도록 설정
-			const loginId = getCookie('loginId');
-			if (loginId) {
-				//alert('쿠키가 존재합니다');
-				$('#idSaveCheckbox').prop('checked', true);
-			}
-		});
-
-		// 쿠키 가져오는 함수
-		function getCookie(name) {
-			// 쿠키 문자열을 가져옵니다.
-			const value = '; ' + document.cookie;
-			
-			// 쿠키 문자열을 이름을 기준으로 분리합니다.
-			const parts = value.split('; ' + name + '=');
-			
-			// 분리한 결과가 쿠키 이름 뒤에 실제 값이 있는 형태인지 확인합니다.
-			if (parts.length === 2) {
-				// 분리한 결과를 배열로 변환하고, 첫 번째 값(실제 쿠키 값)을 가져옵니다.
-				const cookieValue = parts.pop().split(';').shift();				
-				// 쿠키 값 반환
-				return cookieValue;
-			}
+	// 페이지가 로드될 때 실행
+	$(document).ready(function() {
+		// 쿠키에 "loginId" 존재할 경우 체크박스를 체크되도록 설정
+		const loginId = getCookie('loginId');
+		if (loginId) {
+			$('#idSaveCheckbox').prop('checked', true);
 		}
-    </script>
+		
+		// URL에서 requireLogin 파라미터 가져오기
+		const urlParams = new URLSearchParams(window.location.search);
+		const requireLogin = urlParams.get('requireLogin');
+		
+		if(requireLogin === 'true') {
+			// 팝업 띄우기
+			alert('로그인이 필요합니다.');
+		}
+	});
+
+	// 쿠키 가져오는 함수
+	function getCookie(name) {
+		// 쿠키 문자열을 가져옵니다.
+		const value = '; ' + document.cookie;
+		
+		// 쿠키 문자열을 이름을 기준으로 분리합니다.
+		const parts = value.split('; ' + name + '=');
+		
+		// 분리한 결과가 쿠키 이름 뒤에 실제 값이 있는 형태인지 확인합니다.
+		if (parts.length === 2) {
+			// 분리한 결과를 배열로 변환하고, 첫 번째 값(실제 쿠키 값)을 가져옵니다.
+			const cookieValue = parts.pop().split(';').shift();                
+			// 쿠키 값 반환
+			return cookieValue;
+		}
+	}
+	</script>
+
     
 </head>
 
@@ -66,11 +76,11 @@
 				<form class="mt-4" action="${pageContext.request.contextPath}/login" method="post">
 					<div class="row">
 						<div class="col-lg-12">
-						<div class="form-group mb-3">
-						    <label class="form-label text-dark" for="uname">사원번호</label>
-						    <input class="form-control" name="memberId" value="${loginId}" type="text"
-								placeholder="enter your username">
-						</div>
+							<div class="form-group mb-3">
+							    <label class="form-label text-dark" for="uname">사원번호</label>
+							    <input class="form-control" name="memberId" value="${loginId}" type="text"
+									placeholder="enter your username">
+							</div>
 						</div>
 						<div class="col-lg-12">
 						    <div class="form-group mb-3">

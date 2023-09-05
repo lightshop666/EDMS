@@ -1,21 +1,14 @@
 package com.fit.service;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fit.CC;
-import com.fit.mapper.EmpMapper;
-import com.fit.mapper.MemberMapper;
-import com.fit.vo.Department;
-import com.fit.vo.EmpInfo;
-import com.fit.vo.MemberFile;
-import com.fit.vo.Team;
+import com.fit.mapper.*;
+import com.fit.vo.*;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +25,40 @@ public class EmpService {
 	// 사원 목록에서 남은 휴가 일수를 가져오기 위한 의존성 주입
 	@Autowired
 	private VacationRemainService vacationRemainService;
+	
+	
+	//사번 생성
+   public int generateNewEmpNo() {
+	    // DB에서 가장 최근 emp_no를 가져옵니다.
+		Integer lastEmpNo = empMapper.findLastEmpNo();
+	    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 생성 lastEmpNo :  "+ lastEmpNo + CC.RESET);
+		
+		// 현재 년도를 가져옵니다.
+		int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+	    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 생성 currentYear :  "+ currentYear + CC.RESET);
+	
+		if (lastEmpNo != null) {
+			int lastYear = lastEmpNo / 1000;  // emp_no의 앞의 4자리는 년도입니다.
+		    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 년도:  "+ currentYear + CC.RESET);
+			int lastSeq = lastEmpNo % 1000;   // emp_no의 뒤의 3자리는 순차적 번호입니다.
+		    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 순차번호:  "+ lastSeq + CC.RESET);
+		
+			if (lastYear == currentYear) {
+			// 같은 년도일 경우 순차적 번호를 1 증가시킨다.
+			    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo lastYear == currentYear입니다"+ CC.RESET);
+				return (currentYear * 1000) + (lastSeq + 1);
+			}
+		}
+		
+		// 다른 년도거나, 사원번호가 아직 없는 경우 새로운 번호를 초기화한다.
+	    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 마지막 사번이 올해가 아닌 경우"+ CC.RESET);
+		return (currentYear * 1000) + 1;
+	}
+
+
+	
+	
+	
 	
 	// 인사정보 조회 (emp_info)
 	public EmpInfo selectEmp(int empNo) {
@@ -208,5 +235,8 @@ public class EmpService {
 		
 		return resultDays;
 	}
+	
+	
+	
 	
 }

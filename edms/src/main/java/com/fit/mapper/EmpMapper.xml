@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.fit.mapper.EmpMapper">
+
+
+    <!-- 마지막 사원번호 조회 -->
+    <select id="findLastEmpNo" resultType="java.lang.Integer">
+        SELECT MAX(emp_no) FROM emp_no_list
+    </select>
+
+
 	<!-- 인사정보 조회 -->
 	<select id="selectEmp" parameterType="int" resultType="com.fit.vo.EmpInfo">
 		SELECT

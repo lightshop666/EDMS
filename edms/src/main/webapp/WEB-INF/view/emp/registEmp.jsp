@@ -116,6 +116,23 @@
                     window.location.href = '/home';
                 }
             });
+        	
+        	
+			//사원번호 생성
+			$("#empNoMaker").click(function(){
+				$.ajax({
+					type: "POST",
+					url: "/goodeeFit/generateEmpNo",
+					success: function(data) {
+						$("input[name='empNo']").val(data.newEmpNo);  // 응답으로 받은 새로운 사원번호를 input 필드에 설정
+					},
+					error: function(error) {
+						console.error("사원번호 생성 실패: ", error);
+					}
+				});
+			});
+        	
+        	
 		});
 	</script>
 <style>
@@ -207,7 +224,7 @@
 			<tr>
 				<td>사원번호</td>
 				<td><input type="number" class="form-control" name="empNo" value="${empNo}"></td><!-- 직접 입력 / 사원번호 랜덤 생성 후 자동 입력 -->
-				<td><button type="button" class="btn btn-primary">사원번호 생성</button></td>
+				<td><button type="button" class="btn btn-primary" id="empNoMaker">사원번호 생성</button></td>
 			</tr>
 			<tr>
 				<td>사원명</td>

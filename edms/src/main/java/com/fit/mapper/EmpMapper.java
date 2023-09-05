@@ -11,6 +11,9 @@ import com.fit.vo.Team;
 
 @Mapper
 public interface EmpMapper {
+    // 마지막 사원번호 조회
+    Integer findLastEmpNo();
+	
 	// 인사정보 조회
 	EmpInfo selectEmp(int empNo);
 	
@@ -37,5 +40,6 @@ public interface EmpMapper {
 
 	// 비밀번호 수정 (관리자)
 	int modifyPw(int empNo, String tempPw);
+
 	
 }
