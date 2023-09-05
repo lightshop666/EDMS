@@ -8,19 +8,24 @@
 				SELECT last_insert_id()
 			</selectKey><!-- insert가 일어난 후 board_no 생성 -> 매개변수에 전달 -->
 			INSERT INTO board(
-				board_category
+			 	emp_no
+				, board_category
 				, board_title
 				, board_content
+				, top_exposure
 				, createdate
 				, updatedate
 			) VALUES (
-				#{boardCategory}
+				#{empNo}
+				, #{boardCategory}
 				, #{boardTitle}
 				, #{boardContent}
+				, #{topExposure}
 				, NOW()
 				, NOW()
 			)
 	</insert>
+	
 	<!-- 전체 게시글 조회 (페이징 포함) -->
 	<select id="selectBoardList" parameterType="String" resultType="com.fit.vo.Board">
 	    SELECT
@@ -46,6 +51,7 @@
 	        createdate DESC;
 	    LIMIT #{beginRow}, #{rowPerPage}    
 	</select>
+	
 	<!-- 총 게시글 행 수 -->
 	<select id="selectBoardCount" parameterType="String" resultType="int">
 			SELECT

@@ -1,5 +1,19 @@
 package com.fit.mapper;
 
-public interface BoardFileMapper {
+import java.util.List;
+import java.util.Map;
+import org.apache.ibatis.annotations.Mapper;
+import com.fit.vo.BoardFile;
 
+@Mapper
+public interface BoardFileMapper {
+	
+	// 파일 추가
+	int addBoardFile(BoardFile boardFile);
+	
+	// 파일 상세
+	BoardFile selectBoardFileOne(int boardFileNo);
+	
+	// 파일 삭제
+	int removeSaveFile(BoardFile boardFile);
 }

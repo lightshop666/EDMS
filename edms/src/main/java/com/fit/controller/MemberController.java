@@ -109,7 +109,7 @@ public class MemberController {
 	    }
 	}
 	
-	// 내 프로필 - 1. 개인정보 수정 폼
+	// [내 프로필] 개인정보 수정 폼
    @GetMapping("/member/modifyMember")
    public String memberOne(HttpSession session
                      , @RequestParam(required = false, name = "result") String result // 내 프로필 정보 수정

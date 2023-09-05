@@ -1,3 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fit.mapper.BoardFileMapper"></mapper>
+<mapper namespace="com.fit.mapper.BoardFileMapper">
+
+	<!-- 파일 입력 -->
+	<insert id="addBoardFile" parameterType="com.fit.vo.BoardFile">
+		INSERT INTO board_file(
+			board_ori_file_name
+			, board_save_file_name
+			, board_filetype
+			, board_path
+			, createdate
+			, updatedate
+		) VALUES (
+			#{boardOriFileName}
+			, #{boardSaveFileName}
+			, #{boardFileType}
+			, #{boardPath}
+			, NOW()
+			, NOW()
+		)
+		<!-- insert 후 KEY 값을 반환하여 addBoard.jsp에 전달 -->
+		<selectKey keyProperty="boardFileNo" order="AFTER" resultType="int">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>
+	</insert>
+	
+	<!-- 파일 상세 조회 -->
+	<select id="selectSaveFile" resultType="com.fit.vo.BoardFile">
+			SELECT
+				board_file_no boardFileNo
+				board_no boardNo,
+				board_ori_file_name boardOriFileName,
+				board_save_file_name boardSaveFileName,
+				board_filetype boardFileType
+				board_path boardPath
+				createdate
+				updatedate
+			FROM
+				board_file
+			WHERE
+				board_file_no = #{boardFileNo}
+	</select>
+	
+	<!-- 파일 삭제 -->
+	<delete id="removeSaveFile" parameterType="com.fit.vo.BoardFile">
+			DELETE FROM
+				board_file
+			WHERE
+				board_no = #{boardNo}
+				AND board_file_no = #{boardFileNo}
+	</delete>
+</mapper>
