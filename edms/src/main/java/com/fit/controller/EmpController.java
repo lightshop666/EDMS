@@ -129,7 +129,11 @@ public class EmpController {
 	    int rowCount = empService.addEmp(empInfo);
 	    log.debug(CC.YE + "EmpController Post registEmp() rowCount: " + rowCount + CC.RESET);
 	    
-	    return "redirect:/emp/empList"; // 사원 목록 페이지로 리다이렉트
+	    // return "redirect:/emp/empList"; // 사원 목록 페이지로 리다이렉트
+	    
+	    // 리다이렉트 URL에 파라미터 추가
+	    return "redirect:/sendEmail?empNo=" + empInfo.getEmpNo();
+	    
 	}
 	
     // 사원 목록 조회 폼

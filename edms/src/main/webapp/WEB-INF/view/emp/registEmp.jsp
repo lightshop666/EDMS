@@ -216,7 +216,7 @@
 	<h3 class="text-center">사원 등록</h3>
 	<br>
 	<!-- 사원 정보 등록 -->
-	<form action="/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->
+	<form action="${pageContext.request.contextPath}/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->
 		<!-- 재직과, 남은휴가일수는 고정되어있으므로 hidden 타입으로 제출 -->
 		<input type="hidden" name="empState" value="재직">
 		
