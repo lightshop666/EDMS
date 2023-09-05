@@ -127,5 +127,9 @@ public interface DraftMapper {
     
     List<String> selectSalesDateList(String today, String previousMonth, String previousMonthBefore); // 해당 날짜의 기준년월 데이터가 존재하는지 조회
     
-    List<Approval> selectApprovalDraftList(Map<String, Object> paramMap, int empNo); // 내 결재함 리스트 조회
+    List<Approval> selectApprovalDraftList(Map<String, Object> paramMap); // 내 결재함 리스트 조회
+    
+    int selectApprovalDraftCnt(Map<String, Object> paramMap); // 내 결제함 전체 수
+    
+    List<Map<String, Object>> getApprovalCountsByState(int empNo); // 내 결재함의 결재상태별 갯수 조회
 }

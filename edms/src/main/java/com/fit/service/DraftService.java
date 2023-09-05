@@ -995,7 +995,53 @@ public class DraftService {
     
     // ----------- 내 결재함 리스트 --------------
     @Transactional
-    public List<Approval> getApprovalDraftList(Map<String, Object> paramMap, int empNo) {
-    	return null;
+    public Map<String, Object> getApprovalDraftList(Map<String, Object> paramMap, int empNo) {
+    	Map<String, Object> result = new HashMap<>();
+    	
+    	// 검색조건으로 리스트 조회
+    	List<Approval> approvalDraftList = draftMapper.selectApprovalDraftList(paramMap);
+    	// 검색조건으로 전체 수 조회
+    	int approvalDraftCnt = draftMapper.selectApprovalDraftCnt(paramMap);
+    	// 결재상태별 갯수 조회
+    	List<Map<String, Object>> countState = draftMapper.getApprovalCountsByState(empNo);
+
+	    int approvalDraftCount = 0;
+	    int approvalInProgressCount = 0;
+	    int approvalCompletCount = 0;
+	    int approvalRejectCount = 0;
+	    int approvalsaveCount = 0;
+
+	    for (Map<String, Object> statusMap : countState) {
+	        String approvalState = (String)statusMap.get("approvalState");
+	        int count = ((Long) statusMap.get("count")).intValue(); // count가 Long 타입으로 들어올 수 있으므로 형변환 필요
+	        
+	        switch (approvalState) {
+	            case "결재대기":
+	                approvalDraftCount = count;
+	                break;
+	            case "결재중":
+	                approvalInProgressCount = count;
+	                break;
+	            case "결재완료":
+	                approvalCompletCount = count;
+	                break;
+	            case "반려":
+	                approvalRejectCount = count;
+	                break;
+	            case "임시저장":
+	                approvalsaveCount = count;
+	                break;
+	        }
+	    }
+    	
+    	result.put("approvalDraftList", approvalDraftList);
+    	result.put("approvalDraftCnt", approvalDraftCnt);
+    	result.put("approvalDraftCount", approvalDraftCount);
+    	result.put("approvalInProgressCount", approvalInProgressCount);
+    	result.put("approvalCompletCount", approvalCompletCount);
+    	result.put("approvalRejectCount", approvalRejectCount);
+    	result.put("approvalsaveCount", approvalsaveCount);
+    	
+    	return result;
     }
 }

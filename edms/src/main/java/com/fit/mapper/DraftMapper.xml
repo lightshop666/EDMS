@@ -657,23 +657,57 @@
 		FROM approval a
 		INNER JOIN emp_info e ON a.emp_no = e.emp_no
 		<where>
-	        a.emp_no = #{empNo} AND a.approval_state != '임시저장'
-	        <if test="searchCol != null and searchCol != '' and searchWord != null and searchWord != ''">
-	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
+	        (a.mediate_approval = #{empNo} OR a.final_approval = #{empNo})
+	        AND a.approval_state != '임시저장'
+	        <if test="searchCol != '' and searchWord != ''">
+	            AND a.${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
 	        </if>
-	        <if test="startDate != null and startDate != ''">
+	        <if test="startDate != ''">
 	            AND a.createdate &gt;= #{startDate}
 	        </if>
-	        <if test="endDate != null and endDate != ''">
+	        <if test="endDate != ''">
 	            AND a.createdate &lt;= #{endDate}
 	        </if>
 	    </where>
 	    <choose>
-	        <when test="col != null and col != '' and ascDesc != null and ascDesc != ''">
-	            ORDER BY ${col} ${ascDesc}
+	        <when test="col != '' and ascDesc != ''">
+	            ORDER BY a.${col} ${ascDesc}
 	        </when>
 	        <otherwise>ORDER BY a.createdate DESC</otherwise>
 	    </choose>
 	    LIMIT #{beginRow}, #{rowPerPage}
    </select>
+   
+   <!-- approval cnt by emp_no and approval_state -->
+   <select id="selectApprovalDraftCnt" parameterType="java.util.Map" resultType="int">
+		SELECT COUNT(*)
+		FROM approval 
+		<where>
+	        (mediate_approval = #{empNo} OR final_approval = #{empNo})
+	        AND approval_state != '임시저장'
+	        <if test="searchCol != '' and searchWord != ''">
+	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
+	        </if>
+	        <if test="startDate != ''">
+	            AND createdate &gt;= #{startDate}
+	        </if>
+	        <if test="endDate != ''">
+	            AND createdate &lt;= #{endDate}
+	        </if>
+	    </where>
+   </select>
+   
+   <!-- 내 결재함의 결재상태별 갯수 조회 -->
+   <select id="getApprovalCountsByState" parameterType="int" resultType="java.util.Map">
+	   SELECT
+	        approval_state approvalState,
+	        COUNT(*) count
+	    FROM
+	        approval
+	    WHERE
+	        mediate_approval = #{empNo}
+	        OR final_approval = #{empNo}
+	    GROUP BY
+	        approval_state
+	</select> 
 </mapper>

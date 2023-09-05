@@ -10,14 +10,14 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<!-- Favicon icon -->
-	<link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
 	<title>salesDraft</title>
 	<!-- Custom CSS -->
-	<link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
-	<link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-	<link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
 	<!-- Custom CSS -->
-	<link href="../dist/css/style.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -29,24 +29,24 @@
 	<!-- 공통 함수를 불러옵니다. -->
 	<script src="/draftFunction.js"></script>
 	<!-- ============================================================== -->
-	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- apps -->
 	<!-- apps -->
-	<script src="../dist/js/app-style-switcher.js"></script>
-	<script src="../dist/js/feather.min.js"></script>
-	<script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-	<script src="../dist/js/sidebarmenu.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/app-style-switcher.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/feather.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/sidebarmenu.js"></script>
 	<!--Custom JavaScript -->
-	<script src="../dist/js/custom.min.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/custom.min.js"></script>
 	<!--This page JavaScript -->
-	<script src="../assets/extra-libs/c3/d3.min.js"></script>
-	<script src="../assets/extra-libs/c3/c3.min.js"></script>
-	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
-	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/d3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
 	<script>
 		// 사원 목록 배열로 받는 변수 선언 (JSON)
@@ -363,7 +363,7 @@
 										<th>목표액</th>
 										<th>매출액</th>
 										<th>목표달성률</th> <!-- 입력된 매출액과 목표액에 따라 동적으로 계산하여 출력 -->
-										<th><button type="button" id="addDetailBtn">+</button></th>
+										<th><button type="button" id="addDetailBtn" class="btn btn-secondary btn-sm">+</button></th>
 									</tr>
 									<!-- 내역 항목 -->
 									<tr>
@@ -387,7 +387,7 @@
 											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
-											<button type="button" class="removeDetailBtn">-</button>
+											<button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button>
 										</td>
 									</tr>
 									<tr>
@@ -411,7 +411,7 @@
 											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
-											<button type="button" class="removeDetailBtn">-</button>
+											<button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button>
 										</td>
 									</tr>
 									<tr>
@@ -435,7 +435,7 @@
 											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
-											<button type="button" class="removeDetailBtn">-</button>
+											<button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button>
 										</td>
 									</tr>
 									<tr>
@@ -459,7 +459,7 @@
 											<input type="hidden" name="targetRate" class="targetRate"> %
 										</td>
 										<td>
-											<button type="button" class="removeDetailBtn">-</button>
+											<button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button>
 										</td>
 									</tr>
 								</table>

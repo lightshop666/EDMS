@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.fit.service.DraftService;
 import com.fit.service.CommonPagingService;
+import com.fit.CC;
 import com.fit.mapper.DraftMapper;
 import com.fit.vo.Approval;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Controller
 public class DraftListController {
 
@@ -212,10 +216,20 @@ public class DraftListController {
 		// 로그인 유무 -> 인터셉터 처리
 		// 권한 분기 -> 메인메뉴에서 처리
 		
+		log.debug(CC.HE + "DraftListController.approvalDraftList() currentPage : " + currentPage + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() rowPerPage : " + rowPerPage + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() startDate : " + startDate + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() endDate : " + endDate + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() searchCol : " + searchCol + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() searchWord : " + searchWord + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() col : " + col + CC.RESET);
+		log.debug(CC.HE + "DraftListController.approvalDraftList() ascDesc : " + ascDesc + CC.RESET);
+		
 		// 1. 세션 정보 조회
 		int empNo = (int) session.getAttribute("loginMemberId");
 		// 2. 검색조건 및 페이징 조건을 map에 담기
 	    Map<String, Object> paramMap = new HashMap<>();
+	    paramMap.put("empNo", empNo);
 	    paramMap.put("startDate", startDate);
 	    paramMap.put("endDate", endDate);
 	    paramMap.put("col", col);
@@ -226,23 +240,39 @@ public class DraftListController {
 	    paramMap.put("rowPerPage", rowPerPage); // 페이지당 행 수
 	    
 	    // 3. 서비스 호출
-	    List<Approval> draftList = draftService.getFilteredReceiveDrafts(paramMap, empNo);
+	    Map<String, Object> result = draftService.getApprovalDraftList(paramMap, empNo);
+	    List<Approval> approvalDraftList = (List<Approval>) result.get("approvalDraftList");
+	    int approvalDraftCnt = (int) result.get("approvalDraftCnt");
+	    int approvalDraftCount = (int) result.get("approvalDraftCount");
+	    int approvalInProgressCount = (int) result.get("approvalInProgressCount");
+	    int approvalCompletCount = (int) result.get("approvalCompletCount");
+	    int approvalRejectCount = (int) result.get("approvalRejectCount");
+	    int approvalsaveCount = (int) result.get("approvalsaveCount");
 	    
-	    // 4. 페이징을 위한 처리
-	    int totalCount = draftService.getTotalReceiveCount(paramMap, empNo); // 전체 게시물 수를 구하는 서비스 호출
 	    // 페이징 처리를 위한 필요한 변수들 계산 // commonPagingService 사용
-	    int lastPage = commonPagingService.getLastPage(totalCount, rowPerPage); // 마지막 페이지
+	    int lastPage = commonPagingService.getLastPage(approvalDraftCnt, rowPerPage); // 마지막 페이지
 	    int pagePerPage = 5;
 	    int minPage = commonPagingService.getMinPage(currentPage, pagePerPage);
 	    int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 	    
-	    model.addAttribute("draftList", draftList);
+	    model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("col", col);
+	    model.addAttribute("ascDesc", ascDesc);
+	    model.addAttribute("searchCol", searchCol);
+	    model.addAttribute("searchWord", searchWord);
+	    model.addAttribute("approvalDraftList", approvalDraftList);
 	    model.addAttribute("currentPage", currentPage);
 	    model.addAttribute("minPage", minPage);
 	    model.addAttribute("maxPage", maxPage);
 	    model.addAttribute("lastPage", lastPage);
+	    model.addAttribute("approvalDraftCount", approvalDraftCount);
+	    model.addAttribute("approvalInProgressCount", approvalInProgressCount);
+	    model.addAttribute("approvalCompletCount", approvalCompletCount);
+	    model.addAttribute("approvalRejectCount", approvalRejectCount);
+	    model.addAttribute("approvalsaveCount", approvalsaveCount);
 		
-		return "";
+		return "/draft/approvalDraft";
 	}
 	
 	// 임시저장함 리스트

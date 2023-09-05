@@ -352,7 +352,7 @@
 		let newRow = `
 			<tr style="border: 1px solid black;">
 				<td style="border: 1px solid black;">
-					<select name="productCategory" required>
+					<select name="productCategory">
 						<option value="스탠드">스탠드</option>
 						<option value="무드등">무드등</option>
 						<option value="실내조명">실내조명</option>
@@ -360,10 +360,10 @@
 						<option value="포인트조명">포인트조명</option>
 					</select>
 				</td>
-				<td style="border: 1px solid black;">₩ <input type="number" name="targetSales" required></td>
-				<td style="border: 1px solid black;">₩ <input type="number" name="currentSales" required></td>
+				<td style="border: 1px solid black;">₩ <input type="number" name="targetSales"></td>
+				<td style="border: 1px solid black;">₩ <input type="number" name="currentSales"></td>
 				<td style="border: 1px solid black;"><span class="rate"></span><input type="hidden" name="targetRate"> %</td>
-				<td style="border: 1px solid black;"><button type="button" class="removeDetailBtn">-</button></td>
+				<td style="border: 1px solid black;"><button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button></td>
 			</tr>
 		`;
 		$('#detailsTable').append(newRow); // 테이블에 내역(newRow) 추가
