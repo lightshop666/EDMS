@@ -1,7 +1,9 @@
 package com.fit.service;
 import java.io.File;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.mapper.BoardMapper;
 import com.fit.vo.BoardFile;
+import com.fit.vo.EmpInfo;
+import com.fit.vo.Board;
 import com.fit.CC;
 import com.fit.mapper.BoardFileMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -108,4 +112,29 @@ public class BoardService {
         	return -2; // 파일이 존재하지 않음
         }
     }
+	
+	// 전체 게시글 조회
+	public List<Map<String, Object>> selectBoard(Map<String, Object> param) {
+		
+		// 게시글 결과 값 반환
+		List<Map<String, Object>> boardList = boardMapper.selectBoardList(param);
+		log.debug(CC.YE + "BoardService.selectBoard() boardList : " + boardList + CC.RESET);
+    	
+		return boardList;
+	}
+	// 전체 게시글 조회(HOME)
+	public List<Map<String, Object>> selectBoardHome(){
+		
+		// 중요공지로 이루어진 리스트를 반환
+		List<Map<String, Object>> selectBoardHome = boardMapper.selectBoardHome();
+		log.debug(CC.YE + "BoardService.selectBoardHome() selectBoardHome : " + selectBoardHome + CC.RESET);
+		
+		return selectBoardHome;
+	}
+	// 전체 게시글 목록 페이징(조건에 따른 행의 수)
+	public int boardCount(Map<String, Object> param) {
+		int boardCount = boardMapper.selectBoardCount(param);
+		log.debug(CC.YE + "BoardService.getBoardCount() boardCount : " + boardCount + CC.RESET);	 
+		return boardCount;
+	}
 }
