@@ -134,6 +134,23 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
+			<br>
+			   <nav class="navbar navbar-expand-lg navbar-light">
+			       <div class="collapse navbar-collapse" id="navbarNav">
+			           <ul class="nav nav-tabs">
+			               <li class="nav-item">
+			                   <a class="nav-link active" href="${pageContext.request.contextPath}/emp/modifyEmp?empNo=${emp.empNo}">인사정보</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/emp/adminMemberOne?empNo=${emp.empNo}">개인정보</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/vacation/vacationHistory?empNo=${emp.empNo}">휴가정보</a>
+			               </li>
+			           </ul>
+			       </div>
+			   </nav>
+		  	<br>
 			<h1>인사정보 수정(조회) - 관리자</h1>
 			<form action="/emp/modifyEmp" method="post">
 				<input type="hidden" name="empNo" value="${emp.empNo}">

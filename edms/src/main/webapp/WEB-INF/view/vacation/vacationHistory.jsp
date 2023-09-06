@@ -6,6 +6,23 @@
     <title>Vacation History List</title>
 </head>
 <body>
+	<br>
+	   <nav class="navbar navbar-expand-lg navbar-light">
+	       <div class="collapse navbar-collapse" id="navbarNav">
+	           <ul class="nav nav-tabs">
+	               <li class="nav-item">
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/emp/modifyEmp?empNo=${empNo}">인사정보</a>
+	               </li>
+	               <li class="nav-item">
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/emp/adminMemberOne?empNo=${empNo}">개인정보</a>
+	               </li>
+	               <li class="nav-item">
+	                   <a class="nav-link active" href="${pageContext.request.contextPath}/vacation/vacationHistory?empNo=${empNo}">휴가정보</a>
+	               </li>
+	           </ul>
+	       </div>
+	   </nav>
+  	<br>
     <h1>Vacation History List</h1>
 	    <!-- 보상휴가 지급 버튼 -->
 	<div align="center">

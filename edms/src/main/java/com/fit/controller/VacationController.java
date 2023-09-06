@@ -46,9 +46,10 @@ public class VacationController {
     		, @RequestParam(name= "col", required = false, defaultValue = "") String col
     		, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
     		, @RequestParam(required = false) String vacationName
+    		, @RequestParam int empNo
     		) {
 
-    	int empNo = (int) session.getAttribute("loginMemberId");
+    	// int empNo = (int) session.getAttribute("loginMemberId");
         log.debug(CC.JUNG + "[DEBUG] getVacationHistoryList() Start" + CC.RESET);
         log.debug("currentPage: " + currentPage + ", empNo: " + empNo + ", startDate: " + startDate + ", endDate: " + endDate +
                   ", col: " + col + ", ascDesc: " + ascDesc + ", vacationName: " + vacationName);
@@ -86,7 +87,7 @@ public class VacationController {
     }
     
     
-    @GetMapping("/vacation/adminAddVacation")
+    @GetMapping("/adminAddVacation")
     public String getVacationForm(
             @RequestParam int empNo,
             Model model) {

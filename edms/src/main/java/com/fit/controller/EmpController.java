@@ -102,6 +102,7 @@ public class EmpController {
 		model.addAttribute("member", result.get("memberInfo"));
 		model.addAttribute("image", result.get("memberImage"));
 		model.addAttribute("sign", result.get("memberSign"));
+		model.addAttribute("empNo", empNo);
 		
 		return "/emp/adminMemberOne";
 	}
