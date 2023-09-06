@@ -105,11 +105,43 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
+<h4>공지사항</h4>
 
-
-
-
-
+	<table class="table">
+		<tr>
+			<th>공지</th>
+			<th>제목</th>
+			<th>작성자</th>
+			<th>등록일</th>
+		</tr>
+		<!-- 공지가 있을 경우/없을 경우를 분류 -->
+		<c:choose>
+	        <c:when test="${not empty board}">
+	            <c:forEach var="b" items="${board}">
+	                <tr>
+	                    <td>
+	                        <c:choose>
+	                            <c:when test="${b.topExposure == 'Y'}">
+	                                &#128227;
+	                            </c:when>
+	                            <c:otherwise>
+	                                -
+	                            </c:otherwise>
+	                        </c:choose>
+	                    </td>
+	                    <td>${b.boardTitle}</td>
+	                    <td>${b.empName}</td>
+	                    <td>${b.createdate}</td>
+	                </tr>
+	            </c:forEach>
+	        </c:when>
+	        <c:otherwise>
+	            <tr>
+	                <td colspan="4">공지 내용이 없습니다.</td>
+	            </tr>
+	        </c:otherwise>
+    	</c:choose>
+	</table>
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
