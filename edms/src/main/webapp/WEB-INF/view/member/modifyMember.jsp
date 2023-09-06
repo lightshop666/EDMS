@@ -116,7 +116,7 @@
             } else {
                console.log("send 전송");
                $.ajax({ // Ajax를 사용해 데이터 가져오기
-                  url : '/goodeeFit/member/uploadSign',
+                  url : '/member/uploadSign',
                   data : {sign : sign.toDataURL('image/png', 1.0)},
                   type : 'POST',
                   success : function(jsonData){ // 서버로부터 받은 응답 데이터 jsonData
@@ -161,13 +161,13 @@
        <div class="collapse navbar-collapse" id="navbarNav">
            <ul class="navbar-nav">
                <li class="nav-item">
-                   <a class="nav-link active" href="/goodeeFit/member/modifyMember?result=success">개인정보 수정</a>
+                   <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/goodeeFit/member/modifyMemberPw">비밀번호 수정</a>
+                   <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/goodeeFit/member/memberVacationHistory">휴가정보</a>
+                   <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
                </li>
            </ul>
        </div>
@@ -191,7 +191,7 @@
                <span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
             </form>
             <!-- 개인정보 수정 폼 -->
-            <form action="/goodeeFit/member/modifyMember" method="post">
+            <form action="/member/modifyMember" method="post">
                <input type="hidden" name="empNo" value="${empNo}">
              <label for="phoneNumber">전화번호</label>
                 <input type="text" id="phoneNumber" name="phoneNumber" value="${member.phoneNumber}"><br>
@@ -248,7 +248,7 @@
                 <!-- 모달 푸터 -->
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
-                     <form action="/goodeeFit/member/uploadImage" method="post" enctype="multipart/form-data">
+                     <form action="/member/uploadImage" method="post" enctype="multipart/form-data">
                          <input type="hidden" name="empNo" value="${empNo}">
                          <input type="file" name="multipartFile">
                          <c:choose>

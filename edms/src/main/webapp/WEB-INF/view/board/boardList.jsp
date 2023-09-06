@@ -107,16 +107,26 @@
 
 	<h1>공지사항</h1>
 	
-	<!-- [시작] 작성자 검색 ------->
+<!-- [시작] 정렬 및 검색 ------->
 	<form action="/board/boardList" method="GET">
-		<div class="search-area">
+	    <!-- boardCategory 정렬 -->
+	    <label class="sort-label">카테고리</label>
+			<select name="boardCategory" class="sort-input">
+			    <option value="" <c:if test="${param.empPosition.equals('')}">selected</c:if>>전체</option>
+			    <option value="전사공지" <c:if test="${param.empPosition.equals('전사공지')}">selected</c:if>>전사공지</option>
+			    <option value="사업추진본부" <c:if test="${param.empPosition.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
+			    <option value="경영지원본부" <c:if test="${param.empPosition.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
+			    <option value="영업지원본부" <c:if test="${param.empPosition.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
+			</select>
+		<!-- 제목 검색 -->	
+	    <div class="search-area">
 	        <label class="search-label">검색</label>
 	        <select name="searchCol" class="search-input">
 	            <option value="boardTitle">제목</option>
 	        </select>
 	        <input type="text" name="searchWord" class="search-input">
-	        <button type="submit" id="search-button">검색</button>
 	    </div>
+        <button type="submit" id="search-button">검색</button>
 	</form>
 	<!-- [끝] 작성자 검색 ------->
 	<div>
@@ -133,24 +143,33 @@
 			<th>작성자</th>
 			<th>등록일</th>
 		</tr>
-		<c:forEach var="b" items="${board}">
-		<tr>
-			<td>
-				<!-- 중요/일반 공지를 구분 -->
-				<c:choose>
-					<c:when test="${b.topExposure == 'Y'}">
-						&#128227;
-					</c:when>
-					<c:otherwise>
-						-
-					</c:otherwise>
-				</c:choose>
-			</td>
-			<td>${b.boardTitle}</td>
-			<td>${b.empName}</td>
-			<td>${b.createdate}</td>
-		</tr>
-		</c:forEach>
+		<c:choose>
+	        <c:when test="${not empty board}">
+				<c:forEach var="b" items="${board}">
+				<tr>
+					<td>
+						<!-- 중요/일반 공지를 구분 -->
+						<c:choose>
+							<c:when test="${b.topExposure == 'Y'}">
+								&#128227;
+							</c:when>
+							<c:otherwise>
+								-
+							</c:otherwise>
+						</c:choose>
+					</td>
+					<td>${b.boardTitle}</td>
+					<td>${b.empName}</td>
+					<td>${b.createdate}</td>
+				</tr>
+				</c:forEach>
+	     	</c:when>
+	     	<c:otherwise>
+	            <tr>
+	                <td colspan="4">공지 내용이 없습니다.</td>
+	            </tr>
+	        </c:otherwise>
+	    </c:choose>	
 	</table>
 	
 	<!-- [시작] 페이징 ------->

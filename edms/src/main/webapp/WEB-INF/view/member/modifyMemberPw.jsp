@@ -30,7 +30,7 @@
 				// AJAX 비동기 요청 실행
 			    $.ajax({
 			        type: 'POST',
-			        url: '/goodeeFit/member/existingPwCheck',
+			        url: '/member/existingPwCheck',
 			        data: { pw : pw },
 			    }).done(function(pwResult) {
 			    	console.log('modifyMember.jsp 비밀번호 확인 Ajax 실행');
@@ -99,7 +99,7 @@
 			    // AJAX 비동기 요청 실행
 			    $.ajax({
 			        type: 'POST',
-			        url: '/goodeeFit/member/modifyPw',
+			        url: '/member/modifyPw',
 			        data: { newPw2: newPw2 },
 			        success: function(modifyPwResult) {
 			            if (modifyPwResult === 'success') {
@@ -138,13 +138,13 @@
        <div class="collapse navbar-collapse" id="navbarNav">
            <ul class="navbar-nav">
                <li class="nav-item">
-                   <a class="nav-link active" href="/goodeeFit/member/modifyMember?result=success">개인정보 수정</a>
+                   <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/goodeeFit/member/modifyMemberPw">비밀번호 수정</a>
+                   <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
                </li>
                <li class="nav-item">
-                   <a class="nav-link" href="/goodeeFit/member/memberVacationHistory">휴가정보</a>
+                   <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
                </li>
            </ul>
        </div>

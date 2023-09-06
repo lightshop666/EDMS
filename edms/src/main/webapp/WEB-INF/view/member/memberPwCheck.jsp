@@ -130,7 +130,7 @@
 
 
 <h1>비밀번호 확인</h1>
-    <form action="/goodeeFit/member/memberPwCheck" method="post">
+    <form action="/member/memberPwCheck" method="post">
         <div class="mb-3">
             <label for="pw" class="form-label">비밀번호를 입력하세요: </label>
             <input type="password" class="form-control" id="pw" name="pw">
