@@ -2,14 +2,16 @@
 let stompClient = null;
 //알림 횟수를 저장하는 변수
 let notificationCount = 0;
-
-
+// 웹소켓이 연결되어 있는지 나타내는 플래그
+let isConnected = false;
+//유저 리스트 선언
+var userList;
 
 //웹소켓 연결 함수
 function connect() {
-	if(stompClient && stompClient.connected) {
-		// 이미 연결되어 있는 경우
-		return;
+    if (isConnected) {
+        console.log("웹소켓이 이미 연결되어 있습니다.");
+        return;
     }
 	
 	// SockJS를 통해 웹 소켓 연결 생성
@@ -17,11 +19,20 @@ function connect() {
 	// SockJS 연결을 Stomp 클라이언트로 래핑
 	stompClient = Stomp.over(socket);
 
+    isConnected = true;  // 웹소켓 연결이 성공하면 플래그를 true로 설정
+    
 	 // 서버와 연결 후 실행되는 콜백 함수
 	stompClient.connect({}, function (frame) {
 		console.log('연결 frame: ' + frame);
 		// 알림 표시 업데이트 함수 호출
 		updateNotificationDisplay();
+		
+		
+		//users를 구독하여 전체 리스트 받아오기
+		stompClient.subscribe('/topic/users', function(message) {
+	        userList = JSON.parse(message.body);
+			console.log('받아온 userList: ' + userList);
+	    });
 		
         // '/activeUsers' 주제로 사용자 목록을 요청하고 받음
         stompClient.subscribe('/user/topic/activeUsers', function (message) {
@@ -58,14 +69,14 @@ function connect() {
 //메시지를 화면에 표시하는 함수
 function showMessage(message, isMine) {
 	let messageHTML = "";
-	if (isMine) {
+	if (isMine) {	//내 메시지 출력
 	    messageHTML = `<li class="chat-item odd list-style-none mt-3">
 	                        <div class="chat-content text-end d-inline-block ps-3">
 	                            <div class="box msg p-2 d-inline-block mb-1">${message}</div>
 	                            <br>
 	                        </div>
 	                    </li>`;
-	} else {
+	} else {		//타인의 메시지 출력
 	    messageHTML = `<li class="chat-item list-style-none mt-3">
 	                        <div class="chat-img d-inline-block">
 	                            <img src="path/to/image" alt="user" class="rounded-circle" width="45">

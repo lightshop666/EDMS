@@ -20,15 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 //WebSocket 메시지 처리를 위한 컨트롤러
 @Controller
 public class MessegeController {
-    @Autowired
-    private WebSocketSessionManager sessionManager;
-
-    //클라이언트가 /activeUsers 주제를 구독하면 해당 메서드가 호출되어 채팅방에 현재 접속한 사용자 목록을 반환
-    @SubscribeMapping("/activeUsers")
-    public Map<String, WebSocketSession> activeUsers() {
-        return sessionManager.getAllSessions();
-    }
-    
+   
 	
 	// 클라이언트가 '/message' 주제로 메시지를 보낼 때 처리하는 메서드입니다.
 	// 클라이언트의 메시지를 받아 가공 후, '/topic/messages' 주제로 응답 메시지를 전송

@@ -1,14 +1,12 @@
 package com.fit.websocket;
 
-import java.util.Map;
-
-import javax.servlet.http.HttpSession;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.messaging.SessionConnectedEvent;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -19,9 +17,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class WebSocketEventListener {
-
-    @Autowired
-    private WebSocketSessionManager sessionManager;
+	
+	ConcurrentHashMap<String, Object> connectedUsers = new ConcurrentHashMap<>();
+	/*
+	 * ConcurrentHashMap은 Map 인터페이스를 구현하는 클래스 중 하나입니다. 이 클래스는 멀티스레딩 환경에서 효율적으로 작동하도록
+	 * 설계되어 있습니다. 즉, 여러 스레드가 동시에 맵에 접근하더라도 문제가 없습니다. 내부적으로 세그먼트를 사용해 락을 최소화하고, 효율적인
+	 * 동시성 제어를 가능하게 합니다.
+	 */
+	
+	@Autowired
+	private SimpMessagingTemplate messagingTemplate;
 
     // STOMP 연결이 성립했을 때 호출되는 메서드
     @EventListener
@@ -29,31 +34,19 @@ public class WebSocketEventListener {
         // StompHeaderAccessor를 사용하여 STOMP 프로토콜의 헤더를 추출
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 	    log.debug(CC.WOO +"웹소켓이벤트리스너.handleWebSocketConnectListener.스톰프헤더엑세서 : " + accessor +CC.RESET);
+    	String sessionId = accessor.getSessionId();
+	    log.debug(CC.WOO +"웹소켓이벤트리스너.접속시 sessionId :  " + sessionId + CC.RESET);
+	    Object simpUser = accessor.getHeader("simpUser");
+	    log.debug(CC.WOO +"웹소켓이벤트리스너.접속시 simpUser :  " + simpUser + CC.RESET);	     
 
-        // 사용자 ID를 추출 String com.fit.websocket.WebSocketEventListener.getUserIdFromSession(StompHeaderAccessor accessor)
-        String userId = getUserIdFromSession(accessor);
 
-        if (userId != null) {
-            // userId를 이용하여 WebSocketSessionManager의 세션 정보를 업데이트
-            // 웹소켓 세션 객체 대신 userId를 사용
-            sessionManager.addSession(userId);
-            // 연결된 모든 사용자에게 현재 접속자 정보를 브로드캐스트
-            sessionManager.broadcastConnectedUsers();
+        if (simpUser != null) {
+            connectedUsers.put(sessionId , simpUser);
+    	    log.debug(CC.WOO +"웹소켓이벤트리스너.접속시 connectedUsers :  " + connectedUsers + CC.RESET);
+
+            // 전체 클라이언트에게 사용자 리스트를 푸시
+            messagingTemplate.convertAndSend("/topic/users", connectedUsers);
         }
-    }
-
-
-
-    private String getUserIdFromSession(StompHeaderAccessor accessor) {
-        // HttpServletRequest를 사용하여 세션에서 loginMemberId 가져오기
-        HttpSession session = (HttpSession) accessor.getHeader("simpSessionHttpSession");
-        if (session != null) {
-            Integer loginMemberIdInteger = (Integer) session.getAttribute("loginMemberId");
-            // Integer 값을 String으로 변환합니다.
-            return String.valueOf(loginMemberIdInteger);
-        }
-	    log.debug(CC.WOO +"웹소켓이벤트리스너.getUserIdFromSession이 null입니다!!!!!!!!!!!!!!!!!!!!! " + CC.RESET);
-        return null;
     }
 
 
@@ -63,18 +56,18 @@ public class WebSocketEventListener {
 	
     	//StompHeaderAccessor를 사용하여 이벤트 메시지에서 헤더 정보를 추출합니다. 특히, simpSessionAttributes 헤더를 추출하여 세션 관련 정보를 얻습니다.
     	StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
-		// accessor.getHeader("simpSessionAttributes")를 Map<String, Object>으로 캐스팅
-		Map<String, Object> sessionAttributes = (Map<String, Object>) accessor.getHeader("simpSessionAttributes");
-		
-		WebSocketSession session  = null;
-		if (sessionAttributes != null) {
-		    // "webSocketSession" 키를 사용하여 원하는 값을 가져옴
-		    session = (WebSocketSession) sessionAttributes.get("webSocketSession");
-		    log.debug(CC.WOO +"웹소켓이벤트리스너.handleWebSocketConnectListener session :  " + session+ CC.RESET);
-		} else {
-		    log.debug(CC.WOO +"웹소켓이벤트리스너.handleWebSocketConnectListener에서 sessionAttributes가 null입니다  " + CC.RESET);
-		}
-		
-		sessionManager.removeSession(session);
+    	String sessionId = accessor.getSessionId();
+	    log.debug(CC.WOO +"웹소켓이벤트리스너.해제시 sessionId :  " + sessionId + CC.RESET);
+	    Object simpUser = accessor.getHeader("simpUser");
+	    log.debug(CC.WOO +"웹소켓이벤트리스너.해제시 simpUser :  " + simpUser + CC.RESET);	     
+	    
+	    if (sessionId != null) {
+	        connectedUsers.remove(sessionId);
+	        log.debug(CC.WOO + "웹소켓이벤트리스너.접속종료. connectedUsers : " + connectedUsers + CC.RESET);
+
+	        // 전체 클라이언트에게 사용자 리스트를 푸시
+	        messagingTemplate.convertAndSend("/topic/users", connectedUsers.keySet());
+
+	    }
     }
 }
