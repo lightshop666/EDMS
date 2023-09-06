@@ -104,8 +104,24 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
-			<h1>결재함</h1>
+		   	<br>
+			    <nav class="navbar navbar-expand-lg navbar-light">
+			       <div class="collapse navbar-collapse" id="navbarNav">
+			           <ul class="nav nav-tabs">
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/submitDraft">기안함</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/receiveDraft">수신함</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/approvalDraft">결재함</a>
+			               </li>
+			           </ul>
+			       </div>
+			   </nav>
+		   <br>
+			<h2>결재함</h2>
 		    
 		    <!-- 결재상태별 갯수 조회 -->
 			<div class="card-group text-center">

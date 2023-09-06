@@ -132,7 +132,6 @@
          2. 비밀번호 수정
          3. 휴가정보
     -->
-    <h1>내문서함</h1>
     <br>
 	    <nav class="navbar navbar-expand-lg navbar-light">
 	       <div class="collapse navbar-collapse" id="navbarNav">
@@ -144,7 +143,7 @@
 	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/receiveDraft">수신함</a>
 	               </li>
 	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">휴가정보</a>
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">결재함</a>
 	               </li>
 	           </ul>
 	       </div>

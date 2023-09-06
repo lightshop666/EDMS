@@ -121,7 +121,16 @@
 			
 			return isValid;
 		}
-		
+		function formatNumber(input) {
+		    // 입력된 값에서 모든 쉼표를 제거합니다.
+		    const value = input.value.replace(/,/g, '');
+
+		    // 숫자를 3자리 단위로 쉼표로 포맷팅합니다.
+		    const formattedValue = Number(value).toLocaleString();
+
+		    // 포맷팅된 값을 입력 필드에 설정합니다.
+		    input.value = formattedValue;
+		}
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			// 페이지 로드 후 서명 이미지 조회 메서드 실행
@@ -217,6 +226,9 @@
 	        width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
 	        box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
 	    }
+	    input[type="number"] {
+	        text-align: right;
+	    }
 	</style>
 </head>
 
@@ -277,7 +289,26 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
+			<br>
+			   <nav class="navbar navbar-expand-lg navbar-light">
+			       <div class="collapse navbar-collapse" id="navbarNav">
+			           <ul class="nav nav-tabs">
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/basicDraft">기안서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
+			               </li>
+			           </ul>
+			       </div>
+			   </nav>
+		   <br>
 			<div class="container pt-5">
 				<h1 style="text-align: center;">매출보고서</h1>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
@@ -377,10 +408,10 @@
 											</select>
 										</td>
 										<td>
-											₩ <input type="number" name="targetSales" class="targetSales">
+											₩ <input type="number" name="targetSales" class="targetSales" oninput="formatNumber(this)">
 										</td>
 										<td>
-											₩ <input type="number" name="currentSales" class="currentSales">
+											₩ <input type="number" name="currentSales" class="currentSales" oninput="formatNumber(this)">
 										</td>
 										<td>
 											<span class="rate"></span>

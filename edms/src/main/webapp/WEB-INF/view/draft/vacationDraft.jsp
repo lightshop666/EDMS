@@ -243,7 +243,26 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
+			<br>
+			   <nav class="navbar navbar-expand-lg navbar-light">
+			       <div class="collapse navbar-collapse" id="navbarNav">
+			           <ul class="nav nav-tabs">
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/basicDraft">기안서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
+			               </li>
+			               <li class="nav-item">
+			                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
+			               </li>
+			           </ul>
+			       </div>
+			   </nav>
+		   <br>
 			<div class="container pt-5">
 				<h1 style="text-align: center;">휴가신청서</h1>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->

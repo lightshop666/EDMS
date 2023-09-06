@@ -258,38 +258,42 @@
 	// 매출보고서에서 동적으로 생성 또는 제거되는 input 태그 관련 함수들입니다.
 	function generateOptionsForSelect(today) {
 		/*
-			해당 함수는 현재 날짜를 기준으로 전전월, 전월, 당월의 옵션을 동적으로 생성하여 selectbox에 주입합니다.
+			해당 함수는 현재 날짜를 기준으로 이전 3개월의 옵션을 동적으로 생성하여 selectbox에 주입합니다.
 			단, ajax로 데이터를 조회하여 이미 데이터가 존재하는 기준년월일 경우 주입을 생략합니다.
 		*/
-		// 전월 Date 객체 생성
+		// -1월 Date 객체 생성
 		let previousMonth = new Date(today); 
 		previousMonth.setMonth(today.getMonth() - 1);
 		console.log('previousMonth : ' + previousMonth);
-		// 전전월 Date 객체 생성
+		// -2월 Date 객체 생성
 		let previousMonthBefore = new Date(today); 
 		previousMonthBefore.setMonth(today.getMonth() - 2);
 		console.log('previousMonthBefore : ' + previousMonthBefore);
+		// -3월 Date 객체 생성
+		let previousMonthBefore2 = new Date(today); 
+		previousMonthBefore2.setMonth(today.getMonth() - 3);
+		console.log('previousMonthBefore2 : ' + previousMonthBefore2);
 		// formatDateToYYYYMM() 공통 함수 호출
-		let todayString = formatDateToYYYYMM(today);
 		let previousMonthString = formatDateToYYYYMM(previousMonth);
 		let previousMonthBeforeString = formatDateToYYYYMM(previousMonthBefore);
+		let previousMonthBefore2String = formatDateToYYYYMM(previousMonthBefore2);
 		
 		// 1. ajax로 해당 기준년월의 데이터가 존재하는지 조회
 		$.ajax({
 			url : '/getExistingSalesDates',
 			type : 'post',
 			data : {
-				today : todayString, 
-				previousMonth : previousMonthString,
-				previousMonthBefore : previousMonthBeforeString
+				previousMonthBefore2 : previousMonthBefore2String, 
+				previousMonthBefore : previousMonthBeforeString,
+				previousMonth : previousMonthString
 			},
 			success : function(response) {
 				// 2. YYYY년 MM월 형식으로 포맷팅하여 옵션 생성 
 				let selectElement = $('#salesDateSelect'); // selectbox
-				let options = [
-					{ value : todayString, text : formatDateToKorean(today) }, // formatDateToKorean() 공통 함수 호출
-					{ value : previousMonthString, text : formatDateToKorean(previousMonth) },
-					{ value : previousMonthBeforeString, text : formatDateToKorean(previousMonthBefore) }
+				let options = [ // formatDateToKorean() 공통 함수 호출
+					{ value : previousMonthBefore2String, text : formatDateToKorean(previousMonthBefore2) },
+					{ value : previousMonthBeforeString, text : formatDateToKorean(previousMonthBefore) },
+					{ value : previousMonthString, text : formatDateToKorean(previousMonth) }
 				]; // option 배열 생성
 				
 				let optionsCreated = false; // 옵션 생성 여부 확인

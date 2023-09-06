@@ -342,7 +342,7 @@
 	<!-- ============================================================== -->
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
-        <br>
+    <br>
 	   <nav class="navbar navbar-expand-lg navbar-light">
 	       <div class="collapse navbar-collapse" id="navbarNav">
 	           <ul class="nav nav-tabs">
@@ -353,10 +353,10 @@
 	                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
 	               </li>
 	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">매출보고서</a>
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
 	               </li>
 	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">휴가신청서</a>
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
 	               </li>
 	           </ul>
 	       </div>
