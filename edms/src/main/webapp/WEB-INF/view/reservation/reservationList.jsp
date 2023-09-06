@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,6 +68,16 @@
 			}
 		});
 	  
+	});
+	</script>
+	
+	<script>
+	// jQuery를 사용하여 기간 초기화 버튼 클릭 시 동작 정의
+	$(document).ready(function(){
+		$('#resetDateBtn').click(function() {
+	  	$('input[name=startDate]').val('');
+	 	$('input[name=endDate]').val('');
+		});
 	});
 	</script>
 	
@@ -196,7 +207,6 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
-	<!-- 탭 메뉴 형식으로 회사일정 or 공용품리스트 형식으로 나누면서 확인해야함 템플릿 이용 -->
 	<h1 style="text-align: center">예약리스트</h1>
 	
 	<br>
@@ -217,7 +227,6 @@
 	        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
 		        <input type="date" name="endDate" value="${endDate}" class="form-control">
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="selectBtn">조회</button>
 		</div>
 	
 	<br>
@@ -242,7 +251,6 @@
 		            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
 		        </select>
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="orderBtn">정렬</button>
 	    </div>
 	
 	<br>
@@ -261,7 +269,8 @@
 	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
 	        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn" style="margin-right: 10px;">적용</button>
+	        <a href="${pageContext.request.contextPath}/reservation/reservationList" class="btn waves-effect waves-light btn-outline-dark">초기화</a>
 	    </div>
 	</form>
 	
@@ -284,7 +293,7 @@
 												<th>공용품 번호</th>
 												<th>예약일</th>
 												<th>예약시간</th>
-												<th>신청일</th>
+												<th>생성일</th>
 												<th>취소</th>
                                             </tr>
                                         </thead>
@@ -294,9 +303,13 @@
 													<td>${r.utilityCategory}</td>
 													<td>${r.empName}</td>
 													<td>${r.utilityNo}</td>
-													<td>${r.reservationDate}</td>
+													<!-- 예약일 출력 부분 -->
+											        <fmt:parseDate value="${r.reservationDate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedReservationDate"/>
+													<td><fmt:formatDate value="${parsedReservationDate}" pattern="yyyy-MM-dd"/></td>
 													<td>${r.reservationTime}</td>
-													<td>${r.createdate}</td>
+													<!-- 생성일 출력 부분 -->
+												    <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
 													
 													<!-- 세션에서 멤버로그인ID(사원번호) 확인후 작성자사원번호와 일치할경우 취소태그가 보이도록 출력 비교할 값을 하나의 EL태그안에 넣어서 비교해줘야 조건식이 올바르게 작동한다. -->
 													<c:if test="${empNo == r.empNo}">
@@ -366,10 +379,6 @@
 					</nav>
                 </div>
 				<!-- [끝] 페이징 영역 -->
-
-
-
-
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 

@@ -88,11 +88,17 @@
 	
 	<style>
 	#cancelBtn {
-	    float: left;  // 왼쪽 정렬
+	    float: left;  
 	}
 	
 	#addScheduleLink {
-	    float: right;  // 오른쪽 정렬
+	    float: right;  
+	}
+	/* 탭 선택된 상태가 진하게 */
+	.nav-link.active {
+	    font-weight: bold;
+	    color: white;
+	    background-color: #007bff;
 	}
 	</style>
 	
@@ -210,56 +216,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="card">
-                            <div class="">
-                                <div class="row">
-                                    <div class="col-lg-3 border-end pr-0">
-                                        <div class="card-body border-bottom">
-                                            <h4 class="card-title mt-2">Drag & Drop Event</h4>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <div id="calendar-events" class="">
-                                                        <div class="calendar-events mb-3" data-class="bg-info"><i
-                                                                class="fa fa-circle text-info me-2"></i>Event One</div>
-                                                        <div class="calendar-events mb-3" data-class="bg-success"><i
-                                                                class="fa fa-circle text-success me-2"></i> Event Two
-                                                        </div>
-                                                        <div class="calendar-events mb-3" data-class="bg-danger"><i
-                                                                class="fa fa-circle text-danger me-2"></i>Event Three
-                                                        </div>
-                                                        <div class="calendar-events mb-3" data-class="bg-warning"><i
-                                                                class="fa fa-circle text-warning me-2"></i>Event Four
-                                                        </div>
-                                                    </div>
-                                                    <!-- checkbox -->
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" class="custom-control-input"
-                                                            id="drop-remove">
-                                                        <label class="custom-control-label" for="drop-remove">Remove
-                                                            after drop</label>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- [시작] 캘린더 출력부분 -->
-                                    <div class="col-lg-9">
-                                        <div class="card-body b-l calender-sidebar">
-                                            <div id="calendar"></div>
-                                            
-                                        </div>
-                                    </div>
-                                    <!-- [끝] 캘린더 출력부분 -->
-                                    
-                                
-                                    
-                                </div>
-                            </div>
+	                        <!-- [시작] 캘린더 출력부분 -->
+	                        <div class="col-lg-12">
+	                            <div class="card-body b-l calender-sidebar">
+	                                <div id="calendar"></div>
+	                                
+	                            </div>
+	                        </div>
+	                        <!-- [끝] 캘린더 출력부분 -->
                         </div>
-                       
-                       <button type="button" class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">뒤로</button> <!-- 왼쪽 정렬 -->
-                       
+                        <button type="button" class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">뒤로</button> <!-- 왼쪽 정렬 -->
                     </div>
                 </div>
             </div>

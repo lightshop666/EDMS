@@ -128,7 +128,7 @@
 				dayClick: function(date, jsEvent, view) {
 			        // date 객체는 클릭된 날짜 정보를 포함
 			        // 원하는 페이지로 리다이렉트합니다. 예시로 '/scheduleDay' 페이지로 리다이렉트하는 코드, ${pageContext.request.contextPath}가 먹히지 않아 직접 프로젝트명을 추가
-			        window.location.href = '/goodeeFit/schedule/scheduleDay?date=' + date.format();
+			        window.location.href = '/schedule/scheduleDay?date=' + date.format();
 			    },
 				
 				// 하루를 15분 단위로 분할하려면 이 값을 설정

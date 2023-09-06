@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -98,30 +99,6 @@
 		});
 	});
 	</script>
-	
-	<!-- 페이지네이션 버튼을 누를경우 매개변수를 컨트롤러로 POST 방식으로 보내는 폼이 활성화된다.-->
-	<!-- <script>
-	$(document).ready(function() {
-	    $('.prev-page, .next-page, .page-number').click(function(e) {
-	    	
-	        e.preventDefault();
-	        
-	     	// 클릭된 요소의 클래스 확인
-	        var isPrev = $(this).hasClass('prev-page');
-	        var isNext = $(this).hasClass('next-page');
-	        
-	        if (isPrev) { // 이전 버튼 클릭 시
-	            $('#currentPage').val($('#currentPage').val() - 1);
-	        } else if (isNext) { // 다음 버튼 클릭 시
-	            $('#currentPage').val(Number($('#currentPage').val()) + 1);
-	        } else { // 특정 페이지 번호 클릭 시
-	            $('#currentPage').val($(this).text());
-	        }
-	        
-	        $('#postParamForm').submit();
-	    });
-	});
-	</script> -->
 	
 	<style>
 		/* 구분선 */
@@ -235,7 +212,6 @@
 	        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
 		        <input type="date" name="endDate" value="${endDate}" class="form-control">
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="selectBtn">조회</button>
 		</div>
 	
 	<br>
@@ -260,7 +236,6 @@
 		            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
 		        </select>
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="orderBtn">정렬</button>
 	    </div>
 	
 	<br>
@@ -278,7 +253,8 @@
 	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
 	        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
+        	<button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn" style="margin-right: 10px;">적용</button>
+	        <a href="${pageContext.request.contextPath}/schedule/scheduleList" class="btn waves-effect waves-light btn-outline-dark">초기화</a>
 	    </div>
 	</form>
 	
@@ -307,7 +283,7 @@
 												<th>시작시간</th>
 												<th>종료시간</th>
 												<th>내용</th>
-												<th>등록일</th>
+												<th>생성일</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -318,10 +294,16 @@
 														<input type="checkbox" name="selectedItems" value="${s.scheduleNo}">
 													</td>
 													<td>${s.scheduleNo}</td>
-													<td>${s.scheduleStartTime}</td>
-													<td>${s.scheduleEndTime}</td>
+													<!-- 시작시간 출력 부분 -->
+											        <fmt:parseDate value="${s.scheduleStartTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedStartTime"/>
+													<td><fmt:formatDate value="${parsedStartTime}" pattern="HH:mm"/></td>
+													<!-- 종료시간 출력 부분 -->
+												    <fmt:parseDate value="${s.scheduleEndTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedEndTime"/>
+												    <td><fmt:formatDate value="${parsedEndTime}" pattern="HH:mm"/></td>
 													<td>${s.scheduleContent}</td>
-													<td>${s.createdate}</td>
+													<!-- 생성일 출력 부분 -->
+												    <fmt:parseDate value="${s.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
 												</tr>
 											</c:forEach>
                                         </tbody>

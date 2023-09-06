@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"    pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -134,6 +135,13 @@
 		
 		.btn-space {
 		    margin-bottom: 20px;
+		}
+		
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
 		}
 	</style>
 	
@@ -275,7 +283,7 @@
 											<!-- <th>공용품 종류</th> -->
 											<th>공용품 이름</th>
 											<th>공용품 정보</th>
-											<th>등록일</th>
+											<th>생성일</th>
 											<th>수정일</th>
 											<th>수정</th>
 										</tr>
@@ -301,8 +309,12 @@
 													<%-- <td>${u.utilityCategory}</td> --%>
 													<td>${u.utilityName}</td>
 													<td>${u.utilityInfo}</td>
-													<td>${u.createdate}</td>
-													<td>${u.updatedate}</td>
+													<!-- 생성일 출력 부분 -->
+												    <fmt:parseDate value="${u.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
+												    <!-- 수정일 출력 부분 -->
+												    <fmt:parseDate value="${u.updatedate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
 													<!-- 관리자(권한 1~3)만 링크 이동이 가능함 -->
 													<td>
 														<a class="update-link" data-access-level="1" href="${pageContext.request.contextPath}/utility/modifyUtility?utilityNo=${u.utilityNo}">수정</a>
