@@ -45,7 +45,7 @@ preHandle 메서드는 컨트롤러의 메서드가 호출되기 전에 실행�
 		if (loginMemberId == null) {
 log.debug(CC.WOO + "인터셉터.preHandle : loginMemberId가 널이면 로긴페이지로 리다이렉트  " + CC.RESET);
 			// 로그인되지 않은 상태이므로 로그인 페이지로 리다이렉트
-			response.sendRedirect("/goodeeFit/login");
+			response.sendRedirect("/login?requireLogin=true");
 			return false; // 요청 처리 중단
 		}
 		

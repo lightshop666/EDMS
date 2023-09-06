@@ -7,21 +7,39 @@ let notificationCount = 0;
 
 //웹소켓 연결 함수
 function connect() {
+	if(stompClient && stompClient.connected) {
+		// 이미 연결되어 있는 경우
+		return;
+    }
+	
 	// SockJS를 통해 웹 소켓 연결 생성
 	let socket = new SockJS('/ourWebsocket');
 	// SockJS 연결을 Stomp 클라이언트로 래핑
 	stompClient = Stomp.over(socket);
-	
+
 	 // 서버와 연결 후 실행되는 콜백 함수
 	stompClient.connect({}, function (frame) {
 		console.log('연결 frame: ' + frame);
 		// 알림 표시 업데이트 함수 호출
 		updateNotificationDisplay();
 		
+        // '/activeUsers' 주제로 사용자 목록을 요청하고 받음
+        stompClient.subscribe('/user/topic/activeUsers', function (message) {
+            // message.body에 서버에서 전송한 데이터가 들어 있음
+            // 이 데이터를 뷰에 업데이트하는 함수 호출
+            updateActiveUsers(JSON.parse(message.body));
+        });
+		
 		// '/topic/messages' 주제를 구독하여 일반 메시지 수신 처리
 		stompClient.subscribe('/topic/messages', function (message) {
-			showMessage(JSON.parse(message.body).content);
+		    let receivedMessage = JSON.parse(message.body);
+		    let messageContent = receivedMessage.content; 
+		    let receivedWebSocketId = receivedMessage.webSocketId;
+		    let isMine = (loginMemberId === receivedWebSocketId);
+		    showMessage(messageContent, isMine);
 		});
+
+
 
 		// '/user/topic/privateMessages' 주제를 구독하여 개인 메시지 수신 처리
 		stompClient.subscribe('/user/topic/privateMessages', function (message) {
@@ -38,14 +56,39 @@ function connect() {
 }
 
 //메시지를 화면에 표시하는 함수
-function showMessage(message) {
-    $("#messages").append("<tr><td>" + message + "</td></tr>");
+function showMessage(message, isMine) {
+	let messageHTML = "";
+	if (isMine) {
+	    messageHTML = `<li class="chat-item odd list-style-none mt-3">
+	                        <div class="chat-content text-end d-inline-block ps-3">
+	                            <div class="box msg p-2 d-inline-block mb-1">${message}</div>
+	                            <br>
+	                        </div>
+	                    </li>`;
+	} else {
+	    messageHTML = `<li class="chat-item list-style-none mt-3">
+	                        <div class="chat-img d-inline-block">
+	                            <img src="path/to/image" alt="user" class="rounded-circle" width="45">
+	                        </div>
+	                        <div class="chat-content d-inline-block ps-3">
+	                            <h6 class="font-weight-medium">사람이름</h6>
+	                            <div class="msg p-2 d-inline-block mb-1">${message}</div>
+	                        </div>
+	                    </li>`;
+	}
+	$(".chat-list").append(messageHTML);
 }
+
 
 //일반 메시지를 전송하는 함수
 function sendMessage() {
-    console.log("메시지 보내기");
-    stompClient.send("/ws/message", {}, JSON.stringify({'messageContent': $("#message").val()}));
+	console.log("메시지 보내기");
+	stompClient.send("/ws/message", {}, JSON.stringify({
+		'messageContent': $("#message").val(),
+		'webSocketId': loginMemberId 
+	}));
+  // 전송 후 입력 필드 내용 지우기
+  $("#message").val('');
 }
 
 //개인 메시지를 전송하는 함수
@@ -53,6 +96,20 @@ function sendPrivateMessage() {
     console.log("프라이빗 메시지 보내기");
 	stompClient.send("/ws/privateMessage", {}, JSON.stringify({'messageContent': $("#privateMessage").val()}));
 }
+
+// 사용자 목록을 업데이트하는 함수
+function updateActiveUsers(users) {
+    // 사용자 목록을 HTML 요소로 만들어 뷰에 추가
+    let userList = $('#userList');
+    userList.empty(); // 목록 초기화
+
+    for (let userId in users) {
+        let listItem = $('<li>').text(userId);
+        userList.append(listItem);
+    }
+}
+
+
 
 //알림 표시를 업데이트 하는 함수
 function updateNotificationDisplay() {

@@ -21,6 +21,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 				.addPathPatterns("/schedule/**")
 				.addPathPatterns("/utility/**")
 				.addPathPatterns("/draft/**")
+				.addPathPatterns("/chatMessage")
 				.addPathPatterns("/home");
 	}
 	

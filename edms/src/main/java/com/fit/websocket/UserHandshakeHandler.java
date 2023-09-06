@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.messaging.simp.stomp.StompCommand;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
@@ -55,6 +57,25 @@ public class UserHandshakeHandler extends DefaultHandshakeHandler {
 			
 			loginMemberId = randomId;
         }
+		// 사용자 ID를 세션에서 가져오거나 생성한 후, 웹 소켓 헤더에 추가
+		StompHeaderAccessor accessor = StompHeaderAccessor.create(StompCommand.CONNECT);
+/*
+StompHeaderAccessor: STOMP 메시지의 헤더를 다루기 위한 유틸리티 클래스입니다. 헤더에는 메시지의 목적지, 유형, 사용자 정보 등이 포함됩니다. 
+이 클래스는 헤더를 생성하고 수정하는 데 사용됩니다.
+
+create(StompCommand.CONNECT): StompHeaderAccessor 클래스의 create 메서드는 주어진 STOMP 프레임(명령)에 대한 새로운 헤더 accessor를 생성합니다. 
+StompCommand.CONNECT는 STOMP CONNECT 프레임을 나타내며, 이를 기반으로 헤더 accessor를 생성합니다.
+
+STOMP CONNECT 프레임은 클라이언트가 서버에 연결을 요청할 때 사용됩니다. 
+이 프레임은 연결을 설정하는 데 필요한 정보를 포함하며, 사용자 인증과 관련된 정보를 설정할 때 주로 사용됩니다.
+
+따라서 StompHeaderAccessor.create(StompCommand.CONNECT)은 CONNECT 프레임에 대한 헤더 accessor를 생성하게 됩니다. 
+이 accessor를 사용하여 CONNECT 프레임의 헤더를 수정하고 사용자 정보를 설정할 수 있습니다.
+ 
+ */
+		// 사용자 ID를 웹 소켓 세션 헤더에 추가
+		accessor.setUser(new UserPrincipal(loginMemberId));
+		
         return new UserPrincipal(loginMemberId);
     }
 }

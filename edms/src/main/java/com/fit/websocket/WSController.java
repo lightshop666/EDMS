@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class WSController {
 	@Autowired
-	private WSService service;
+	private WSService service;	
 		
 	// '/sendMassage' 엔드포인트에 POST 요청이 오면 호출됩니다.
 	// 요청 본문에 포함된 메시지를 추출하여 웹 소켓 서비스를 통해 모든 연결된 클라이언트에게 메시지를 전달
@@ -27,6 +27,12 @@ public class WSController {
 	    service.notifyUser(id, message.getMessageContent());
     }
 	
+	//특정 사용자에게 알림 전송
+	@PostMapping("/draft/{id}")
+	public void sendDraftAlarm(@PathVariable final String id,
+	                               @RequestBody final Message message) {
+	    service.notifyUser(id, message.getMessageContent());
+    }
 	
 	
 }
