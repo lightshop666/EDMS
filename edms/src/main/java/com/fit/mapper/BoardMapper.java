@@ -9,17 +9,14 @@ import com.fit.vo.Board;
 
 @Mapper
 public interface BoardMapper {
-	// 게시글 추가
-	int addBoard(Board board);
-		
-	// 게시글 삭제
-	int removeBoard(Board board);
+
+	// 게시글 리스트
+	List<Map<String, Object>> selectBoardList(Map<String, Object> map);
 	
-	List<Board> selectBoardList(Map<String, Object> map);
+	// 게시글 리스트(HOME)
+	List<Map<String, Object>> selectBoardHome();
 	
 	// 총 게시글 행 수
-	int selectBoardCount(String boardCategory);
+	int selectBoardCount(Map<String, Object> map);
 	
-	// 하나의 게시글 조회
-	Board selectBoardOne(int BoardNo);
 }

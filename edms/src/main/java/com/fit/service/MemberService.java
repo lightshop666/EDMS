@@ -141,7 +141,7 @@ public class MemberService {
 		newMemberFile.setMemberFiletype(file.getContentType()); // 파일타입
 		log.debug(CC.YE + "memberService.addMemberFileImage() contentType : " + newMemberFile.getMemberFiletype() + CC.RESET);
 		// path
-		newMemberFile.setMemberPath("/image/member/");
+		newMemberFile.setMemberPath("/goodeeFit/image/member/");
 		log.debug(CC.YE + "memberService.addMemberFileImage() path : " + path + CC.RESET);
 		
 		// 확장자
@@ -237,7 +237,7 @@ public class MemberService {
 		newMemberFile.setMemberFiletype(type); // 파일타입
 		log.debug(CC.YE + "memberService.addMemberFileImage() getContentType : " + newMemberFile.getMemberFiletype() + CC.RESET);
 		// path
-		newMemberFile.setMemberPath("/image/member/");
+		newMemberFile.setMemberPath("/goodeeFit/image/member/");
 		log.debug(CC.YE + "memberService.addMemberFileImage() path : " + path + CC.RESET);
 		
 	// 기존 서명 파일 확인	

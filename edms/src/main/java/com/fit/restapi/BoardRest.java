@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,8 +26,9 @@ public class BoardRest {
     private BoardService boardService;
 	
 	// 파일 업로드
-	@PostMapping(value="/uploadSummernoteImageFile", produces = "application/json")
+	@PostMapping(value="/uploadSummernoteImageFile")
 	public Map<String, Object> uploadSummernoteImageFile(HttpServletRequest request
+														 , HttpSession session
 														 , @RequestParam("file") MultipartFile file) throws IllegalStateException, IOException {	
 		// 파일의 경로
 		String path = request.getServletContext().getRealPath("/file/board/"); //직접 실제 위치(경로)를 구해서 service에 넘겨주는 api

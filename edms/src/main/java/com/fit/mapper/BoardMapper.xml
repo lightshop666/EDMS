@@ -27,46 +27,145 @@
 	</insert>
 	
 	<!-- 전체 게시글 조회 (페이징 포함) -->
-	<select id="selectBoardList" parameterType="String" resultType="com.fit.vo.Board">
+	<select id="selectBoardList" parameterType="java.util.Map" resultType="java.util.Map">
 	    SELECT
-	        board_no
-	        , board_category
-	        , board_title
-	        , board_content
-	        , top_exposure
-	        , createdate
-	    FROM
-	        board
-	    WHERE
-	        board_category = 
-        <choose>
-            <when test=" boardCategory != null and boardCategory != '' ">
-                #{boardCategory}
-            </when>
-            <otherwise>
-                '전체'
-            </otherwise>
-        </choose>
-	    ORDER BY
-	        createdate DESC;
-	    LIMIT #{beginRow}, #{rowPerPage}    
+	    		*
+	    FROM (
+			    (
+			    	SELECT
+					    b.board_no boardNo,
+					    b.emp_no empNo,
+					    b.board_category boardCategory,
+					    b.board_title boardTitle,
+					    b.board_content boardContent,
+					    b.top_exposure topExposure,
+					    DATE_FORMAT(b.createdate, '%Y-%m-%d') createdate,
+					    e.emp_name empName
+					FROM
+					    board b JOIN emp_info e ON b.emp_no = e.emp_no    
+					WHERE
+					    b.top_exposure = 'Y'
+					<!-- board_category로 검색하는 경우 -->
+			        <if test=" boardCategory != null and boardCategory != '' ">
+			            AND board_category = #{boardCategory}
+			        </if>
+			        <!-- board_title로 검색하는 경우 -->
+			        <if test="searchCol == 'boardTitle' and searchWord != ''">
+			            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+			        </if>    
+					ORDER BY
+			        	b.createdate DESC    
+					LIMIT 3
+				)
+			    
+			    UNION ALL
+			    
+			    (
+			    	SELECT
+					    b.board_no boardNo,
+					    b.emp_no empNo,
+					    b.board_category boardCategory,
+					    b.board_title boardTitle,
+					    b.board_content boardContent,
+					    b.top_exposure topExposure,
+					    DATE_FORMAT(b.createdate, '%Y-%m-%d') createdate,
+					    e.emp_name empName
+					FROM
+					    board b JOIN emp_info e ON b.emp_no = e.emp_no    
+				    WHERE
+			            1 = 1
+			            
+						AND b.top_exposure = 'N'    
+				    <!-- board_category로 검색하는 경우 -->
+			        <if test=" boardCategory != null and boardCategory != '' ">
+			            AND board_category = #{boardCategory}
+			        </if>
+			        <!-- board_title로 검색하는 경우 -->
+			        <if test="searchCol == 'boardTitle' and searchWord != ''">
+			            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+			        </if>
+			        ORDER BY
+			        	b.createdate DESC
+			    )
+		    ) AS boardList
+	    LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	
 	<!-- 총 게시글 행 수 -->
-	<select id="selectBoardCount" parameterType="String" resultType="int">
+	<select id="selectBoardCount" parameterType="java.util.Map" resultType="int">
 			SELECT
 				COUNT(*)
-			FROM board
-			WHERE
-				board_category = 
-	        <choose>
-	            <when test=" boardCategory != null and boardCategory != '' ">
-	                #{boardCategory}
-	            </when>
-	            <otherwise>
-	                '전체'
-	            </otherwise>
-	        </choose>
+			FROM (
+				    (
+				    	SELECT
+						    b.board_no boardNo,
+						    b.emp_no empNo,
+						    b.board_category boardCategory,
+						    b.board_title boardTitle,
+						    b.board_content boardContent,
+						    b.top_exposure topExposure,
+						    b.createdate createdate,
+						    e.emp_name empName
+						FROM
+						    board b JOIN emp_info e ON b.emp_no = e.emp_no    
+						WHERE
+						    b.top_exposure = 'Y'
+						<!-- board_category로 검색하는 경우 -->
+				        <if test=" boardCategory != null and boardCategory != '' ">
+				            AND board_category = #{boardCategory}
+				        </if>
+				        <!-- board_title로 검색하는 경우 -->
+				        <if test="searchCol == 'boardTitle' and searchWord != ''">
+				            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+				        </if>      
+						LIMIT 3
+					)
+			    
+			    	UNION ALL
+			    
+				    (
+				    	SELECT
+						    b.board_no boardNo,
+						    b.emp_no empNo,
+						    b.board_category boardCategory,
+						    b.board_title boardTitle,
+						    b.board_content boardContent,
+						    b.top_exposure topExposure,
+						    b.createdate createdate,
+						    e.emp_name empName
+						FROM
+						    board b JOIN emp_info e ON b.emp_no = e.emp_no    
+					    WHERE
+					    	1 = 1
+					    	
+						    AND b.top_exposure = 'N'
+					    <!-- board_category로 검색하는 경우 -->
+				        <if test=" boardCategory != null and boardCategory != '' ">
+				            AND board_category = #{boardCategory}
+				        </if>
+				        <!-- board_title로 검색하는 경우 -->
+				        <if test="searchCol == 'boardTitle' and searchWord != ''">
+				            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+				        </if>
+				    )
+	    		) AS boardList
 	</select>
 	
+	<!-- HOME 게시글 조회 -->
+	<select id="selectBoardHome" parameterType="java.util.Map" resultType="java.util.Map">
+		SELECT
+		    b.board_no boardNo,
+		    b.emp_no empNo,
+		    b.board_category boardCategory,
+		    b.board_title boardTitle,
+		    b.board_content boardContent,
+		    b.top_exposure topExposure,
+		    DATE_FORMAT(b.createdate, '%Y-%m-%d') createdate,
+		    e.emp_name empName
+		FROM
+		    board b JOIN emp_info e ON b.emp_no = e.emp_no    
+		WHERE
+		    b.top_exposure = 'Y'
+		LIMIT 3    
+	</select>	    
 </mapper>
