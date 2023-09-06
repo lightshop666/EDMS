@@ -98,7 +98,7 @@ public class BasicController {
         if ("cancelButton".equals(action)) {
             draftService.cancelDraft(approvalNo);
         } else if ("modifyButton".equals(action)) {
-            // 여기서 수정 페이지로 리다이렉트 등의 처리를 수행할 수 있음
+        	return "redirect:/draft/modifyBasic?approvalNo=" + approvalNo;
         } else if ("approveButton".equals(action)) {
             draftService.approveDraft(approvalNo, role);
         } else if ("reject".equals(action)) {
