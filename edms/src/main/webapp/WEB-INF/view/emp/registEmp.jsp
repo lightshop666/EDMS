@@ -122,7 +122,7 @@
 			$("#empNoMaker").click(function(){
 				$.ajax({
 					type: "POST",
-					url: "/goodeeFit/generateEmpNo",
+					url: "/generateEmpNo",
 					success: function(data) {
 						$("input[name='empNo']").val(data.newEmpNo);  // 응답으로 받은 새로운 사원번호를 input 필드에 설정
 					},
