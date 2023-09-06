@@ -316,7 +316,7 @@
 	        </select>
 	        <input type="text" name="searchWord" class="search-input">
 	    </div>
-	        <button type="submit" id="search-button">검색</button>
+	        <button type="submit" id="search-button" value="${param.searchWord}">검색</button>
     </form>
 <!-- [끝] 검색 ------->
 

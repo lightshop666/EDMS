@@ -1,25 +1,55 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <title>addBoard</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  
-   <!-- jquery -->
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
-   
-   <!-- summernote 연결 -->
-   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-   
-   <!-- 서머노트를 위해 추가해야할 부분 -->
-   <script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
-   <script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
-   <link rel="stylesheet" href="${pageContext.request.contextPath}/summernote/summernote-lite.css">
-  
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<!-- Favicon icon -->
+	<link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
+	<title>goodeeFit 공지 추가</title>
+	<!-- Custom CSS -->
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+	<link href="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+	<!-- Custom CSS -->
+	<link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<!-- ============================================================== -->
+	<!-- All Jquery -->
+	<!-- ============================================================== -->
+	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
+	<!-- apps -->
+	<!-- apps -->
+	<script src="${pageContext.request.contextPath}/dist/js/app-style-switcher.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/feather.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/sidebarmenu.js"></script>
+	<!--Custom JavaScript -->
+	<script src="${pageContext.request.contextPath}/dist/js/custom.min.js"></script>
+	<!--This page JavaScript -->
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/d3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
+	
+	<!-- summernote 연결 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/summernote/summernote-lite.css">
+
    <script>
       $(document).ready(function() {
          
@@ -49,7 +79,7 @@
                       // 그림첨부, 링크만들기, 동영상첨부
                       ['insert',['link']],
                       // 코드보기, 확대해서보기, 도움말
-                      ['view', ['codeview','fullscreen', 'help']]
+                      ['view', ['codeview', 'help']]
                     ],
                  // 추가한 글꼴
                fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
@@ -58,95 +88,188 @@
                 focus : true
             });
          
-         // 2. 이미지 업로드 감지 후 controller 호출
-         $('#files').on('change', function(){
-              // 파일을 담을수 있는 형 생성
-            var data = new FormData();
-            formData.append('file', this.files[0]); // 첫 번째 파일
-              $.ajax({
-                 data : data,
-                dataType: 'json',
-                 type : "POST",
-                 url : "/goodeeFit/uploadSummernoteImageFile",
-                 contentType : false,
-                 processData : false,
-                 success : function(data) {
-                    // 1. 서버에서 받은 값을 변수에 할당
-                       var boardFileNo = data.boardFileNo;
-                       var savePath = data.savePath;
-                       console.log("SavePath:", savePath);
-                       
-                    // 2. boardFileNo 값을 가져와서 hidden input 필드를 생성
-                  var input = $('<input>').attr({
-                     type: 'hidden',
-                     name: 'boardFileNo[]',
-                     value: data.boardFileNo // 백엔드에서 반환된 boardFileNo
-                  }).appendTo('form'); // form 태그에 추가
-                  
-                  // 3. image 값을 가져와서 hidden input 필드를 생성
-                     // 이미지 태그를 생성
-                        var imgTag = '<img src="' + savePath + '" data-boardFileNo="' + boardFileNo + '">';
-   
-                        // 에디터의 컨텐츠에 이미지 태그를 추가
-                        $(editor).summernote('pasteHTML', imgTag);
-   
-                        // 이미지 태그가 삽입된 컨텐츠 가져오기
-                        var updatedContent = $(editor).summernote('code');
-   
-                        // 가져온 컨텐츠를 숨겨진 input 필드에 설정
-                        $('#boardContent').val(updatedContent);
-                    }
-              });
-           });
-         
          // 취소 버튼 클릭 시
          $('#cancelBtn').click(function() {
-            let result = confirm('HOME으로 이동할까요?');
+            let result = confirm('목록으로 이동할까요?');
             if (result) {
-               window.location.href = '/goodeeFit/home'; // home으로 이동
+               window.location.href = '/board/boardList'; // home으로 이동
             }
          });
+         
+      	// 파라미터 값에 따라 알림 메세지
+	     const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+	     const resultParam = urlParams.get('result'); // '?' 제외한 url에서 파라미터 추출
+	     
+	     if (resultParam === 'fail') { // fail 파라미터 값이 들어올 경우
+            // 알림
+    	 	alert('중요 공지는 3개까지 설정 가능합니다.');
+     		// 텍스트 출력
+            $('#msg').text('중요공지는 3개까지 설정 가능합니다.').css('color', 'red'); // 빨간색 오류 메세지
+         }
+         
+		
+	     let maxFiles = 3; // 최대 파일 수
+	     let fileCounter = 1; // 현재 파일 수
+
+	  	// 첫 번째 파일 인풋이 변경될 때
+	     $(document).on('change', 'input[name="multipartFile"]:last', function() {
+	         // 현재 파일 수가 최대 파일 수 미만인 경우
+	         if (fileCounter < maxFiles) {
+	             // 새로운 파일 인풋을 생성하고 추가
+	             let newInput = $('<div><input type="file" name="multipartFile"><button class="removeFile">삭제</button></div>');
+	             $(this).parent().after(newInput);
+
+	             // 현재 파일 수 증가
+	             fileCounter++;
+	         }
+	     });
+
+	     // 파일 인풋이 삭제될 경우
+	     $(document).on('click', '.removeFile', function() {
+	         $(this).parent().remove();
+
+	         // 현재 파일 수 감소
+	         fileCounter--;
+	     });
+	    
+	     $('form').on('submit', function(e) {
+	         // 제목 검증
+	         const title = $("input[name='boardTitle']").val().trim();
+	         if (title === '') {
+	             alert("제목을 입력해주세요.");
+	             e.preventDefault();
+	             return false;
+	         }
+
+	         // 내용 검증 (summernote 내용)
+	         const content = $('#summernote').summernote('code').trim();
+	         if (content === '') {
+	             alert("내용을 입력해주세요.");
+	             e.preventDefault();
+	             return false;
+	         }
+
+	         // 중요도 검증
+	         const topExposure = $("input[name='topExposure']:checked").val();
+	         if (!topExposure) {
+	             alert("중요도를 체크해주세요.");
+	             $('#msg').text('중요도를 체크해주세요.').css('color', 'red');
+	             e.preventDefault();
+	             return false;
+	         }
+
+	         // 여기까지 왔다면 모든 검증을 통과한 것임
+	         return true;
+	     });	     
+	     
       });
       
    </script>
 </head>
 <body>
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+    <div class="lds-ripple">
+        <div class="lds-pos"></div>
+        <div class="lds-pos"></div>
+    </div>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
+	<!-- ============================================================== -->
+	<!-- Topbar header - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<!-- 헤더 인클루드 -->
+	
+	<header class="topbar" data-navbarbg="skin6">
+		<jsp:include page="/WEB-INF/view/inc/header.jsp" />
+	</header>
+	<!-- ============================================================== -->
+	<!-- End Topbar header -->
+	<!-- ============================================================== -->
+	<!-- ============================================================== -->
+	<!-- Left Sidebar - style you can find in sidebar.scss  -->
+	<!-- ============================================================== -->
+	
+	<!-- 좌측 메인메뉴 인클루드 -->
+	
+	<aside class="left-sidebar" data-sidebarbg="skin6">
+	
+		<jsp:include page="/WEB-INF/view/inc/mainmenu.jsp" />
+	
+	</aside>
+	
+	<!-- ============================================================== -->
+	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
+	<!-- ============================================================== -->
+        
+        
+        
+        <!-- ============================================================== -->
+        <!-- Page wrapper  -->
+        <!-- ============================================================== -->
+        
+        
+        
+	<div class="page-wrapper">
+	<!-- ============================================================== -->
+	<!-- Container fluid  -->
+	<!-- ============================================================== -->
+		<div class="container-fluid">
+<!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
+<!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
+
 <h1>공지글 추가</h1>
-<form method="POST" id="addBoardFileNo" action="/goodeeFit/board/addBoard" enctype="multipart/form-data">
+<form method="POST" action="/board/addBoard" enctype="multipart/form-data">
    <input type="hidden" name="empNo" value="${empNo}">
    <table>
       <tr>
          <td>작성자</td>
-         <td><input type="text" name="empName" value="${empName}" readonly></td>
+         <td><input type="text" value="${empName}" readonly></td>
          <td>부서명</td>
-         <td><input type="text" name="deptName" value="${deptName}" readonly></td>
+         <td><input type="text" value="${deptName}" readonly></td>
       </tr>
       <tr>
-         <td>카테고리</td>
-         <td colspan="3"><input type="text" name="boardCategory"></td>
-      </tr>
+	    <td>카테고리</td>
+	    <td colspan="3">
+	        <select name="boardCategory" id="category">
+	            <option value="전사공지">전사공지</option>
+	            <option value="사업추진본부">사업추진본부</option>
+	            <option value="경영지원본부">경영지원본부</option>
+	            <option value="영업지원본부">영업지원본부</option>
+	        </select>
+	    </td>
+	</tr>
       <tr>
          <td>제목</td>
-         <td colspan="3"><input type="text" name="boardTitle"></td>
+         <td colspan="3"><input id="title" type="text" name="boardTitle"></td>
       </tr>
       <tr>
           <td>중요공지 여부</td>
           <td colspan="4">
               <label><input type="radio" name="topExposure" value="Y"> 중요</label>
               <label><input type="radio" name="topExposure" value="N"> 일반</label>
-          </td>
-      </tr>
-      <tr>
-          <td>파일첨부</td>
-          <td>
-             <input type="file" id="files" name="boardOriFileName" multiple>
-             <button type="button" class="add-file">파일 추가</button>
+              <span id="msg"></span>
           </td>
       </tr>
    </table>
+   
    <br>
-   <div class="container">
+	<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
+	<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <div class="container">
        <textarea id="summernote" name="boardContent" class="summernote"></textarea>
+    </div>
+    
+    <div>
+    	<input type="file" name="multipartFile"><button type="button" class="removeFile">삭제</button>
     </div>
     <hr>
     <div class="buttons">
@@ -154,5 +277,35 @@
        <button type="submit" id="saveBtn">저장</button>
    </div>
 </form>
+<!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
+
+		</div>
+		<!-- ============================================================== -->
+		<!-- End Container fluid  -->
+		<!-- ============================================================== -->
+            
+		<!-- ============================================================== -->
+		<!-- footer -->
+		<!-- ============================================================== -->
+<!-- 푸터 인클루드 -->
+		<footer class="footer text-center text-muted">
+		
+			<jsp:include page="/WEB-INF/view/inc/footer.jsp" />
+			
+		</footer>
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
+	</div>
+<!-- ============================================================== -->
+<!-- End Page wrapper  -->
+<!-- ============================================================== -->        
+</div>
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+<!-- End Wrapper -->
+<!-- ============================================================== -->
+
 </body>
 </html>

@@ -12,7 +12,7 @@ public interface BoardFileMapper {
 	int addBoardFile(BoardFile boardFile);
 	
 	// 파일 상세
-	BoardFile selectBoardFileOne(int boardFileNo);
+	List<BoardFile> selectSaveFile(int boardNo);
 	
 	// 파일 삭제
 	int removeBoardFile(int boardNo, int boardFileNo);

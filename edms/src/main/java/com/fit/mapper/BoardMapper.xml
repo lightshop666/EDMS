@@ -4,27 +4,51 @@
 
 	<!-- 게시글 추가 -->
 	<insert id="addBoard" parameterType="com.fit.vo.Board">
-			<selectKey order="AFTER" keyProperty="boardNo" resultType="int"><!-- 키가 반환된 후에 -->
-				SELECT last_insert_id()
-			</selectKey><!-- insert가 일어난 후 board_no 생성 -> 매개변수에 전달 -->
-			INSERT INTO board(
-			 	emp_no
-				, board_category
-				, board_title
-				, board_content
-				, top_exposure
-				, createdate
-				, updatedate
-			) VALUES (
-				#{empNo}
-				, #{boardCategory}
-				, #{boardTitle}
-				, #{boardContent}
-				, #{topExposure}
-				, NOW()
-				, NOW()
-			)
+		<selectKey order="AFTER" keyProperty="boardNo" resultType="int">
+			SELECT last_insert_id()
+		</selectKey><!-- insert가 일어난 후 board_no 생성 -> 매개변수에 전달 -->
+		INSERT INTO board(
+		 	emp_no
+			, board_category
+			, board_title
+			, board_content
+			, top_exposure
+			, createdate
+			, updatedate
+		) VALUES (
+			#{empNo}
+			, #{boardCategory}
+			, #{boardTitle}
+			, #{boardContent}
+			, #{topExposure}
+			, NOW()
+			, NOW()
+		)
 	</insert>
+	
+	<!-- 게시글 삭제 -->
+	<delete id="removeBoard" parameterType="com.fit.vo.Board">
+			DELETE FROM board
+			WHERE
+				emp_no = #{empNo}
+			AND
+				board_no = #{boardNo}
+	</delete>
+	
+	<!-- 게시글 수정 -->
+	<update id="modifyBoard" parameterType="com.fit.vo.Board">
+			UPDATE
+				board
+			SET
+				board_category = #{boardCategory}
+				, board_title = #{boardTitle}
+				, board_content = #{boardContent}
+				, top_exposure = #{topExposure}
+			WHERE
+				emp_no = #{empNo}
+			AND
+				board_no = #{boardNo}
+	</update>
 	
 	<!-- 전체 게시글 조회 (페이징 포함) -->
 	<select id="selectBoardList" parameterType="java.util.Map" resultType="java.util.Map">
@@ -52,7 +76,11 @@
 			        <!-- board_title로 검색하는 경우 -->
 			        <if test="searchCol == 'boardTitle' and searchWord != ''">
 			            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
-			        </if>    
+			        </if>
+			        <!-- empName로 검색하는 경우 -->
+			        <if test="searchCol == 'empName' and searchWord != ''">
+			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+			        </if>
 					ORDER BY
 			        	b.createdate DESC    
 					LIMIT 3
@@ -84,6 +112,10 @@
 			        <if test="searchCol == 'boardTitle' and searchWord != ''">
 			            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
 			        </if>
+			        <!-- empName로 검색하는 경우 -->
+			        <if test="searchCol == 'empName' and searchWord != ''">
+			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+			        </if>
 			        ORDER BY
 			        	b.createdate DESC
 			    )
@@ -112,12 +144,16 @@
 						    b.top_exposure = 'Y'
 						<!-- board_category로 검색하는 경우 -->
 				        <if test=" boardCategory != null and boardCategory != '' ">
-				            AND board_category = #{boardCategory}
+				            AND b.board_category = #{boardCategory}
 				        </if>
 				        <!-- board_title로 검색하는 경우 -->
 				        <if test="searchCol == 'boardTitle' and searchWord != ''">
-				            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
-				        </if>      
+				            AND b.board_title LIKE CONCAT('%', #{searchWord}, '%')
+				        </if>
+				        <!-- empName로 검색하는 경우 -->
+				        <if test="searchCol == 'empName' and searchWord != ''">
+				            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
+				        </if>
 						LIMIT 3
 					)
 			    
@@ -141,14 +177,28 @@
 						    AND b.top_exposure = 'N'
 					    <!-- board_category로 검색하는 경우 -->
 				        <if test=" boardCategory != null and boardCategory != '' ">
-				            AND board_category = #{boardCategory}
+				            AND b.board_category = #{boardCategory}
 				        </if>
 				        <!-- board_title로 검색하는 경우 -->
 				        <if test="searchCol == 'boardTitle' and searchWord != ''">
-				            AND board_title LIKE CONCAT('%', #{searchWord}, '%')
+				            AND b.board_title LIKE CONCAT('%', #{searchWord}, '%')
+				        </if>
+				        <!-- empName로 검색하는 경우 -->
+				        <if test="searchCol == 'empName' and searchWord != ''">
+				            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 				        </if>
 				    )
 	    		) AS boardList
+	</select>
+	
+	<!-- 중요공지 개수 -->
+	<select id="topExposureCnt" resultType="int">
+	    SELECT
+	    	COUNT(*)
+	    FROM
+	    	board
+	    WHERE
+	    	top_exposure = 'Y'
 	</select>
 	
 	<!-- HOME 게시글 조회 -->
@@ -166,6 +216,27 @@
 		    board b JOIN emp_info e ON b.emp_no = e.emp_no    
 		WHERE
 		    b.top_exposure = 'Y'
-		LIMIT 3    
-	</select>	    
+		LIMIT 3
+	</select>
+	
+	<!-- 하나의 게시글 조회 -->
+	<select id="selectBoardOne" parameterType="int" resultType="java.util.Map">
+			SELECT
+		        b.board_no boardNo
+		        , b.emp_no empNo
+		        , b.board_category boardCategory
+		        , b.board_title boardTitle
+		        , b.board_content boardContent
+		        , b.top_exposure topExposure
+		        , b.createdate
+		        , b.updatedate
+		        , e.dept_name deptName
+		        , e.emp_name empName
+		    FROM
+		        board b JOIN emp_info e
+		    ON
+		   		b.emp_no = e.emp_no
+		    WHERE
+		        b.board_no = #{boardNo}
+	</select>    
 </mapper>

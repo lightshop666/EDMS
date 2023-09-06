@@ -11,7 +11,7 @@
 	<meta name="author" content="">
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
-	<title>goodeeFit 공지리스트</title>
+	<title>GoodeeFit 공지상세</title>
 	<!-- Custom CSS -->
 	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
 	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
@@ -45,6 +45,59 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
+
+	<!-- summernote 연결 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/summernote/summernote-lite.css">
+	
+	<script>
+      $(document).ready(function() {
+         // 1. summernote editor
+         $('.summernote').summernote({
+	        height: 700, // 에디터 높이
+	     	// 읽기 전용으로 설정
+	        disable: false,  // disable을 false로 설정
+	        readOnly: true,  // 읽기 전용으로 설정
+	        toolbar: false  // 툴바를 숨김
+	      });
+	
+	    $('.summernote').summernote('disable'); // 에디터를 읽기 전용으로 설정
+	 	
+      	// 목록 버튼 클릭 시
+         $('#list').click(function() {
+            let result = confirm('목록으로 이동하시겠습니까?');
+            if (result) {
+               window.location.href = '/board/boardList'; // home으로 이동
+            }
+         });
+         
+         // 수정 버튼 클릭 시
+         $('#modify').click(function() {
+            let result = confirm('수정하시겠습니까?');
+            if (result) {
+               window.location.href = '/board/modifyBoard'; // home으로 이동
+            }
+         });
+         
+      	// 삭제 버튼 클릭 시
+         $('#remove').click(function() {
+            let result = confirm('삭제하시겠습니까?');
+            if (result) {
+               window.location.href = '/board/removeBoard'; // home으로 이동
+            }
+         });
+      });
+      
+   </script>
+   <style>
+		#text-container {
+			width: 990px;
+			height: 700px;
+			background-color: #ffffff;
+			overflow-y: auto; /* 내용이 넘치면 스크롤바 생성 */
+		}
+   </style>
 </head>
 
 <body>
@@ -104,104 +157,51 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
-	<h1>공지사항</h1>
-	
-<!-- [시작] 정렬 및 검색 ------->
-	<form action="/board/boardList" method="GET">
-		<!-- 제목 검색 -->	
-	    <div class="search-area">
-	        <label class="search-label">검색</label>
-	        <select name="searchCol" class="search-input">
-	            <option value="boardTitle" <c:if test="${searchCol.equals('boardTitle')}">selected</c:if>>제목</option>
-	            <option value="empName" <c:if test="${searchCol.equals('empName')}">selected</c:if>>작성자</option>
-	        </select>
-	        <input type="text" name="searchWord" class="search-input" value="${searchWord}">
-	        <input type="hidden" name="boardCategory" value="${boardCategory}"><!-- 검색 항목을 유지하기 위해 추가 -->
-	        <button type="submit" id="search-button">검색</button>
-	    </div>
-	</form>
-	<a href="/board/addBoard">추가</a>
-	<!-- boardCategory 정렬 -->
-	<div>
-		<a href="/board/boardList">전체</a>
-		<a href="/board/boardList?boardCategory=전사공지">전사공지</a>
-	    <a href="/board/boardList?boardCategory=사업추진본부">사업추진본부</a>
-	    <a href="/board/boardList?boardCategory=경영지원본부">경영지원본부</a>
-	    <a href="/board/boardList?boardCategory=영업지원본부">영업지원본부</a>
-	</div>
+	<h1>공지 상세</h1>
 	<table class="table">
 		<tr>
-			<th>공지</th>
-			<th>제목</th>
-			<th>작성자</th>
-			<th>등록일</th>
+			<td colspan="2">${boardOne.boardTitle}</td>
 		</tr>
-		<c:choose>
-	        <c:when test="${not empty board}">
-				<c:forEach var="b" items="${board}">
-				<tr>
-					<td>
-						<!-- 중요/일반 공지를 구분 -->
-						<c:choose>
-							<c:when test="${b.topExposure == 'Y'}">
-								&#128227;
-							</c:when>
-							<c:otherwise>
-								-
-							</c:otherwise>
-						</c:choose>
-					</td>
-					<td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
-					<td>${b.empName}</td>
-					<td>${b.createdate}</td>
-				</tr>
-				</c:forEach>
-	     	</c:when>
-	     	<c:otherwise>
-	            <tr>
-	                <td colspan="4">공지 내용이 없습니다.</td>
-	            </tr>
-	        </c:otherwise>
-	    </c:choose>	
+		<tr>
+			<td>작성자 | ${boardOne.deptName}, ${boardOne.empName} </td>
+			<td>수정일 | ${boardOne.updatedate}</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
+				<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+			   
+				<div class="text-container">
+			       <textarea id="text-container" name="boardContent" class="summernote" readonly>${boardOne.boardContent}</textarea>
+			    </div>
+		    </td>
+		</tr>
+		<!-- 파일 미리보기 및 다운로드 -->
+	    <c:forEach var="s" items="${saveFileName}">
+            <tr>
+            	<td colspan="2">
+            		<span>&#128196;</span>
+            		<a href="/file/board/${s.boardSaveFileName}">미리보기</a>
+            		<a href="/file/board/${s.boardSaveFileName}" download="${s.boardSaveFileName}">다운로드</a>
+            	</td>
+            </tr>
+	    </c:forEach>
+	    <!-- 파일이 존재하지 않을 경우 메세지 표시 -->
+	    <c:if test="${empty saveFileName}">
+	        <tr>
+	            <td colspan="2">파일이 존재하지 않습니다.</td>
+            </tr>
+        </c:if>
 	</table>
 	
-	<!-- [시작] 페이징 ------->
-	<nav aria-label="Page navigation">
-	    <ul class="pagination">
-	        <c:if test="${minPage > 1}">
-	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${currentPage - 1}" aria-label="Previous">
-	                    <span aria-hidden="true">&laquo;</span>
-	                    <span class="sr-only">이전</span>
-	                </a>
-	            </li>
-	        </c:if>
-	        
-	        <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-	            <li class="page-item">
-	                <c:choose>
-	                    <c:when test="${i == currentPage}">
-	                        <span class="page-link current-page">${i}</span>
-	                    </c:when>
-	                    <c:otherwise>
-	                        <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${i}">${i}</a>
-	                    </c:otherwise>
-	                </c:choose>
-	            </li>
-	        </c:forEach>
-	        
-	        <c:if test="${lastPage > currentPage}">
-	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${currentPage + 1}" aria-label="Next">
-	                    <span aria-hidden="true">&raquo;</span>
-	                    <span class="sr-only">다음</span>
-	                </a>
-	            </li>
-	        </c:if>
-	    </ul>
-	</nav>
-	<!-- [끝] 페이징 ------->
+	<hr>
+	
+	<a href="/board/boardList" id="list">목록</a>
+	<a href="/board/modifyBoard?boardNo=${boardOne.boardNo}" id="modify">수정</a>
+	<a href="/board/removeBoard?boardNo=${boardOne.boardNo}" id="remove">삭제</a>
+
+
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
