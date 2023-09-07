@@ -44,8 +44,9 @@
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
 	<!-- 웹소켓 JS -->
-	<script src="/WebsocketScripts.js"></script>
-<script type="text/javascript">
+	<script src="${pageContext.request.contextPath}/WebsocketScripts.js"></script>
+	
+<script>
 
 $(document).ready(function() {
 	//웹 소켓 연결 함수 호출
@@ -56,7 +57,11 @@ $(document).ready(function() {
 	$("#bell").click(function() {
 		resetNotificationCount();
 	});
+	
 });
+
+
+
 </script>
 	
 </head>
@@ -111,48 +116,6 @@ $(document).ready(function() {
 					<span class="badge text-bg-primary notify-no rounded-circle" id="notifications"></span>
 				</a>
 				
-	<!-- 알림 드롭다운 -->
-				<div class="dropdown-menu dropdown-menu-left mailbox animated bounceInDown">
-			        <ul class="list-style-none">
-	<!-- 메시지 -->
-			            <li>
-			                <div class="message-center notifications position-relative">
-			                    <!-- Message -->
-								<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2">
-									<div class="btn btn-danger rounded-circle btn-circle">
-										<i data-feather="airplay" class="text-white"></i>
-									</div>
-									<div class="w-75 d-inline-block v-middle ps-2">
-										<h6 class="message-title mb-0 mt-1">Luanch Admin</h6>
-										<span class="font-12 text-nowrap d-block text-muted">
-										Just see the my new admin!
-										</span>
-										<span class="font-12 text-nowrap d-block text-muted">9:30 AM</span>
-									</div>
-								</a>
-								<!-- Message -->
-								<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2">
-									<span class="btn btn-success text-white rounded-circle btn-circle">
-										<i data-feather="calendar" class="text-white"></i>
-									</span>
-									<div class="w-75 d-inline-block v-middle ps-2">
-										<h6 class="message-title mb-0 mt-1">Event today</h6>
-										<span class="font-12 text-nowrap d-block text-muted text-truncate">
-											Just a reminder that you have event</span>
-										<span class="font-12 text-nowrap d-block text-muted">9:10 AM</span>
-									</div>
-								</a>
-							</div>
-						</li>
-						<!-- 모든 알림 보기 -->
-						<li>
-							<a class="nav-link pt-3 text-center text-dark" href="javascript:void(0);">
-								<strong>Check all notifications</strong>
-								<i class="fa fa-angle-right"></i>
-							</a>
-						</li>
-					</ul>
-				</div>
 			</li>
 		</ul>	
 		<!-- End Notification -->

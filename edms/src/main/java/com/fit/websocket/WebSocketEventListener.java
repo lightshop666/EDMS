@@ -1,7 +1,5 @@
 package com.fit.websocket;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -17,8 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class WebSocketEventListener {
-	
-	ConcurrentHashMap<String, Object> connectedUsers = new ConcurrentHashMap<>();
+
+    @Autowired
+    private UserService userService;
 	/*
 	 * ConcurrentHashMap은 Map 인터페이스를 구현하는 클래스 중 하나입니다. 이 클래스는 멀티스레딩 환경에서 효율적으로 작동하도록
 	 * 설계되어 있습니다. 즉, 여러 스레드가 동시에 맵에 접근하더라도 문제가 없습니다. 내부적으로 세그먼트를 사용해 락을 최소화하고, 효율적인
@@ -41,11 +40,11 @@ public class WebSocketEventListener {
 
 
         if (simpUser != null) {
-            connectedUsers.put(sessionId , simpUser);
-    	    log.debug(CC.WOO +"웹소켓이벤트리스너.접속시 connectedUsers :  " + connectedUsers + CC.RESET);
+            userService.addUser(sessionId, simpUser);
+    	    log.debug(CC.WOO +"웹소켓이벤트리스너.접속시 connectedUsers :  " + userService.getConnectedUsers() + CC.RESET);
 
             // 전체 클라이언트에게 사용자 리스트를 푸시
-            messagingTemplate.convertAndSend("/topic/users", connectedUsers);
+            messagingTemplate.convertAndSend("/topic/users", userService.getConnectedUsers() );
         }
     }
 
@@ -62,11 +61,11 @@ public class WebSocketEventListener {
 	    log.debug(CC.WOO +"웹소켓이벤트리스너.해제시 simpUser :  " + simpUser + CC.RESET);	     
 	    
 	    if (sessionId != null) {
-	        connectedUsers.remove(sessionId);
-	        log.debug(CC.WOO + "웹소켓이벤트리스너.접속종료. connectedUsers : " + connectedUsers + CC.RESET);
+	    	userService.remove(sessionId, simpUser);
+	        log.debug(CC.WOO + "웹소켓이벤트리스너.접속종료. connectedUsers : " + userService.getConnectedUsers() + CC.RESET);
 
 	        // 전체 클라이언트에게 사용자 리스트를 푸시
-	        messagingTemplate.convertAndSend("/topic/users", connectedUsers.keySet());
+	        messagingTemplate.convertAndSend("/topic/users", userService.getConnectedUsers());
 
 	    }
     }

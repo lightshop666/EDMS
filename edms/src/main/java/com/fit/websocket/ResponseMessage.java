@@ -9,6 +9,9 @@ public class ResponseMessage {
         this.setContent(content);
         this.setWebSocketId(webSocketId);
     }
+    public ResponseMessage(String content) {
+        this.setContent(content);
+    }
 
 	public String getContent() {
 		return content;

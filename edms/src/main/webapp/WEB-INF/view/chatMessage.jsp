@@ -53,13 +53,65 @@
 //세션에 담긴 아이디 JS로 저장
 var loginMemberId = '<%= request.getSession().getAttribute("loginMemberId") %>';
 console.log("JS로 받아온 loginMemberId : " + loginMemberId);
+var userName;
 
 $(document).ready(function() {
 	// 웹 소켓 연결 함수 호출
-	connect();
+	connect();	
 	console.log("웹소켓 연결 완료");
 	console.log("JS로 받아온 loginMemberId : " + loginMemberId);
+	
 
+	// 웹 소켓 연결 상태를 주기적으로 체크
+	var intervalId = setInterval(function() {
+		
+	    if (isConnected) {  // 웹소켓이 연결되었다면
+	        clearInterval(intervalId);  // 인터벌을 정지
+	        
+	        $.ajax({
+                type: "GET",
+                url: "/userList",
+                success: function(data) {
+                    console.log("웹소켓 연결 후 userList 아작스 안에 들어옴");
+                    let userList = data;
+                    console.log('아작스가 받아온 userList: ' + JSON.stringify(userList, null, 2));
+
+                    $('.message-center').empty();  // div를 비움
+
+                    // userList를 반복하여 div에 이름을 추가
+                    for (let sessionId in userList) {
+                        console.log('아작스에서 for문 안에 들어옴 sessionId : ' + sessionId );
+
+                        if (userList.hasOwnProperty(sessionId)) {
+                            console.log('userList.hasOwnProperty(sessionId) 안에 들어옴 : ' + userList.hasOwnProperty(sessionId));
+                            let userName = userList[sessionId].name;
+                            
+                            console.log('아작스 안의 안의 안에서 userName : ' + userName );
+                            let userTemplate = 
+                                '<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2">' +
+                                    '<div class="user-img">'+
+                                       '<img src="/assets/images/users/1.jpg" alt="user" class="img-fluid rounded-circle" width="40px">'+
+                                        '<span class="profile-status online float-end"></span>'+
+                                    '</div>'+
+                                    '<div class="w-75 d-inline-block v-middle ps-2">'+
+    									'<h6 class="message-title mb-0 mt-1">' + userName+ '</h6>'+                            
+                                    '</div>'+
+                                '</a>';
+                  
+                            $('.message-center').append(userTemplate);
+                        }
+                    }
+                },
+                error: function(error) {
+                    console.error("유저 리스트를 가져오는 데 실패했습니다: ", error);
+                }
+            });
+	        
+	    }
+	}, 500);  // 500ms 마다 체크
+
+	
+	
 	
 	// 전송 버튼 클릭 시 메시지 전송 함수 호출
 	$("#send").click(function() {
@@ -68,12 +120,14 @@ $(document).ready(function() {
 	
 	// 엔터키 눌렀을 때의 이벤트
 	$("#message").keypress(function(e) {
-			if (e.keyCode == 13) { // 13은 엔터키의 키코드
-				e.preventDefault(); // 엔터키의 기본 동작을 막습니다.
-				sendMessage(); // 메시지 전송 함수를 호출합니다.
-			}
-		});
+		if (e.keyCode == 13) { // 13은 엔터키의 키코드
+			e.preventDefault(); // 엔터키의 기본 동작을 막습니다.
+			sendMessage(); // 메시지 전송 함수를 호출합니다.
+		}
 	});
+	
+	
+});
 
 </script>
 </head>
@@ -149,25 +203,11 @@ $(document).ready(function() {
 	<div class="card">
 		<div class="row g-0">
 			<div class="col-lg-3 col-xl-2 border-end">			
+			
 			<!-- 좌측 접속 인원 -->		
 				<div class="scrollable position-relative" style="height: calc(100vh - 111px);">
 					<ul class="mailbox list-style-none">
-						<li>
-							<div class="message-center">
-								<!-- 좌측 접속인원 -->
-								<a href="javascript:void(0)" class="message-item d-flex align-items-center border-bottom px-3 py-2">
-								<!-- 유저이미지 -->
-									<div class="user-img">
-										<img src="${pageContext.request.contextPath}/assets/images/users/1.jpg" alt="user" class="img-fluid rounded-circle" width="40px"> 
-										<span class="profile-status online float-end"></span>
-									</div>
-								<!-- 유저네임 -->
-									<div class="w-75 d-inline-block v-middle ps-2">
-									    <h6 class="message-title mb-0 mt-1">${loginMemberId}</h6>
-									</div>
-								</a>				
-							</div>
-						</li>
+						<li><div class="message-center"></div></li>
 					</ul>
 				</div>
 			</div>
@@ -176,31 +216,10 @@ $(document).ready(function() {
 			
 			<!-- 채팅 내용 출력부분 -->
 			<div class="col-lg-9  col-xl-10">
-				<div class="chat-box scrollable position-relative" style="height: calc(100vh - 111px);">
-					 <ul class="chat-list list-style-none px-3 pt-3">
-						<!--상대방 메시지 -->
-						<li class="chat-item list-style-none mt-3">
-							<div class="chat-img d-inline-block">
-								<!-- 상대방 프로필 이미지 -->
-								<img src="${pageContext.request.contextPath}/assets/images/users/1.jpg" alt="user" class="rounded-circle" width="45">
-							</div>
-							<!-- 유저명과 상대방 채팅 내용 -->
-							<div class="chat-content d-inline-block ps-3">
-							    <h6 class="font-weight-medium">사람이름</h6>
-							    <div class="msg p-2 d-inline-block mb-1">채팅 내용 출력</div>
-							</div>
-						</li>
-						
-						<!--내 메시지 -->
-						<li class="chat-item odd list-style-none mt-3">
-							<div class="chat-content text-end d-inline-block ps-3">
-								<div class="box msg p-2 d-inline-block mb-1"> 채팅 내용 </div>
-								<br>
-							</div>
-						</li> 	    
-				    </ul>
+				<div class="chat-box scrollable position-relative" style="height: calc(100vh - 111px);">			
+					 <ul class="chat-list list-style-none px-3 pt-3"></ul>				    
 				</div>
-			
+				
 				<!-- 타이핑 부분 -->
 				<div class="card-body border-top">
 					<div class="row">
