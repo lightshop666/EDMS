@@ -129,7 +129,7 @@ $(document).ready(function() {
 					</a>
 			    </li>	
 			    <li class="sidebar-item"> 
-					<a class="sidebar-link" href="${pageContext.request.contextPath}/home" aria-expanded="false" data-access-level="2">
+					<a class="sidebar-link" href="${pageContext.request.contextPath}/sendEmail" aria-expanded="false" data-access-level="2">
 						<i data-feather="grid" class="feather-icon"></i>
 							<span class="hide-menu">사원초대</span>
 					</a>

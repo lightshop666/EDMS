@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Transactional // 서비스 레이어에서 트랜잭션 처리 진행
+@Transactional
 public class UtilityService {
 	
 	@Autowired

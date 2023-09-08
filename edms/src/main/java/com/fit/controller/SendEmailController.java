@@ -40,7 +40,7 @@ public class SendEmailController {
  		log.debug(CC.YOUN+"SendEmailController.sendEmailForm() serviceId: "+serviceId+CC.RESET);
  		log.debug(CC.YOUN+"SendEmailController.sendEmailForm() emailTemplateId: "+emailTemplateId+CC.RESET);
         
- 		// "/sendEmail"이라는 이름의 뷰(JSP 페이지)를 반환합니다. 실제로는 /WEB-INF/views/sendEmail.jsp 파일이 렌더링
+ 		// "/sendEmail"이라는 이름의 뷰(JSP 페이지)를 반환 실제로는 /WEB-INF/view/sendEmail.jsp 파일이 렌더링
 		return "/sendEmail";
 	}
 }
