@@ -121,22 +121,7 @@
 			
 			return isValid;
 		}
-<<<<<<< HEAD
-=======
-		/* function formatNumber(input) {
-		    // 입력된 값에서 모든 쉼표를 제거합니다.
-		    const value = input.value.replace(/,/g, '');
->>>>>>> branch 'master' of https://github.com/lightshop666/EDMS.git
 
-<<<<<<< HEAD
-=======
-		    // 숫자를 3자리 단위로 쉼표로 포맷팅합니다.
-		    const formattedValue = Number(value).toLocaleString();
-
-		    // 포맷팅된 값을 입력 필드에 설정합니다.
-		    input.value = formattedValue;
-		} */
->>>>>>> branch 'master' of https://github.com/lightshop666/EDMS.git
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
 			// 페이지 로드 후 서명 이미지 조회 메서드 실행
@@ -414,18 +399,10 @@
 											</select>
 										</td>
 										<td>
-<<<<<<< HEAD
 											₩ <input type="number" name="targetSales" class="targetSales">
-=======
-											₩ <input type="number" name="targetSales" class="targetSales" >
->>>>>>> branch 'master' of https://github.com/lightshop666/EDMS.git
 										</td>
 										<td>
-<<<<<<< HEAD
 											₩ <input type="number" name="currentSales" class="currentSales">
-=======
-											₩ <input type="number" name="currentSales" class="currentSales" >
->>>>>>> branch 'master' of https://github.com/lightshop666/EDMS.git
 										</td>
 										<td>
 											<span class="rate"></span>
