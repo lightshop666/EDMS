@@ -178,20 +178,29 @@
                                             </tr>
                                         </thead>
                                         <tbody class='center-text'>
-                                           <c:forEach var="s" items="${scheduleByDay}">
-												<tr>
-													<!-- 시작시간 출력 부분 -->
-											        <fmt:parseDate value="${s.scheduleStartTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedStartTime"/>
-													<td><fmt:formatDate value="${parsedStartTime}" pattern="HH:mm"/></td>
-													<!-- 종료시간 출력 부분 -->
-												    <fmt:parseDate value="${s.scheduleEndTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedEndTime"/>
-												    <td><fmt:formatDate value="${parsedEndTime}" pattern="HH:mm"/></td>
-													<td>${s.scheduleContent}</td>
-													<!-- 생성일 출력 부분 -->
-												    <fmt:parseDate value="${s.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
-												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
-												</tr>
-											</c:forEach>
+                                        <c:choose>
+	        								<c:when test="${not empty scheduleByDay}">
+	                                           <c:forEach var="s" items="${scheduleByDay}">
+													<tr>
+														<!-- 시작시간 출력 부분 -->
+												        <fmt:parseDate value="${s.scheduleStartTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedStartTime"/>
+														<td><fmt:formatDate value="${parsedStartTime}" pattern="HH:mm"/></td>
+														<!-- 종료시간 출력 부분 -->
+													    <fmt:parseDate value="${s.scheduleEndTime}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedEndTime"/>
+													    <td><fmt:formatDate value="${parsedEndTime}" pattern="HH:mm"/></td>
+														<td>${s.scheduleContent}</td>
+														<!-- 생성일 출력 부분 -->
+													    <fmt:parseDate value="${s.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+													    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
+													</tr>
+												</c:forEach>
+											</c:when>
+											<c:otherwise>
+									            <tr>
+									                <td colspan="4">일정 현황이 없습니다.</td>
+									            </tr>
+									        </c:otherwise>
+										</c:choose>
                                         </tbody>
                                     </table>
                                 </div>
@@ -220,22 +229,31 @@
                                             </tr>
                                         </thead>
                                         <tbody class='center-text'>
-                                           <c:forEach var="r" items="${reservationByDay}">
-												<tr>
-													<td>${r.reservationNo}</td>
-													<td>${r.empNo}</td>
-													<td>${r.empName}</td>
-													<td>${r.utilityNo}</td>
-													<td>${r.utilityCategory}</td>
-													<!-- 예약일 출력 부분 -->
-											        <fmt:parseDate value="${r.reservationDate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedReservationDate"/>
-													<td><fmt:formatDate value="${parsedReservationDate}" pattern="yyyy-MM-dd"/></td>
-													<td>${r.reservationTime}</td>
-													<!-- 생성일 출력 부분 -->
-												    <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
-												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>		
-												</tr>
-											</c:forEach>
+                                        <c:choose>
+	        								<c:when test="${not empty reservationByDay}">
+	                                           <c:forEach var="r" items="${reservationByDay}">
+													<tr>
+														<td>${r.reservationNo}</td>
+														<td>${r.empNo}</td>
+														<td>${r.empName}</td>
+														<td>${r.utilityNo}</td>
+														<td>${r.utilityCategory}</td>
+														<!-- 예약일 출력 부분 -->
+												        <fmt:parseDate value="${r.reservationDate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedReservationDate"/>
+														<td><fmt:formatDate value="${parsedReservationDate}" pattern="yyyy-MM-dd"/></td>
+														<td>${r.reservationTime}</td>
+														<!-- 생성일 출력 부분 -->
+													    <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+													    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>		
+													</tr>
+												</c:forEach>
+											</c:when>
+											<c:otherwise>
+									            <tr>
+									                <td colspan="8">예약 현황이 없습니다.</td>
+									            </tr>
+									        </c:otherwise>
+										</c:choose>
                                         </tbody>
                                     </table>
                                 </div>

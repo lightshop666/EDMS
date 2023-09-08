@@ -281,10 +281,10 @@ public class ScheduleController {
 	}
 	
 	
-	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 공용품 게시글을 삭제
+	// view로부터 체크된 항목에 대한 값을 매개값으로 해당 항목에 해당하는 게시글을 삭제
 	@PostMapping("/schedule/delete")
     public String deleteSelectedSchedules(HttpSession session
-    		,	// 선택된 체크박스의 공용품 번호를 리스트 형식으로 매개값을 받는다.
+    		,	// 선택된 체크박스의 번호를 리스트 형식으로 매개값을 받는다.
     			@RequestParam(value = "selectedItems", required = false) List<Long> selectedItems) {
 		
 		// 삭제 유무를 확인
@@ -292,9 +292,9 @@ public class ScheduleController {
 		
 		// 체크박스를 선택한 값이 있다면
         if (selectedItems != null && !selectedItems.isEmpty()) {
-        	// 체크된 매개값을 해당하는 공용품 번호에 매칭하여 삭제하는 메서드 동작
+        	// 체크된 매개값을 해당하는 컬럼 번호에 매칭하여 삭제하는 메서드 동작
             for (Long scheduleNo : selectedItems) {
-            	// 서비스단의 공용품글과 파일을 동시에 삭제하는 메서드 실행
+            	// 일정을 삭제하는 메서드 실행
                 row = scheduleService.removeSchedule(scheduleNo);
             }
         }
