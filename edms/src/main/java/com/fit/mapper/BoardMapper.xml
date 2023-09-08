@@ -53,15 +53,19 @@
 	<!-- 중요공지 변경 -->
 	<update id="topExposureChange">
 		UPDATE board
-	    SET top_exposure = 'N'
-	    WHERE board_no = (
-	        SELECT board_no
-	        FROM board
-	        WHERE top_exposure = 'Y'
-	        ORDER BY createDate ASC
-	        LIMIT 1
-	    );
+		SET top_exposure = 'N'
+		WHERE
+			board_no = #{board_no}
 	</update>
+	
+	<!--  중요공지 변경할 no -->
+	<select id="topExposureAsc" resultType="int">
+		SELECT board_no
+		FROM board
+		WHERE top_exposure = 'Y'
+		ORDER BY createdate ASC
+		LIMIT 1
+	</select>
 	
 	<!-- 전체 게시글 조회 (페이징 포함) -->
 	<select id="selectBoardList" parameterType="java.util.Map" resultType="java.util.Map">

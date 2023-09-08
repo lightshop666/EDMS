@@ -27,9 +27,13 @@ public interface BoardMapper {
 	// 총 게시글 행 수
 	int selectBoardCount(Map<String, Object> map);
 	
-	// 중요 공지로 변경
-	int topExposureChange();
-	// 중요 공지 개수
+	// 중요 공지로 수정
+	int topExposureChange(int board_no);
+	
+	// 중요공지로 변경할 no 가져오기
+	int topExposureAsc();
+	
+	// 중요 공지 전체 개수 조회
 	int topExposureCnt();
 	
 	// 하나의 게시글 조회

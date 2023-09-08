@@ -96,7 +96,7 @@
 					alert('최대 3개의 파일만 선택할 수 있습니다.');
 			        // 선택한 파일을 초기화
 			        $(this).val('');
-			    } else {
+			    } else if ($(this)[0].files.length > 1){
 					// 파일 개수가 3개 이하일 때
 				    let fileNames = []; // 선택한 파일 이름을 저장할 배열
 			
@@ -253,27 +253,32 @@
       </tr>
       <tr>
           <td>중요공지 여부</td>
-          <td colspan="4">
+          <td colspan="3">
               <label><input type="radio" name="topExposure" value="Y"> 중요</label>
               <label><input type="radio" name="topExposure" value="N"> 일반</label>
               <span id="msg"></span>
           </td>
       </tr>
+      <tr>
+		<td colspan="4">
+			<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
+			<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+		    
+			<div class="container">
+		       <textarea id="summernote" name="boardContent" class="summernote"></textarea>
+		    </div>
+		</td>
+      </tr>
+      <tr>
+      	<td>
+      		<input type="file" name="multipartFile" multiple>
+      	</td>
+      	<td colspan="3">
+      		<div id="selectedFileNames"></div>
+      	</td>
+      </tr>
    </table>
-   
-   <br>
-	<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
-	<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    
-    <div class="container">
-       <textarea id="summernote" name="boardContent" class="summernote"></textarea>
-    </div>
-    
-    <div>
-    	<input type="file" name="multipartFile" multiple>
-    </div>
-    <div id="selectedFileNames"></div>
     <hr>
     <div class="buttons">
        <button type="button" id="cancelBtn">취소</button>

@@ -201,7 +201,7 @@
 	     	</c:when>
 	     	<c:otherwise>
 	            <tr>
-	                <td colspan="4">공지 내용이 없습니다.</td>
+	                <td colspan="4" class="center">공지 내용이 없습니다.</td>
 	            </tr>
 	        </c:otherwise>
 	    </c:choose>	

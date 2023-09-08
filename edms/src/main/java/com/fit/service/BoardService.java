@@ -98,9 +98,13 @@ public class BoardService {
 		log.debug(CC.YE + "BoardService.modifyBoard() modifyBoard : " + modifyBoard + CC.RESET);
 		
 		int topExposureCount = boardMapper.topExposureCnt();
+		
+		// 제일 오래된 중요공지
+		int board_no = boardMapper.topExposureAsc();
+		
 		// 중요 공지 개수 체크
-	    if (topExposureCount >= 3) {
-	    	int topExposureChangeRow = boardMapper.topExposureChange();
+	    if (topExposureCount > 3) {
+	    	int topExposureChangeRow = boardMapper.topExposureChange(board_no);
 	    	log.debug(CC.YE + "BoardService.modifyBoard() topExposureChangeRow : " + topExposureChangeRow + CC.RESET);
 	    }
 		
