@@ -82,9 +82,11 @@
          
       	// 삭제 버튼 클릭 시
          $('#remove').click(function() {
-            let result = confirm('삭제하시겠습니까?');
+            let result = confirm('정말 삭제하시겠습니까?');
             if (result) {
                window.location.href = '/board/removeBoard'; // home으로 이동
+            } else {
+            	return false;
             }
          });
       });
@@ -96,6 +98,42 @@
 			height: 700px;
 			background-color: #ffffff;
 			overflow-y: auto; /* 내용이 넘치면 스크롤바 생성 */
+		}
+		.center{
+			text-align:center;
+		}
+		.right {
+		    text-align: right;
+		}
+		#inline {
+		    display: inline;
+		    margin-right: 10px; /* 원하는 간격 값으로 조정 */
+		}
+		.black {
+			color: black !important;
+		}
+		#diveder-all {
+			border-top: 3px solid rgba(0, 0, 0, 0.3) !important;
+		    border-bottom: 3px solid rgba(0, 0, 0, 0.3) !important; /* 굵은 선 */
+		    margin-top: 10px; /* 원하는 간격 값으로 조정 */
+		    margin-bottom: 10px; /* 원하는 간격 값으로 조정 */
+		}
+		#diveder-bottom {
+		    border-bottom: 6px solid rgba(0, 0, 0, 0.3) !important; /* 굵은 선 */
+		    margin-top: 10px; /* 원하는 간격 값으로 조정 */
+		    margin-bottom: 10px; /* 원하는 간격 값으로 조정 */
+		}
+		.button-container {
+		    display: flex;
+		    justify-content: space-between;
+		}
+		
+		.left-button {
+		  text-align: left;
+		}
+		
+		.right-button {
+		  text-align: right;
 		}
    </style>
 </head>
@@ -157,14 +195,14 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-	<h1>공지 상세</h1>
+	<h2 class="center">공지 상세</h2>
+	<br>
 	<table class="table">
-		<tr>
-			<td colspan="2">${boardOne.boardTitle}</td>
+		<tr id="diveder-top">
+			<th colspan="2" class="center table-active black"><h3>${boardOne.boardTitle}</h3></th>
 		</tr>
-		<tr>
-			<td>작성자 | ${boardOne.deptName}, ${boardOne.empName} </td>
-			<td>수정일 | ${boardOne.updatedate}</td>
+		<tr class="right" id="diveder-all">
+			<td colspan="2">작성자: ${boardOne.deptName}_${boardOne.empName}&nbsp;&nbsp;&nbsp;&nbsp;수정일: ${boardOne.updatedate}</td>
 		</tr>
 		<tr>
 			<td colspan="2">
@@ -179,7 +217,7 @@
 		</tr>
 		<!-- 파일 미리보기 및 다운로드 -->
 	    <c:forEach var="s" items="${saveFileName}">
-            <tr>
+            <tr class="black">
             	<td colspan="2">
             		<span>&#128196;</span>
             		<a href="/file/board/${s.boardSaveFileName}">미리보기</a>
@@ -190,19 +228,30 @@
 	    <!-- 파일이 존재하지 않을 경우 메세지 표시 -->
 	    <c:if test="${empty saveFileName}">
 	        <tr>
-	            <td colspan="2">파일이 존재하지 않습니다.</td>
+	            <td class="black" id="diveder-bottom" colspan="2">파일이 존재하지 않습니다.</td>
             </tr>
         </c:if>
 	</table>
 	
-	<hr>
 	
-	<a href="/board/boardList" id="list">목록</a>
-	<a href="/board/modifyBoard?boardNo=${boardOne.boardNo}" id="modify">수정</a>
-	<a href="/board/removeBoard?boardNo=${boardOne.boardNo}" id="remove">삭제</a>
-
-
-
+	<div class="button-container">
+	  <a href="/board/boardList" class="left-button">
+	    <button type="button" class="btn btn-light">목록</button>
+	  </a>
+	  <c:if test="${boardOne.empNo == sessionScope.loginMemberId}">
+		  <div class="right-button">
+		    <a href="/board/modifyBoard?boardNo=${boardOne.boardNo}">
+		      <button type="button" class="btn btn-primary">수정</button>
+		    </a>
+		    <form id="inline" method="POST" action="/board/removeBoard?boardNo=${boardOne.boardNo}&empNo=${boardOne.empNo}">
+		      <c:forEach var="s" items="${saveFileName}">
+		        <input type="hidden" name="boardSaveFileName" value="${s.boardSaveFileName}">
+		      </c:forEach>
+		      <button type="submit" id="remove" class="btn btn-danger">삭제</button>
+		    </form>
+		  </div>
+	  </c:if>
+	</div>
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
 		</div>

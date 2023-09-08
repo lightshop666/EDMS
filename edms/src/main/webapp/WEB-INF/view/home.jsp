@@ -129,7 +129,7 @@
 			                            </c:otherwise>
 			                        </c:choose>
 			                    </td>
-			                    <td>${b.boardTitle}</td>
+			                    <td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
 			                    <td>${b.empName}</td>
 			                    <td>${b.createdate}</td>
 			                </tr>

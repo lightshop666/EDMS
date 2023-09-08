@@ -16,7 +16,7 @@ public interface BoardMapper {
 	int modifyBoard(Board board);
 	
 	// 게시글 삭제
-	int removeBoard(Board board);
+	int removeBoard(int boardNo, int empNo);
 	
 	// 게시글 리스트
 	List<Map<String, Object>> selectBoardList(Map<String, Object> map);
@@ -27,6 +27,8 @@ public interface BoardMapper {
 	// 총 게시글 행 수
 	int selectBoardCount(Map<String, Object> map);
 	
+	// 중요 공지로 변경
+	int topExposureChange();
 	// 중요 공지 개수
 	int topExposureCnt();
 	

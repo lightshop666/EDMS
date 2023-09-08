@@ -45,6 +45,30 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
+
+	<script>
+	$(document).ready(function() {
+		// 파라미터 값에 따라 알림 메세지
+	    const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+	    const resultParam = urlParams.get('result'); // '?' 제외한 url에서 파라미터 추출
+	    
+	    if (resultParam === 'success') { // fail 파라미터 값이 들어올 경우
+	       // 알림
+		 	alert('게시 성공');
+	    }
+	});
+	</script>
+	<style>
+		.center {
+			text-align:center;
+		}
+		.right {
+		    text-align: right;
+		}
+		.left {
+		    text-align: left;
+		}
+	</style>
 </head>
 
 <body>
@@ -105,31 +129,48 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
-	<h1>공지사항</h1>
-	
+	<h2 class="center">공지사항</h2>
+	<br>
 <!-- [시작] 정렬 및 검색 ------->
 	<form action="/board/boardList" method="GET">
 		<!-- 제목 검색 -->	
-	    <div class="search-area">
-	        <label class="search-label">검색</label>
-	        <select name="searchCol" class="search-input">
-	            <option value="boardTitle" <c:if test="${searchCol.equals('boardTitle')}">selected</c:if>>제목</option>
-	            <option value="empName" <c:if test="${searchCol.equals('empName')}">selected</c:if>>작성자</option>
-	        </select>
-	        <input type="text" name="searchWord" class="search-input" value="${searchWord}">
+	    <div class="search-area" style="display: flex; align-items: center;">
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="searchCol" class="search-input form-control">
+		            <option value="boardTitle" <c:if test="${searchCol.equals('boardTitle')}">selected</c:if>>제목</option>
+		            <option value="empName" <c:if test="${searchCol.equals('empName')}">selected</c:if>>작성자</option>
+		        </select>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+	        	<input type="text" name="searchWord" class="search-input form-control" value="${searchWord}">
+	        </div>
 	        <input type="hidden" name="boardCategory" value="${boardCategory}"><!-- 검색 항목을 유지하기 위해 추가 -->
-	        <button type="submit" id="search-button">검색</button>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" style="margin-right: 10px;" id="search-button">검색</button>
 	    </div>
 	</form>
-	<a href="/board/addBoard">추가</a>
+	<br>
 	<!-- boardCategory 정렬 -->
-	<div>
-		<a href="/board/boardList">전체</a>
-		<a href="/board/boardList?boardCategory=전사공지">전사공지</a>
-	    <a href="/board/boardList?boardCategory=사업추진본부">사업추진본부</a>
-	    <a href="/board/boardList?boardCategory=경영지원본부">경영지원본부</a>
-	    <a href="/board/boardList?boardCategory=영업지원본부">영업지원본부</a>
+	<div class="d-flex justify-content-between">
+		<ul class="nav nav-tabs">
+		    <li class="nav-item">
+		        <a class="nav-link" data-toggle="tab" href="/board/boardList">전체</a>
+		    </li>
+		    <li class="nav-item">
+		        <a class="nav-link" data-toggle="tab" href="/board/boardList?boardCategory=전사공지">전사공지</a>
+		    </li>
+		    <li class="nav-item">
+		        <a class="nav-link" data-toggle="tab" href="/board/boardList?boardCategory=사업추진본부">사업추진본부</a>
+		    </li>
+		    <li class="nav-item">
+		        <a class="nav-link" data-toggle="tab" href="/board/boardList?boardCategory=경영지원본부">경영지원본부</a>
+		    </li>
+		    <li class="nav-item">
+		        <a class="nav-link" data-toggle="tab" href="/board/boardList?boardCategory=영업지원본부">영업지원본부</a>
+		    </li>
+		</ul>
+		<a href="/board/addBoard"><button type="button" class="btn waves-effect waves-light btn-outline-dark">추가</button></a>
 	</div>
+	<br>
 	<table class="table">
 		<tr>
 			<th>공지</th>
@@ -167,11 +208,11 @@
 	</table>
 	
 	<!-- [시작] 페이징 ------->
-	<nav aria-label="Page navigation">
+	<nav aria-label="Page navigation" class="d-flex justify-content-center">
 	    <ul class="pagination">
 	        <c:if test="${minPage > 1}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${currentPage - 1}" aria-label="Previous">
+	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${currentPage - 1}" aria-label="Previous">
 	                    <span aria-hidden="true">&laquo;</span>
 	                    <span class="sr-only">이전</span>
 	                </a>
@@ -185,7 +226,7 @@
 	                        <span class="page-link current-page">${i}</span>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${i}">${i}</a>
+	                        <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${i}">${i}</a>
 	                    </c:otherwise>
 	                </c:choose>
 	            </li>
@@ -193,7 +234,7 @@
 	        
 	        <c:if test="${lastPage > currentPage}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?currentPage=${currentPage + 1}" aria-label="Next">
+	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${currentPage + 1}" aria-label="Next">
 	                    <span aria-hidden="true">&raquo;</span>
 	                    <span class="sr-only">다음</span>
 	                </a>

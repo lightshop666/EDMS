@@ -40,12 +40,30 @@
 				board_no = #{boardNo}
 	</select>
 	
+	<!-- 파일 상세 조회 -->
+	<select id="selectBoardFileOne" resultType="com.fit.vo.BoardFile">
+			SELECT
+				board_file_no boardFileNo
+				, board_no boardNo
+				, board_ori_file_name boardOriFileName
+				, board_save_file_name boardSaveFileName
+				, board_filetype boardFileType
+				, board_path boardPath
+				, createdate
+				, updatedate
+			FROM
+				board_file
+			WHERE
+				board_file_no = #{boardFileNo}
+	</select>
+	
 	<!-- 파일 삭제 -->
-	<delete id="removeBoardFile" parameterType="com.fit.vo.BoardFile">
+	<delete id="removeBoardFile" parameterType="java.util.Map">
 			DELETE FROM
 				board_file
 			WHERE
 				board_no = #{boardNo}
 				AND board_file_no = #{boardFileNo}
 	</delete>
+	
 </mapper>

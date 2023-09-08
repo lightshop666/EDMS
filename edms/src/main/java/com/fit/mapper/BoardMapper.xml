@@ -27,7 +27,7 @@
 	</insert>
 	
 	<!-- 게시글 삭제 -->
-	<delete id="removeBoard" parameterType="com.fit.vo.Board">
+	<delete id="removeBoard" parameterType="java.util.Map">
 			DELETE FROM board
 			WHERE
 				emp_no = #{empNo}
@@ -37,17 +37,30 @@
 	
 	<!-- 게시글 수정 -->
 	<update id="modifyBoard" parameterType="com.fit.vo.Board">
-			UPDATE
-				board
-			SET
-				board_category = #{boardCategory}
-				, board_title = #{boardTitle}
-				, board_content = #{boardContent}
-				, top_exposure = #{topExposure}
-			WHERE
-				emp_no = #{empNo}
-			AND
-				board_no = #{boardNo}
+		UPDATE
+			board
+		SET
+			board_category = #{boardCategory}
+			, board_title = #{boardTitle}
+			, board_content = #{boardContent}
+			, top_exposure = #{topExposure}
+		WHERE
+			emp_no = #{empNo}
+		AND
+			board_no = #{boardNo}
+	</update>
+	
+	<!-- 중요공지 변경 -->
+	<update id="topExposureChange">
+		UPDATE board
+	    SET top_exposure = 'N'
+	    WHERE board_no = (
+	        SELECT board_no
+	        FROM board
+	        WHERE top_exposure = 'Y'
+	        ORDER BY createDate ASC
+	        LIMIT 1
+	    );
 	</update>
 	
 	<!-- 전체 게시글 조회 (페이징 포함) -->
@@ -70,7 +83,7 @@
 					WHERE
 					    b.top_exposure = 'Y'
 					<!-- board_category로 검색하는 경우 -->
-			        <if test=" boardCategory != null and boardCategory != '' ">
+			        <if test=" boardCategory != '' ">
 			            AND board_category = #{boardCategory}
 			        </if>
 			        <!-- board_title로 검색하는 경우 -->
@@ -101,11 +114,9 @@
 					FROM
 					    board b JOIN emp_info e ON b.emp_no = e.emp_no    
 				    WHERE
-			            1 = 1
-			            
-						AND b.top_exposure = 'N'    
+			            b.top_exposure = 'N'    
 				    <!-- board_category로 검색하는 경우 -->
-			        <if test=" boardCategory != null and boardCategory != '' ">
+			        <if test=" boardCategory != '' ">
 			            AND board_category = #{boardCategory}
 			        </if>
 			        <!-- board_title로 검색하는 경우 -->
@@ -143,7 +154,7 @@
 						WHERE
 						    b.top_exposure = 'Y'
 						<!-- board_category로 검색하는 경우 -->
-				        <if test=" boardCategory != null and boardCategory != '' ">
+				        <if test=" boardCategory != '' ">
 				            AND b.board_category = #{boardCategory}
 				        </if>
 				        <!-- board_title로 검색하는 경우 -->
@@ -176,7 +187,7 @@
 					    	
 						    AND b.top_exposure = 'N'
 					    <!-- board_category로 검색하는 경우 -->
-				        <if test=" boardCategory != null and boardCategory != '' ">
+				        <if test=" boardCategory != '' ">
 				            AND b.board_category = #{boardCategory}
 				        </if>
 				        <!-- board_title로 검색하는 경우 -->

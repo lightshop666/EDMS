@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
 import com.fit.service.BoardService;
@@ -66,10 +67,12 @@ public class BoardController {
 		log.debug(CC.YE + "BoardController.addBoard() addRow : " + addRow + CC.RESET); // debug 용도. static log 필드(5개)
 		
 		// 추가 성공 여부에 따라 redirect 설정
-		if(addRow == 1) {
+		if(addRow == 1) { // 성공
 			result = "redirect:/board/boardList?result=success";
-		} else if(addRow < 1) {
+		} else if(addRow == -1) { // 중요공지 설정 실패
 			result = "redirect:/board/addBoard?result=fail";
+		}  else if(addRow == -2) { // 이미 3개가 있는 경우
+			result = "redirect:/board/addBoard?result=duplicate";
 		}
 		return result;
 	}
@@ -80,6 +83,7 @@ public class BoardController {
 	public String modifyBoard(Model model,
 							  Board board,
 							  @RequestParam(name = "boardNo", required = false) int boardNo) {
+		log.debug(CC.YE + "BoardController.modifyBoard() boardNo : " + boardNo + CC.RESET);
 		// 게시글 상세 정보 Map 가져오기
 		Map<String, Object> resultMap = boardService.getSelectBoardOne(boardNo);
 		// 글 정보 모델
@@ -91,19 +95,28 @@ public class BoardController {
 	
 	// 게시글 수정 액션
 	@PostMapping("/board/modifyBoard")
-	public String modifyBoard(Board board) {
+	public String modifyBoard(HttpServletRequest request, Board board) {
+		// 반환값
 		String result = "";
+		// 게시글 번호
+		int boardNo = board.getBoardNo();
+		log.debug(CC.YE + "BoardController.modifyBoard() boardNo : " + boardNo + CC.RESET); // debug 용도. static log 필드(5개)
+		
+		// 경로 설정
+		String path = request.getServletContext().getRealPath("/file/board/"); //직접 실제 위치(경로)를 구해서 service에 넘겨주는 api
+		log.debug(CC.YE + "BoardController.addBoard() path : " + path + CC.RESET); // debug 용도. static log 필드(5개)
+		
 		// 수정 메서드 실행
-		int modifyRow = boardService.modifyBoard(board);
+		int modifyRow = boardService.modifyBoard(board, path);
 		log.debug(CC.YE + "BoardController.modifyRow : " + modifyRow + CC.RESET);
 		
 		// 추가 성공 여부에 따라 redirect 설정
 		if(modifyRow == 1) {
-			result = "redirect:/board/boardList?result=modify";
+			result = "redirect:/board/boardList?boardNo="+boardNo+"&result=modify";
 		} else if(modifyRow == 0) {
-			result = "redirect:/board/modifyBoard?boardNo="+board.getBoardNo()+"&result=topExposure";
-		} else if(modifyRow < 1) {
-			result = "redirect:/board/modifyBoard?boardNo="+board.getBoardNo()+"&result=fail";
+			result = "redirect:/board/modifyBoard?boardNo="+boardNo+"&result=fail";
+		} else if(modifyRow == -1) {
+			result = "redirect:/board/modifyBoard?boardNo="+boardNo+"&result=topExposure";
 		}
 		return result;
 	}
@@ -111,13 +124,22 @@ public class BoardController {
 /* 삭제 */
 	// 게시글 삭제 액션
 	@PostMapping("/board/removeBoard")
-	public String removeBoard(Board board) {
+	public String removeBoard(@RequestParam(name = "boardNo") int boardNo // 현재 페이지
+							  , @RequestParam(name = "empNo") int empNo 
+							  , @RequestParam(name = "boardSaveFileName", required = false) List<String> boardSaveFileName){ // 한 페이지 당 행의 수
+		
+		int removeRow = 0;
 		
 		// board 글 및 파일 삭제
-		int removeRow = boardService.removeBoard(board);
-		log.debug(CC.YE + "BoardController.removeBoard() removeRow : " + removeRow + CC.RESET);
-		
-		return "redirect:/board/boardList";
+	    if (boardSaveFileName != null) {
+	        removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName);
+	        log.debug(CC.YE + "BoardController.removeBoard() removeRow : " + removeRow + CC.RESET);
+	    } else {
+	    	removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName);
+	    	log.debug(CC.YE + "BoardController.removeBoard() boardSaveFileName is null" + CC.RESET);
+	    }
+	    
+		return "redirect:/board/boardList?result=removed";
 	}
 	
 /* 조회 */	

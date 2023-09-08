@@ -336,7 +336,7 @@
 	<a href="/emp/excelDownload?ascDesc=${param.ascDesc}&empState=${param.empState}&empDate=${param.empDate}&deptName=${param.deptName}&teamName=${param.teamName}&empPosition=${param.empPosition}&searchCol=${param.searchCol}&searchWord=${param.searchWord}&startDate=${param.startDate}&endDate=${param.endDate}" class="generateListBtn">엑셀 다운로드</a>
 	
 <!-- [시작] 관리자 리스트 출력 ------->	
-	<table border="1">
+	<table class="table">
 		<!-- 관리자의 경우, 비밀번호 초기화 가능 -->
 		<tr>
 			<c:if test="${accessLevel >= 3}">
@@ -367,8 +367,15 @@
 				<td>${e.teamName}</td>
 				<td>${e.empPosition}</td>
 				<td>${e.employDate}</td><!-- YYYY-MM-DD -->
-				<th>${e.remainDays}</th>
-				<td>${e.isMember}</td>
+				<td>${e.remainDays}</td>
+				<c:choose>
+	                <c:when test="${e.isMember eq 'X'}">
+	                    <td><a href="/sendEmail?empNo=${e.empNo}">${e.isMember}</a></td>
+	                </c:when>
+	                <c:otherwise>
+	                    <td>${e.isMember}</td>
+	                </c:otherwise>
+	            </c:choose>
 				<td>${e.accessLevel}</td>
 			</tr>
 		</c:forEach>

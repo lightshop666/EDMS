@@ -50,121 +50,123 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/summernote/summernote-lite.css">
 
-   <script>
-      $(document).ready(function() {
-         
-         // 1. summernote editor
-         $('.summernote').summernote({
-             // 에디터 높이
-             height: 700,
-             // 에디터 한글 설정
-             lang: "ko-KR",
-             // 에디터에 커서 이동 (input창의 autofocus라고 생각하시면 됩니다.)
-             focus : true,
-             toolbar: [
-                      // 글꼴 설정
-                      ['fontname', ['fontname']],
-                      // 글자 크기 설정
-                      ['fontsize', ['fontsize']],
-                      // 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
-                      ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
-                      // 글자색
-                      ['color', ['forecolor','color']],
-                      // 표만들기
-                      ['table', ['table']],
-                      // 글머리 기호, 번호매기기, 문단정렬
-                      ['para', ['ul', 'ol', 'paragraph']],
-                      // 줄간격
-                      ['height', ['height']],
-                      // 그림첨부, 링크만들기, 동영상첨부
-                      ['insert',['link']],
-                      // 코드보기, 확대해서보기, 도움말
-                      ['view', ['codeview', 'help']]
-                    ],
-                 // 추가한 글꼴
-               fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
-               // 추가한 폰트사이즈
-               fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
-                focus : true
-            });
-         
-         // 취소 버튼 클릭 시
-         $('#cancelBtn').click(function() {
-            let result = confirm('목록으로 이동할까요?');
-            if (result) {
-               window.location.href = '/board/boardList'; // home으로 이동
-            }
-         });
-         
-      	// 파라미터 값에 따라 알림 메세지
-	     const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
-	     const resultParam = urlParams.get('result'); // '?' 제외한 url에서 파라미터 추출
-	     
-	     if (resultParam === 'fail') { // fail 파라미터 값이 들어올 경우
-            // 알림
-    	 	alert('중요 공지는 3개까지 설정 가능합니다.');
-     		// 텍스트 출력
-            $('#msg').text('중요공지는 3개까지 설정 가능합니다.').css('color', 'red'); // 빨간색 오류 메세지
-         }
-         
+	<script>
+		$(document).ready(function() {
+	         
+		/* 1. summernote editor */
+			$('.summernote').summernote({
+				// 에디터 높이
+				height: 700,
+				// 에디터 한글 설정
+				lang: "ko-KR",
+				// 에디터에 커서 이동 (input창의 autofocus라고 생각하시면 됩니다.)
+				focus : true,
+				toolbar: [
+							// 글꼴 설정
+							['fontname', ['fontname']],
+							// 글자 크기 설정
+							['fontsize', ['fontsize']],
+							// 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
+							['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+							// 글자색
+							['color', ['forecolor','color']],
+							// 표만들기
+							['table', ['table']],
+							// 글머리 기호, 번호매기기, 문단정렬
+							['para', ['ul', 'ol', 'paragraph']],
+							// 줄간격
+							['height', ['height']],
+							// 그림첨부, 링크만들기, 동영상첨부
+							['insert',['link']],
+							// 코드보기, 확대해서보기, 도움말
+							['view', ['codeview', 'help']]
+						],
+					// 추가한 글꼴
+					fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋음체','바탕체'],
+					// 추가한 폰트사이즈
+					fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
+					focus : true
+	            });
 		
-	     let maxFiles = 3; // 최대 파일 수
-	     let fileCounter = 1; // 현재 파일 수
-
-	  	// 첫 번째 파일 인풋이 변경될 때
-	     $(document).on('change', 'input[name="multipartFile"]:last', function() {
-	         // 현재 파일 수가 최대 파일 수 미만인 경우
-	         if (fileCounter < maxFiles) {
-	             // 새로운 파일 인풋을 생성하고 추가
-	             let newInput = $('<div><input type="file" name="multipartFile"><button class="removeFile">삭제</button></div>');
-	             $(this).parent().after(newInput);
-
-	             // 현재 파일 수 증가
-	             fileCounter++;
-	         }
-	     });
-
-	     // 파일 인풋이 삭제될 경우
-	     $(document).on('click', '.removeFile', function() {
-	         $(this).parent().remove();
-
-	         // 현재 파일 수 감소
-	         fileCounter--;
-	     });
-	    
-	     $('form').on('submit', function(e) {
-	         // 제목 검증
-	         const title = $("input[name='boardTitle']").val().trim();
-	         if (title === '') {
-	             alert("제목을 입력해주세요.");
-	             e.preventDefault();
-	             return false;
-	         }
-
-	         // 내용 검증 (summernote 내용)
-	         const content = $('#summernote').summernote('code').trim();
-	         if (content === '') {
-	             alert("내용을 입력해주세요.");
-	             e.preventDefault();
-	             return false;
-	         }
-
-	         // 중요도 검증
-	         const topExposure = $("input[name='topExposure']:checked").val();
-	         if (!topExposure) {
-	             alert("중요도를 체크해주세요.");
-	             $('#msg').text('중요도를 체크해주세요.').css('color', 'red');
-	             e.preventDefault();
-	             return false;
-	         }
-
-	         // 여기까지 왔다면 모든 검증을 통과한 것임
-	         return true;
-	     });	     
-	     
-      });
-      
+		/* 파일 관련 */
+			// 파일 선택 입력 필드를 3개로 제한
+			$(document).on('change', 'input[name="multipartFile"]', function() {
+				// 선택한 파일의 개수가 3개를 초과한 경우
+			    if ($(this)[0].files.length > 3) {
+					alert('최대 3개의 파일만 선택할 수 있습니다.');
+			        // 선택한 파일을 초기화
+			        $(this).val('');
+			    } else {
+					// 파일 개수가 3개 이하일 때
+				    let fileNames = []; // 선택한 파일 이름을 저장할 배열
+			
+			        // 선택한 파일들의 이름을 추출하여 배열에 추가
+			        for (let i = 0; i < this.files.length; i++) {
+			            fileNames.push(this.files[i].name);
+			        }
+			
+			        // 추출한 파일 이름을 화면에 나열
+			       	$('#selectedFileNames').text(fileNames.join(', '));
+			    }
+			});
+		
+		/* 2. view */
+			// 2-1. 저장 버튼 클릭 시
+			$('form').on('submit', function(e) {
+			    // 제목 검증
+			    const title = $("input[name='boardTitle']").val().trim();
+			    if (title === '') {
+			        alert("제목을 입력해주세요.");
+			        e.preventDefault();
+			        return false;
+			    }
+			
+			    // 내용 검증 (summernote 내용)
+			    const content = $('#summernote').summernote('code').trim();
+			    if (content === '') {
+			        alert("내용을 입력해주세요.");
+			        e.preventDefault();
+			        return false;
+			    }
+			
+			    // 중요도 검증
+			    const topExposure = $("input[name='topExposure']:checked").val();
+			    if (!topExposure) {
+			        alert("중요도를 체크해주세요.");
+			        $('#msg').text('중요도를 체크해주세요.').css('color', 'red');
+			        e.preventDefault();
+			        return false;
+			    }
+			
+			    // 여기까지 왔다면 모든 검증을 통과한 것임
+			    return true;
+			});
+			
+			// 2-2. 취소 버튼 클릭 시
+			$('#cancelBtn').click(function() {
+				let result = confirm('목록으로 이동할까요?');
+				if (result) {
+					window.location.href = '/board/boardList'; // home으로 이동
+				}
+			});
+	         
+			// 2-3. 파라미터 값에 따라 알림 메세지
+			const urlParams = new URLSearchParams(window.location.search); // 서버에서 전송한 결과 값 처리
+			const resultParam = urlParams.get('result'); // '?' 제외한 url에서 파라미터 추출
+			    
+			if (resultParam === 'fail') { // fail 파라미터 값이 들어올 경우
+				// 알림
+		  	 	alert('중요 공지는 3개까지 설정 가능합니다.');
+		   		// 텍스트 출력
+		        $('#msg').text('중요 공지는 3개까지 설정 가능합니다.').css('color', 'red'); // 빨간색 오류 메세지
+			} else if (resultParam === 'duplicate'){
+				// 알림
+		  	 	alert('한 개의 공지에는 최대 3개의 파일만 게시할 수 있습니다.');
+			}
+			
+		});
    </script>
+   
 </head>
 <body>
 <!-- ============================================================== -->
@@ -227,7 +229,7 @@
 <h1>공지글 추가</h1>
 <form method="POST" action="/board/addBoard" enctype="multipart/form-data">
    <input type="hidden" name="empNo" value="${empNo}">
-   <table>
+   <table class="table">
       <tr>
          <td>작성자</td>
          <td><input type="text" value="${empName}" readonly></td>
@@ -269,8 +271,9 @@
     </div>
     
     <div>
-    	<input type="file" name="multipartFile"><button type="button" class="removeFile">삭제</button>
+    	<input type="file" name="multipartFile" multiple>
     </div>
+    <div id="selectedFileNames"></div>
     <hr>
     <div class="buttons">
        <button type="button" id="cancelBtn">취소</button>
