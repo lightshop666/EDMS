@@ -50,10 +50,6 @@
 	<script src="${pageContext.request.contextPath}/WebsocketScripts.js"></script>
 
 <script>
-//세션에 담긴 아이디 JS로 저장
-var loginMemberId = '<%= request.getSession().getAttribute("loginMemberId") %>';
-console.log("JS로 받아온 loginMemberId : " + loginMemberId);
-var userName;
 
 $(document).ready(function() {
 	// 웹 소켓 연결 함수 호출

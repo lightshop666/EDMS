@@ -11,42 +11,50 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <!-- Favicon icon -->
-    <link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
     <!-- Custom CSS -->
-    <link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-    <link href="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+    <link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+    <link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+    <link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
     <!-- Custom CSS -->
-    <link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
+    <link href="../dist/css/style.min.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 
 	<!-- ============================================================== -->
 	<!-- All Jquery -->
 	<!-- ============================================================== -->
-	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- apps -->
 	<!-- apps -->
-	<script src="${pageContext.request.contextPath}/dist/js/app-style-switcher.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/feather.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/sidebarmenu.js"></script>
+	<script src="../dist/js/app-style-switcher.js"></script>
+	<script src="../dist/js/feather.min.js"></script>
+	<script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+	<script src="../dist/js/sidebarmenu.js"></script>
 	<!--Custom JavaScript -->
-	<script src="${pageContext.request.contextPath}/dist/js/custom.min.js"></script>
+	<script src="../dist/js/custom.min.js"></script>
 	<!--This page JavaScript -->
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/d3.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
+	<script src="../assets/extra-libs/c3/d3.min.js"></script>
+	<script src="../assets/extra-libs/c3/c3.min.js"></script>
+	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
-	<!-- 웹소켓 JS -->
+	<script src="${pageContext.request.contextPath}/webjars/sockjs-client/sockjs.min.js"></script>
+	<script src="${pageContext.request.contextPath}/webjars/stomp-websocket/stomp.min.js"></script>
 	<script src="${pageContext.request.contextPath}/WebsocketScripts.js"></script>
 	
+	<!-- 웹소켓 JS -->
+	<script src="../WebsocketScripts.js"></script>
+	
 <script>
+//세션에 담긴 아이디 JS로 저장
+var loginMemberId = '<%= request.getSession().getAttribute("loginMemberId") %>';
+console.log("JS로 받아온 loginMemberId : " + loginMemberId);
+var userName;
 
 $(document).ready(function() {
 	//웹 소켓 연결 함수 호출
@@ -82,8 +90,8 @@ $(document).ready(function() {
 		<!-- ============================================================== -->
 		<div class="navbar-brand">
 		    <!-- Logo icon -->
-			<a href="${pageContext.request.contextPath}/home">
-				<img src="${pageContext.request.contextPath}/assets/images/freedashDark.svg" alt="" class="img-fluid">
+			<a href="../home">
+				<img src="../assets/images/freedashDark.svg" alt="" class="img-fluid">
 			</a>
 		</div>
 		<!-- ============================================================== -->
@@ -131,7 +139,7 @@ $(document).ready(function() {
 		<!-- ============================================================== -->
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="javascript:void(0)" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-				<img src="${pageContext.request.contextPath}/assets/images/users/profile-pic.jpg" alt="user" class="rounded-circle" width="40">
+				<img src="../assets/images/users/profile-pic.jpg" alt="user" class="rounded-circle" width="40">
 					<span class="ms-2 d-none d-lg-inline-block">
 						<span>Hello,</span>
 						<span class="text-dark">${loginMemberId}</span> 
@@ -139,11 +147,11 @@ $(document).ready(function() {
 					</span>
 			</a>
 			<div class="dropdown-menu dropdown-menu-end dropdown-menu-right user-dd animated flipInY">
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/member/modifyMember">
+				<a class="dropdown-item" href="../member/modifyMember">
 					<i data-feather="user" class="svg-icon me-2 ms-1"></i>
 					내 프로필
 				</a>
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/chatMessage">
+				<a class="dropdown-item" href="../chatMessage">
 					<i data-feather="mail" class="svg-icon me-2 ms-1"></i>
 					채팅
 				</a>
@@ -151,7 +159,7 @@ $(document).ready(function() {
 		<!-- 구분선 -->
 				<div class="dropdown-divider"></div>
 				
-				<a class="dropdown-item" href="${pageContext.request.contextPath}/logout"><i data-feather="power" class="svg-icon me-2 ms-1"></i>
+				<a class="dropdown-item" href="../logout"><i data-feather="power" class="svg-icon me-2 ms-1"></i>
 					Logout
 				</a>
 			</div>

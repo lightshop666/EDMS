@@ -94,19 +94,31 @@ function connect() {
 		});
 
 
-/*
-		// '/user/topic/privateMessages' 주제를 구독하여 개인 메시지 수신 처리
-		stompClient.subscribe('/user/topic/privateMessages', function (message) {
-			showMessage(JSON.parse(message.body).content);
+		// '/user/topic/privateNotifications' 주제를 구독하여 개인 알림 수신 처리
+		stompClient.subscribe('/user/topic/privateNotifications', function (message) {
+			console.log('결재 푸시알림 구독 안에 들어왔다!');
+			//내 아이디와 같은 메시지인 경우에만 증가
+			notificationCount += 1;
+			updateNotificationDisplay();
+			
 		});
-		
-*/	
+	
 		//채팅 알림 구독
 		stompClient.subscribe('/topic/globalNotifications', function(message) {
 			console.log('알림 구독 globalNotifications 안에 들어왔다!');
-			notificationCount += 1;
-			updateNotificationDisplay();
+		    let receivedMessage = JSON.parse(message.body);
+		    let messageContent = receivedMessage.content; 
+		    console.log('알림 구독 messageContent : ' + messageContent);
+		    let receivedWebSocketId = receivedMessage.webSocketId;
+		    console.log('알림 구독 receivedWebSocketId : ' + receivedWebSocketId);
+		    
+		    //내 아이디와 다른 메시지인 경우에만 증가
+		    if(receivedWebSocketId !==loginMemberId){	
+				notificationCount += 1;
+				updateNotificationDisplay();
+			}
 		});
+		
 		
 		// '/topic/draftAlarm' 주제를 구독하여 전체 알림 수신 처리
 		stompClient.subscribe('/user/topic/draftAlarm', function (message) {
