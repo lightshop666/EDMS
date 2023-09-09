@@ -63,6 +63,7 @@ public class VolunteerRest {
 	
 	// 2. 위에서 조회한 progrmRegistNo로 해당 봉사정보의 상세 정보 조회
 	// 상세 정보에 지도에 마커를 찍을 때 필요한 좌표값이 포함되어 있습니다.
+	@GetMapping("/getVltrPartcptnItem")
 	public String getVltrPartcptnItem(int progrmRegistNo) {
 		StringBuffer result = new StringBuffer();
         String jsonPrintString = null;
