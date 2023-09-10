@@ -68,7 +68,8 @@
 				lineWidth :3,
 				hideHover : 'auto',
 			        lineColors:['#5f76e8','#01caf1','#fa292a','#00ff00','#0000ff'], 
-			  	resize:true
+			  	resize:true,
+			  	yLabelFormat: function (y) { return (y * 100).toFixed(0) + '%'; }
 			        });
 			      },
 			      
@@ -78,5 +79,84 @@
 			    	    	// 실패한 이유를 콘솔에 출력합니다. 
 	    }
     });
+    
+    // 도넛 차트
+    $.ajax({
+		url : '/getSalesDraftForDonutChart',
+		method : 'get',
+		success : function(data) {
+			let salesDate = data[0].salesDate; // "yyyy-mm-dd" 형식의 날짜 문자열
+			let dateObj = new Date(salesDate);
+			let chartMonth = dateObj.getFullYear() + '년 ' + (dateObj.getMonth() + 1) + '월';
+			
+			console.log('chartMonth : ' + chartMonth);
+			$('#tagetMonth').text(chartMonth);
+			
+			var chartData = data.map(function (item) {
+	            return {
+	                label: item.productCategory,
+	                value: item.currentSales
+	            };
+	        });
+
+	        Morris.Donut({
+	            element: 'morris-donut-chart',
+	            data: chartData, // 변환된 데이터를 사용
+	            resize: true,
+	            colors: ['#5f76e8', '#01caf1', '#8fa0f3', '#4caf50', '#8bc34a'],
+	            formatter: function (y) {
+			        return y.toLocaleString() + '원'; // 값에 쉼표 추가
+			    }
+	        });
+		},
+		error : function(error) {
+				console.log('error : ' + error);
+		}
+	});
+	
+	// 바 차트
+	$.ajax({
+		url : '/getSalesDraftForBarChart',
+		method : 'get',
+		success : function(data) {
+			// 데이터 가공
+			let processedData = {};
+			data.forEach(function(item) {
+			    let salesDate = item.salesDate.slice(0, -3);
+			    let targetRate = item.targetRate;
+			    let productCategory = item.productCategory;
+			
+			    if (!processedData[salesDate]) {
+			        processedData[salesDate] = {};
+			    }
+			    
+			    processedData[salesDate][productCategory] = targetRate;
+			});
+			
+			let chartData = [];
+			for (let date in processedData) {
+			    let dataItem = processedData[date];
+			    dataItem['y'] = date;
+			    chartData.push(dataItem);
+			}
+			
+			// Morris Bar 차트 생성
+			Morris.Bar({
+			    element: 'morris-bar-chart',
+			    data: chartData,
+			    xkey: 'y',
+			    ykeys: ['스탠드', '무드등', '실내조명', '실외조명', '포인트조명'],
+			    labels: ['스탠드', '무드등', '실내조명', '실외조명', '포인트조명'],
+			    barColors: ['#01caf1', '#5f76e8', '#a6c7ff', '#00a2ff', '#7ec0ee'],
+			    hideHover: 'auto',
+			    gridLineColor: '#eef0f2',
+			    resize: true,
+			    yLabelFormat: function (y) { return (y * 100).toFixed(0) + '%'; } // y 라벨 포맷 설정 (targetRate를 백분율로 변환)
+			});
+		},
+		error : function(error) {
+				console.log('error : ' + error);
+		}
+	});
 });
 

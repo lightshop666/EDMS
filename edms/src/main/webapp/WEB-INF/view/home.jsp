@@ -49,7 +49,8 @@
     <script src="${pageContext.request.contextPath}/assets/libs/raphael/raphael.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/libs/morris.js/morris.min.js"></script>
     <script src="/homeChartFunction.js"></script>
-	
+	<!-- Morris CSS -->
+    <link href="${pageContext.request.contextPath}/assets/libs/morris.js/morris.css" rel="stylesheet">
 	
 </head>
 
@@ -110,91 +111,102 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
-
-<!------------  매출차트 ------------>
 			<div class="row">
-				<!-- column -->
-			       	<div class="col-lg-6">
-			           	<div class="card">
-			               	<div class="card-body" style="text-align: center;">
-			                   	<h4 id="card-title" class="card-title">품목별 매출현황</h4>
-			                       <ul id="chart-legend" class="list-inline text-end"></ul>
-			                   	<div id="morris-area-chart"></div>
-			               	</div>
-			           	</div>
-			       	</div>
-			       <!-- column -->
+				<!-- 꺾은선 그래프 -->
+		       	<div class="col-lg-6">
+		           	<div class="card">
+		               	<div class="card-body" style="text-align: center;">
+		                   	<h4 id="card-title" class="card-title">최근 1년 품목별 매출현황</h4>
+		                       <ul id="chart-legend" class="list-inline text-end"></ul>
+		                   	<div id="morris-area-chart"></div>
+		               	</div>
+		           	</div>
+		       	</div>
+		       	<!-- 꺾은선 그래프 끝 -->
+		       	<!-- 도넛 차트 -->
+		       	<div class="col-lg-6">
+		           	<div class="card">
+		               	<div class="card-body" style="text-align: center;">
+		                   	<h4 id="card-title" class="card-title">
+		                   		<span id="tagetMonth"></span> 매출현황</h4>
+		                       <ul id="chart-legend" class="list-inline text-end"></ul>
+		                   	<div id="morris-donut-chart"></div>
+		               	</div>
+		           	</div>
+		       	</div>
+		       	<!-- 도넛 차트 끝 -->
+		       	<!-- 바 차트 -->
+		       	<div class="col-lg-12">
+		       		<div class="card">
+		               	<div class="card-body" style="text-align: center;">
+		                   	<h4 id="card-title" class="card-title">최근 3개월 목표달성률</h4>
+		                       <ul id="chart-legend" class="list-inline text-end"></ul>
+		                   	<div id="morris-bar-chart"></div>
+		               	</div>
+		           	</div>
+		       	</div>
+		       	<!-- 바 차트 끝 -->
+		       	<!------------ 봉사정보 ------------->
+		       	<div class="col-lg-12">
+		       		<script>
+						function fetchDetails() {
+							$.ajax({
+								url: '/vltrDetailsList',
+								type: 'GET',
+								success: function(data) {
+									$('#output').text(JSON.stringify(data, null, 4));
+								},
+								error: function(error) {
+									alert("오류 발생: " + error.statusText);
+								}
+							});
+						}
+					</script>
+		
+					<button onclick="fetchDetails()">봉사정보리스트</button>
+		       	</div>
+		       	<!------------ 끝 봉사정보 끝 ------------->
+		       	<!------------ 중요 공지 목록 시작 ------------->
+				<div class="col-lg-12">
+					<h4>공지사항</h4>
+					<table class="table">
+						<tr>
+							<th>공지</th>
+							<th>제목</th>
+							<th>작성자</th>
+							<th>등록일</th>
+						</tr>
+						<!-- 공지가 있을 경우/없을 경우를 분류 -->
+						<c:choose>
+					        <c:when test="${not empty board}">
+					            <c:forEach var="b" items="${board}">
+					                <tr>
+					                    <td>
+					                        <c:choose>
+					                            <c:when test="${b.topExposure == 'Y'}">
+					                                &#128227;
+					                            </c:when>
+					                            <c:otherwise>
+					                                -
+					                            </c:otherwise>
+					                        </c:choose>
+					                    </td>
+					                    <td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
+					                    <td>${b.empName}</td>
+					                    <td>${b.createdate}</td>
+					                </tr>
+					            </c:forEach>
+					        </c:when>
+					        <c:otherwise>
+					            <tr>
+					                <td colspan="4">공지 내용이 없습니다.</td>
+					            </tr>
+					        </c:otherwise>
+				    	</c:choose>
+					</table>
+				</div>
+				<!------------ 중요 공지 목록 끝 ------------->
 			</div>
-<!------------ 끝 매출차트 끝 ------------>
-
-<!------------ 중요 공지 목록 시작 ------------->
-			<div class="row">	
-				<h4>공지사항</h4>
-				<table class="table">
-					<tr>
-						<th>공지</th>
-						<th>제목</th>
-						<th>작성자</th>
-						<th>등록일</th>
-					</tr>
-					<!-- 공지가 있을 경우/없을 경우를 분류 -->
-					<c:choose>
-				        <c:when test="${not empty board}">
-				            <c:forEach var="b" items="${board}">
-				                <tr>
-				                    <td>
-				                        <c:choose>
-				                            <c:when test="${b.topExposure == 'Y'}">
-				                                &#128227;
-				                            </c:when>
-				                            <c:otherwise>
-				                                -
-				                            </c:otherwise>
-				                        </c:choose>
-				                    </td>
-				                    <td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
-				                    <td>${b.empName}</td>
-				                    <td>${b.createdate}</td>
-				                </tr>
-				            </c:forEach>
-				        </c:when>
-				        <c:otherwise>
-				            <tr>
-				                <td colspan="4">공지 내용이 없습니다.</td>
-				            </tr>
-				        </c:otherwise>
-			    	</c:choose>
-				</table>
-			</div>
-<!------------ 중요 공지 목록 끝 ------------->
-
-<!------------ 봉사정보 ------------->
-
-			<div class="row">
-				<script>
-					function fetchDetails() {
-						$.ajax({
-							url: '/vltrDetailsList',
-							type: 'GET',
-							success: function(data) {
-								$('#output').text(JSON.stringify(data, null, 4));
-							},
-							error: function(error) {
-								alert("오류 발생: " + error.statusText);
-							}
-						});
-					}
-				</script>
-			
-				<button onclick="fetchDetails()">봉사정보리스트</button>
-			</div>
-
-
-
-
-<!------------ 끝 봉사정보 끝 ------------->
-
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
 		</div>

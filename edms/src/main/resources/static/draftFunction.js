@@ -196,12 +196,12 @@
 		}
 	}
 	
-	// Date 객체의 날짜 정보를 YYYY-MM-00 형식으로 포맷팅하는 함수
+	// Date 객체의 날짜 정보를 YYYY-MM-01 형식으로 포맷팅하는 함수
 	function formatDateToYYYYMM(date) {
 		let year = date.getFullYear(); // 년도를 가져옵니다.
 		let month = date.getMonth() + 1; // 자바의 월은 0부터 시작하므로 +1 해줍니다.
 		let formattedMonth = month < 10 ? `0${month}` : `${month}`; // 월이 10미만일 경우 앞에 0을 붙여 MM형식을 유지합니다.
-		let formattedDate = `${year}-${formattedMonth}-00`; // DD는 00으로 표시합니다.
+		let formattedDate = `${year}-${formattedMonth}-01`; // DD는 01로 표시합니다.
 		console.log('formatDateToYYYYMM() : ' + formattedDate);
 		
 		return formattedDate;
@@ -445,9 +445,9 @@
 		endDate.setDate(startDate.getDate() + selectedVacationDays - 1);
 		
 		// 휴가 종료일 포맷팅
-		let endDateFomatted = formatDateToYYYYMM(endDate); // 기존 함수 사용 -> YYYY-MM-00 형식으로 포맷팅하는 기존 함수를 호출합니다.
+		let endDateFomatted = formatDateToYYYYMM(endDate); // 기존 함수 사용 -> YYYY-MM-01 형식으로 포맷팅하는 기존 함수를 호출합니다.
 		let endDateDay = endDate.getDate(endDate); // 휴가종료일의 '일'정보를 가져옵니다.
-		let endDateString = endDateFomatted.slice(0, -2) + endDateDay; // slice()로 00을 잘라내고 '일'정보를 합칩니다.
+		let endDateString = endDateFomatted.slice(0, -2) + endDateDay; // slice()로 01을 잘라내고 '일'정보를 합칩니다.
 		
 		$('#vacationEndSpan').text(endDateString);
 		$('#vacationEndInput').val(endDateString);

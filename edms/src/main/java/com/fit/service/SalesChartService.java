@@ -23,6 +23,6 @@ public class SalesChartService {
 	
 	// 가장 최근 데이터 1건 조회
 	public List<Map<String, Object>> getRecentSalesDraftForChart() {
-		return null;
+		return salesChartMapper.getRecentSalesDraftForChart();
 	}
 }

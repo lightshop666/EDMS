@@ -31,7 +31,7 @@
 		SELECT
 		    sd.sales_date salesDate,
 		    sdc.product_category productCategory,
-		    sdc.target_rate targetRate
+		    sdc.current_sales currentSales
 		FROM
 		    sales_draft_content sdc
 		INNER JOIN

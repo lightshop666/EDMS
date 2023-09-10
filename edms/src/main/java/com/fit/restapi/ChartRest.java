@@ -22,11 +22,11 @@ public class ChartRest {
 	@Autowired
 	private SalesChartService salesChartService;
 	
-	// LocalDate 객체를 yyyy-MM-00 형식의 String 문자열로 변환하는 메서드
+	// LocalDate 객체를 yyyy-MM-01 형식의 String 문자열로 변환하는 메서드
 	private String modifyStringDate(LocalDate date) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		String formattedDate = date.format(formatter);
-		String modifiedString = formattedDate.replaceAll("(.{2})$", "00"); // 문자열의 뒤에서 2글자를 "00"으로 대체
+		String modifiedString = formattedDate.replaceAll("(.{2})$", "01"); // 문자열의 뒤에서 2글자를 "01"로 대체
 		
 		return modifiedString;
 	}
@@ -46,7 +46,7 @@ public class ChartRest {
 		log.debug(CC.HE + "ChartRest.getSalesDraftForBarChart() threeMonthsAgoString : " + threeMonthsAgoString + CC.RESET);
 		
 		// 서비스 호출
-		List<Map<String, Object>> resultList = salesChartService.getSalesDraftForChart(todayString, threeMonthsAgoString);
+		List<Map<String, Object>> resultList = salesChartService.getSalesDraftForChart(threeMonthsAgoString, todayString);
 		log.debug(CC.HE + "ChartRest.getSalesDraftForBarChart() resultList : " + resultList + CC.RESET);
 		
 		return resultList;
@@ -55,7 +55,9 @@ public class ChartRest {
 	// 최근 1개월의 상품 카테고리별 매출달성률 조회 (donut 차트)
 	@GetMapping("/getSalesDraftForDonutChart")
 	public List<Map<String, Object>> getSalesDraftForDonutChart() {
-		return salesChartService.getRecentSalesDraftForChart();
+		List<Map<String, Object>> resultList = salesChartService.getRecentSalesDraftForChart();
+		log.debug(CC.HE + "ChartRest.getSalesDraftForDonutChart() resultList : " + resultList + CC.RESET);
+		return resultList;
 	}
 	
 	// 최근 1년의 상품 카테고리별 목표달성률 조회(morris 차트)
