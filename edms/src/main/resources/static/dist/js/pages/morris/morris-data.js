@@ -1,24 +1,25 @@
 // Dashboard 1 Morris-chart
 $(function () {
     "use strict"; // 엄격 모드를 활성화. 오류를 방지하고 JavaScript 코드의 효율을 높이기 위해 사용
+ /* 동적으로 사용하기 위해 ajax 사용
+ Morris.Area({
+        element: 'morris-area-chart',
+        data: formatted_data,
+        xkey: 'period',
+        ykeys: productCategories,
+        labels: productCategories,
+		pointSize: 3,
+		fillOpacity: 0,
+		pointStrokeColors:['#5f76e8','#01caf1','#fa292a','#00ff00','#0000ff'],
+		behaveLikeLine : true,
+		gridLineColor : '#e0e0e0',
+		lineWidth :3,
+		hideHover : 'auto',
+	    lineColors:['#5f76e8','#01caf1','#fa292a','#00ff00','#0000ff'], 
+		resize:true
+      });
+*/   
 Morris.Area({ // Morris.js 라이브러리를 이용해 Area chart 생성
-        element: 'morris-area-chart', // 그래프가 그려질 HTML 요소의 ID
-        data: data,// view에서 알맞은 data형식으로 변환된 값을 받는다.
-        xkey: 'period', // x 축으로 사용할 데이터 객체의 속성 이름
-        ykeys: productCategory, // y 축으로 사용할 데이터 객체의 속성 이름들.
-        labels: productCategory, // 각각의 선(데이터 시리즈)에 대한 레이블.
-        pointSize: 3, // 점 크기 설정
-        fillOpacity: 0, // 영역 채우기 투명도 설정. 여기서는 영역을 채우지 않음
-        pointStrokeColors:['#5f76e8','#01caf1','#fa292a','#00ff00','#0000ff'], // 점 외곽선 색상 설정. 배열 형식으로 전달받음.
-        behaveLikeLine: true, // true로 설정하면 면적 차트가 선 차트처럼 동작
-        gridLineColor: '#e0e0e0', // 그리드 선 색상을 설정
-        lineWidth: 3, // 선폭을 설정
-        hideHover: 'auto', // 호버 시 동작을 자동으로 조정
-        lineColors: ['#5f76e8','#01caf1','#fa292a','#00ff00','#0000ff'], // 선 색상을 설정, 배열로 값 전달받음
-        resize: true // 차트가 컨테이너의 크기에 맞게 자동으로 조정되도록 설정
-    });
-    
-/*Morris.Area({ // Morris.js 라이브러리를 이용해 Area chart 생성
         element: 'morris-area-chart', // 그래프가 그려질 HTML 요소의 ID
         data: [{ // 그래프에 표시될 데이터. 각 객체는 하나의 포인트(시간 단위)를 나타냄
             period: '2010', // x축 값 (시간)
@@ -70,8 +71,7 @@ Morris.Area({ // Morris.js 라이브러리를 이용해 Area chart 생성
         lineColors: ['#5f76e8', '#01caf1'], // 선 색상을 설정, 배열로 값 전달받음
         resize: true // 차트가 컨테이너의 크기에 맞게 자동으로 조정되도록 설정
         
-    });*/
-
+    });
 Morris.Area({
         element: 'morris-area-chart2',
         data: [{

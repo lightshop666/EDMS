@@ -45,6 +45,12 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+	<!--Morris JavaScript -->
+    <script src="${pageContext.request.contextPath}/assets/libs/raphael/raphael.min.js"></script>
+    <script src="${pageContext.request.contextPath}/assets/libs/morris.js/morris.min.js"></script>
+    <script src="/homeChartFunction.js"></script>
+	
+	
 </head>
 
 <body>
@@ -104,6 +110,22 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
+
+<div class="container-fluid">
+	<div class="row">
+		<!-- column -->
+        	<div class="col-lg-6">
+            	<div class="card">
+                	<div class="card-body" style="text-align: center;">
+                    	<h4 id="card-title" class="card-title">품목별 매출현황</h4>
+                        <ul id="chart-legend" class="list-inline text-end"></ul>
+                    	<div id="morris-area-chart"></div>
+                	</div>
+            	</div>
+        	</div>
+        <!-- column -->
+	</div>
+</div>
 
 			<!------------ 중요 공지 목록 시작 ------------->
 			<h4>공지사항</h4>

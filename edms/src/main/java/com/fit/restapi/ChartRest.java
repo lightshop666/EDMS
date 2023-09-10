@@ -57,4 +57,14 @@ public class ChartRest {
 	public List<Map<String, Object>> getSalesDraftForDonutChart() {
 		return salesChartService.getRecentSalesDraftForChart();
 	}
+	
+	// 최근 1년의 상품 카테고리별 목표달성률 조회(morris 차트)
+	@GetMapping("/getSalesDraftForMorrisChart")
+	public List<Map<String, Object>> getLastYearData() {
+	    LocalDate now = LocalDate.now();
+	    String startDate = modifyStringDate(now.minusYears(1).withDayOfMonth(1));  // 첫날
+	    String endDate = modifyStringDate(now.withDayOfMonth(now.lengthOfMonth())); // 마지막날
+	    
+	    return salesChartService.getSalesDraftForChart(startDate, endDate);
+	}
 }

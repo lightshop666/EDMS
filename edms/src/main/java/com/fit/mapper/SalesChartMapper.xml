@@ -14,14 +14,15 @@
 		    approval a ON sd.approval_no = a.approval_no
 		<where>
 			a.approval_state = '결재완료' <!-- 결재완료인 매출보고서만 조회 -->
+			<!-- 앞에 AND를 추가하여 여러개의 IF조건문이 참일 경우에 에러를 방지 -->
 			<if test="startDate != '' and endDate != ''">
-				sd.sales_date BETWEEN #{startDate} AND #{endDate}
+				AND sd.sales_date BETWEEN #{startDate} AND #{endDate}
 			</if>
 			<if test="startDate != ''">
-				sd.sales_date &gt;= #{startDate}
+				AND sd.sales_date &gt;= #{startDate}
 			</if>
 			<if test="endDate != ''">
-				sd.sales_date &lt;= #{endDate}
+				AND sd.sales_date &lt;= #{endDate}
 			</if>
 		</where>
 	</select>
