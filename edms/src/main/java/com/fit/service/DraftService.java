@@ -74,7 +74,7 @@ public class DraftService {
 
     //지출결의서 service 매서드
     @Transactional
-    public int processExpenseSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList) {
+    public int processExpenseSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds, List<ExpenseDraftContent> expenseDraftContentList, int empNo) {
        String draftState = null;  
        if (isSaveDraft) {
                draftState = "임시저장";
@@ -86,6 +86,8 @@ public class DraftService {
         String approvalField = "A";
        //임시번호 
         int empNotest = 2008001;
+        
+        int result = 1;
 
         log.debug("processExpenseSubmission() Start");
 
@@ -98,9 +100,9 @@ public class DraftService {
         log.debug("Approval Date: {}", submissionData.get("approvalDate"));
         // approval 테이블에 데이터 입력
         Approval approval = new Approval();
-        approval.setEmpNo(empNotest);
+        approval.setEmpNo(empNo);
         approval.setDocTitle((String) submissionData.get("documentTitle"));
-        approval.setFirstApproval(empNotest);
+        approval.setFirstApproval(empNo);
         approval.setMediateApproval(Integer.parseInt((String) submissionData.get("selectedMiddleApproverId")));
         approval.setFinalApproval(Integer.parseInt((String) submissionData.get("selectedFinalApproverId")));
         approval.setApprovalDate("");
@@ -130,13 +132,13 @@ public class DraftService {
         }  
         
         if (selectedRecipientsIds == null || selectedRecipientsIds.isEmpty()) {
-            return 1; // 수신참조자가 없는 경우를 나타내는 코드 또는 상수값
+            return result; // 수신참조자가 없는 경우를 나타내는 코드 또는 상수값
         }else {
-           for (int empNo : selectedRecipientsIds) {
-                draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
+           for (int empNos : selectedRecipientsIds) {
+                draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNos);
             }
         }
-        return 1;
+        return result;
     }
     
     //expenseDraftOne
@@ -223,6 +225,8 @@ public class DraftService {
                    draftMapper.insertReceiveDraft(approvalNo, empNo);
                }
            }
+           
+           int row = 1;
 
            // 7. approval 테이블 수정
            
@@ -233,11 +237,11 @@ public class DraftService {
            draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId,docTitle);
 
 
-           return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
+           return row; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
        }
    
        //기본 기안서 basicDraft service 매서드
-       public int processBasicSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds) {
+       public int processBasicSubmission(Boolean isSaveDraft,Map<String, Object> submissionData,List<Integer> selectedRecipientsIds, int empNo) {
           String 
                   draftState = "결재대기";      
           
@@ -257,9 +261,9 @@ public class DraftService {
            log.debug("Approval Date: {}", submissionData.get("approvalDate"));
            // approval 테이블에 데이터 입력
            Approval approval = new Approval();
-           approval.setEmpNo(empNotest);
+           approval.setEmpNo(empNo);
            approval.setDocTitle((String) submissionData.get("documentTitle"));
-           approval.setFirstApproval(empNotest);
+           approval.setFirstApproval(empNo);
            approval.setMediateApproval(Integer.parseInt((String) submissionData.get("selectedMiddleApproverId")));
            approval.setFinalApproval(Integer.parseInt((String) submissionData.get("selectedFinalApproverId")));
            approval.setApprovalDate("");
@@ -279,15 +283,15 @@ public class DraftService {
            // 기타 필드들 설정
            draftMapper.insertBasicDraft(basicDraft);
 
-           
+           int row = 1;
            if (selectedRecipientsIds == null || selectedRecipientsIds.isEmpty()) {
                return 1; // 수신참조자가 없는 경우를 나타내는 코드 또는 상수값
            }else {
-              for (int empNo : selectedRecipientsIds) {
-                   draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNo);
-               }
-              return 1;
+              for (int empNos : selectedRecipientsIds) {
+            	   draftMapper.insertReceiveDraft(draftMapper.selectLastInsertedApprovalNo(), empNos);
+               }  
            }   
+           return row;
        }
        
        // 결재상태에 따른 서명이미지 조회
@@ -444,7 +448,7 @@ public class DraftService {
            draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId,docTitle);
 
 
-           return 1; // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
+           return draftMapper.updateApproval(approvalNo, selectedMiddleApproverId, selectedFinalApproverId,docTitle); // 성공적으로 수정되었음을 나타내는 코드 또는 상수값
        }
     //------------------------------정환 끝---------------------------------------------   
     //------------------------------희진 시작--------------------------------------------

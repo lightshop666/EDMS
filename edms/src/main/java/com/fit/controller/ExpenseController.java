@@ -1,12 +1,14 @@
 package com.fit.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,8 +47,10 @@ public class ExpenseController {
     }
     
     @PostMapping("/draft/expenseDraft")
-    public String submitExpense(@RequestBody Map<String, Object> formData, Model model) {
+    public ResponseEntity<Map<String, String>> submitExpense(@RequestBody Map<String, Object> formData, Model model, HttpSession session) {
         log.debug("제출 데이터: {}", formData);
+        
+        int empNo = (int) session.getAttribute("loginMemberId");
 
         Boolean isSaveDraft = (Boolean) formData.get("isSaveDraft");
         
@@ -81,19 +85,15 @@ public class ExpenseController {
                 }
             }
         }
-            int result = draftService.processExpenseSubmission(isSaveDraft, submissionData, selectedRecipientsIds, expenseDraftContentList);
+            int result = draftService.processExpenseSubmission(isSaveDraft, submissionData, selectedRecipientsIds, expenseDraftContentList, empNo);
 
-        log.debug("result: ", result);
+        log.debug("result: "+ result);
         
-        if (result == 1) {
-            // 성공적인 경우 처리 (예: 리다이렉트)
-            return "redirect:/draft/submitDraft";
-        } else {
-            // 실패한 경우 처리 (예: 에러 메시지 전달)
-            String errorMessage = "지출 제출 실패";
-            model.addAttribute("errorMessage", errorMessage);
-            return "/draft/expenseDraft";
-        }
+        
+        Map<String, String> responseMap = new HashMap<>();
+        responseMap.put("redirectUrl", "/draft/submitDraft"); // 이 부분에 원하는 리다이렉션 URL을 설정합니다.
+
+        return ResponseEntity.ok(responseMap);
     }
     
     @GetMapping("/draft/expenseDraftOne")
@@ -126,6 +126,7 @@ public class ExpenseController {
        
        if ("cancelButton".equals(action)) {
            draftService.cancelDraft(approvalNo);
+           return "redirect:/draft/tempDraft";
        } else if ("modifyButton".equals(action)) {
     	   return "redirect:/draft/modifyExpense?approvalNo=" + approvalNo;
        } else if ("approveButton".equals(action)) {
@@ -136,7 +137,7 @@ public class ExpenseController {
            draftService.cancelApproval(approvalNo, role);
        }
         
-        return "/draft/expenseDraftOne";
+        return "redirect:/draft/expenseDraftOne?approvalNo=" + approvalNo;
         // 여기서 필요한 리다이렉트나 뷰를 반환하면 됨
     }   
     
@@ -194,19 +195,13 @@ public class ExpenseController {
 
         Map<String, Object> submissionData = formData;
         
-        Boolean isSave = (Boolean)formData.get("isSave");
-        
-        if (isSave == true) {
-            submissionData.put("isSave", "");
-        } else {
-            submissionData.put("isSave", "결재대기");
-        }
         
         int result = draftService.modifyExpenseDraft(submissionData, selectedRecipientsIds, expenseDraftContentList);
 
         log.debug("result: {}", result);
 
-        if (result == 1) {
+        
+        if (result !=0) {
             // 성공적인 경우 처리 (예: 리다이렉트)
             return "redirect:/draft/expenseDraftOne?approvalNo=" + formData.get("approvalNo");
         } else {

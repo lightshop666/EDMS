@@ -67,7 +67,7 @@
            a.first_approval AS firstApproval,
            a.doc_title AS docTitle,
            a.document_category AS documentCategory,
-           a.createdate,
+           a.createdate AS createdate,
            a.approval_state AS approvalState,
            e.emp_name AS firstApprovalName
        FROM approval a
@@ -89,7 +89,7 @@
        </where>
        <choose>
            <when test="col != null and col != '' and ascDesc != null and ascDesc != ''">
-               ORDER BY a.${col} ${ascDesc}
+               ORDER BY ${col} ${ascDesc}
            </when>
            <otherwise>ORDER BY a.createdate DESC</otherwise>
        </choose>
@@ -126,7 +126,7 @@
        JOIN receive_draft r ON a.approval_no = r.approval_no
        JOIN emp_info e ON a.first_approval = e.emp_no
         <where>        
-           a.approval_state != '임시저장' and a.emp_no = #{empNo}        
+           a.approval_state != '임시저장' and r.emp_no = #{empNo}        
            <if test="startDate != null and startDate != ''">
                AND a.createdate &gt;= #{startDate}
            </if>
@@ -452,50 +452,44 @@
    <!-- approval select by approvalNo, empNo -->
    <!-- emp_info 테이블과 join하여 이름, 부서명 (+직급) 도 함께 조회 -> DTO 사용 -->
    <select id="selectApprovalOne" parameterType="map" resultType="com.fit.vo.ApprovalJoinDto">
-		SELECT * FROM (
-			SELECT DISTINCT
-			    a.approval_no approvalNo,
-			    a.doc_title docTitle,
-			    a.emp_no empNo,
-			    a.first_approval firstApproval,
-			    a.mediate_approval mediateApproval,
-			    a.final_approval finalApproval,
-			    a.approval_date approvalDate,
-			    a.approval_reason approvalReason,
-			    a.approval_state approvalState,
-			    a.document_category documentCategory,
-			    a.approval_field approvalField,
-			    a.createdate createDate,
-			    CASE <!-- 해당 양식에 empNo가 어느 결재라인인지 출력합니다. -->
-			        WHEN a.first_approval = #{empNo} THEN '기안자'
-			        WHEN a.mediate_approval = #{empNo} AND a.final_approval = #{empNo} THEN '중간 및 최종승인자'
-			        WHEN a.mediate_approval = #{empNo} THEN '중간승인자'
-			        WHEN a.final_approval = #{empNo} THEN '최종승인자'
-			        WHEN r.emp_no = #{empNo} THEN '수신참조자'
-			    END role, <!-- role -->
-			    e1.emp_name firstEmpName, <!-- 기안자 이름 -->
-			    e1.dept_name firstDeptName, <!-- 기안자 부서명 -->
-			    e1.emp_position firstEmpPosition, <!-- 기안자 직급 -->
-			    e2.emp_name mediateEmpName, <!-- 중간승인자 이름 -->
-			    e2.dept_name mediateDeptName, <!-- 중간승인자 부서명 -->
-			    e2.emp_position mediateEmpPosition, <!-- 중간승인자 직급 -->
-			    e3.emp_name finalEmpName, <!-- 최종승인자 이름 -->
-			    e3.dept_name finalDeptName, <!-- 최종승인자 부서명 -->
-			    e3.emp_position finalEmpPosition <!-- 최종승인자 직급 -->
-			FROM
-			    approval a
-			INNER JOIN
-				emp_info e1 ON a.emp_no = e1.emp_no
-			LEFT JOIN
-				emp_info e2 ON a.mediate_approval = e2.emp_no
-			LEFT JOIN
-				emp_info e3 ON a.final_approval = e3.emp_no
-			LEFT JOIN
-				receive_draft r ON a.approval_no = r.approval_no
-			WHERE
-			    a.approval_no = #{approvalNo}
-		) AS subquery 
-		WHERE role IS NOT NULL <!-- 수신참조자 테이블의 경우 role이 NULL이어도 출력되기 때문에 서브쿼리를 사용하여 WHERE절을 추가합니다. -->
+      SELECT
+          a.approval_no approvalNo,
+          a.doc_title docTitle,
+          a.emp_no empNo,
+          a.first_approval firstApproval,
+          a.mediate_approval mediateApproval,
+          a.final_approval finalApproval,
+          a.approval_date approvalDate,
+          a.approval_reason approvalReason,
+          a.approval_state approvalState,
+          a.document_category documentCategory,
+          a.approval_field approvalField,
+          a.createdate createDate,
+          CASE <!-- 해당 양식에 empNo가 어느 결재라인인지 출력합니다. -->
+              WHEN a.first_approval = #{empNo} THEN '기안자'
+              WHEN a.mediate_approval = #{empNo} AND a.final_approval = #{empNo} THEN '중간 및 최종승인자'
+              WHEN a.mediate_approval = #{empNo} THEN '중간승인자'
+              WHEN a.final_approval = #{empNo} THEN '최종승인자'
+          END role, <!-- role -->
+          e1.emp_name firstEmpName, <!-- 기안자 이름 -->
+          e1.dept_name firstDeptName, <!-- 기안자 부서명 -->
+          e1.emp_position firstEmpPosition, <!-- 기안자 직급 -->
+          e2.emp_name mediateEmpName, <!-- 중간승인자 이름 -->
+          e2.dept_name mediateDeptName, <!-- 중간승인자 부서명 -->
+          e2.emp_position mediateEmpPosition, <!-- 중간승인자 직급 -->
+          e3.emp_name finalEmpName, <!-- 최종승인자 이름 -->
+          e3.dept_name finalDeptName, <!-- 최종승인자 부서명 -->
+          e3.emp_position finalEmpPosition <!-- 최종승인자 직급 -->
+      FROM
+          approval a
+      INNER JOIN
+         emp_info e1 ON a.emp_no = e1.emp_no
+      LEFT JOIN
+         emp_info e2 ON a.mediate_approval = e2.emp_no
+      LEFT JOIN
+         emp_info e3 ON a.final_approval = e3.emp_no
+      WHERE
+          approval_no = #{approvalNo}
    </select>
    
    <!-- receive_draft select by approvalNo (List) -->
@@ -637,7 +631,7 @@
       WHERE approval_no = #{approvalNo}
    </update>
    
-   <!-- sales_draft select by sales_date -->
+   <!-- sales_draft by sales_date -->
    <select id="selectSalesDateList" parameterType="String" resultType="java.lang.String">
       SELECT
          DISTINCT sd.sales_date
@@ -649,142 +643,5 @@
          sales_date IN (#{today}, #{previousMonth}, #{previousMonthBefore})
          AND a.approval_state != '임시저장' <!-- 임시저장인 문서일 경우 옵션을 출력합니다. -->
          AND a.approval_state != '반려'; <!-- 반려인 문서일 경우 옵션을 출력합니다. -->
-   </select>
-   
-      <!-- approval select by emp_no and approval_state -->
-   <select id="selectApprovalDraftList" parameterType="java.util.Map" resultType="com.fit.vo.Approval">
-		SELECT
-			a.approval_no approvalNo,
-			a.doc_title docTitle,
-			e.emp_name firstApprovalName,
-			a.createdate createdate,
-			a.approval_state approvalState,
-			a.document_category documentCategory
-		FROM approval a
-		INNER JOIN emp_info e ON a.emp_no = e.emp_no
-		<where>
-	        (a.mediate_approval = #{empNo} OR a.final_approval = #{empNo})
-	        AND a.approval_state != '임시저장'
-	        <if test="searchCol != '' and searchWord != ''">
-	            AND a.${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
-	        </if>
-	        <if test="startDate != ''">
-	            AND a.createdate &gt;= #{startDate}
-	        </if>
-	        <if test="endDate != ''">
-	            AND a.createdate &lt;= #{endDate}
-	        </if>
-	    </where>
-	    <choose>
-	        <when test="col != '' and ascDesc != ''">
-	            ORDER BY a.${col} ${ascDesc}
-	        </when>
-	        <otherwise>ORDER BY a.createdate DESC</otherwise>
-	    </choose>
-	    LIMIT #{beginRow}, #{rowPerPage}
-   </select>
-
-   <!-- approval cnt by emp_no and approval_state -->
-   <select id="selectApprovalDraftCnt" parameterType="java.util.Map" resultType="int">
-		SELECT COUNT(*)
-		FROM approval 
-		<where>
-	        (mediate_approval = #{empNo} OR final_approval = #{empNo})
-	        AND approval_state != '임시저장'
-	        <if test="searchCol != '' and searchWord != ''">
-	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
-	        </if>
-	        <if test="startDate != ''">
-	            AND createdate &gt;= #{startDate}
-	        </if>
-	        <if test="endDate != ''">
-	            AND createdate &lt;= #{endDate}
-	        </if>
-	    </where>
-   </select>
-
-   <!-- 내 결재함의 결재상태별 갯수 조회 -->
-   <select id="selectApprovalCountsByState" parameterType="int" resultType="java.util.Map">
-	   SELECT
-	        approval_state approvalState,
-	        COUNT(*) count
-	    FROM
-	        approval
-	    WHERE
-	        mediate_approval = #{empNo}
-	        OR final_approval = #{empNo}
-	    GROUP BY
-	        approval_state
-	</select>
-
-	<!-- approval select by emp_no and approval_state -->
-   <select id="selectTempDraftList" parameterType="java.util.Map" resultType="com.fit.vo.Approval">
-		SELECT
-			approval_no approvalNo,
-			doc_title docTitle,
-			createdate createdate,
-			document_category documentCategory
-		FROM approval
-		<where>
-	        emp_no = #{empNo}
-	        AND approval_state = '임시저장'
-	        <if test="searchCol != '' and searchWord != ''">
-	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
-	        </if>
-	        <if test="startDate != ''">
-	            AND createdate &gt;= #{startDate}
-	        </if>
-	        <if test="endDate != ''">
-	            AND createdate &lt;= #{endDate}
-	        </if>
-	    </where>
-	    <choose>
-	        <when test="col != '' and ascDesc != ''">
-	            ORDER BY ${col} ${ascDesc}
-	        </when>
-	        <otherwise>ORDER BY createdate DESC</otherwise>
-	    </choose>
-	    LIMIT #{beginRow}, #{rowPerPage}
-   </select>
-
-   <!-- approval cnt by emp_no and approval_state -->
-   <select id="selectTempDraftCnt" parameterType="java.util.Map" resultType="int">
-		SELECT COUNT(*)
-		FROM approval 
-		<where>
-	        emp_no = #{empNo}
-	        AND approval_state = '임시저장'
-	        <if test="searchCol != '' and searchWord != ''">
-	            AND ${searchCol} LIKE CONCAT('%', #{searchWord}, '%')
-	        </if>
-	        <if test="startDate != ''">
-	            AND createdate &gt;= #{startDate}
-	        </if>
-	        <if test="endDate != ''">
-	            AND createdate &lt;= #{endDate}
-	        </if>
-	    </where>
-   </select>
-
-   <!-- approval delete by approvalNo -->
-   <delete id="deleteApprovalTempDrafts" parameterType="int[]">
-		DELETE FROM approval
-		WHERE approval_no IN
-		<foreach collection="approvalNo" item="item" open="(" close=")" separator=",">
-			#{item}
-		</foreach>
-   </delete>
-
-   <!-- document_file select by approvalNo -->
-   <select id="selectDocumentFileByApprovalNo" parameterType="int[]" resultType="com.fit.vo.DocumentFile">
-   		SELECT
-   			approval_no approvalNo,
-   			doc_file_no docFileNo,
-   			doc_save_filename docSaveFilename
-   		FROM document_file
-   		WHERE approval_no IN
-   		<foreach collection="approvalNo" item="item" open="(" close=")" separator=",">
-   			#{item}
-   		</foreach>
    </select>
 </mapper>

@@ -6,69 +6,69 @@
     <meta charset="UTF-8">
     <title>지출결의서 작성</title>
         <!-- 테이블 스타일 추가 -->
-	<style>
-	    table {
-	        border-collapse: collapse;
-	        width: 100%;
-	        border: 1px solid black;
-	        text-align: center; /* 셀 내 텍스트 가운데 정렬 */
-	    }
-	    th, td {
-	        border: 1px solid black;
-	        padding: 8px;
-	    }
-	    input[type="text"], textarea {
-	        width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
-	        box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
-	    }
-	</style>
-    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<!-- Tell the browser to be responsive to screen width -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<!-- Favicon icon -->
-	<link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
-	<title>salesDraft</title>
-	<!-- Custom CSS -->
-	<link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
-	<link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-	<link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
-	<!-- Custom CSS -->
-	<link href="../dist/css/style.min.css" rel="stylesheet">
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-	<!-- ============================================================== -->
-	<!-- All Jquery -->
-	<!-- 공통 함수를 불러옵니다. -->
-	<script src="/draftFunction.js"></script>
-	<!-- ============================================================== -->
-	<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- apps -->
-	<!-- apps -->
-	<script src="../dist/js/app-style-switcher.js"></script>
-	<script src="../dist/js/feather.min.js"></script>
-	<script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-	<script src="../dist/js/sidebarmenu.js"></script>
-	<!--Custom JavaScript -->
-	<script src="../dist/js/custom.min.js"></script>
-	<!--This page JavaScript -->
-	<script src="../assets/extra-libs/c3/d3.min.js"></script>
-	<script src="../assets/extra-libs/c3/c3.min.js"></script>
-	<script src="../assets/libs/chartist/dist/chartist.min.js"></script>
-	<script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
-	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
-	    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+   <style>
+       table {
+           border-collapse: collapse;
+           width: 100%;
+           border: 1px solid black;
+           text-align: center; /* 셀 내 텍스트 가운데 정렬 */
+       }
+       th, td {
+           border: 1px solid black;
+           padding: 8px;
+       }
+       input[type="text"], textarea {
+           width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
+           box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
+       }
+   </style>
+       <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <!-- Tell the browser to be responsive to screen width -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <meta name="description" content="">
+   <meta name="author" content="">
+   <!-- Favicon icon -->
+   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png">
+   <title>salesDraft</title>
+   <!-- Custom CSS -->
+   <link href="../assets/extra-libs/c3/c3.min.css" rel="stylesheet">
+   <link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
+   <link href="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
+   <!-- Custom CSS -->
+   <link href="../dist/css/style.min.css" rel="stylesheet">
+   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+   <!--[if lt IE 9]>
+   <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+   <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+   <![endif]-->
+   <!-- ============================================================== -->
+   <!-- All Jquery -->
+   <!-- 공통 함수를 불러옵니다. -->
+   <script src="/draftFunction.js"></script>
+   <!-- ============================================================== -->
+   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   <!-- apps -->
+   <!-- apps -->
+   <script src="../dist/js/app-style-switcher.js"></script>
+   <script src="../dist/js/feather.min.js"></script>
+   <script src="../assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
+   <script src="../dist/js/sidebarmenu.js"></script>
+   <!--Custom JavaScript -->
+   <script src="../dist/js/custom.min.js"></script>
+   <!--This page JavaScript -->
+   <script src="../assets/extra-libs/c3/d3.min.js"></script>
+   <script src="../assets/extra-libs/c3/c3.min.js"></script>
+   <script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+   <script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+   <script src="../assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
+   <script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
+   <script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
+       <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-        	 // 중간승인자 모달 열기
+            // 중간승인자 모달 열기
             function openMiddleApproverModal() {
                 $("#middleApproverModal").show();
             }
@@ -242,37 +242,29 @@
                     // 추가로 필요한 데이터 추가
                 };
 
-                // 폼 제출
                 $.ajax({
                     type: "POST",
-                    url: "${pageContext.request.contextPath}/draft/expenseDraft",
+                    url: "/draft/expenseDraft",
                     contentType: "application/json",
-                    data: JSON.stringify(dataToSend),
+                    data: JSON.stringify(formData),
                     success: function(response) {
-                        if (isSaveDraft) {
-                            console.log("임시저장 서버 응답: ", response);
-                            // 임시저장 완료 메시지 등의 동작
-                        } else {
-                            console.log("기안하기 서버 응답: ", response);
-                            // 기안하기 완료 메시지 등의 동작
-                        }
+                        // 서버에서 받은 리다이렉션 URL을 사용하여 페이지를 이동
+                        window.location.href = response.redirectUrl; // response.redirectUrl은 서버 응답에서 설정한 리다이렉션 URL입니다.
                     },
                     error: function(xhr, status, error) {
                         console.error("에러 발생: ", error);
-                        // 에러 메시지 표시 등의 동작
-                    } 
+                    }
                 });
-            }
 
-            // 기안하기 버튼 클릭 시
-        $("#saveDraftBtn").click(function() {
-            sendData(true);
-        });
-
-        // 기안하기 버튼 클릭 시 호출되는 함수
-        $("#submitBtn").click(function() {
-            sendData(false);
-        });
+                  // 기안하기 버튼 클릭 시
+              $("#saveDraftBtn").click(function() {
+                  sendData(true);
+              });
+      
+              // 기안하기 버튼 클릭 시 호출되는 함수
+              $("#submitBtn").click(function() {
+                  sendData(false);
+              });
 
 
             // 버튼 이벤트 핸들러 설정
@@ -287,7 +279,7 @@
     </script>
 </head>
 <body>
-	<!-- ============================================================== -->
+   <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->
 <!-- ============================================================== -->
 <div class="preloader">
@@ -301,32 +293,32 @@
 <!-- ============================================================== -->
 <div id="main-wrapper" data-theme="light" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed" data-boxed-layout="full">
-	<!-- ============================================================== -->
-	<!-- Topbar header - style you can find in pages.scss -->
-	<!-- ============================================================== -->
-	<!-- 헤더 인클루드 -->
-	
-	<header class="topbar" data-navbarbg="skin6">
-		<jsp:include page="/WEB-INF/view/inc/header.jsp" />
-	</header>
-	<!-- ============================================================== -->
-	<!-- End Topbar header -->
-	<!-- ============================================================== -->
-	<!-- ============================================================== -->
-	<!-- Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
-	
-	<!-- 좌측 메인메뉴 인클루드 -->
-	
-	<aside class="left-sidebar" data-sidebarbg="skin6">
-	
-		<jsp:include page="/WEB-INF/view/inc/mainmenu.jsp" />
-	
-	</aside>
-	
-	<!-- ============================================================== -->
-	<!-- End Left Sidebar - style you can find in sidebar.scss  -->
-	<!-- ============================================================== -->
+   <!-- ============================================================== -->
+   <!-- Topbar header - style you can find in pages.scss -->
+   <!-- ============================================================== -->
+   <!-- 헤더 인클루드 -->
+   
+   <header class="topbar" data-navbarbg="skin6">
+      <jsp:include page="/WEB-INF/view/inc/header.jsp" />
+   </header>
+   <!-- ============================================================== -->
+   <!-- End Topbar header -->
+   <!-- ============================================================== -->
+   <!-- ============================================================== -->
+   <!-- Left Sidebar - style you can find in sidebar.scss  -->
+   <!-- ============================================================== -->
+   
+   <!-- 좌측 메인메뉴 인클루드 -->
+   
+   <aside class="left-sidebar" data-sidebarbg="skin6">
+   
+      <jsp:include page="/WEB-INF/view/inc/mainmenu.jsp" />
+   
+   </aside>
+   
+   <!-- ============================================================== -->
+   <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+   <!-- ============================================================== -->
         
         
         
@@ -336,42 +328,42 @@
         
         
         
-	<div class="page-wrapper">
-	<!-- ============================================================== -->
-	<!-- Container fluid  -->
-	<!-- ============================================================== -->
-		<div class="container-fluid">
+   <div class="page-wrapper">
+   <!-- ============================================================== -->
+   <!-- Container fluid  -->
+   <!-- ============================================================== -->
+      <div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
-    <br>
-	   <nav class="navbar navbar-expand-lg navbar-light">
-	       <div class="collapse navbar-collapse" id="navbarNav">
-	           <ul class="nav nav-tabs">
-	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/basicDraft">기안서</a>
-	               </li>
-	               <li class="nav-item">
-	                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
-	               </li>
-	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
-	               </li>
-	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
-	               </li>
-	           </ul>
-	       </div>
-	   </nav>
+        <br>
+      <nav class="navbar navbar-expand-lg navbar-light">
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/basicDraft">기안서</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link active" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">매출보고서</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">휴가신청서</a>
+                  </li>
+              </ul>
+          </div>
+      </nav>
    <br>
     <h1 style="text-align: center;">지출결의서 작성</h1>
-    <form action="${pageContext.request.contextPath}/expenseDraft" method="post">
+    <form action="${pageContext.request.contextPath}/draft/expenseDraft" method="post">
         <table class="table-bordered">
             <tr>
-				<th rowspan="3" colspan="2">지출결의서</th>
-				<th rowspan="3">결재</th>
-				<th>기안자</th>
-				<th>중간승인자</th>
-				<th>최종승인자</th>
-			</tr>
+            <th rowspan="3" colspan="2">지출결의서</th>
+            <th rowspan="3">결재</th>
+            <th>기안자</th>
+            <th>중간승인자</th>
+            <th>최종승인자</th>
+         </tr>
          
             <tr>
                 <td rowspan="2">
@@ -381,23 +373,23 @@
                     <span id="selectedMiddleApprover"></span> 
                 </td>
                 <td>    
-                    <span id="selectedFinalApprover"></span>	
+                    <span id="selectedFinalApprover"></span>   
                     <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
                     <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
                 </td>
             </tr>
             <tr>
-					<td>
-						<button type="button" id="middleApproverBtn" class="btn btn-secondary">
-							검색 <!-- 중간승인자 검색 모달 버튼 -->
-						</button>
-					</td>
-					<td>
-						<button type="button" id="finalApproverBtn" class="btn btn-secondary">
-							검색 <!-- 최종승인자 검색 모달 버튼 -->
-						</button>
-					</td>
-			</tr>
+               <td>
+                  <button type="button" id="middleApproverBtn" class="btn btn-secondary">
+                     검색 <!-- 중간승인자 검색 모달 버튼 -->
+                  </button>
+               </td>
+               <td>
+                  <button type="button" id="finalApproverBtn" class="btn btn-secondary">
+                     검색 <!-- 최종승인자 검색 모달 버튼 -->
+                  </button>
+               </td>
+         </tr>
             <tr>
                 <td>수신참조 <button type="button" id="recipientsBtn" class="btn btn-secondary">선택</button></td>
                 <td colspan="5">
@@ -419,7 +411,7 @@
             <!-- 내역 항목 -->
             <tr>
                 <td>
-                	내역
+                   내역
                 </td>
                 <td colspan="5">
                     <table id="expenseDetailsTable" class="table-bordered">
@@ -447,11 +439,11 @@
                 </td>
             </tr>
             <tr>
-				<th colspan="6">
-					위와 같이 결재바랍니다. <br>
-					${year}년 ${month}월 ${day}일
-				</th>
-			</tr>
+            <th colspan="6">
+               위와 같이 결재바랍니다. <br>
+               ${year}년 ${month}월 ${day}일
+            </th>
+         </tr>
         </table>
 
         <!-- 버튼 그룹 -->
@@ -600,24 +592,24 @@
    </div>
    <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
-		</div>
-		<!-- ============================================================== -->
-		<!-- End Container fluid  -->
-		<!-- ============================================================== -->
+      </div>
+      <!-- ============================================================== -->
+      <!-- End Container fluid  -->
+      <!-- ============================================================== -->
             
-		<!-- ============================================================== -->
-		<!-- footer -->
-		<!-- ============================================================== -->
+      <!-- ============================================================== -->
+      <!-- footer -->
+      <!-- ============================================================== -->
 <!-- 푸터 인클루드 -->
-		<footer class="footer text-center text-muted">
-		
-			<jsp:include page="/WEB-INF/view/inc/footer.jsp" />
-			
-		</footer>
-		<!-- ============================================================== -->
-		<!-- End footer -->
-		<!-- ============================================================== -->
-	</div>
+      <footer class="footer text-center text-muted">
+      
+         <jsp:include page="/WEB-INF/view/inc/footer.jsp" />
+         
+      </footer>
+      <!-- ============================================================== -->
+      <!-- End footer -->
+      <!-- ============================================================== -->
+   </div>
 <!-- ============================================================== -->
 <!-- End Page wrapper  -->
 <!-- ============================================================== -->        

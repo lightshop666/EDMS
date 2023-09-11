@@ -1,9 +1,12 @@
 package com.fit.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.CC;
@@ -45,27 +49,29 @@ public class BasicController {
         return "draft/basicDraft";
     }
     
+    @ResponseBody
     @PostMapping("/draft/basicDraft")
-    public String submitBasic(@RequestBody Map<String, Object> formData, Model model) {
+    public Map<String, Object> submitBasic(@RequestBody Map<String, Object> formData, HttpSession session,HttpServletResponse response) throws IOException {
+        int empNo = (int) session.getAttribute("loginMemberId");
         log.debug("제출 데이터: {}", formData);
 
         Boolean isSaveDraft = (Boolean) formData.get("isSaveDraft");
         
         Map<String, Object> submissionData = (Map<String, Object>) formData;
         List<Integer> selectedRecipientsIds = (List<Integer>) formData.get("selectedRecipientsIds");
-        int result = draftService.processBasicSubmission(isSaveDraft, submissionData, selectedRecipientsIds);
-
-        log.debug("result: ", result);
+        
+        int result = draftService.processBasicSubmission(isSaveDraft, submissionData, selectedRecipientsIds, empNo);
         
         if (result == 1) {
-            // 성공적인 경우 처리 (예: 리다이렉트)
-            return "redirect:/home";
-        } else {
-            // 실패한 경우 처리 (예: 에러 메시지 전달)
-            String errorMessage = "지출 제출 실패";
-            model.addAttribute("errorMessage", errorMessage);
-            return "/draft/basicDraft";
+            // 서버에서 리다이렉션 수행
+        	
+        	log.debug("result: {}", result);
+            response.sendRedirect("/draft/submitDraft");
         }
+        
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("result", result);
+        return responseMap;
     }
 
     
@@ -77,7 +83,7 @@ public class BasicController {
 
         Map<String, Object> memberSignMap = (Map) basicDraftData.get("memberSignMap");	
         
-        log.debug(CC.JUNG + "[DEBUG] Expense Draft Data: {}", basicDraftData + CC.RESET);
+        log.debug(CC.JUNG + "[DEBUG] Basic Draft Data: {}", basicDraftData + CC.RESET);
         model.addAttribute("basicDraftData", basicDraftData);
         model.addAttribute("memberSignMap", memberSignMap);
 
@@ -97,6 +103,8 @@ public class BasicController {
        
         if ("cancelButton".equals(action)) {
             draftService.cancelDraft(approvalNo);
+            
+            return "redirect:/draft/tempDraft";
         } else if ("modifyButton".equals(action)) {
         	return "redirect:/draft/modifyBasic?approvalNo=" + approvalNo;
         } else if ("approveButton".equals(action)) {
@@ -105,6 +113,7 @@ public class BasicController {
             draftService.rejectDraft(approvalNo,rejectionReason);
         } else if ("cancelApproval".equals(action)) {
             draftService.cancelApproval(approvalNo, role);
+            
         }
         
         return "redirect:/draft/basicDraftOne?approvalNo=" + approvalNo;
@@ -146,13 +155,8 @@ public class BasicController {
 
         Map<String, Object> submissionData = formData;
         
-        Boolean isSave = (Boolean)formData.get("isSave");
-        
-        if (isSave == true) {
-            submissionData.put("isSave", "");
-        } else {
-            submissionData.put("isSave", "결재대기");
-        }
+    
+       
         
         int result = draftService.modifyBasicDraft(submissionData, selectedRecipientsIds);
 

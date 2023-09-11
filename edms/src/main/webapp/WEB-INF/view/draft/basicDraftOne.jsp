@@ -87,7 +87,7 @@
                 const button = $("<button>", {
                     id: buttonId,
                     text: buttonText,
-                    class: "actionBtn btn btn-secondary",
+                    class: "approval-button",
                     "data-action": actionValue
                 });
                 $("#buttonArea").append(button);

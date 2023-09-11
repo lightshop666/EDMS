@@ -90,8 +90,8 @@
             // 각 상태에 따라 버튼을 추가하고 해당 영역을 보여주는 코드
             if (status === "A") {
                 if (role === "drafter") {
-                    addButton("cancelButton", "기안 취소","cancelButton");
                     addButton("modifyButton", "수정","modifyButton");
+                    addButton("cancelButton", "기안 취소","cancelButton");
                 } else if (role === "middleApprover") {
                     addButton("rejectButton", "반려","rejectButton");
                     addButton("approveButton", "승인","approveButton");

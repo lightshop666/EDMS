@@ -233,7 +233,8 @@
                         documentTitle: documentTitle,
                         selectedRecipientsIds: selectedRecipientsIds,
                         expenseDetails: expenseDetails,
-                        isSaveDraft: isSaveDraft
+                        isSaveDraft: isSaveDraft,
+                        approvalNo: ${expenseDraftData.approvalNo}
                     };
 
                     // 폼 제출
@@ -424,10 +425,10 @@
         <div class="buttons">
             <c:choose>
 			    <c:when test="${isSave == null or isSave == 'true'}">
-			        <button type="submit" id="saveDraftBtn" class="table-bordered">저장</button>
+			        <button type="submit" id="saveDraftBtn" class="btn btn-primary">저장</button>
 			    </c:when>
 			    <c:otherwise>
-			        <button type="submit" id="submitBtn" class="table-bordered">기안</button>
+			        <button type="submit" id="submitBtn" class="btn btn-primary">기안</button>
 			    </c:otherwise>
 			</c:choose>
         </div>

@@ -46,7 +46,13 @@ public class DraftListController {
 		) {
 		int empNo = (int) session.getAttribute("loginMemberId");
 		    
-
+		    model.addAttribute("startDate", startDate);
+		    model.addAttribute("endDate", endDate);
+		    model.addAttribute("col", col);
+		    model.addAttribute("ascDesc", ascDesc);
+		    model.addAttribute("searchCol", searchCol);
+		    model.addAttribute("searchWord", searchWord);
+		
 		    // 검색 조건을 포함한 목록을 가져오도록 수정
 		    Map<String, Object> filterParams = new HashMap<>();
 		    filterParams.put("startDate", startDate);
@@ -128,6 +134,12 @@ public class DraftListController {
 		) {
 		int empNo = (int) session.getAttribute("loginMemberId");
 		   
+	    model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("col", col);
+	    model.addAttribute("ascDesc", ascDesc);
+	    model.addAttribute("searchCol", searchCol);
+	    model.addAttribute("searchWord", searchWord);
 	
 		    // 검색 조건을 포함한 목록을 가져오도록 수정
 		    Map<String, Object> filterParams = new HashMap<>();

@@ -295,7 +295,7 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->  
     <h1 style="text-align: center;">기안서 수정</h1>
-    <form action="${pageContext.request.contextPath}/modifyBasic" method="post">
+    <form action="${pageContext.request.contextPath}/draft/modifyBasic" method="post">
     
         <table class="table-bordered">
         	 <tr>
