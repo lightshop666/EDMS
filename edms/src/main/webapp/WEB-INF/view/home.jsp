@@ -66,6 +66,7 @@
 	    .info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
 	    .info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
 	    .info .link {color: #5085BB;}
+	    .center {text-align:center;}
 	</style>
 </head>
 
@@ -170,7 +171,7 @@
 						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9740ccac570045a96ce1f6a1973ef1c7"></script>
 				       	<script>
 					       	$(document).ready(function () {
-					       		var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+								var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
 								    mapOption = { 
 								        center: new kakao.maps.LatLng(37.4765002,126.8799586), // 지도의 중심좌표
 								        level: 6 // 지도의 확대 레벨
@@ -234,23 +235,25 @@
 							                kakao.maps.event.addListener(marker, 'click', function () {
 							                    overlays[index].setMap(map); // 해당 마커의 오버레이를 표시
 							                });
+							            
+								            function closeOverlay(index) {
+								                overlays[index].setMap(null); // 해당 인덱스의 오버레이를 숨김
+								            }
 							            });
-			
-							            function closeOverlay(index) {
-							                overlays[index].setMap(null); // 해당 인덱스의 오버레이를 숨김
-							            }
 							        },
 							        error: function (error) {
 							            console.error('데이터 요청 실패: ' + error.statusText);
 							        }
 							    });
-							    });
+							});
 						</script>
 			    	</div>
 				    <!------------ 봉사 정보 지도 끝 ------------->   	
 				    <!------------ 중요 공지 목록 시작 ------------->   	
 					<div class="col-lg-6">
-						<h4>공지사항</h4>
+						<br>
+						<h3 class="center" style="color:black;">공지사항</h3>
+						<br>
 						<table class="table">
 							<tr>
 								<th>공지</th>
