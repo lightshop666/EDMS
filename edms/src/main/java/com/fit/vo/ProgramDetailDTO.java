@@ -33,7 +33,7 @@ public class ProgramDetailDTO {
 	private String postAdres;			//담당자 주소
 	private String email;				//이메일
 	private String progrmCn;			//내용
-	
+	private String areaLalo1;
 	
     private int numOfRows;
     private int pageNo;

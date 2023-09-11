@@ -40,6 +40,7 @@ public class VolunteerRest {
     @GetMapping("/vltrDetailsList")
     public ResponseEntity<List<ProgramDetailDTO>> getDetails() {
         List<ProgramDetailDTO> details = volunteerService.getAllDetailedVolunteerInfo();
+        log.debug(CC.JUNG + " 봉사정보RestController.details :  " + details  + CC.RESET);
         return ResponseEntity.ok(details);
     }
 	

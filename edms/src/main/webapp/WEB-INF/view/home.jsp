@@ -51,7 +51,22 @@
     <script src="/homeChartFunction.js"></script>
 	<!-- Morris CSS -->
     <link href="${pageContext.request.contextPath}/assets/libs/morris.js/morris.css" rel="stylesheet">
-	
+	<style>
+	    .wrap {position: absolute;left: 0;bottom: 40px;width: 288px;height: 132px;margin-left: -144px;text-align: left;overflow: hidden;font-size: 12px;font-family: 'Malgun Gothic', dotum, '돋움', sans-serif;line-height: 1.5;}
+	    .wrap * {padding: 0;margin: 0;}
+	    .wrap .info {width: 286px;height: 120px;border-radius: 5px;border-bottom: 2px solid #ccc;border-right: 1px solid #ccc;overflow: hidden;background: #fff;}
+	    .wrap .info:nth-child(1) {border: 0;box-shadow: 0px 1px 2px #888;}
+	    .info .title {padding: 5px 0 0 10px;height: 30px;background: #eee;border-bottom: 1px solid #ddd;font-size: 18px;font-weight: bold;}
+	    .info .close {position: absolute;top: 10px;right: 10px;color: #888;width: 17px;height: 17px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/overlay_close.png');}
+	    .info .close:hover {cursor: pointer;}
+	    .info .body {position: relative;overflow: hidden;}
+	    .info .desc {position: relative;margin: 13px 0 0 90px;height: 75px;}
+	    .desc .ellipsis {overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+	    .desc .jibun {font-size: 11px;color: #888;margin-top: -2px;}
+	    .info .img {position: absolute;top: 6px;left: 5px;width: 73px;height: 71px;border: 1px solid #ddd;color: #888;overflow: hidden;}
+	    .info:after {content: '';position: absolute;margin-left: -12px;left: 50%;bottom: 0;width: 22px;height: 12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white.png')}
+	    .info .link {color: #5085BB;}
+	</style>
 </head>
 
 <body>
@@ -146,65 +161,132 @@
 		           	</div>
 		       	</div>
 		       	<!-- 바 차트 끝 -->
-		       	<!------------ 봉사정보 ------------->
-		       	<div class="col-lg-12">
-		       		<script>
-						function fetchDetails() {
-							$.ajax({
-								url: '/vltrDetailsList',
-								type: 'GET',
-								success: function(data) {
-									$('#output').text(JSON.stringify(data, null, 4));
-								},
-								error: function(error) {
-									alert("오류 발생: " + error.statusText);
-								}
-							});
-						}
-					</script>
-		
-					<button onclick="fetchDetails()">봉사정보리스트</button>
 		       	</div>
-		       	<!------------ 끝 봉사정보 끝 ------------->
-		       	<!------------ 중요 공지 목록 시작 ------------->
-				<div class="col-lg-12">
-					<h4>공지사항</h4>
-					<table class="table">
-						<tr>
-							<th>공지</th>
-							<th>제목</th>
-							<th>작성자</th>
-							<th>등록일</th>
-						</tr>
-						<!-- 공지가 있을 경우/없을 경우를 분류 -->
-						<c:choose>
-					        <c:when test="${not empty board}">
-					            <c:forEach var="b" items="${board}">
-					                <tr>
-					                    <td>
-					                        <c:choose>
-					                            <c:when test="${b.topExposure == 'Y'}">
-					                                &#128227;
-					                            </c:when>
-					                            <c:otherwise>
-					                                -
-					                            </c:otherwise>
-					                        </c:choose>
-					                    </td>
-					                    <td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
-					                    <td>${b.empName}</td>
-					                    <td>${b.createdate}</td>
-					                </tr>
-					            </c:forEach>
-					        </c:when>
-					        <c:otherwise>
-					            <tr>
-					                <td colspan="4">공지 내용이 없습니다.</td>
-					            </tr>
-					        </c:otherwise>
-				    	</c:choose>
-					</table>
-				</div>
+		       	<!------------ 봉사 정보 지도 시작 ------------->
+		       	<div class="row">
+			       	<div class="col-lg-6">
+				       	<div id="map" style="width:500px; height:400px; !important"></div>
+		
+						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9740ccac570045a96ce1f6a1973ef1c7"></script>
+				       	<script>
+					       	$(document).ready(function () {
+					       		var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+								    mapOption = { 
+								        center: new kakao.maps.LatLng(37.4765002,126.8799586), // 지도의 중심좌표
+								        level: 6 // 지도의 확대 레벨
+								    };
+					       		
+								var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+								 
+								$.ajax({
+							        url: '/vltrDetailsList',
+							        type: 'GET',
+							        dataType: 'json',
+							        success: function (data) {
+							            var markers = []; // 마커 배열
+							            var overlays = []; // 오버레이 배열
+			
+							            $.each(data, function (index, item) {
+							                var title = item.progrmSj;
+							                var area = item.areaLalo1;
+							                var latlng = area.split(',');
+							                var latitude = parseFloat(latlng[0]);
+							                var longitude = parseFloat(latlng[1]);
+							                var nanmmbyNm = item.nanmmbyNm;
+							                var rcritNmpr = item.rcritNmpr;
+							                var email = item.email;
+			
+							                var marker = new kakao.maps.Marker({
+							                    map: map,
+							                    position: new kakao.maps.LatLng(latitude, longitude),
+							                    title: title,
+							                });
+			
+							                markers.push(marker);
+			
+							                var content = '<div class="wrap">' +
+							                    '<div class="info">' +
+							                    '<div class="title">' +
+							                    title +
+							                    '<div class="close" onclick="closeOverlay(' + index + ')" title="닫기"></div>' +
+							                    '</div>' +
+							                    '<div class="body">' +
+							                    '<div class="img">' +
+							                    '<img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png" width="73" height="70">' +
+							                    '</div>' +
+							                    '<div class="desc">' +
+							                    '<div class="ellipsis">주소: ' + nanmmbyNm + '</div>' +
+							                    '<div class="ellipsis">모집인원: ' + rcritNmpr + '</div>' +
+							                    '<div class="ellipsis">이메일: ' + email + '</div>' +
+							                    '</div>' +
+							                    '</div>' +
+							                    '</div>' +
+							                    '</div>';
+			
+							                var overlay = new kakao.maps.CustomOverlay({
+							                    content: content,
+							                    map: map,
+							                    position: marker.getPosition()
+							                });
+			
+							                overlays.push(overlay);
+			
+							                kakao.maps.event.addListener(marker, 'click', function () {
+							                    overlays[index].setMap(map); // 해당 마커의 오버레이를 표시
+							                });
+							            });
+			
+							            function closeOverlay(index) {
+							                overlays[index].setMap(null); // 해당 인덱스의 오버레이를 숨김
+							            }
+							        },
+							        error: function (error) {
+							            console.error('데이터 요청 실패: ' + error.statusText);
+							        }
+							    });
+							    });
+						</script>
+			    	</div>
+				    <!------------ 봉사 정보 지도 끝 ------------->   	
+				    <!------------ 중요 공지 목록 시작 ------------->   	
+					<div class="col-lg-6">
+						<h4>공지사항</h4>
+						<table class="table">
+							<tr>
+								<th>공지</th>
+								<th>제목</th>
+								<th>작성자</th>
+								<th>등록일</th>
+							</tr>
+							<!-- 공지가 있을 경우/없을 경우를 분류 -->
+							<c:choose>
+						        <c:when test="${not empty board}">
+						            <c:forEach var="b" items="${board}">
+						                <tr>
+						                    <td>
+						                        <c:choose>
+						                            <c:when test="${b.topExposure == 'Y'}">
+						                                &#128227;
+						                            </c:when>
+						                            <c:otherwise>
+						                                -
+						                            </c:otherwise>
+						                        </c:choose>
+						                    </td>
+						                    <td><a href="/board/boardOne?boardNo=${b.boardNo}">${b.boardTitle}</a></td>
+						                    <td>${b.empName}</td>
+						                    <td>${b.createdate}</td>
+						                </tr>
+						            </c:forEach>
+						        </c:when>
+						        <c:otherwise>
+						            <tr>
+						                <td colspan="4">공지 내용이 없습니다.</td>
+						            </tr>
+						        </c:otherwise>
+					    	</c:choose>
+						</table>
+					</div>
 				<!------------ 중요 공지 목록 끝 ------------->
 			</div>
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
