@@ -416,7 +416,7 @@
 										<td>
 											<select name="productCategory">
 												<option value="스탠드">스탠드</option>
-												<option value="무드등">무드등</option>
+												<option value="무드등" selected>무드등</option>
 												<option value="실내조명">실내조명</option>
 												<option value="실외조명">실외조명</option>
 												<option value="포인트조명">포인트조명</option>
@@ -441,7 +441,7 @@
 											<select name="productCategory">
 												<option value="스탠드">스탠드</option>
 												<option value="무드등">무드등</option>
-												<option value="실내조명">실내조명</option>
+												<option value="실내조명" selected>실내조명</option>
 												<option value="실외조명">실외조명</option>
 												<option value="포인트조명">포인트조명</option>
 											</select>
@@ -466,8 +466,32 @@
 												<option value="스탠드">스탠드</option>
 												<option value="무드등">무드등</option>
 												<option value="실내조명">실내조명</option>
-												<option value="실외조명">실외조명</option>
+												<option value="실외조명" selected>실외조명</option>
 												<option value="포인트조명">포인트조명</option>
+											</select>
+										</td>
+										<td>
+											₩ <input type="number" name="targetSales" class="targetSales">
+										</td>
+										<td>
+											₩ <input type="number" name="currentSales" class="currentSales">
+										</td>
+										<td>
+											<span class="rate"></span>
+											<input type="hidden" name="targetRate" class="targetRate"> %
+										</td>
+										<td>
+											<button type="button" class="removeDetailBtn btn btn-secondary btn-sm">-</button>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<select name="productCategory">
+												<option value="스탠드">스탠드</option>
+												<option value="무드등">무드등</option>
+												<option value="실내조명">실내조명</option>
+												<option value="실외조명">실외조명</option>
+												<option value="포인트조명" selected>포인트조명</option>
 											</select>
 										</td>
 										<td>

@@ -21,6 +21,11 @@ public class SalesChartService {
 		return salesChartMapper.getSalesDraftForChart(startDate, endDate);
 	}
 	
+	// 기간별 평균 목표달성률 조회
+	public List<Map<String, Object>> getSalesDraftForMorrisChart(String startDate, String endDate) {
+		return salesChartMapper.getSalesDraftForMorrisChart(startDate, endDate);
+	}
+	
 	// 가장 최근 데이터 1건 조회
 	public List<Map<String, Object>> getRecentSalesDraftForChart() {
 		return salesChartMapper.getRecentSalesDraftForChart();

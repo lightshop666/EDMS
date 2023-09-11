@@ -45,4 +45,31 @@
 				FROM sales_draft_content
 				)
 	</select>
+	
+	<select id="getSalesDraftForMorrisChart" parameterType="map" resultType="map">
+		SELECT
+		    sd.sales_date salesDate,
+		    AVG(sdc.target_rate) targetRate
+		FROM
+		    sales_draft_content sdc
+		INNER JOIN
+		    sales_draft sd ON sdc.document_no = sd.document_no
+		INNER JOIN
+		    approval a ON sd.approval_no = a.approval_no
+		<where>
+			a.approval_state = '결재완료' <!-- 결재완료인 매출보고서만 조회 -->
+			<!-- 앞에 AND를 추가하여 여러개의 IF조건문이 참일 경우에 에러를 방지 -->
+			<if test="startDate != '' and endDate != ''">
+				AND sd.sales_date BETWEEN #{startDate} AND #{endDate}
+			</if>
+			<if test="startDate != ''">
+				AND sd.sales_date &gt;= #{startDate}
+			</if>
+			<if test="endDate != ''">
+				AND sd.sales_date &lt;= #{endDate}
+			</if>
+		</where>
+		GROUP BY
+   			 sdc.product_category;
+	</select>
 </mapper>
