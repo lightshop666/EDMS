@@ -30,6 +30,7 @@ import com.fit.vo.SalesDraft;
 import com.fit.vo.SalesDraftContent;
 import com.fit.vo.VacationDraft;
 import com.fit.websocket.AlarmService;
+import com.fit.websocket.NotificationService;
 import com.google.gson.Gson;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class DraftController {
 	private DraftService draftService;
 	
 	@Autowired
-	private AlarmService alarmService;
+	private NotificationService notificationService;
 	
 	// 결재 상태 업데이트 // 상세페이지에서 클릭한 버튼에 따라 결재상태를 업데이트
 	@PostMapping("/draft/updateApprovalState")
@@ -480,9 +481,11 @@ public class DraftController {
 		int approvalKey = draftService.addVacationDraft(paramMap);
 		
 		// 웹소켓 알림 보내기
-		// 사용자ID, 알림 내용 enum '기안알림','일정알림','공지알림', 구독 주제 (/topic/draftAlarm)
-		// sendAlarmToUser(int empNo,String alarmContent, String prefixContent)
-		alarmService.sendAlarmToUser(1000000, "기안알림", "/topic/draftAlarm");//테스트용 
+		String MiddleNoti = Integer.toString( approvalFormData.getMediateApproval() );
+		String finalNoti = Integer.toString( approvalFormData.getFinalApproval() );
+		log.debug(CC.WOO + "드래프트.휴가신청 approvalFormData.getMediateApproval() :  " + MiddleNoti + CC.RESET);
+		log.debug(CC.WOO + "드래프트.휴가신청 approvalFormData.getFinalApproval() :  " + finalNoti + CC.RESET);
+
 		/*
 		// for문으로 중간승인자,최종승인자,참조인에게 알림 보낸다. 나중에는 성공 유무에 따라 성공한 경우만 하게 if문 안으로 넣기
 		for (int recipient : recipients) {
@@ -492,6 +495,11 @@ public class DraftController {
 		
 		// 성공 유무에 따라 분기
 		if (approvalKey != 0 && !isSaveDraft) { // 성공시 상세 페이지로.. approvalKey 값 필요, result=success
+			
+			//성공시 특정 유저에게 웹소켓 알림 발송
+			notificationService.sendPrivateNotification(MiddleNoti);
+			notificationService.sendPrivateNotification(MiddleNoti);
+			
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
 			return "redirect:/draft/vacationDraftOne?result=success&approvalNo=" + approvalKey;
 		} else if (approvalKey != 0 && isSaveDraft) { // 성공시 임시저장함으로.., result=success

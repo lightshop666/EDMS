@@ -1,6 +1,5 @@
 package com.fit.websocket;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +9,6 @@ public class WSService {
 	private final SimpMessagingTemplate messagingTemplate;
 	private final NotificationService notificationService;
 	
-	@Autowired
 	public WSService(SimpMessagingTemplate messagingTemplate, NotificationService notificationService) {
 		this.messagingTemplate = messagingTemplate;
 		this.notificationService = new NotificationService();
@@ -24,11 +22,19 @@ public class WSService {
 	public void notifyFrontend(String id, String message) {
 	    // ResponseMessage 객체를 생성하고, 메시지 내용을 설정
 	    ResponseMessage response = new ResponseMessage(id,message);
-	    notificationService.sendGlobalNotification();
+	    notificationService.sendGlobalNotification(id);
 	    	
 	    // '/topic/messages' 주제로 메시지를 전송하여 모든 연결된 클라이언트에게 브로드캐스트합니다.
 	    messagingTemplate.convertAndSend("/topic/messages", response);
 	}
+	
+    public void notifyUser( String id,  String message) {
+        ResponseMessage response = new ResponseMessage(message);
+
+        notificationService.sendPrivateNotification(id);
+        messagingTemplate.convertAndSendToUser(id, "/topic/privateMessages", response);
+    }
+	
 	
 	
 	// 특정 사용자에게 알림 전송
@@ -40,6 +46,8 @@ public class WSService {
 	    messagingTemplate.convertAndSendToUser(id, "/topic/draftAlarm", response);
 	    
 	}
+	
+	
 
 
 
