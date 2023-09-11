@@ -201,7 +201,7 @@ public class UtilityService {
         return row;
     }
 	
-	// 공용품을 수정하는 메서드 -> 공용품 정보의 경우 UPDATE 하고 기존 파일이 존재할 경우 기존 파일을 삭제하고 수정폼에서 입력받은 파일을 저장한다.
+	// 공용품을 수정하는 메서드 -> 공용품 정보의 경우 UPDATE 하고 기존 파일이 있고 새롭게 업로드 된 파일이 있는 경우 기존 파일을 삭제하고 수정폼에서 입력받은 파일을 저장한다.
 	// 기존에 파일이 있는지 확인하는 객체 existingUtility를 입력받는다, 수정폼으로부터 수정된 값을 저장하는 modifiedUtility 객체를 입력받는다.
 	public int modifyUtility(UtilityDto modifiedUtility, String path, UtilityDto existingUtility) {
 		// 공용품 정보 업데이트 -> 수정된 공용품 정보를 통해 Utility table 수정
@@ -213,8 +213,9 @@ public class UtilityService {
 	    // 수정폼으로부터 입력받은 수정된 공용품 정보를 담고 있는 modifiedUtility 객체로부터 새로 업로드된 파일을 가져온다.
 	    MultipartFile newSingleFile = modifiedUtility.getSinglepartFile();
 	    
-	    // 기존 파일이 있었을 경우 삭제 -> 실제로 파일이 저장되어 있는 경로에서 파일을 삭제
-	    if (existingUtility.getUtilitySaveFilename() != null && !existingUtility.getUtilitySaveFilename().isEmpty()) {
+	    // 기존 파일이 있고 새롭게 업로드 된 파일이 있는 경우 삭제 -> 실제로 파일이 저장되어 있는 경로에서 파일을 삭제
+	    if (existingUtility.getUtilitySaveFilename() != null && !existingUtility.getUtilitySaveFilename().isEmpty()
+	    		&& newSingleFile != null && !newSingleFile.isEmpty()) {
 	        String existingFilePath = path + existingUtility.getUtilitySaveFilename();
 	        File existingFile = new File(existingFilePath);
 	        if (existingFile.exists()) {

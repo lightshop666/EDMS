@@ -71,16 +71,6 @@
 	});
 	</script>
 	
-	<script>
-	// jQuery를 사용하여 기간 초기화 버튼 클릭 시 동작 정의
-	$(document).ready(function(){
-		$('#resetDateBtn').click(function() {
-	  	$('input[name=startDate]').val('');
-	 	$('input[name=endDate]').val('');
-		});
-	});
-	</script>
-	
 	<!-- Custom CSS -->
 	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
 	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">

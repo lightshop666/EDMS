@@ -70,6 +70,6 @@
 			</if>
 		</where>
 		GROUP BY
-   			 sdc.product_category;
+   			 sd.sales_date;
 	</select>
 </mapper>
