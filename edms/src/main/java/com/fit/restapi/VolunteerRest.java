@@ -23,7 +23,7 @@ public class VolunteerRest {
 	// 1. 서울시 금천구의 봉사 정보 리스트를 조회
     @GetMapping("/getVltrAreaListApi")
     public String getVltrAreaListApi() {
-        log.debug(CC.JUNG + " 봉사정보RestController.getVltrAreaListApi :  " + volunteerService.getVltrAreaListApi().toString()  + CC.RESET);
+        //log.debug(CC.JUNG + " 봉사정보RestController.getVltrAreaListApi :  " + volunteerService.getVltrAreaListApi().toString()  + CC.RESET);
         return volunteerService.getVltrAreaListApi().toString();
     }
     
@@ -32,7 +32,7 @@ public class VolunteerRest {
 	// 상세 정보에 지도에 마커를 찍을 때 필요한 좌표값이 포함되어 있습니다.
 	@GetMapping("/getVltrPartcptnItem")
 	public String getVltrPartcptnItem(int progrmRegistNo) {
-        log.debug(CC.JUNG + " 봉사정보RestController.getVltrPartcptnItem :  " + volunteerService.getVltrPartcptnItem(progrmRegistNo).toString()  + CC.RESET);
+        //log.debug(CC.JUNG + " 봉사정보RestController.getVltrPartcptnItem :  " + volunteerService.getVltrPartcptnItem(progrmRegistNo).toString()  + CC.RESET);
         return volunteerService.getVltrPartcptnItem(progrmRegistNo).toString();
 	}
 	
@@ -40,7 +40,7 @@ public class VolunteerRest {
     @GetMapping("/vltrDetailsList")
     public ResponseEntity<List<ProgramDetailDTO>> getDetails() {
         List<ProgramDetailDTO> details = volunteerService.getAllDetailedVolunteerInfo();
-        log.debug(CC.JUNG + " 봉사정보RestController.details :  " + details  + CC.RESET);
+        //log.debug(CC.JUNG + " 봉사정보RestController.details :  " + details  + CC.RESET);
         return ResponseEntity.ok(details);
     }
 	

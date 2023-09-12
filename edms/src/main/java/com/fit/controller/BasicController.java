@@ -25,13 +25,18 @@ import com.fit.mapper.DraftMapper;
 import com.fit.service.DraftService;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraftContent;
+import com.fit.websocket.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Controller
 public class BasicController {
- @Autowired DraftService draftService;
+	@Autowired		//웹소켓 알림 서비스 주입
+	private NotificationService notificationService;
+	
+	@Autowired DraftService draftService;
+ 
     @GetMapping("/draft/basicDraft")
     public String basicDraft(HttpSession session,Model model) {
         log.debug("[DEBUG] expenseDraft() Start");
@@ -62,9 +67,18 @@ public class BasicController {
         
         int result = draftService.processBasicSubmission(isSaveDraft, submissionData, selectedRecipientsIds, empNo);
         
+        //웹소켓 알림 보내기
+        String middleNoti = (String) submissionData.get("selectedMiddleApproverId");
+        String finalNoti = (String) submissionData.get("selectedFinalApproverId");
+		log.debug(CC.WOO + "베이직드래프트.기안신청 submissionData.selectedMiddleApproverId() :  " + middleNoti + CC.RESET);
+		log.debug(CC.WOO + "베이직드래프트.기안신청 submissionData.selectedFinalApproverId() :  " + finalNoti + CC.RESET);
+		
         if (result == 1) {
-            // 서버에서 리다이렉션 수행
+			//성공시 특정 유저에게 웹소켓 알림 발송
+			notificationService.sendPrivateNotification(middleNoti);
+			notificationService.sendPrivateNotification(finalNoti);
         	
+            // 서버에서 리다이렉션 수행        	
         	log.debug("result: {}", result);
             response.sendRedirect("/draft/submitDraft");
         }

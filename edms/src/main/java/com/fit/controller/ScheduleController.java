@@ -26,6 +26,7 @@ import com.fit.service.ReservationService;
 import com.fit.service.ScheduleService;
 import com.fit.vo.ReservationDto;
 import com.fit.vo.Schedule;
+import com.fit.websocket.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,6 +42,9 @@ public class ScheduleController {
 	
 	@Autowired
 	private CommonPagingService commonPagingService;
+	
+	@Autowired		//웹소켓 알림 서비스 주입
+	private NotificationService notificationService;
 	
 	// 달력페이지를 요청받았을 때 실행된다.
 	@GetMapping("/schedule/schedule")
@@ -180,7 +184,9 @@ public class ScheduleController {
 		// 입력유무를 확인
 		int row = scheduleService.addSchedule(schedule);
 		
-		if(row == 1) {
+		if(row == 1) {			
+			//웹소켓 글로벌 알림
+			notificationService.sendGlobalNotification("");
 			// 디버깅
 			// 일정 추가시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);

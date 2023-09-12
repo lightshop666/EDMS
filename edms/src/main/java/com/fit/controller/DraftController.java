@@ -42,7 +42,7 @@ public class DraftController {
 	@Autowired
 	private DraftService draftService;
 	
-	@Autowired
+	@Autowired		//웹소켓 알림 서비스 주입
 	private NotificationService notificationService;
 	
 	// 결재 상태 업데이트 // 상세페이지에서 클릭한 버튼에 따라 결재상태를 업데이트
@@ -228,9 +228,18 @@ public class DraftController {
  		paramMap.put("path", path);
  		
  		int approvalKey = draftService.addSalesDraft(paramMap);
+
+		// 웹소켓 알림 보내기
+		String MiddleNoti = Integer.toString( approval.getMediateApproval() );
+		String finalNoti = Integer.toString( approval.getFinalApproval() );
+		log.debug(CC.WOO + "드래프트.휴가신청 approval.getMediateApproval() :  " + MiddleNoti + CC.RESET);
+		log.debug(CC.WOO + "드래프트.휴가신청 approval.getFinalApproval() :  " + finalNoti + CC.RESET);
     
  		// 성공 유무에 따라 분기
 		if (approvalKey != 0 && !isSaveDraft) { // 성공시 상세 페이지로.. approvalKey 값 필요, result=success
+			//성공시 특정 유저에게 매출보고서 웹소켓 알림 발송
+			notificationService.sendPrivateNotification(MiddleNoti);
+			notificationService.sendPrivateNotification(finalNoti);			
 			log.debug(CC.HE + "DraftController.addSalesDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
 			return "redirect:/draft/salesDraftOne?result=success&approvalNo=" + approvalKey;
 		} else if (approvalKey != 0 && isSaveDraft) { // 성공시 임시저장함으로.., result=success
@@ -498,7 +507,7 @@ public class DraftController {
 			
 			//성공시 특정 유저에게 웹소켓 알림 발송
 			notificationService.sendPrivateNotification(MiddleNoti);
-			notificationService.sendPrivateNotification(MiddleNoti);
+			notificationService.sendPrivateNotification(finalNoti);
 			
 			log.debug(CC.HE + "DraftController.addVacationDraft() 기안 성공 approvalKey : " + approvalKey + CC.RESET);
 			return "redirect:/draft/vacationDraftOne?result=success&approvalNo=" + approvalKey;

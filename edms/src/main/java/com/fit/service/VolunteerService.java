@@ -70,7 +70,7 @@ public class VolunteerService {
             JSONObject jsonObject = XML.toJSONObject(result.toString());
 
             // 디버깅
-            log.debug(CC.HE + "봉사서비스.getVltrAreaListApi() result : " + jsonObject + CC.RESET);
+            //log.debug(CC.HE + "봉사서비스.getVltrAreaListApi() result : " + jsonObject + CC.RESET);
             // API 응답 데이터를 XML에서 JSONObject으로 변환
             return jsonObject;
             
@@ -112,7 +112,7 @@ public class VolunteerService {
 		    // 응답 데이터(XML 형식)를 JSON 형식으로 변환합니다.
 		    JSONObject jsonObject = XML.toJSONObject(result.toString());
             // 디버깅
-            log.debug(CC.HE + "봉사서비스.getVltrAreaListApi() result : " + jsonObject + CC.RESET);
+            //log.debug(CC.HE + "봉사서비스.getVltrAreaListApi() result : " + jsonObject + CC.RESET);
             return jsonObject;
 		    
 		} catch (Exception e) {
@@ -130,7 +130,7 @@ public class VolunteerService {
 	    try {
 	        // 1. 금천구의 봉사 정보 목록 가져오기
 	        JSONObject areaList = getVltrAreaListApi();
-	        log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO getVltrAreaListApi() : "  + areaList + CC.RESET);
+	        //log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO getVltrAreaListApi() : "  + areaList + CC.RESET);
 
 	        /*
 	        봉사정보 API JSON 값 구조
@@ -140,7 +140,7 @@ public class VolunteerService {
 			        |- item (배열)
 	         */
 	        JSONArray items = areaList.getJSONObject("response").getJSONObject("body").getJSONObject("items").optJSONArray("item");
-	        log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO items : "  + items + CC.RESET);
+	        //log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO items : "  + items + CC.RESET);
 	        if (items == null) {
 	            items = new JSONArray();
 	            items.put(areaList.getJSONObject("response").getJSONObject("body").getJSONObject("items").getJSONObject("item"));
@@ -162,7 +162,7 @@ public class VolunteerService {
 	        log.debug(CC.WOO + " 지역정보 API + 상세 정보 API 매핑 중 에러로 catch문 안에 들어왔습니다 " + CC.RESET, e);
 	    }
 
-        log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO detailedInfoList : "  + detailedInfoList + CC.RESET);
+       //log.debug(CC.WOO + " 봉사서비스.ProgramDetailDTO detailedInfoList : "  + detailedInfoList + CC.RESET);
 	    return detailedInfoList;
 	}
 

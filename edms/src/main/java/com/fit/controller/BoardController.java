@@ -20,6 +20,7 @@ import com.fit.CC;
 import com.fit.service.BoardService;
 import com.fit.service.CommonPagingService;
 import com.fit.vo.Board;
+import com.fit.websocket.NotificationService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,7 +32,9 @@ public class BoardController {
 	
 	@Autowired
 	private CommonPagingService commonPagingService;
-	
+
+	@Autowired	//알림을 위한 서비스 주입
+	private NotificationService notificationService;
 /* 추가 */	
 	// 게시글 추가 폼
 	@GetMapping("/board/addBoard")
@@ -68,6 +71,9 @@ public class BoardController {
 		
 		// 추가 성공 여부에 따라 redirect 설정
 		if(addRow == 1) { // 성공
+			//글로벌알림발송. 나를 제외시키기 위해 소켓ID를 받고 있으나 알림은 모두에게 간다.
+			notificationService.sendGlobalNotification(result);			
+			
 			result = "redirect:/board/boardList?result=success";
 		} else if(addRow == -1) { // 중요공지 설정 실패
 			result = "redirect:/board/addBoard?result=fail";
