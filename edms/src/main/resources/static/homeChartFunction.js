@@ -39,7 +39,7 @@ $(function() {
 				data: formatted_data,
 				xkey: 'period',
 				ykeys:['averageTargetRate'],
-				labels:['Average Target Rate'],
+				labels:['평균 목표달성률'],
 		        pointSize : 3,
 		        fillOpacity : 0,
 		        pointStrokeColors : ['#5f76e8'],
@@ -49,7 +49,7 @@ $(function() {
 		        hideHover :'auto',
 		      	lineColors:['#5f76e8'], 
 			  	resize:true,
-			  	yLabelFormat:function(y){return(y*100).toFixed(2)+'%';}
+			  	yLabelFormat:function(y){return(y*100).toFixed(0)+'%';}
 			});
 	    },
 	    error:function(textStatus,errorThrown){  

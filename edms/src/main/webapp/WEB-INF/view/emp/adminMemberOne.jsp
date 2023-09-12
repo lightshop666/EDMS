@@ -45,7 +45,15 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
-	
+	<!-- emailjs 라이브러리 로드 -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            // https://dashboard.emailjs.com/admin/account
+            // emailjs 초기화. 서버에서 전달받은 publicKey 사용
+            emailjs.init('${publicKey}'); 
+        })();
+    </script>
 	<script>
 		// 랜덤 비밀번호 생성 규칙을 정할 상수 선언
 		const UPPERCASE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 영대문자
@@ -112,6 +120,34 @@
 								$('#updateResult').text('비밀번호 초기화 실패').css('color', 'red');
 							}
 						});
+					}
+				}
+			});
+			
+			// 임시 비밀번호 이메일 발송
+			$('#emailPwBtn').click(function() {
+				if (tempPw == '') { // 비밀번호를 생성하지 않았을시
+					alert('비밀번호를 생성해주세요.');
+				} else { // 비밀번호를 생성했다면
+					let result = confirm('생성한 임시 비밀번호를 이메일로 발송할까요?');
+					// 사용자 선택 값에 따라 true or false 반환
+					
+					if (result) { // 확인 선택 시 true 반환
+						// 템플릿으로 보낼 param 배열 생성
+						let templateParams = {
+							temp_pw : tempPw,
+							to_email : '${member.email}',
+							to_name : '${member.empName}'	
+						};
+						
+						emailjs.send('${serviceId}', '${emailTemplateId2}', templateParams)
+							.then(function() {
+		                        console.log('SUCCESS!');
+		                        $('#emailResult').text('이메일 전송 완료').css('color', 'green');
+		                    }, function(error) {
+		                        console.log('FAILED...', error);
+		                        $('#emailResult').text('이메일 전송 실패').css('color', 'red');
+		                    });
 					}
 				}
 			});
@@ -273,9 +309,9 @@
 						</td>
 					</tr>
 				</table>
-				<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+				<button type="button" id="cancelBtn" class="btn btn-secondary">취소</button> <!-- 왼쪽 정렬 -->
 				<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
-				<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal">비밀번호 초기화</button> <!-- 오른쪽 정렬 -->
+				<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal" class="btn btn-secondary">임시 비밀번호 발급</button> <!-- 오른쪽 정렬 -->
 				
 				<!-- 모달창 시작 -->
 				
@@ -329,7 +365,7 @@
 						<div class="modal-content">
 							<!-- 모달 헤더 -->
 							<div class="modal-header">
-								<h4 class="modal-title">비밀번호 초기화</h4>
+								<h4 class="modal-title">임시 비밀번호 발급</h4>
 								<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
 							</div>
 							<!-- 모달 본문 -->
@@ -338,7 +374,7 @@
 									랜덤한 임시 비밀번호를 생성하여 초기화합니다.
 								</div>
 								<div>
-									<button type="button" id="getPwBtn">비밀번호 생성</button>
+									<button type="button" id="getPwBtn" class="btn btn-secondary">비밀번호 생성</button>
 									임시 비밀번호 : <span id="tempPw"></span> <!-- 비밀번호 생성시 출력 -->
 								</div> <br>
 								<div>
@@ -346,8 +382,13 @@
 										비밀번호 초기화 후 다시 되돌릴 수 없습니다. <br>
 										생성한 임시 비밀번호를 사용자에게 반드시 전달하세요.
 									</p>
-									<button type="button" id="updatePwBtn">비밀번호 초기화</button>
+									<button type="button" id="updatePwBtn" class="btn btn-secondary">비밀번호 초기화</button>
 									<span id="updateResult"></span> <!-- 비밀번호 초기화 결과 출력 -->
+								</div> <br>
+								<div>
+									<p>개인정보에 저장된 이메일로 임시 비밀번호를 발송 할까요?</p>
+									<button type="button" id="emailPwBtn" class="btn btn-secondary">이메일 발송</button>
+									<span id="emailResult"></span> <!-- 비밀번호 전송 결과 출력 -->
 								</div>
 							</div>
 							<!-- 모달 푸터 -->

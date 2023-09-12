@@ -1,6 +1,7 @@
 package com.fit.restapi;
 
 import java.util.HashMap;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class EmpRest {
 	@Autowired
 	private EmpService empService;
-	
+	    
 	// 비밀번호 초기화
 	@PostMapping("/adminUpdatePw")
 	public int adminUpdatePw(int empNo, String tempPw) {
@@ -40,5 +41,4 @@ public class EmpRest {
 		
 		return result;
 	}
-
 }

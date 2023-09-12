@@ -129,10 +129,15 @@
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 			<div class="row">
 				<!-- 꺾은선 그래프 -->
-		       	<div class="col-lg-6">
+		       	<div class="col-lg-12">
 		           	<div class="card">
 		               	<div class="card-body" style="text-align: center;">
-		                   	<h4 id="card-title" class="card-title">최근 1년 품목별 매출현황</h4>
+		                   	<h4 id="card-title" class="card-title">전체 품목 목표달성률 - 최근 1년</h4>
+		                   		<ul class="list-inline text-end">
+                                    <li class="list-inline-item">
+                                        <h5><i class="fa fa-circle me-1 text-info"></i>평균 목표달성률</h5>
+                                    </li>
+                                </ul>
 		                       <ul id="chart-legend" class="list-inline text-end"></ul>
 		                   	<div id="morris-area-chart"></div>
 		               	</div>
@@ -140,7 +145,7 @@
 		       	</div>
 		       	<!-- 꺾은선 그래프 끝 -->
 		       	<!-- 도넛 차트 -->
-		       	<div class="col-lg-6">
+		       	<div class="col-lg-4">
 		           	<div class="card">
 		               	<div class="card-body" style="text-align: center;">
 		                   	<h4 id="card-title" class="card-title">
@@ -152,10 +157,10 @@
 		       	</div>
 		       	<!-- 도넛 차트 끝 -->
 		       	<!-- 바 차트 -->
-		       	<div class="col-lg-12">
+		       	<div class="col-lg-8">
 		       		<div class="card">
 		               	<div class="card-body" style="text-align: center;">
-		                   	<h4 id="card-title" class="card-title">최근 3개월 목표달성률</h4>
+		                   	<h4 id="card-title" class="card-title">품목별 목표달성률 - 최근 3개월</h4>
 		                       <ul id="chart-legend" class="list-inline text-end"></ul>
 		                   	<div id="morris-bar-chart"></div>
 		               	</div>
@@ -169,83 +174,86 @@
 				       	<div id="map" style="width:500px; height:400px; !important"></div>
 		
 						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9740ccac570045a96ce1f6a1973ef1c7"></script>
-				       	<script>
-					       	$(document).ready(function () {
-								var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
-								    mapOption = { 
-								        center: new kakao.maps.LatLng(37.4765002,126.8799586), // 지도의 중심좌표
-								        level: 6 // 지도의 확대 레벨
-								    };
-					       		
-								var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
-								 
-								$.ajax({
-							        url: '/vltrDetailsList',
-							        type: 'GET',
-							        dataType: 'json',
-							        success: function (data) {
-							            var markers = []; // 마커 배열
-							            var overlays = []; // 오버레이 배열
-			
-							            $.each(data, function (index, item) {
-							                var title = item.progrmSj;
-							                var area = item.areaLalo1;
-							                var latlng = area.split(',');
-							                var latitude = parseFloat(latlng[0]);
-							                var longitude = parseFloat(latlng[1]);
-							                var nanmmbyNm = item.nanmmbyNm;
-							                var rcritNmpr = item.rcritNmpr;
-							                var email = item.email;
-			
-							                var marker = new kakao.maps.Marker({
-							                    map: map,
-							                    position: new kakao.maps.LatLng(latitude, longitude),
-							                    title: title,
-							                });
-			
-							                markers.push(marker);
-			
-							                var content = '<div class="wrap">' +
-							                    '<div class="info">' +
-							                    '<div class="title">' +
-							                    title +
-							                    '<div class="close" onclick="closeOverlay(' + index + ')" title="닫기"></div>' +
-							                    '</div>' +
-							                    '<div class="body">' +
-							                    '<div class="img">' +
-							                    '<img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png" width="73" height="70">' +
-							                    '</div>' +
-							                    '<div class="desc">' +
-							                    '<div class="ellipsis">주소: ' + nanmmbyNm + '</div>' +
-							                    '<div class="ellipsis">모집인원: ' + rcritNmpr + '</div>' +
-							                    '<div class="ellipsis">이메일: ' + email + '</div>' +
-							                    '</div>' +
-							                    '</div>' +
-							                    '</div>' +
-							                    '</div>';
-			
-							                var overlay = new kakao.maps.CustomOverlay({
-							                    content: content,
-							                    map: map,
-							                    position: marker.getPosition()
-							                });
-			
-							                overlays.push(overlay);
-			
-							                kakao.maps.event.addListener(marker, 'click', function () {
-							                    overlays[index].setMap(map); // 해당 마커의 오버레이를 표시
-							                });
-							            
-								            function closeOverlay(index) {
-								                overlays[index].setMap(null); // 해당 인덱스의 오버레이를 숨김
-								            }
-							            });
-							        },
-							        error: function (error) {
-							            console.error('데이터 요청 실패: ' + error.statusText);
-							        }
-							    });
-							});
+						<script>
+						    $(document).ready(function () {
+						        var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
+						            mapOption = { 
+						                center: new kakao.maps.LatLng(37.4765002,126.8799586), // 지도의 중심좌표
+						                level: 6 // 지도의 확대 레벨
+						            };
+						
+						        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+						         
+						        $.ajax({
+						            url: '/vltrDetailsList',
+						            type: 'GET',
+						            dataType: 'json',
+						            success: function (data) {
+						                var markers = []; // 마커 배열
+						                var overlays = []; // 오버레이 배열
+						
+						                $.each(data, function (index, item) {
+						                    var title = item.progrmSj;
+						                    var area = item.areaLalo1;
+						                    var latlng = area.split(',');
+						                    var latitude = parseFloat(latlng[0]);
+						                    var longitude = parseFloat(latlng[1]);
+						                    var nanmmbyNm = item.nanmmbyNm;
+						                    var rcritNmpr = item.rcritNmpr;
+						                    var email = item.email;
+						
+						                    var marker = new kakao.maps.Marker({
+						                        map: map,
+						                        position: new kakao.maps.LatLng(latitude, longitude),
+						                        title: title,
+						                    });
+						
+						                    markers.push(marker);
+						
+						                    var content = '<div class="wrap">' +
+						                        '<div class="info">' +
+						                        '<div class="title">' +
+						                        title +
+						                        '</div>' +
+						                        '<div class="body">' +
+						                        '<div class="img">' +
+						                        '<img src="https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/thumnail.png" width="73" height="70">' +
+						                        '</div>' +
+						                        '<div class="desc">' +
+						                        '<div class="ellipsis">주소: ' + nanmmbyNm + '</div>' +
+						                        '<div class="ellipsis">모집인원: ' + rcritNmpr + '</div>' +
+						                        '<div class="ellipsis">이메일: ' + email + '</div>' +
+						                        '</div>' +
+						                        '</div>' +
+						                        '</div>' +
+						                        '</div>';
+						
+						                    var overlay = new kakao.maps.CustomOverlay({
+						                        content: content,
+						                        map: map,
+						                        position: marker.getPosition(),
+						                        yAnchor: 1.5, // 오버레이가 마커 아래에 표시되도록 조정
+						                    });
+						
+						                    overlays.push(overlay);
+						
+						                    // 오버레이를 닫은 상태로 시작
+						                    overlay.setMap(null);
+						
+						                    kakao.maps.event.addListener(marker, 'click', function () {
+						                        // 모든 오버레이를 닫은 후 클릭한 마커에 대한 오버레이만 열도록 처리
+						                        $.each(overlays, function (i, overlay) {
+						                            overlay.setMap(null);
+						                        });
+						                        overlay.setMap(map); // 클릭한 마커의 오버레이를 표시
+						                    });
+						                });
+						            },
+						            error: function (error) {
+						                console.error('데이터 요청 실패: ' + error.statusText);
+						            }
+						        });
+						    });
 						</script>
 			    	</div>
 				    <!------------ 봉사 정보 지도 끝 ------------->   	

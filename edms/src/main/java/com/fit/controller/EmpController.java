@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,16 @@ public class EmpController {
 
 	@Autowired
 	private CommonPagingService commonPagingService;
+	
+	// application.properties에서 myapi.publickey 값을 가져오는 어노테이션
+	@Value("${myapi.publickey}")
+    private String publicKey;
+
+    @Value("${myapi.serviceid}")
+    private String serviceId;
+
+    @Value("${myapi.emailtemplatesid2}") // 임시 비밀번호 발급용 템플릿 id
+    private String emailTemplateId2;
 	
 	// 인사정보 수정 폼
 	@GetMapping("/emp/modifyEmp")
@@ -103,6 +114,9 @@ public class EmpController {
 		model.addAttribute("image", result.get("memberImage"));
 		model.addAttribute("sign", result.get("memberSign"));
 		model.addAttribute("empNo", empNo);
+		model.addAttribute("publicKey", publicKey);
+        model.addAttribute("serviceId", serviceId);
+        model.addAttribute("emailTemplateId2", emailTemplateId2);
 		
 		return "/emp/adminMemberOne";
 	}
