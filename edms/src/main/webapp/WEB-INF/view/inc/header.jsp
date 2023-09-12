@@ -91,7 +91,7 @@ $(document).ready(function() {
 		<div class="navbar-brand">
 		    <!-- Logo icon -->
 			<a href="../home">
-				<img src="../assets/images/freedashDark.svg" alt="" class="img-fluid">
+				<img src="../assets/images/logo.png" alt="" class="img-fluid">
 			</a>
 		</div>
 		<!-- ============================================================== -->
