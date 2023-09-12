@@ -385,7 +385,7 @@
          product_category productCategory,
          target_sales targetSales,
          current_sales currentSales,
-         target_rate targetRate,updateSalesDraft
+         target_rate targetRate,
          updatedate,
          createdate
       FROM sales_draft_content
