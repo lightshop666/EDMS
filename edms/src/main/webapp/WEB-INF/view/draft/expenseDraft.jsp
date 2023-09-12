@@ -345,10 +345,10 @@
                       <a class="nav-link active" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">매출보고서</a>
+                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
                   </li>
                   <li class="nav-item">
-                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">휴가신청서</a>
+                      <a class="nav-link" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
                   </li>
               </ul>
           </div>

@@ -10,6 +10,7 @@ import java.util.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,6 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class VolunteerService {
+	
+	@Value("${myapi.volunteerKey}")
+    private String serviceKey;
     
     public JSONObject getVltrAreaListApi() {
         // 결과를 저장할 StringBuffer 초기화
@@ -29,7 +33,7 @@ public class VolunteerService {
         try {
             // 봉사 정보를 조회하기 위한 API URL 생성
             String apiUrl = "http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrAreaList?" +
-                    "serviceKey=gzU9qt1pdkaXEb9VxBkvtxd%2FviKV%2B03tEfE3s%2Bd2jamCgZ6leBJ7f1DT1Xd99A8oAGZNYOb4HYSeyguI3rQ4LQ%3D%3D" +
+                    "serviceKey=" + serviceKey +
                     "&schSido=6110000" + // 서울시 지역코드
                     "&schSign1=3170000" + // 금천구 지역코드
                     "&numOfRows=50" ; // 최대 50개의 정보를 조회합니다.
@@ -87,7 +91,7 @@ public class VolunteerService {
 		try {
 		    // API 호출 URL 생성. 이 URL에는 프로그램 등록 번호를 포함하여 봉사 정보의 상세 데이터를 가져옵니다.
 		    String apiUrl = "http://openapi.1365.go.kr/openapi/service/rest/VolunteerPartcptnService/getVltrPartcptnItem?" +
-		                   "serviceKey=gzU9qt1pdkaXEb9VxBkvtxd%2FviKV%2B03tEfE3s%2Bd2jamCgZ6leBJ7f1DT1Xd99A8oAGZNYOb4HYSeyguI3rQ4LQ%3D%3D" +
+		    				"serviceKey=" + serviceKey +
 		                   "&progrmRegistNo=" + progrmRegistNo;
 		    
 		    // API에 연결하기 위한 URL 객체 생성

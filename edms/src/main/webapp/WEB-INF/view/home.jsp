@@ -173,7 +173,7 @@
 			       	<div class="col-lg-6">
 				       	<div id="map" style="width:500px; height:400px; !important"></div>
 		
-						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=9740ccac570045a96ce1f6a1973ef1c7"></script>
+						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${appkey}"></script>
 						<script>
 						    $(document).ready(function () {
 						        var mapContainer = document.getElementById('map'), // 지도를 표시할 div  

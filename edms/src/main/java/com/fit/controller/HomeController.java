@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 public class HomeController {
 	@Autowired
 	private BoardService boardService;
+	
+	@Value("${myapi.kakaoKey}")
+    private String appkey;
 	
 	@GetMapping("/home")
 	public String home(HttpSession session, Model model) {
@@ -42,6 +46,7 @@ log.debug(CC.WOO + "home컨트롤러.세션계층 empName :  " + empName + CC.RE
 		model.addAttribute("accessLevel", accessLevel);		
 		model.addAttribute("empName", empName);		
 		model.addAttribute("board", selectBoardHome);
+		model.addAttribute("appkey", appkey);
 		
 		return "/home";
 	}
