@@ -50,13 +50,13 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 추가시 리스트로
 			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
-			session.setAttribute("result", "insert");
+			session.setAttribute("utilityResult", "insert");
 			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.addUtility() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("utilityResult", "fail");
 			return "redirect:/utility/utilityList";
 		}
 	}
@@ -128,13 +128,13 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			session.setAttribute("result", "delete");
+			session.setAttribute("utilityResult", "delete");
 			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("utilityResult", "fail");
 			return "redirect:/utility/utilityList";
 		}
     }
@@ -175,13 +175,13 @@ public class UtilityController {
 			// 디버깅
 			// 공용품 수정 성공시 리스트로
 			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
-			session.setAttribute("result", "update");
+			session.setAttribute("utilityResult", "update");
 			return "redirect:/utility/utilityList";
 		} else {
 			// 디버깅
 			// 공용품 수정 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.modifyUtility() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("utilityResult", "fail");
 			return "redirect:/utility/utilityList";
 		}
 	}

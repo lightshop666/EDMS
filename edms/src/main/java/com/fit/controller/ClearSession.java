@@ -12,5 +12,8 @@ public class ClearSession {
 	@GetMapping("/clear-session")
 	public void clearSession(HttpSession session) {
 		session.removeAttribute("result");
+		session.removeAttribute("scheduleResult");
+		session.removeAttribute("reservationResult");
+		session.removeAttribute("utilityResult");
 	}
 }

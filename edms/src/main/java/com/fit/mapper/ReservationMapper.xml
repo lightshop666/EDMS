@@ -30,7 +30,6 @@
 		FROM reservation
 		WHERE reservation_date = #{reservationDate} 
 			AND utility_no = #{utilityNo} 
-			AND emp_no = #{empNo}
 	</select>
 	
 	<!-- 예약 테이블 추가시 회의실 중복검사 쿼리 -->
@@ -40,7 +39,6 @@
 		WHERE reservation_date = #{reservationDate} 
 			AND reservation_time = #{reservationTime}
 			AND utility_no = #{utilityNo} 
-			AND emp_no = #{empNo}
 	</select>
 	
 	<!-- 예약 테이블 삭제하는 쿼리 -->
@@ -59,7 +57,8 @@
 	        r.reservation_time reservationTime,
 	        r.createdate createdate,
 	        e.emp_name empName,
-	        u.utility_category utilityCategory
+	        u.utility_category utilityCategory,
+	        u.utility_name utilityName
 	    FROM reservation r
 	    	JOIN emp_info e ON r.emp_no = e.emp_no
 	    	JOIN utility u ON r.utility_no = u.utility_no

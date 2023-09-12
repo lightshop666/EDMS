@@ -44,7 +44,7 @@
 	  });
 	  
 		// 변경 성공 or 실패 결과에 따른 alert
-		let result = '${sessionScope.result}'; // 세션의 값 가져오기
+		let result = '${sessionScope.reservationResult}'; // 세션의 값 가져오기
 		
 		if (result == 'fail') { // result의 값이 fail이면
 		    console.log('예약 변경사항 적용 실패');

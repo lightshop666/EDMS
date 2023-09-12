@@ -16,6 +16,7 @@ public class ReservationDto {
 	
 	// DB 테이블과는 일치하지 않는 확장컬럼
 	private String utilityCategory;
+	private String utilityName;
 	private String empName;
 	
 	// DB에 저장된 형식을 view 페이지 달력에서 fullcalendar에 사용할 형식으로 변환하는 메서드

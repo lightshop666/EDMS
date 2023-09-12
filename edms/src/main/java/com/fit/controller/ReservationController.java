@@ -1,7 +1,5 @@
 package com.fit.controller;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +84,9 @@ public class ReservationController {
 			log.debug(CC.YOUN+"reservationController.addReservation() carRow: "+carRow+CC.RESET);
 			
 			if(carRow != 0) {
-				// 예약 신청 실패시 fail을 매개변수로 view에 전달
-				return "redirect:/reservation/reservationList?result=fail";
+				// 세션값 전달
+				session.setAttribute("reservationResult", "fail");
+				return "redirect:/reservation/reservationList?result";
 			}
 		// 예약시간이 기본값이 아닌 다른 값일경우 회의실 중복체크를 수행 -> 한 ID로 여러번 예약해서 하루종일 예약이 가능
 		} else { 
@@ -99,8 +98,9 @@ public class ReservationController {
 			
 			// 중복등록된 값이 있으면 리다이렉션
 			if(meetingRow != 0) {
-				// 예약 신청 실패시 fail을 매개변수로 view에 전달
-				return "redirect:/reservation/reservationList?result=fail";
+				// 세션값 전달
+				session.setAttribute("reservationResult", "fail");
+				return "redirect:/reservation/reservationList?result";
 			}
 		}
 		
@@ -111,13 +111,13 @@ public class ReservationController {
 			// 디버깅
 			// 예약 신청 성공시 리스트로
 			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
-			session.setAttribute("result", "insert");
+			session.setAttribute("reservationResult", "insert");
 			return "redirect:/reservation/reservationList";
 		} else {
 			// 디버깅
 			// 예약 신청 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"reservationController.addReservation() insertRow: "+insertRow+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("reservationResult", "fail");
 			return "redirect:/reservation/reservationList";
 		}
 	}
@@ -137,13 +137,13 @@ public class ReservationController {
 			// 디버깅
 			// 공용품 삭제시 데이터를 보낸다
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			session.setAttribute("result", "delete");
+			session.setAttribute("reservationResult", "delete");
 			return "redirect:/reservation/reservationList";
 		} else {
 			// 디버깅
 			// 공용품 추가 실패시 fail을 매개변수로 view에 전달
 			log.debug(CC.YOUN+"utilityController.deleteSelectedUtilities() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("reservationResult", "fail");
 			return "redirect:/reservation/reservationList";
 		}
 	}

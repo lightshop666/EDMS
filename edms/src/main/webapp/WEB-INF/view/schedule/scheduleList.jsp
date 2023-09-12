@@ -51,7 +51,7 @@
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
 			// 변경 성공 or 실패 결과에 따른 alert
-			let result = '${sessionScope.result}'; // 세션의 값 가져오기
+			let result = '${sessionScope.scheduleResult}'; // 세션의 값 가져오기
 			
 			if (result == 'fail') { // result의 값이 fail이면
 			    console.log('일정 변경사항 적용 실패');

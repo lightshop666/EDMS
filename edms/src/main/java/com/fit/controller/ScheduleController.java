@@ -117,10 +117,10 @@ public class ScheduleController {
 	    	        String title;
 	    	        String clazz;
 	    	        if ("차량".equals(reservationDto.getUtilityCategory())) {
-	    	            title = "차량 예약";
+	    	            title = reservationDto.getUtilityName()+ "(차량) 예약";
 	    	            clazz = "bg-warning";
 	    	        } else if ("회의실".equals(reservationDto.getUtilityCategory())) {
-	    	            title = "회의실 예약";
+	    	            title = reservationDto.getUtilityName()+ " 예약";
 	    	            clazz = "bg-success";
 	    	        } else {
 	    	            title = "예약";  // 기본값
@@ -190,13 +190,13 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 추가시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
-			session.setAttribute("result", "insert");
+			session.setAttribute("scheduleResult", "insert");
 			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
 			// 일정 추가 실패시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.addSchedule() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("scheduleResult", "fail");
 			return "redirect:/schedule/scheduleList";
 		}
 	}
@@ -309,13 +309,13 @@ public class ScheduleController {
 			// 디버깅
 			// 일정 삭제시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
-			session.setAttribute("result", "delete");
+			session.setAttribute("scheduleResult", "delete");
 			return "redirect:/schedule/scheduleList";
 		} else {
 			// 디버깅
 			// 일정 삭제 실패시 세션에 값을 저장 후 view 페이지에서 조건 분기로 처리 후 세션값을 삭제한다.
 			log.debug(CC.YOUN+"scheduleController.deleteSelectedSchedules() row: "+row+CC.RESET);
-			session.setAttribute("result", "fail");
+			session.setAttribute("scheduleResult", "fail");
 			return "redirect:/schedule/scheduleList";
 		}
     }
