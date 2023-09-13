@@ -223,7 +223,10 @@
 											<c:if test="${empNo != 0}">	
 												<tr>
 													<td>사원번호</td>
-													<td>${empNo}</td>
+													<td>
+														${empNo}
+														<input type="hidden" name="empNo" value="${empNo}" id="sendMessage">	
+													</td>
 												</tr>								
 											</c:if>
 											<c:if test="${empNo == 0}">
