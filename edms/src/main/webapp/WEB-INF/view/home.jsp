@@ -167,12 +167,14 @@
 		           	</div>
 		       	</div>
 		       	<!-- 바 차트 끝 -->
-		       	</div>
+			</div>
+			
+			<div><br></div>
 		       	<!------------ 봉사 정보 지도 시작 ------------->
 		       	<div class="row">
-			       	<div class="col-lg-6">
-			       		<h3 class="center" style="color:black;">봉사 정보 지도</h3>
-				       	<div id="map" style="width:500px; height:400px; !important"></div>
+				<div class="col-lg-6">
+					<h3 class="center" style="color:black; text-align:center;">봉사 정보 지도</h3>
+					<div id="map" style="width:100%; height:400px;"></div>
 		
 						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${appkey}"></script>
 						<script>
@@ -260,9 +262,7 @@
 				    <!------------ 봉사 정보 지도 끝 ------------->   	
 				    <!------------ 중요 공지 목록 시작 ------------->   	
 					<div class="col-lg-6">
-						<br>
-						<h3 class="center" style="color:black;">공지사항</h3>
-						<br>
+						<h3 class="center" style="color:black; text-align:center;">공지사항</h3>
 						<table class="table">
 							<tr>
 								<th>공지</th>
