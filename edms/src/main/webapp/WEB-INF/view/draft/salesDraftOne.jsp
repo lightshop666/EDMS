@@ -179,7 +179,7 @@
 			<c:set var="m" value="${memberSignMap}"></c:set>
 			<!--------------------->
 			<div class="container pt-5">
-				<h1 style="text-align: center;">휴가신청서</h1>
+				<h1 style="text-align: center;">매출보고서</h1>
 				<!-- 결재상태 출력 -->
 				<c:if test="${a.approvalState == '결재대기'}"> 
 					<div class="alert alert-light">결재 대기중인 문서입니다.</div>

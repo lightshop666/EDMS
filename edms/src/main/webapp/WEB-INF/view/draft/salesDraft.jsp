@@ -614,7 +614,7 @@
 						    </div> <br>
 						    <div class="sort-area" style="display: flex; align-items: center;">		    
 							    <div class="form-group" style="width: 90px;">
-						        	<label class="sort-label"></label>
+						        	<label class="sort-label">부서</label>
 						        </div>
 						        <div class="form-group" style="width: 150px; margin-left: 30px; margin-right: 20px;">
 								    <select name="deptName" class="form-control">

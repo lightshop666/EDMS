@@ -233,6 +233,7 @@ public class EmpController {
 	    model.addAttribute("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
 	    model.addAttribute("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
 	    model.addAttribute("param", param); // 파라미터 값
+	    model.addAttribute("currentPage", currentPage);
 	    model.addAttribute("publicKey", publicKey);
         model.addAttribute("serviceId", serviceId);
         model.addAttribute("emailTemplateId2", emailTemplateId2);

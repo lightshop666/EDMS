@@ -291,7 +291,7 @@
 						<th colspan="6">
 							위와 같이 휴가를 신청하오니, 결재 바랍니다. <br>
 							<!-- 기안일자에서 년,월,일을 추출하기 위해 substring 사용 -->
-							${fn:substring(s.updatedate, 0, 4)}년 ${fn:substring(s.updatedate, 5, 7)}월 ${fn:substring(s.updatedate, 8, 10)}일
+							${fn:substring(v.updatedate, 0, 4)}년 ${fn:substring(v.updatedate, 5, 7)}월 ${fn:substring(v.updatedate, 8, 10)}일
 						</th>
 					</tr>
 				</table>

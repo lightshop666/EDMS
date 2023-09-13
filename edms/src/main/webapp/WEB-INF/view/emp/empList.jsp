@@ -502,9 +502,13 @@
 	        <tr>
 				<c:if test="${accessLevel >= 3}">
                     <td>
-                        <button type="button" class="getEmpNo btn btn-primary" data-empno="${e.empNo}" data-name="${e.empName}" data-email="${e.email}" data-bs-toggle="modal" data-bs-target="#pwModal">
-                            초기화
-                        </button>
+                    	<c:choose>
+			                <c:when test="${e.isMember eq 'O'}">
+		                        <button type="button" class="getEmpNo btn btn-primary" data-empno="${e.empNo}" data-name="${e.empName}" data-email="${e.email}" data-bs-toggle="modal" data-bs-target="#pwModal">
+		                            초기화
+		                        </button>
+		                    </c:when>
+		                </c:choose>        
                     </td>
                 </c:if>
 				<td data-empno="${e.empNo}" data-name="${e.empName}" class="enterOne">${e.empNo}</td>
@@ -573,6 +577,7 @@
 	<br>
 	
 <!-- [시작] 페이징 ------->
+	<!-- 페이징 영역 -->
 	<nav aria-label="Page navigation example" style="text-align: center;">
 		<ul class="pagination justify-content-center">
 	        <c:if test="${minPage > 1}">
