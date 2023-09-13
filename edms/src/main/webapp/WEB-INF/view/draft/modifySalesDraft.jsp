@@ -429,8 +429,7 @@
 						<tr>
 							<th colspan="6">
 								위와 같이 결재바랍니다. <br>
-								<!-- 기안일자에서 년,월,일을 추출하기 위해 substring 사용 -->
-								${fn:substring(s.createdate, 0, 4)}년 ${fn:substring(s.createdate, 5, 7)}월 ${fn:substring(s.createdate, 8, 10)}일
+								${year}년 ${month}월 ${day}일
 							</th>
 						</tr>
 					</table>

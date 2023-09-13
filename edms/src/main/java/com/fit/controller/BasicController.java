@@ -1,6 +1,7 @@
 package com.fit.controller;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,13 +56,22 @@ public class BasicController {
         
         // 기안자의 서명 이미지
         MemberFile memberSign = draftService.selectMemberSign(empNo);
+        
+        // 오늘 날짜 - year, month, day
+ 		LocalDate today = LocalDate.now();
+ 		int year = today.getYear();
+ 		int month = today.getMonthValue();
+ 		int day = today.getDayOfMonth();
 
         model.addAttribute("employeeList", employeeList);
         model.addAttribute("empName", empName);
         model.addAttribute("sign", memberSign);
 		model.addAttribute("deptName", deptName);
 		model.addAttribute("empPosition", empPosition);
-        
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
+		
         return "draft/basicDraft";
     }
     

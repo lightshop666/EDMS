@@ -113,6 +113,27 @@
 			
 			return isValid;
 		}
+		function getSearchParam() {
+			// 사용자가 모달 창 내에서 선택한 검색 조건을 가져옵니다.
+			  let ascDesc = $('select[name="ascDesc"]').val();
+			  let deptName = $('select[name="deptName"]').val();
+			  let teamName = $('select[name="teamName"]').val();
+			  let empPosition = $('select[name="empPosition"]').val();
+			  let searchCol = $('select[name="searchCol"]').val();
+			  let searchWord = $('input[name="searchWord"]').val();
+
+			  // 가져온 검색 조건을 객체로 만듭니다.
+			  let param = {
+			    ascDesc: ascDesc,
+			    deptName: deptName,
+			    teamName: teamName,
+			    empPosition: empPosition,
+			    searchCol: searchCol,
+			    searchWord: searchWord
+			  };
+			  
+			  return param;
+		}
 		
 		// 이벤트 스크립트 시작
 		$(document).ready(function() {
@@ -163,6 +184,24 @@
 				if (result) {
 					location.reload(); // 현재 페이지 새로고침
 				}
+			});
+			
+			// 검색 조건에 따른 사원 목록 모달창에 출력
+			let currentPage = 1;
+			// 중간승인자 모달
+			$('.getEmpInfoListBtnForMediate').click(function() {
+				  // 검색 함수 호출
+				  getEmpInfoListByPageForModalMediateApproval(getSearchParam());
+			});
+			// 최종승인자 모달
+			$('.getEmpInfoListBtnForFinal').click(function() {
+				  // 검색 함수 호출
+				  getEmpInfoListByPageForModalFinalApproval(getSearchParam());
+			});
+			// 수신참조자 모달
+			$('.getEmpInfoListBtnForRecipients').click(function() {
+				  // 검색 함수 호출
+				  getEmpInfoListByPageForModalRecipients(getSearchParam());
 			});
 		});
 	</script>
@@ -311,12 +350,12 @@
 								${empName}_${deptName}_${empPosition}
 							</td>
 							<td>
-								<button type="button" data-bs-toggle="modal" data-bs-target="#mediateModal" class="btn btn-secondary">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#mediateModal" class="btn btn-secondary getEmpInfoListBtnForMediate">
 									검색 <!-- 중간승인자 검색 모달 버튼 -->
 								</button>
 							</td>
 							<td>
-								<button type="button" data-bs-toggle="modal" data-bs-target="#finalModal" class="btn btn-secondary">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#finalModal" class="btn btn-secondary getEmpInfoListBtnForFinal">
 									검색 <!-- 최종승인자 검색 모달 버튼 -->
 								</button>
 							</td>
@@ -324,7 +363,7 @@
 						<tr>
 							<th>
 								수신참조자
-								<button type="button" data-bs-toggle="modal" data-bs-target="#receiveModal" class="btn btn-secondary">
+								<button type="button" data-bs-toggle="modal" data-bs-target="#receiveModal" class="btn btn-secondary getEmpInfoListBtnForRecipients">
 									검색 <!-- 수신참조자 검색 모달 버튼 -->
 								</button>
 							</th>
@@ -402,34 +441,77 @@
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table class="table-bordered">
-								<tr>
-									<th>선택</th>
-									<th>사원번호</th>
-									<th>성명</th>
-									<th>부서명</th>
-									<th>직급명</th>
-								</tr>
-								<c:forEach var="employee" items="${employeeList}">
-									<tr>
-										<td>
-											<input type="radio" value="${employee.empNo}" name="modalMediateApproval">
-										</td>
-										<td>
-											${employee.empNo}
-										</td>
-										<td>
-											${employee.empName}
-										</td>
-										<td>
-											${employee.deptName}
-										</td>
-										<td>
-											${employee.empPosition}
-										</td>
-									</tr>
-								</c:forEach>
-							</table>
+							<!-- 검색조건 -->
+							<div class="sort-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="sort-label">정렬</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        직급
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="ascDesc" class="form-control">
+							            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+							            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+							        </select>
+						        </div>
+						    </div> <br>
+						    <div class="sort-area" style="display: flex; align-items: center;">		    
+							    <div class="form-group" style="width: 90px;">
+						        	<label class="sort-label">부서</label>
+						        </div>
+						        <div class="form-group" style="width: 150px; margin-left: 30px; margin-right: 20px;">
+								    <select name="deptName" class="form-control">
+								        <option value="" <c:if test="${param.deptName.equals('')}">selected</c:if>>전체</option>
+								        <option value="사업추진본부" <c:if test="${param.deptName.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
+								        <option value="경영지원본부" <c:if test="${param.deptName.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
+								        <option value="영업지원본부" <c:if test="${param.deptName.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
+								    </select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">팀</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="teamName" class="form-control">
+									    <option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
+									    <option value="기획팀" <c:if test="${param.teamName.equals('기획팀')}">selected</c:if>>기획팀</option>
+									    <option value="경영팀" <c:if test="${param.teamName.equals('경영팀')}">selected</c:if>>경영팀</option>
+									    <option value="영업팀" <c:if test="${param.teamName.equals('영업팀')}">selected</c:if>>영업팀</option>
+									</select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">직급</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="empPosition" class="form-control">
+									    <option value="" <c:if test="${param.empPosition.equals('')}">selected</c:if>>전체</option>
+									    <option value="CEO" <c:if test="${param.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
+									    <option value="부서장" <c:if test="${param.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
+									    <option value="팀장" <c:if test="${param.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
+									    <option value="부팀장" <c:if test="${param.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
+									    <option value="사원" <c:if test="${param.empPosition.equals('사원')}">selected</c:if>>사원</option>
+									</select>
+								</div>
+							</div>
+							<div class="search-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="search-label">검색</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="searchCol" class="form-control">
+							            <option value="empNo" ${searchCol eq 'empNo' ? 'selected' : ''}>사원번호</option>
+							            <option value="empName" ${searchCol eq 'empName' ? 'selected' : ''}>성명</option>
+							        </select>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+						        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
+						        </div>
+						        <button type="button" class="btn waves-effect waves-light btn-outline-dark getEmpInfoListBtnForMediate" style="margin-right: 10px;">적용</button>
+						    </div> <br>
+							<div id="modalMediateApprovalResult">
+							</div>
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
@@ -452,34 +534,76 @@
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table class="table-bordered">
-								<tr>
-									<th>선택</th>
-									<th>사원번호</th>
-									<th>성명</th>
-									<th>부서명</th>
-									<th>직급명</th>
-								</tr>
-								<c:forEach var="employee" items="${employeeList}">
-									<tr>
-										<td>
-											<input type="radio" value="${employee.empNo}" name="modalFinalApproval">
-										</td>
-										<td>
-											${employee.empNo}
-										</td>
-										<td>
-											${employee.empName}
-										</td>
-										<td>
-											${employee.deptName}
-										</td>
-										<td>
-											${employee.empPosition}
-										</td>
-									</tr>
-								</c:forEach>
-							</table>
+						<!-- 검색조건 -->
+							<div class="sort-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="sort-label">정렬</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        직급
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="ascDesc" class="form-control">
+							            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+							            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+							        </select>
+						        </div>
+						    </div> <br>
+						    <div class="sort-area" style="display: flex; align-items: center;">		    
+							    <div class="form-group" style="width: 90px;">
+						        	<label class="sort-label">부서</label>
+						        </div>
+						        <div class="form-group" style="width: 150px; margin-left: 30px; margin-right: 20px;">
+								    <select name="deptName" class="form-control">
+								        <option value="" <c:if test="${param.deptName.equals('')}">selected</c:if>>전체</option>
+								        <option value="사업추진본부" <c:if test="${param.deptName.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
+								        <option value="경영지원본부" <c:if test="${param.deptName.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
+								        <option value="영업지원본부" <c:if test="${param.deptName.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
+								    </select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">팀</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="teamName" class="form-control">
+									    <option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
+									    <option value="기획팀" <c:if test="${param.teamName.equals('기획팀')}">selected</c:if>>기획팀</option>
+									    <option value="경영팀" <c:if test="${param.teamName.equals('경영팀')}">selected</c:if>>경영팀</option>
+									    <option value="영업팀" <c:if test="${param.teamName.equals('영업팀')}">selected</c:if>>영업팀</option>
+									</select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">직급</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="empPosition" class="form-control">
+									    <option value="" <c:if test="${param.empPosition.equals('')}">selected</c:if>>전체</option>
+									    <option value="CEO" <c:if test="${param.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
+									    <option value="부서장" <c:if test="${param.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
+									    <option value="팀장" <c:if test="${param.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
+									    <option value="부팀장" <c:if test="${param.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
+									    <option value="사원" <c:if test="${param.empPosition.equals('사원')}">selected</c:if>>사원</option>
+									</select>
+								</div>
+							</div>
+							<div class="search-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="search-label">검색</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="searchCol" class="form-control">
+							            <option value="empNo" ${searchCol eq 'empNo' ? 'selected' : ''}>사원번호</option>
+							            <option value="empName" ${searchCol eq 'empName' ? 'selected' : ''}>성명</option>
+							        </select>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+						        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
+						        </div>
+						        <button type="button" class="btn waves-effect waves-light btn-outline-dark getEmpInfoListBtnForFinal" style="margin-right: 10px;">적용</button>
+						    </div> <br>
+							<div id="modalFinalApprovalResult"></div>
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">
@@ -502,34 +626,76 @@
 						</div>
 						<!-- 모달 본문 -->
 						<div class="modal-body">
-							<table class="table-bordered">
-								<tr>
-									<th>선택</th>
-									<th>사원번호</th>
-									<th>성명</th>
-									<th>부서명</th>
-									<th>직급명</th>
-								</tr>
-								<c:forEach var="employee" items="${employeeList}">
-									<tr>
-										<td>
-											<input type="checkbox" value="${employee.empNo}" name="modalRecipients">
-										</td>
-										<td>
-											${employee.empNo}
-										</td>
-										<td>
-											${employee.empName}
-										</td>
-										<td>
-											${employee.deptName}
-										</td>
-										<td>
-											${employee.empPosition}
-										</td>
-									</tr>
-								</c:forEach>
-							</table>
+							<!-- 검색조건 -->
+							<div class="sort-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="sort-label">정렬</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        직급
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="ascDesc" class="form-control">
+							            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+							            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+							        </select>
+						        </div>
+						    </div> <br>
+						    <div class="sort-area" style="display: flex; align-items: center;">		    
+							    <div class="form-group" style="width: 90px;">
+						        	<label class="sort-label">부서</label>
+						        </div>
+						        <div class="form-group" style="width: 150px; margin-left: 30px; margin-right: 20px;">
+								    <select name="deptName" class="form-control">
+								        <option value="" <c:if test="${param.deptName.equals('')}">selected</c:if>>전체</option>
+								        <option value="사업추진본부" <c:if test="${param.deptName.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
+								        <option value="경영지원본부" <c:if test="${param.deptName.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
+								        <option value="영업지원본부" <c:if test="${param.deptName.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
+								    </select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">팀</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="teamName" class="form-control">
+									    <option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
+									    <option value="기획팀" <c:if test="${param.teamName.equals('기획팀')}">selected</c:if>>기획팀</option>
+									    <option value="경영팀" <c:if test="${param.teamName.equals('경영팀')}">selected</c:if>>경영팀</option>
+									    <option value="영업팀" <c:if test="${param.teamName.equals('영업팀')}">selected</c:if>>영업팀</option>
+									</select>
+							    </div>
+							    
+							    <div class="form-group" style="width: 90px; margin-left: 30px;">
+						        	<label class="sort-label">직급</label>
+						        </div>
+						        <div class="form-group" style="width: 150px;">
+									<select name="empPosition" class="form-control">
+									    <option value="" <c:if test="${param.empPosition.equals('')}">selected</c:if>>전체</option>
+									    <option value="CEO" <c:if test="${param.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
+									    <option value="부서장" <c:if test="${param.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
+									    <option value="팀장" <c:if test="${param.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
+									    <option value="부팀장" <c:if test="${param.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
+									    <option value="사원" <c:if test="${param.empPosition.equals('사원')}">selected</c:if>>사원</option>
+									</select>
+								</div>
+							</div>
+							<div class="search-area" style="display: flex; align-items: center;">
+						    	<div class="form-group" style="width: 100px;">
+						        	<label class="search-label">검색</label>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+							        <select name="searchCol" class="form-control">
+							            <option value="empNo" ${searchCol eq 'empNo' ? 'selected' : ''}>사원번호</option>
+							            <option value="empName" ${searchCol eq 'empName' ? 'selected' : ''}>성명</option>
+							        </select>
+						        </div>
+						        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+						        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
+						        </div>
+						        <button type="button" class="btn waves-effect waves-light btn-outline-dark getEmpInfoListBtnForRecipients" style="margin-right: 10px;">적용</button>
+						    </div> <br>
+							<div id="modalRecipientsResult"></div>
 						</div>
 						<!-- 모달 푸터 -->
 						<div class="modal-footer">

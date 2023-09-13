@@ -334,6 +334,12 @@ public class DraftController {
 		// JSON 형식의 데이터를 String으로 변환하여 추가
 		String employeeListJson = new Gson().toJson(employeeList);
 		
+		// 오늘 날짜 - year, month, day
+		LocalDate today = LocalDate.now();
+		int year = today.getYear();
+		int month = today.getMonthValue();
+		int day = today.getDayOfMonth();
+		
     	model.addAttribute("approval", approval);
 		model.addAttribute("receiveList", receiveList);
 		model.addAttribute("documentFileList", documentFileList);
@@ -342,6 +348,9 @@ public class DraftController {
 		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
 		model.addAttribute("employeeList", employeeList);
 		model.addAttribute("employeeListJson", employeeListJson);
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
 				
 		return "/draft/modifySalesDraft";
 	}
@@ -600,6 +609,12 @@ public class DraftController {
 		// JSON 형식의 데이터를 String으로 변환하여 추가
 		String employeeListJson = new Gson().toJson(employeeList);
 		
+		// 오늘 날짜 - year, month, day
+		LocalDate today = LocalDate.now();
+		int year = today.getYear();
+		int month = today.getMonthValue();
+		int day = today.getDayOfMonth();
+		
 		model.addAttribute("approval", approval);
 		model.addAttribute("receiveList", receiveList);
 		model.addAttribute("vacationDraft", vacationDraft);
@@ -607,6 +622,9 @@ public class DraftController {
 		model.addAttribute("memberSignMap", memberSignMap); // key -> firstSign, mediateSign, finalSign
 		model.addAttribute("employeeList", employeeList);
 		model.addAttribute("employeeListJson", employeeListJson);
+		model.addAttribute("year", year);
+		model.addAttribute("month", month);
+		model.addAttribute("day", day);
 		
 		return "/draft/modifyVacationDraft";
 	}

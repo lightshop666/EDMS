@@ -23,8 +23,11 @@ public interface DraftMapper {
 
     
     //공통매서드
-	
 	List<EmpInfo> getAllEmp();
+	
+	List<EmpInfo> getEmpInfoListByPage(Map<String, Object> paramMap);
+	
+	int getEmpInfoListByPageCnt(Map<String, Object> paramMap);
 	
     int insertApproval(Approval approval);
     

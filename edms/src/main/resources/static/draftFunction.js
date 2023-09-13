@@ -22,6 +22,110 @@
 		목록 -> list, 기안취소 -> cancel, 승인 -> approve, 반려 -> reject, 승인취소 -> CancelApprove
 	*/
 	
+	// 모달창에서 검색 조건에 따른 사원 목록 조회 (중간승인자)
+	function getEmpInfoListByPageForModalMediateApproval(param) {
+		$.ajax({
+			url : '/getEmpInfoListByPage',
+			method : 'post',
+			data : {
+				ascDesc : param.ascDesc,
+				deptName : param.deptName,
+				teamName : param.teamName,
+				empPosition : param.empPosition,
+				searchCol : param.searchCol,
+				searchWord : param.searchWord,
+				currentPage : param.currentPage
+			},
+			success : function(data) {
+				let tableRows = '';
+			    $.each(data.resultList, function (index, employee) {
+			        tableRows += '<tr>';
+			        tableRows += '<td><input type="radio" value="' + employee.empNo + '" name="modalMediateApproval"></td>';
+			        tableRows += '<td>' + employee.empNo + '</td>';
+			        tableRows += '<td>' + employee.empName + '</td>';
+			        tableRows += '<td>' + employee.deptName + '</td>';
+			        tableRows += '<td>' + employee.empPosition + '</td>';
+			        tableRows += '</tr>';
+			    });
+			    
+			    $('#modalMediateApprovalResult').html(tableRows);
+			},
+			error : function(error) {
+				console.error('사원 목록 검색 조회 실패 : ' + error);
+			}
+		});
+	}
+	
+	// 모달창에서 검색 조건에 따른 사원 목록 조회 (최종승인자)
+	function getEmpInfoListByPageForModalFinalApproval(param) {
+		console.log('실행');
+		$.ajax({
+			url : '/getEmpInfoListByPage',
+			method : 'post',
+			data : {
+				ascDesc : param.ascDesc,
+				deptName : param.deptName,
+				teamName : param.teamName,
+				empPosition : param.empPosition,
+				searchCol : param.searchCol,
+				searchWord : param.searchWord,
+				currentPage : param.currentPage
+			},
+			success : function(data) {
+				let tableRows = '';
+			    $.each(data.resultList, function (index, employee) {
+			        tableRows += '<tr>';
+			        tableRows += '<td><input type="radio" value="' + employee.empNo + '" name="modalFinalApproval"></td>';
+			        tableRows += '<td>' + employee.empNo + '</td>';
+			        tableRows += '<td>' + employee.empName + '</td>';
+			        tableRows += '<td>' + employee.deptName + '</td>';
+			        tableRows += '<td>' + employee.empPosition + '</td>';
+			        tableRows += '</tr>';
+			    });
+			    
+			    $('#modalFinalApprovalResult').html(tableRows);
+			},
+			error : function(error) {
+				console.error('사원 목록 검색 조회 실패 : ' + error);
+			}
+		});
+	}
+	
+	// 모달창에서 검색 조건에 따른 사원 목록 조회 (수신참조자)
+	function getEmpInfoListByPageForModalRecipients(param) {
+		console.log('실행');
+		$.ajax({
+			url : '/getEmpInfoListByPage',
+			method : 'post',
+			data : {
+				ascDesc : param.ascDesc,
+				deptName : param.deptName,
+				teamName : param.teamName,
+				empPosition : param.empPosition,
+				searchCol : param.searchCol,
+				searchWord : param.searchWord,
+				currentPage : param.currentPage
+			},
+			success : function(data) {
+				let tableRows = '';
+			    $.each(data.resultList, function (index, employee) {
+			        tableRows += '<tr>';
+			        tableRows += '<td><input type="checkbox" value="' + employee.empNo + '" name="modalRecipients"></td>';
+			        tableRows += '<td>' + employee.empNo + '</td>';
+			        tableRows += '<td>' + employee.empName + '</td>';
+			        tableRows += '<td>' + employee.deptName + '</td>';
+			        tableRows += '<td>' + employee.empPosition + '</td>';
+			        tableRows += '</tr>';
+			    });
+			    
+			    $('#modalRecipientsResult').html(tableRows);
+			},
+			error : function(error) {
+				console.error('사원 목록 검색 조회 실패 : ' + error);
+			}
+		});
+	}
+	
 	// 선택한 결재자의 정보 구하기// 모달창에서 선택한 결재자의 정보를 출력하기 위해 리스트를 조회합니다.
 	function getApproverDetails(selectedApproverNo) {
 		let empName = ''; // 이름
