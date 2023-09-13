@@ -11,6 +11,21 @@
         margin-right: 10px; /* 원하는 간격(px)을 지정 */
     	}
     	
+    	  .approval-button {
+	        /* 모든 동적 버튼에 공통으로 적용할 스타일 */
+	        padding: 8px 16px;
+	        background-color: #6c757d;
+	        color: #fff;
+	        border: none;
+	        cursor: pointer;
+	        
+	        margin-right: 10px; /* 버튼 간의 오른쪽 여백을 지정합니다. */
+	    }
+    	
+    	#buttonArea {
+        margin-top: 20px; /* 원하는 여백 크기(px)를 지정합니다. */
+    }
+    
 	    table {
 	        border-collapse: collapse;
 	        width: 100%;

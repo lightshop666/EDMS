@@ -47,7 +47,7 @@ public class ExpenseController {
     }
     
     @PostMapping("/draft/expenseDraft")
-    public ResponseEntity<Map<String, String>> submitExpense(@RequestBody Map<String, Object> formData, Model model, HttpSession session) {
+    public Map<String, Object> submitExpense(@RequestBody Map<String, Object> formData, Model model, HttpSession session) {
         log.debug("제출 데이터: {}", formData);
         
         int empNo = (int) session.getAttribute("loginMemberId");
@@ -56,6 +56,9 @@ public class ExpenseController {
         
         Map<String, Object> submissionData = (Map<String, Object>) formData;
         List<Integer> selectedRecipientsIds = (List<Integer>) formData.get("selectedRecipientsIds");
+        
+        String middleNoti = (String) submissionData.get("selectedMiddleApproverId");
+        String finalNoti = (String) submissionData.get("selectedFinalApproverId");
         
         log.debug("selectedRecipientsIds: {}", selectedRecipientsIds);
         
@@ -87,13 +90,19 @@ public class ExpenseController {
         }
             int result = draftService.processExpenseSubmission(isSaveDraft, submissionData, selectedRecipientsIds, expenseDraftContentList, empNo);
 
-        log.debug("result: "+ result);
-        
-        
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("redirectUrl", "/draft/submitDraft"); // 이 부분에 원하는 리다이렉션 URL을 설정합니다.
-
-        return ResponseEntity.ok(responseMap);
+            if (result == 1) {
+                // 서버에서 리다이렉션 수행
+            	
+            	log.debug("result: {}", result);
+               
+            }
+            
+           
+            
+            Map<String, Object> responseMap = new HashMap<>();
+            responseMap.put("result", result);
+            
+            return responseMap;
     }
     
     @GetMapping("/draft/expenseDraftOne")

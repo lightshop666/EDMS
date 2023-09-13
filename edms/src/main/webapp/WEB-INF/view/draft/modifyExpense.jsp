@@ -245,7 +245,8 @@
                         data: JSON.stringify(dataToSend),
                         success: function(response) {
                             console.log("서버 응답: ", response);
-                            // 완료 메시지 등의 동작
+                            let url = '/draft/expenseDraftOne?approvalNo=${expenseDraftData.approvalNo}'; // 리다이렉션할 URL로 변경
+                            location.replace(url);
                         },
                         error: function(xhr, status, error) {
                             console.error("에러 발생: ", error);
@@ -333,16 +334,15 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
     <h1 style="text-align: center;">지출결의서 수정</h1>
-    <form action="${pageContext.request.contextPath}/modifyExpense" method="post">
     
         <table class="table-bordered">
         	 <tr>
-				<th rowspan="3" colspan="2">지출결의서</th>
+				<th rowspan="3" colspan="2">지출결의서 <input type="hidden" id="approvalNo" name="approvalNo" value="${expenseDraftData.approvalNo}"></th>
 				<th rowspan="3">결재</th>
 				<th>기안자</th>
 				<th>중간승인자</th>
 				<th>최종승인자</th>
-				<td><input type="hidden" id="approvalNo" name="approvalNo" value="${expenseDraftData.approvalNo}"></td>
+				
 			</tr>
 			<tr>
                 <td rowspan="2">
@@ -423,16 +423,17 @@
       
         
         <div class="buttons">
+        	<a class="btn btn-secondary custom-link" href="${pageContext.request.contextPath}/draft/expenseDraftOne?approvalNo= ${expenseDraftData.approvalNo}">취소</a>
             <c:choose>
 			    <c:when test="${isSave == null or isSave == 'true'}">
+
 			        <button type="submit" id="saveDraftBtn" class="btn btn-primary">저장</button>
 			    </c:when>
 			    <c:otherwise>
-			        <button type="submit" id="submitBtn" class="btn btn-primary">기안</button>
+			        <button type="submit" id="submitBtn" class="btn btn-primary">저장</button>
 			    </c:otherwise>
 			</c:choose>
         </div>
-    </form>
 
   <!-- 중간승인자 검색 모달 -->
    <div class="modal" id="middleApproverModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" style="display: none;">

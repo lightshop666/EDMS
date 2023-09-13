@@ -206,11 +206,9 @@
                     contentType: "application/json",
                     data: JSON.stringify(dataToSend),
                     success: function(response) {
-                        if (isSaveDraft) {
-                            console.log("임시저장 서버 응답: ", response);
-                        } else {
+                    	let url = '/draft/basicDraftOne?approvalNo=${basicDraftData.approvalNo}'; // 리다이렉션할 URL로 변경
+                        location.replace(url);
                             console.log("기안하기 서버 응답: ", response);
-                        }
                     },
                     error: function(xhr, status, error) {
                         console.error("에러 발생: ", error);
@@ -295,16 +293,16 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->  
     <h1 style="text-align: center;">기안서 수정</h1>
-    <form action="${pageContext.request.contextPath}/draft/modifyBasic" method="post">
+   
     
         <table class="table-bordered">
         	 <tr>
-				<th rowspan="3" colspan="2">기안서 </th>
+				<th rowspan="3" colspan="2">기안서 <input type="hidden" id="approvalNo" name="approvalNo" value="${basicDraftData.approvalNo}"> </th>
 				<th rowspan="3">결재</th>
 				<th>기안자</th>
 				<th>중간승인자</th>
 				<th>최종승인자</th>
-				<td><input type="hidden" id="approvalNo" name="approvalNo" value="${basicDraftData.approvalNo}"></td>
+				
 			</tr>
 			<tr>
                 <td rowspan="2">
@@ -364,6 +362,7 @@
 			</tr>
         </table>
         <div class="buttons">
+        	<a class="btn btn-secondary custom-link" href="${pageContext.request.contextPath}/draft/basicDraftOne?approvalNo=${basicDraftData.approvalNo}">취소</a>
             <c:choose>
 			    <c:when test="${isSave == null or isSave == 'true'}">
 			        <button type="submit" class="btn btn-secondary" id="saveDraftBtn" >저장</button>
@@ -373,7 +372,6 @@
 			    </c:otherwise>
 			</c:choose>
         </div>
-    </form>
 
  <!-- 중간승인자 검색 모달 -->
    <div class="modal" id="middleApproverModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" style="display: none;">

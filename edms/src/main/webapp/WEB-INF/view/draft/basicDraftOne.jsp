@@ -10,9 +10,16 @@
     <title>기안서 상세</title>
     <!-- 테이블 스타일 추가 -->
 	<style>
-		.actionBtn {
-        margin-right: 10px; /* 원하는 간격(px)을 지정 */
-    	}
+	    .approval-button {
+	        /* 모든 동적 버튼에 공통으로 적용할 스타일 */
+	        padding: 8px 16px;
+	        background-color: #6c757d;
+	        color: #fff;
+	        border: none;
+	        cursor: pointer;
+	        
+	        margin-right: 10px; /* 버튼 간의 오른쪽 여백을 지정합니다. */
+	    }
     
 	    table {
 	        border-collapse: collapse;
@@ -28,6 +35,10 @@
 	        width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
 	        box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
 	    }
+	    
+	#buttonArea {
+        margin-top: 20px; /* 원하는 여백 크기(px)를 지정합니다. */
+    }
 	</style>
     	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!-- Tell the browser to be responsive to screen width -->

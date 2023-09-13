@@ -63,6 +63,15 @@ public class DraftListController {
 		    filterParams.put("searchWord", searchWord);
 		    filterParams.put("beginRow", (currentPage - 1) * rowPerPage); // 시작 행
 		    filterParams.put("rowPerPage", rowPerPage); // 페이지당 행 수
+		    
+		    log.debug(CC.JUNG+ "DraftListController.approvalDraftList() currentPage : " + currentPage + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() rowPerPage : " + rowPerPage + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() startDate : " + startDate + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() endDate : " + endDate + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() searchCol : " + searchCol + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() searchWord : " + searchWord + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() col : " + col + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() ascDesc : " + ascDesc + CC.RESET);
 	
 		    int totalCount = draftService.getTotalDraftCount(filterParams,empNo); // 전체 게시물 수
 		    
@@ -152,6 +161,16 @@ public class DraftListController {
 		    filterParams.put("beginRow", (currentPage - 1) * rowPerPage); // 시작 행
 		    filterParams.put("rowPerPage", rowPerPage); // 페이지당 행 수
 	
+		    log.debug(CC.JUNG+ "DraftListController.approvalDraftList() currentPage : " + currentPage + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() rowPerPage : " + rowPerPage + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() startDate : " + startDate + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() endDate : " + endDate + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() searchCol : " + searchCol + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() searchWord : " + searchWord + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() col : " + col + CC.RESET);
+			log.debug(CC.JUNG + "DraftListController.approvalDraftList() ascDesc : " + ascDesc + CC.RESET);
+			
+		    
 		    int totalCount = draftService.getTotalReceiveCount(filterParams,empNo); // 전체 게시물 수
 		    
 		    // 페이징 처리를 위한 필요한 변수들 계산

@@ -46,10 +46,9 @@ public class VacationController {
     		, @RequestParam(name= "col", required = false, defaultValue = "") String col
     		, @RequestParam(name= "ascDesc", required = false, defaultValue = "") String ascDesc
     		, @RequestParam(required = false) String vacationName
-    		, @RequestParam int empNo
+    		, @RequestParam(required = false, name = "empNo") Integer empNo
     		) {
-
-    	// int empNo = (int) session.getAttribute("loginMemberId");
+    	
         log.debug(CC.JUNG + "[DEBUG] getVacationHistoryList() Start" + CC.RESET);
         log.debug("currentPage: " + currentPage + ", empNo: " + empNo + ", startDate: " + startDate + ", endDate: " + endDate +
                   ", col: " + col + ", ascDesc: " + ascDesc + ", vacationName: " + vacationName);
@@ -79,15 +78,19 @@ public class VacationController {
 	    model.addAttribute("minPage", minPage);
 	    model.addAttribute("maxPage", maxPage);
 	    model.addAttribute("lastPage", lastPage);
+	    model.addAttribute("startDate", startDate);
+	    model.addAttribute("endDate", endDate);
+	    model.addAttribute("col", col);
+	    model.addAttribute("ascDesc", ascDesc);
 	    model.addAttribute("empNo", empNo);
 
         log.debug(CC.JUNG + "[DEBUG] getVacationHistoryList() End" + CC.RESET);
 
-        return "/vacation/vacationHistory";
+        return "vacation/vacationHistory";
     }
     
     
-    @GetMapping("/adminAddVacation")
+    @GetMapping("/vacation/adminAddVacation")
     public String getVacationForm(
             @RequestParam int empNo,
             Model model) {
@@ -95,7 +98,7 @@ public class VacationController {
         return "/vacation/adminAddVacation";
     }
 
-    @PostMapping("/adminAddVacation")
+    @PostMapping("/vacation/adminAddVacation")
     public String processVacation(
             @RequestParam int empNo,
             @RequestParam String vacationName,
@@ -106,6 +109,6 @@ public class VacationController {
         
         // 휴가 추가 후에 필요한 작업 수행 (예: 휴가 내역 다시 조회 등)
 
-        return "redirect:/vacation/vacationHistory";
+        return "redirect:/vacation/vacationHistory?empNo="+empNo;
     }
 }

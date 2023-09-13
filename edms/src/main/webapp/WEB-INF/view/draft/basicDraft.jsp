@@ -154,7 +154,7 @@
                 
                 closeRecieveModal();
             }
-			
+		
 
             // 공통적으로 사용하는 데이터 수집 및 전송 함수
             function sendData(isSaveDraft) {
@@ -205,11 +205,9 @@
                     contentType: "application/json",
                     data: JSON.stringify(dataToSend),
                     success: function(response) {
-                        if (isSaveDraft) {
-                            console.log("임시저장 서버 응답: ", response);
-                        } else {
-                            console.log("기안하기 서버 응답: ", response);
-                        }
+
+                        let url = '/draft/submitDraft'; // 리다이렉션할 URL로 변경
+                        location.replace(url);
                     },
                     error: function(xhr, status, error) {
                         console.error("에러 발생: ", error);
@@ -313,8 +311,9 @@
 	       </div>
 	   </nav>
    <br>
+   
     <h1 style="text-align: center;">기안서 작성</h1>
-    <form action="${pageContext.request.contextPath}/basicDraft" method="post">
+    
         <table class="table-bordered">
        
 	        <tr>
@@ -384,7 +383,6 @@
             <button type="submit" class="btn btn-secondary" id="saveDraftBtn">임시저장</button>
             <button type="submit" class="btn btn-secondary" id="submitBtn">저장</button>
         </div>
-    </form>
 
 	<!-- 중간승인자 검색 모달 -->
 	<div class="modal" id="middleApproverModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" style="display: none;">

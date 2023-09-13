@@ -3,8 +3,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    
     <title>기안함</title>
+    <meta charset="UTF-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <!-- 모달을 띄우기 위한 부트스트랩 라이브러리 -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -128,9 +129,7 @@
 		<div class="container-fluid">
 	<!--
         탭 네비게이션
-         1. 개인정보 수정
-         2. 비밀번호 수정
-         3. 휴가정보
+
     -->
     <br>
 	    <nav class="navbar navbar-expand-lg navbar-light">
@@ -181,6 +180,8 @@
     
     <form method="get" action="${pageContext.request.contextPath}/draft/submitDraft">
 		<!-- 날짜 조회 align-items: center; 속성은 해당 div안의 내용이 한 row에 출력되도록 함-->
+		 	
+		 	
 		 	<div class="date-area" style="display: flex; align-items: center;">
 		 		<div class="form-group" style="width: 100px;">
 			        <label class="date-label">검색 시작일</label>
@@ -194,7 +195,7 @@
 		        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
 			        <input type="date" name="endDate" value="${endDate}" class="form-control">
 		        </div>
-		        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="selectBtn">조회</button>
+		       
 			</div>
 		
 		<br>
@@ -219,7 +220,7 @@
 			            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
 			        </select>
 		        </div>
-		        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="orderBtn">정렬</button>
+		        
 		    </div>
 		
 		<br>
