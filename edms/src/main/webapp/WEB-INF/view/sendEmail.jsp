@@ -220,13 +220,21 @@
 												<td>받는사람 Email *</td>
 												<td><input class="form-control" type="email" name="to_email" placeholder="ex) example@email.com"></td>
 											</tr>
-											<tr>
-												<td>내용 *</td>
-												<td>
-													<textarea class="form-control" id="sendMessage" name="message" cols="50" rows="3">사원번호: ${empNo}</textarea>
-													<small id="textHelp" class="form-text text-muted">회원가입을 할 수 있도록 사원번호를 7자리로 입력해주세요. ex)2000001</small>
-												</td>
-											</tr>
+											<c:if test="${empNo != 0}">	
+												<tr>
+													<td>사원번호</td>
+													<td>${empNo}</td>
+												</tr>								
+											</c:if>
+											<c:if test="${empNo == 0}">
+												<tr>
+													<td>사원번호 *</td>
+													<td>
+														<textarea class="form-control" id="sendMessage" name="empNo" cols="50" rows="3"></textarea>
+														<small id="textHelp" class="form-text text-muted">회원가입을 할 수 있도록 사원번호를 7자리로 입력해주세요. ex)2000001</small>
+													</td>
+												</tr>
+											</c:if>
 								        </table>
 								        <button type="button"
                                    			class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button>
