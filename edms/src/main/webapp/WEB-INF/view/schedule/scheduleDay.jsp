@@ -225,7 +225,7 @@
 												<th>공용품종류</th>
 												<th>예약일</th>
 												<th>예약시간</th>
-												<th>생성일</th>
+												<!-- <th>생성일</th> -->
                                             </tr>
                                         </thead>
                                         <tbody class='center-text'>
@@ -243,8 +243,8 @@
 														<td><fmt:formatDate value="${parsedReservationDate}" pattern="yyyy-MM-dd"/></td>
 														<td>${r.reservationTime}</td>
 														<!-- 생성일 출력 부분 -->
-													    <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
-													    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>		
+													    <%-- <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+													    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td> --%>		
 													</tr>
 												</c:forEach>
 											</c:when>

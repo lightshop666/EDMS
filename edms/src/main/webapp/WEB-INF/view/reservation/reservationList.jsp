@@ -22,6 +22,15 @@
 	  $(".reservationCancelBtn").click(function(){
 		// 클릭한 버튼($(this))의 'data-reservation-no' 속성 값을 가져와서 reservationNo 변수에 저장
 	    var reservationNo = $(this).data('reservation-no');
+	    var reservationNo = $(this).data('reservation-time');
+	    var currentTime = new Date().getTime(); // 현재 시간 가져오기
+	    
+	    if (currentTime > reservationTime) {
+	        alert("이미 예약 시간이 지났으므로 취소할 수 없습니다.");
+	        window.location.href = '${pageContext.request.contextPath}/reservationList';
+	        return;
+	      }
+	    
 		// jQuery의 AJAX 기능을 사용하여 서버로 비동기 요청을 보냅니다. {} 안의 내용은 AJAX 요청의 세부 사항을 설정하는 곳
 	    $.ajax({
 	    // AJAX 요청이 보내질 URL을 설정
@@ -283,7 +292,7 @@
 												<th>공용품 번호</th>
 												<th>예약일</th>
 												<th>예약시간</th>
-												<th>생성일</th>
+												<!-- <th>생성일</th> -->
 												<th>취소</th>
                                             </tr>
                                         </thead>
@@ -298,15 +307,16 @@
 													<td><fmt:formatDate value="${parsedReservationDate}" pattern="yyyy-MM-dd"/></td>
 													<td>${r.reservationTime}</td>
 													<!-- 생성일 출력 부분 -->
-												    <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
-												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td>
+												    <%-- <fmt:parseDate value="${r.createdate}" pattern="yyyy-MM-dd HH:mm:ss" var="parsedCreatedate"/>
+												    <td><fmt:formatDate value="${parsedCreatedate}" pattern="yyyy-MM-dd"/></td> --%>
 													
 													<!-- 세션에서 멤버로그인ID(사원번호) 확인후 작성자사원번호와 일치할경우 취소태그가 보이도록 출력 비교할 값을 하나의 EL태그안에 넣어서 비교해줘야 조건식이 올바르게 작동한다. -->
 													<c:if test="${empNo == r.empNo}">
 														<td>
 															<!-- 취소 버튼 클릭 시 postRequest 함수 호출 -->
 								                			<!-- data-reservation-no 속성으로 예약 번호 저장 -->
-															<button class='reservationCancelBtn btn waves-effect waves-light btn-outline-dark delete-link'  data-reservation-no='${r.reservationNo}'>예약취소</button>
+															<button class='reservationCancelBtn btn waves-effect waves-light btn-outline-dark delete-link'  
+															data-reservation-no='${r.reservationNo}' data-reservation-time='${r.reservationTime}'>예약취소</button>
 														</td>
 													</c:if> 
 												</tr>
