@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.fit.CC;
 import com.fit.service.CommonPagingService;
 import com.fit.service.EmpService;
+import com.fit.service.MemberService;
 import com.fit.vo.EmpInfo;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class EmpController {
 	@Autowired
 	private EmpService empService;
 
+	@Autowired
+	private MemberService memberService;
+	
 	@Autowired
 	private CommonPagingService commonPagingService;
 	
@@ -201,10 +205,10 @@ public class EmpController {
 	    param.put("rowPerPage", rowPerPage); // 한 페이지에 출력될 행의 수
 	    log.debug(CC.YE + "EmpController.empList() rowPerPage: " + rowPerPage + CC.RESET);
 	    
-    	// 3. 사원 목록 (휴가일수, 회원가입 여부 추가)
+    	// 3. 사원 목록 (휴가일수, 회원가입 여부, 이메일 정보 추가)
 		List<Map<String, Object>> enrichedEmpList = empService.enrichedEmpList(param);
 		log.debug(CC.YE + "EmpController.empList() enrichedEmpList: " + enrichedEmpList + CC.RESET);
-		  
+
 	    // 4. 페이징
     	// 4-1. 검색어가 적용된 리스트의 전체 행 개수를 구해주는 메서드 실행
 		int totalCount = empService.getEmpListCount(param);
@@ -229,6 +233,10 @@ public class EmpController {
 	    model.addAttribute("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
 	    model.addAttribute("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
 	    model.addAttribute("param", param); // 파라미터 값
+	    model.addAttribute("publicKey", publicKey);
+        model.addAttribute("serviceId", serviceId);
+        model.addAttribute("emailTemplateId2", emailTemplateId2);
+	    model.addAttribute("empState", empState);
 	    
 	    return "/emp/empList"; // 사원 목록 페이지로 이동
     }

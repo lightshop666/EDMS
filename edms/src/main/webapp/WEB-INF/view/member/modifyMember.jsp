@@ -183,9 +183,7 @@
       
       });
       
-      
    </script>
-
 </head>
 
 <body>
@@ -252,89 +250,119 @@
          2. 비밀번호 수정
          3. 휴가정보
     -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-       <div class="collapse navbar-collapse" id="navbarNav">
-           <ul class="navbar-nav">
-               <li class="nav-item">
-                   <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
-               </li>
-           </ul>
-       </div>
-   </nav>
-
+	<div class="d-flex justify-content-between">
+		<ul class="nav nav-tabs">
+		    <li class="nav-item">
+                <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
+            </li>
+        </ul>
+    </div>
+	<br>
 <!-- 개인정보 수정 폼 -->
-      <!-- 사진 수정-->
-            <form>
-               <!-- 사진 클릭 시 모달로 이미지 출력 -->
-               <label>사진</label>
-            <img src="${image.memberPath}${image.memberSaveFileName}" width="200" height="200"
-                data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
-            </form>
-            <!-- 사원번호와 사원명 변경 불가 -->
-               <p>사원번호 ${empNo}</p>
-               <p>사원명 ${empName}</p>
-               <p>성별 ${member.gender}</p>
-            <!-- 서명 수정 -->
-            <form>
-               <label>서명</label>
-               <span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
-            </form>
-            <!-- 개인정보 수정 폼 -->
-            <form action="/member/modifyMember" method="post">
-               <input type="hidden" name="empNo" value="${empNo}">
-             <label for="phoneNumber">전화번호</label>
-                <input type="text" id="phoneNumber" name="phoneNumber" value="${member.phoneNumber}"><br>
-                
-             <br>
-             
-                <label for="email">이메일</label>
-                <input type="email" id="email" name="email" value="${member.email}"><br>
-                
-                <!-- 기존 주소 표시 -->
-             <label for="existingAddress">주소</label>
-             <input type="text" id="existingAddress" name="existingAddress" value="${member.address}" readonly><br>
-         
-             <!-- 새 주소 입력 -->
-             <div>
-                 <input type="text" id="sample6_postcode" placeholder="우편번호">
-                 <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
-                 <input type="text" id="sample6_address" placeholder="주소"><br>
-                 <input type="text" id="sample6_detailAddress" placeholder="상세주소">
-                 <input type="text" id="sample6_extraAddress" placeholder="참고항목">
-             </div>
-             <input type="hidden" name="address" id="address"><br>
-    
-                <label for="createdate">가입일</label>
-                <input type="text" id="createdate" name="createdate" value="${member.createdate}" readonly><br>
-                
-                <label for="updatedate">최종 수정일</label>
-                <input type="text" id="updatedate" name="updatedate" value="${member.updatedate}" readonly><br>
-                
-                <hr>
-                
-                <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
-                <button type="submit" class="btn btn-primary" id="saveBtn">저장</button>
-            </form>
+	<!-- 사진 수정-->
+	<h1 style="text-align:center;">개인정보 수정</h1>
+	<br>
+    <table>
+    	<tr>
+    		<td><label>사진</label></td><!-- 사진 클릭 시 모달로 이미지 출력 -->
+    		<td>
+    			<img src="${image.memberPath}${image.memberSaveFileName}" width="200" height="200"
+					data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
+			</td>
+    	</tr>
+    	<tr><td>&nbsp;</td></tr>
+    	<!-- 조회할 정보 -->
+    	<tr>
+    		<td><label>사원번호&nbsp;</label></td>
+    		<td><input type="number" value="${empNo}" readonly class="form-control"></td>
+    	</tr>
+    	<tr><td>&nbsp;</td></tr>
+    	<tr>	
+    		<td><label>사원명</label></td>
+    		<td><input type="number" value="${empName}" readonly class="form-control"></td>
+    	</tr>
+    	<tr><td>&nbsp;</td></tr>
+    	<tr>	
+    		<td><label>성별</label></td>
+    		<td><input type="number" value="${member.gender}" readonly class="form-control"></td>
+    	</tr>
+    	<tr><td>&nbsp;</td></tr>
+    	<!-- 서명 수정 -->
+    	<tr>
+    		<td><label>서명</label></td>
+    		<td><span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span></td>
+    	</tr>
+    	<tr><td>&nbsp;</td></tr>
+    </table>
+
+	<form action="/member/modifyMember" method="post">
+		<input type="hidden" name="empNo" value="${empNo}">
+		<table >
+		<!-- 수정할 정보 -->
+		<tr>
+			<td><label for="phoneNumber">전화번호</label></td>
+			<td><input type="text" id="phoneNumber" name="phoneNumber" class="form-control" value="${member.phoneNumber}"></td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td><label for="email">이메일</label></td>
+			<td><input type="email" id="email" name="email" class="form-control" value="${member.email}"></td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+	    <tr><!-- 기존 주소 표시 -->
+	    	<td><label for="existingAddress">주소</label></td>
+	    	<td><textarea id="existingAddress" name="existingAddress" class="form-control" readonly>${member.address}</textarea></td>
+	    </tr>
+	    <tr><td>&nbsp;</td></tr>
+		<tr>
+			<td colspan="2">
+				<!-- 새 주소 입력 -->
+			    <input type="text" id="sample6_postcode" placeholder="우편번호">
+			    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
+			    <input type="text" id="sample6_address" placeholder="주소"><br>
+			    <input type="text" id="sample6_detailAddress" placeholder="상세주소">
+			    <input type="text" id="sample6_extraAddress" placeholder="참고항목">
+			    <input type="hidden" name="address" id="address">
+			</td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td><label for="createdate">가입일</label></td>
+			<td><input type="text" id="createdate" name="createdate" class="form-control" value="${member.createdate}" readonly></td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		<tr>
+			<td><label for="updatedate">최종 수정일</label></td>
+			<td><input type="text" id="updatedate" name="updatedate" class="form-control" value="${member.updatedate}" readonly></td>
+		</tr>
+		<tr><td>&nbsp;</td></tr>
+		</table>
+		<hr>
+		<div style="display: flex; justify-content: space-between;">
+			<button type="button" class="btn btn-secondary" id="cancelBtn" style="text-align:left;">취소</button>
+			<button type="submit" class="btn btn-primary" id="saveBtn" style="text-align:right;">저장</button>
+		</div>
+	</form>
         
-<!-- 이미지 모달 -->
-      <div class="modal" id="imageModal">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <!-- 모달 헤더 -->
-               <div class="modal-header">
-                  <h4 class="modal-title">사진</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
-               </div>
-               <!-- 모달 본문 -->
-               <c:choose>
-                    <c:when test="${empty image.memberPath}">
-                        <p>이미지가 없습니다.</p>
+	<!-- [시작] 이미지 모달 -->
+	<div class="modal" id="imageModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!-- 모달 헤더 -->
+				<div class="modal-header">
+					<h4 class="modal-title">사진</h4>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+				</div>
+				<!-- 모달 본문 -->
+				<c:choose>
+					<c:when test="${empty image.memberPath}">
+						<p>이미지가 없습니다.</p>
                     </c:when>
                     <c:otherwise>
                         <img src="${image.memberPath}${image.memberSaveFileName}">
@@ -359,59 +387,55 @@
             </div>
          </div>
       </div>
-<!-- 이미지 모달 끝 -->
+	<!-- [끝] 이미지 모달 -->
       
-<!-- 서명 모달 -->
-      <div class="modal" id="signModal">
-         <div class="modal-dialog">
-            <div class="modal-content">
-               <!-- 모달 헤더 -->
-               <div class="modal-header">
-                  <h4 class="modal-title">사원 서명</h4>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
-               </div>
-               <!-- 모달 본문 -->
-               <div class="modal-body">
-                  <c:choose>
-                       <c:when test="${empty sign.memberPath}">
-                           <p>이미지가 없습니다.</p>
-                           <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
-                           <div>
-                           <button id="save">임시저장</button>
-                           <button id="clear">삭제</button>
-                           <button id="send">저장</button>
-                        </div>
-                        <div>
-                           <img id="target" src = "" width=200, height=200>
-                        </div>
-                       </c:when>
-                       <c:otherwise>
-                           <img src="${sign.memberPath}${sign.memberSaveFileName}">
-                           <br>
-                           <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
-                           <div>
-                           <button id="save">임시저장</button>
-                           <button id="clear">삭제</button>
-                           <button id="send">저장</button>
-                        </div>
-                        <div>
-                           <img id="target" src = "" width=200, height=200>
-                        </div>
-                        </c:otherwise>
-                     </c:choose>
-               </div>
-               <!-- 모달 푸터 -->
-               <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" id="signModal" data-bs-dismiss="modal">닫기</button>
-               </div>
-            </div>
-         </div>
-      </div>
-<!-- 서명 모달 끝 -->
-
-
-
-
+	<!-- [시작] 서명 모달 -->
+	<div class="modal" id="signModal">
+	   <div class="modal-dialog">
+	      <div class="modal-content">
+	         <!-- 모달 헤더 -->
+	         <div class="modal-header">
+	            <h4 class="modal-title">사원 서명</h4>
+	            <button type="button" class="btn-close" data-bs-dismiss="modal"></button> <!-- x버튼 -->
+	         </div>
+	         <!-- 모달 본문 -->
+	         <div class="modal-body">
+	            <c:choose>
+	                 <c:when test="${empty sign.memberPath}">
+	                     <p>이미지가 없습니다.</p>
+	                     <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
+	                     <div>
+	                     <button id="save">임시저장</button>
+	                     <button id="clear">삭제</button>
+	                     <button id="send">저장</button>
+	                  </div>
+	                  <div>
+	                     <img id="target" src = "" width=200, height=200>
+	                  </div>
+	                 </c:when>
+	                 <c:otherwise>
+	                     <img src="${sign.memberPath}${sign.memberSaveFileName}">
+	                     <br>
+	                     <canvas id="goal" style="border: 1px solid black" width="200" height="200"></canvas>
+	                     <div>
+	                     <button id="save">임시저장</button>
+	                     <button id="clear">삭제</button>
+	                     <button id="send">저장</button>
+	                  </div>
+	                  <div>
+	                     <img id="target" src = "" width=200, height=200>
+	                  </div>
+	                  </c:otherwise>
+	               </c:choose>
+	         </div>
+	         <!-- 모달 푸터 -->
+	         <div class="modal-footer">
+	            <button type="button" class="btn btn-secondary" id="signModal" data-bs-dismiss="modal">닫기</button>
+	         </div>
+	      </div>
+	   </div>
+	</div>
+	<!-- [끝] 서명 모달 -->
 
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          

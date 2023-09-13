@@ -161,6 +161,11 @@
 			
 		});
 	</script>
+	<style>
+		.center{
+			text-align:center;
+		}
+	</style>
 </head>
 
 <body>
@@ -227,42 +232,47 @@
          2. 비밀번호 수정
          3. 휴가정보
     -->
-    <nav class="navbar navbar-expand-lg navbar-light">
-       <div class="collapse navbar-collapse" id="navbarNav">
-           <ul class="navbar-nav">
-               <li class="nav-item">
-                   <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
-               </li>
-           </ul>
-       </div>
-   </nav>
-   
-	<!-- 현재 비밀번호 일치/불일치 검사 -->
-	<label>현재 비밀번호:</label>
-	<input type="password" id="currentPassword">
-	<span id="exsistingPwMsg" class="validation-msg"></span><br>
-	<!-- 새 비밀번호 정규식 검사 -->
-	<label>새 비밀번호:</label>
-	<input type="password" id="newPassword" disabled>
-	<span id="pwMsg1" class="validation-msg"></span><br>
-	<!-- 새 비밀번호 일치/불일치 검사 -->
-	<label>새 비밀번호 확인:</label>
-	<input type="password" id="confirmNewPassword" name="newPw2" disabled>
-	<span id="pwMsg2" class="validation-msg"></span><br>
-		
-	<div id="passwordMatchMessage" class="text-success"></div>
-		
+    <div class="d-flex justify-content-between">
+		<ul class="nav nav-tabs">
+	        <li class="nav-item">
+	            <a class="nav-link" href="/member/modifyMember?result=success">개인정보 수정</a>
+	        </li>
+	        <li class="nav-item">
+	            <a class="nav-link active" href="/member/modifyMemberPw">비밀번호 수정</a>
+	        </li>
+	        <li class="nav-item">
+	            <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
+	        </li>
+	    </ul>
+	</div>
+	<br>
+	<h1 style="text-align:center">비밀번호 수정</h1>
+	<br>
+	<br>
+	<div>
+		<table>
+			<tr><!-- 현재 비밀번호 일치/불일치 검사 -->
+				<td><label>현재 비밀번호</label></td>
+				<td class="center"><input type="password" id="currentPassword" class="form-control"><span id="exsistingPwMsg" class="validation-msg"></span></td>
+			</tr>
+			<tr><!-- 새 비밀번호 정규식 검사 -->
+				<td><label>새 비밀번호</label></td>
+				<td class="center"><input type="password" id="newPassword" class="form-control" disabled><span id="pwMsg1" class="validation-msg"></span></td>
+			</tr>
+			<tr><!-- 새 비밀번호 일치/불일치 검사 -->
+				<td><label>새 비밀번호 확인</label></td>
+				<td class="center"><input type="password" id="confirmNewPassword" name="newPw2" class="form-control" disabled><span id="pwMsg2" class="validation-msg"></span></td>
+				<td><div id="passwordMatchMessage" class="text-success"></div></td>
+			</tr>
+		</table>
+	</div>
+	<br>
+	<br>
 	<hr>
-		
-	<button type="button" class="btn btn-secondary">취소</button>
-	<button type="button" class="btn btn-primary" id="saveButton">저장</button>
-    
+	<div style="display: flex; justify-content: space-between;">
+		<button type="button" class="btn btn-secondary" style="text-algin:left">취소</button>
+		<button type="button" class="btn btn-primary" style="text-align:right" id="saveButton">저장</button>
+    </div>
 
 
 

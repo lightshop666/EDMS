@@ -208,6 +208,14 @@ public class EmpService {
 	        enrichedEmp.put("accessLevel", emp.getAccessLevel()); // 권한
 	        log.debug(CC.YE + "EmpService.enrichedEmpList() accessLevel : " + emp.getAccessLevel() + CC.RESET);
 		    
+	        // 3. 사원의 이메일
+	        Map<String, Object> memberInfo = memberMapper.selectMemberInfo(emp.getEmpNo());
+	        log.debug(CC.YE + "EmpService.enrichedEmpList() memberInfo : " + memberInfo + CC.RESET);
+	        if(memberInfo != null){
+		        String email = (String)memberInfo.get("email");
+		        log.debug(CC.YE + "EmpService.enrichedEmpList() email : " + email.toString() + CC.RESET);
+		        enrichedEmp.put("email", email);
+	        }
 	        enrichedEmpList.add(enrichedEmp);
 	    }
 

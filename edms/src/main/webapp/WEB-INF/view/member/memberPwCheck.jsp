@@ -48,7 +48,7 @@
 	<!-- jquery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
 	<script>
-        $(document).ready(function() {
+		$(document).ready(function() {
         	// 비밀번호 불일치 시 팝업 메세지
             var result = '${param.result}'; // result 파라미터 값을 가져옴
             if (result === 'fail') {
@@ -64,7 +64,8 @@
 		                window.location.href = '/home'; // Home 페이지로 이동
 		            }
 		        });
-			});
+			})
+
         });
     </script>
 
@@ -127,16 +128,20 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-
-
-<h1>비밀번호 확인</h1>
+	
+	<br>
+	<br>
+	<br>
+	<h2>비밀번호 확인</h2>
     <form action="/member/memberPwCheck" method="post">
         <div class="mb-3">
-            <label for="pw" class="form-label">비밀번호를 입력하세요: </label>
-            <input type="password" class="form-control" id="pw" name="pw">
+            <label for="pw" class="form-label"></label>
+            <input type="password" class="form-control center" id="pw" name="pw">
         </div>
-        <a class="btn btn-secondary" id="cancelBtn" href="/home">취소</a>
-        <button type="submit" class="btn btn-primary">확인</button>
+        <div style="display: flex; justify-content: space-between;">
+	        <a class="btn btn-secondary" id="cancelBtn" href="/home" style="text-align:left;">취소</a>
+	        <button type="submit" class="btn btn-primary" style="text-align:right;">확인</button>
+    	</div>
     </form>
 
 

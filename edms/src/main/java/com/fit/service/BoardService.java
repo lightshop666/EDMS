@@ -38,11 +38,7 @@ public class BoardService {
 	        return -1;
 	    }
 	    
-	    // 기존 파일 조회
-        BoardFile boardFileOne = boardFileMapper.selectBoardFileOne(board.getBoardNo());
-        log.debug(CC.YE + "BoardService.addBoard() boardFileOne : " + boardFileOne + CC.RESET);
-        
-        int row = boardMapper.addBoard(board); // 성공 시 board의 boardNo가 키 값으로 채워짐
+        int row = boardMapper.addBoard(board);
     		
 		// VO 파일리스트 호출
 		List<MultipartFile> fileList = board.getMultipartFile();

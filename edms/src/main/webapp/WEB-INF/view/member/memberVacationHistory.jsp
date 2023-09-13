@@ -45,6 +45,11 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
+	<style>
+		.table{
+			text-align:center;
+		}
+	</style>
 </head>
 
 <body>
@@ -111,46 +116,81 @@
          2. 비밀번호 수정
          3. 휴가정보
     -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-       <div class="collapse navbar-collapse" id="navbarNav">
-           <ul class="navbar-nav">
-               <li class="nav-item">
-                   <a class="nav-link active" href="/member/modifyMember?result=success">개인정보 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
-               </li>
-               <li class="nav-item">
-                   <a class="nav-link" href="/member/memberVacationHistory">휴가정보</a>
-               </li>
-           </ul>
-       </div>
-   </nav>
-   
-    <h1>휴가정보</h1>
-    
-    <table border="1">
-		<tr>
-			<td>지급연차<br>${vacationByPeriod}일</td>
-			<td>남은연차<br>${remainDays}일</td>
-			<td>남은보상휴가<br>${remainRewardDays}일</td>
-		</tr>
-	</table>
+    <div class="d-flex justify-content-between">
+		<ul class="nav nav-tabs">
+		    <li class="nav-item">
+		        <a class="nav-link" href="/member/modifyMember?result=success">개인정보 수정</a>
+		    </li>
+			<li class="nav-item">
+				<a class="nav-link" href="/member/modifyMemberPw">비밀번호 수정</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link active" href="/member/memberVacationHistory">휴가정보</a>
+			</li>
+		</ul>
+	</div>
 	
-    <form method="GET" action="/member/memberVacationHistory">
-        <div class="search-area">
-            <label class="search-label">기간검색</label>
-            <input type="date" name="startDate" value="${param.startDate}">
-            <input type="date" name="endDate" value="${param.endDate}">
-            <button type="submit">검색</button>
-        </div>
-    </form>
-	    
-    <div>
-        <a href="/member/memberVacationHistory?vacationName=연차">연차</a>
-        <a href="/member/memberVacationHistory?vacationName=보상">보상</a>
-    </div>
+	<br>
+	<br>
+	
+    <h1 style="text-align:center;">휴가정보</h1>
     
+	<br>
+	<br>
+	
+	<!-- 휴가 정보 카드 조회 -->
+	<div class="row">
+	    <div class="col-md-4">
+			<div class="card-group text-center">
+				<div class="card">
+					<div class="card-body">
+						<h2 class="card-title">지급연차</h2>
+						<h2 class="card-title">${vacationByPeriod}일</h2>
+					</div>
+				</div>
+			</div>
+		</div>	
+		<div class="col-md-4">
+			<div class="card-group text-center">
+				<div class="card">
+					<div class="card-body">
+						<h2 class="card-title">남은연차</h2>
+						<h2 class="card-title">${remainDays}일</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card-group text-center">
+				<div class="card">
+					<div class="card-body">
+						<h2 class="card-title">남은보상휴가</h2>
+						<h2 class="card-title">${remainRewardDays}일</h2>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="search-area">
+	    <form method="GET" action="/member/memberVacationHistory">
+			<div class="form-group" style="display: flex;">
+		        <label class="date-label" style="padding-top: 5px; width: 50px;">기간</label>
+	 		
+	 		
+	           	<input type="date" name="startDate" value="${param.startDate}" class="form-control" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+	           ~
+	           	<input type="date" name="endDate" value="${param.endDate}" class="form-control" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+	       		<button type="submit" class="btn waves-effect waves-light btn-outline-dark" style="margin-left: 50px;">검색</button>
+	       	</div>
+		</form>
+	</div>
+	<br>
+	<br>
+   	<div class="text-center">
+        <a href="/member/memberVacationHistory?vacationName=연차"><button type="button" class="btn btn-primary">연차</button></a>
+        <a href="/member/memberVacationHistory?vacationName=보상"><button type="button" class="btn btn-primary">보상</button></a>
+    </div>
+    <br>
     <table class="table">
         <thead class="table-active">
             <tr>
@@ -164,7 +204,7 @@
 	        <c:choose>
 		        <c:when test="${empty vacationHistoryList}">
 		        	<tr>
-		            	<td colspan="5">휴가정보가 없습니다.</td>
+		            	<td colspan="5" style="text-align:center;">휴가정보가 없습니다.</td>
 		            </tr>
 	            </c:when>
 	        </c:choose>    

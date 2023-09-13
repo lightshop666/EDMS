@@ -23,7 +23,7 @@
 		)
 	</insert>
 	
-	<!-- 파일 상세 조회 -->
+	<!-- 파일 상세 조회(boardNo로 조회) -->
 	<select id="selectSaveFile" parameterType="int" resultType="com.fit.vo.BoardFile">
 			SELECT
 				board_file_no boardFileNo
@@ -40,7 +40,7 @@
 				board_no = #{boardNo}
 	</select>
 	
-	<!-- 파일 상세 조회 -->
+	<!-- 파일 상세 조회(boardFileNo로 조회) -->
 	<select id="selectBoardFileOne" resultType="com.fit.vo.BoardFile">
 			SELECT
 				board_file_no boardFileNo

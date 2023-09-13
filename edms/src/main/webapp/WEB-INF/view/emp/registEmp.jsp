@@ -135,25 +135,25 @@
         	
 		});
 	</script>
-<style>
-	/* 구분선 */
-	hr {
-	    border: solid 3px black;
-	    width: 100%;
-	    margin: 0; /* auto 가운데 정렬 */
-	}
-	/* 테이블 중앙 정렬 */
-	table {
-		text-align: center;
-	}
-	/* body 중앙 정렬 */
-	body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-    }
-</style>
+	<style>
+		/* 구분선 */
+		hr {
+		    border: solid 3px black;
+		    width: 100%;
+		    margin: 0; /* auto 가운데 정렬 */
+		}
+		/* 테이블 중앙 정렬 */
+		table {
+			text-align: center;
+		}
+		/* body 중앙 정렬 */
+		body {
+	          display: flex;
+	          justify-content: center;
+	          align-items: center;
+	          height: 100vh;
+	    }
+	</style>
 </head>
 <body>
 <!-- ============================================================== -->
