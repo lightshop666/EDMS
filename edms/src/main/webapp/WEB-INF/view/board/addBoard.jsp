@@ -67,7 +67,7 @@
 							// 글자 크기 설정
 							['fontsize', ['fontsize']],
 							// 굵기, 기울임꼴, 밑줄,취소 선, 서식지우기
-							['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
+							['style', ['italic', 'underline', 'strikethrough', 'clear']],
 							// 글자색
 							['color', ['forecolor','color']],
 							// 표만들기
@@ -166,7 +166,16 @@
 			
 		});
    </script>
-   
+   <style>
+	   	#diveder-bottom {
+		    border-bottom: 6px solid rgba(0, 0, 0, 0.3) !important; /* 굵은 선 */
+		    margin-top: 10px; /* 원하는 간격 값으로 조정 */
+		    margin-bottom: 10px; /* 원하는 간격 값으로 조정 */
+		}
+		.center{
+			text-align:center;
+		}
+   </style>
 </head>
 <body>
 <!-- ============================================================== -->
@@ -226,63 +235,63 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
-<h1>공지글 추가</h1>
+<h1 style="text-align:center;">공지글 추가</h1>
+<br>
 <form method="POST" action="/board/addBoard" enctype="multipart/form-data">
    <input type="hidden" name="empNo" value="${empNo}">
-   <table class="table">
-      <tr>
-         <td>작성자</td>
-         <td><input type="text" value="${empName}" readonly></td>
-         <td>부서명</td>
-         <td><input type="text" value="${deptName}" readonly></td>
-      </tr>
-      <tr>
-	    <td>카테고리</td>
-	    <td colspan="3">
-	        <select name="boardCategory" id="category">
-	            <option value="전사공지">전사공지</option>
-	            <option value="사업추진본부">사업추진본부</option>
-	            <option value="경영지원본부">경영지원본부</option>
-	            <option value="영업지원본부">영업지원본부</option>
-	        </select>
-	    </td>
-	</tr>
-      <tr>
-         <td>제목</td>
-         <td colspan="3"><input id="title" type="text" name="boardTitle"></td>
-      </tr>
-      <tr>
-          <td>중요공지 여부</td>
-          <td colspan="3">
-              <label><input type="radio" name="topExposure" value="Y"> 중요</label>
-              <label><input type="radio" name="topExposure" value="N"> 일반</label>
-              <span id="msg"></span>
-          </td>
-      </tr>
-      <tr>
-		<td colspan="4">
-			<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
-			<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
-			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-		    
-			<div class="container">
-		       <textarea id="summernote" name="boardContent" class="summernote"></textarea>
-		    </div>
-		</td>
-      </tr>
-      <tr>
-      	<td>
-      		<input type="file" name="multipartFile" multiple>
-      	</td>
-      	<td colspan="3">
-      		<div id="selectedFileNames"></div>
-      	</td>
-      </tr>
-   </table>
-    <hr>
-    <div class="buttons">
-       <button type="button" id="cancelBtn">취소</button>
-       <button type="submit" id="saveBtn">저장</button>
+	<table class="table">
+		<tr>
+			<td class="table-active center">작성자</td>
+			<td><input type="text" value="${empName}" class="form-control" readonly></td>
+			<td class="table-active center">부서명</td>
+			<td><input type="text" value="${deptName}" class="form-control" readonly></td>
+		</tr>
+		<tr>
+			<td class="table-active center">카테고리</td>
+			<td colspan="3">
+			    <select name="boardCategory" id="category" class="form-control">
+			        <option value="전사공지">전사공지</option>
+			        <option value="사업추진본부">사업추진본부</option>
+			        <option value="경영지원본부">경영지원본부</option>
+			        <option value="영업지원본부">영업지원본부</option>
+			    </select>
+			</td>
+		</tr>
+		<tr>
+		   <td class="table-active center">제목</td>
+		   <td colspan="3"><input id="title" type="text" name="boardTitle" class="form-control"></td>
+		</tr>
+		<tr>
+			<td class="table-active center">중요공지 여부</td>
+			<td colspan="3">
+			    <label><input type="radio" name="topExposure" value="Y"> 중요</label>
+			    <label><input type="radio" name="topExposure" value="N"> 일반</label>
+			    <span id="msg"></span>
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4">
+				<script src="${pageContext.request.contextPath}/summernote/summernote-lite.js"></script>
+				<script src="${pageContext.request.contextPath}/summernote/lang/summernote-ko-KR.js"></script>
+				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+			    
+				<div class="container">
+			       <textarea id="summernote" name="boardContent" class="summernote"></textarea>
+			    </div>
+			</td>
+		</tr>
+		<tr id="diveder-bottom">
+			<td>
+	      		<input type="file" name="multipartFile" multiple>
+			</td>
+			<td colspan="3">
+				<div id="selectedFileNames"></div>
+			</td>
+		</tr>
+	</table>
+	<div style="display: flex; justify-content: space-between;">
+       <button type="button" id="cancelBtn" class="btn btn-secondary" style="text-algin:left">취소</button>
+       <button type="submit" id="saveBtn" class="btn btn-primary" style="text-align:right">저장</button>
    </div>
 </form>
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          

@@ -44,6 +44,7 @@
 			, board_title = #{boardTitle}
 			, board_content = #{boardContent}
 			, top_exposure = #{topExposure}
+			, updatedate = NOW()
 		WHERE
 			emp_no = #{empNo}
 		AND
@@ -98,8 +99,7 @@
 			        <if test="searchCol == 'empName' and searchWord != ''">
 			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 			        </if>
-					ORDER BY
-			        	b.createdate DESC    
+			        ORDER BY b.createdate DESC
 					LIMIT 3
 				)
 			    
@@ -131,8 +131,7 @@
 			        <if test="searchCol == 'empName' and searchWord != ''">
 			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 			        </if>
-			        ORDER BY
-			        	b.createdate DESC
+			        ORDER BY b.createdate DESC
 			    )
 		    ) AS boardList
 	    LIMIT #{beginRow}, #{rowPerPage}

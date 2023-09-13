@@ -260,7 +260,7 @@
 				<td class="center"><input type="password" id="newPassword" class="form-control" disabled><span id="pwMsg1" class="validation-msg"></span></td>
 			</tr>
 			<tr><!-- 새 비밀번호 일치/불일치 검사 -->
-				<td><label>새 비밀번호 확인</label></td>
+				<td><label>새 비밀번호 확인&nbsp;</label></td>
 				<td class="center"><input type="password" id="confirmNewPassword" name="newPw2" class="form-control" disabled><span id="pwMsg2" class="validation-msg"></span></td>
 				<td><div id="passwordMatchMessage" class="text-success"></div></td>
 			</tr>

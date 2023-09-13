@@ -135,25 +135,25 @@
         	
 		});
 	</script>
-	<style>
-		/* 구분선 */
-		hr {
-		    border: solid 3px black;
-		    width: 100%;
-		    margin: 0; /* auto 가운데 정렬 */
-		}
-		/* 테이블 중앙 정렬 */
-		table {
-			text-align: center;
-		}
-		/* body 중앙 정렬 */
-		body {
-	          display: flex;
-	          justify-content: center;
-	          align-items: center;
-	          height: 100vh;
-	    }
-	</style>
+<style>
+	/* 구분선 */
+	hr {
+	    border: solid 3px black;
+	    width: 100%;
+	    margin: 0; /* auto 가운데 정렬 */
+	}
+	/* 테이블 중앙 정렬 */
+	table {
+		text-align: center;
+	}
+	/* body 중앙 정렬 */
+	body {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+    }
+</style>
 </head>
 <body>
 <!-- ============================================================== -->
@@ -213,7 +213,7 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 <div class="container">
-	<h3 class="text-center">사원 등록</h3>
+	<h1 class="text-center">사원 등록</h1>
 	<br>
 	<!-- 사원 정보 등록 -->
 	<form action="${pageContext.request.contextPath}/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->

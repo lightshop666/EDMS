@@ -132,16 +132,20 @@ public class BoardController {
 	@PostMapping("/board/removeBoard")
 	public String removeBoard(@RequestParam(name = "boardNo") int boardNo // 현재 페이지
 							  , @RequestParam(name = "empNo") int empNo 
-							  , @RequestParam(name = "boardSaveFileName", required = false) List<String> boardSaveFileName){ // 한 페이지 당 행의 수
+							  , @RequestParam(name = "boardSaveFileName", required = false) List<String> boardSaveFileName
+							  , HttpServletRequest request){ // 한 페이지 당 행의 수
 		
 		int removeRow = 0;
-		
+		// 경로 설정
+		String path = request.getServletContext().getRealPath("/file/board/"); //직접 실제 위치(경로)를 구해서 service에 넘겨주는 api
+		log.debug(CC.YE + "BoardController.removeBoard() path : " + path + CC.RESET); // debug 용도. static log 필드(5개)
+	
 		// board 글 및 파일 삭제
 	    if (boardSaveFileName != null) {
-	        removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName);
+	        removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName, path);
 	        log.debug(CC.YE + "BoardController.removeBoard() removeRow : " + removeRow + CC.RESET);
 	    } else {
-	    	removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName);
+	    	removeRow = boardService.removeBoard(boardNo, empNo, boardSaveFileName, path);
 	    	log.debug(CC.YE + "BoardController.removeBoard() boardSaveFileName is null" + CC.RESET);
 	    }
 	    

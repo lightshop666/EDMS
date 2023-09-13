@@ -148,14 +148,14 @@ public class BoardService {
 	}
 	
 	// 게시글 삭제
-	public int removeBoard(int boardNo, int empNo, List<String> boardSaveFileName) {
+	public int removeBoard(int boardNo, int empNo, List<String> boardSaveFileName, String path) {
 		int removeBoardRow = boardMapper.removeBoard(boardNo, empNo);
 		log.debug(CC.YE + "BoardService.removeBoard() removeBoardRow : " + removeBoardRow + CC.RESET);
 		
 		if(boardSaveFileName != null) {
 			// 배열에 있는 각 파일 이름을 반복하여 삭제
 		    for (String fileName : boardSaveFileName) {
-		        File f = new File("/file/board/" + fileName);
+		        File f = new File(path + fileName);
 		        if (f.exists()) {
 		            if (!f.delete()) { // 파일 삭제가 실패하면 로그를 출력하고 실패 코드 반환
 		                log.debug(CC.YE + "BoardService.removeFile() 파일 삭제 실패 : " + fileName + CC.RESET);

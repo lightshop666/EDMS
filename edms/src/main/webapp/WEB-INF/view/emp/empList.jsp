@@ -230,7 +230,18 @@
 	            }
 	        });
 			
-			
+			// 회원가입 미진행 사원에게 이메일 발송
+	        $("#sendEmail").click(function(e) {
+	            e.preventDefault(); // 기본 링크 동작을 막음
+	
+	            // 경고창 표시
+	            if (confirm("사원 초대 페이지로 이동하시겠습니까?")) {
+	                // 확인을 클릭한 경우 페이지 이동
+	                window.location.href = $(this).attr("href");
+	            } else {
+	            	return;
+	            }
+	        });
 		});
 		
 	</script>
@@ -505,7 +516,7 @@
 				<td data-empno="${e.empNo}" data-name="${e.empName}" class="enterOne">${e.remainDays}</td>
 				<c:choose>
 	                <c:when test="${e.isMember eq 'X'}">
-	                    <td><a href="/sendEmail?empNo=${e.empNo}">${e.isMember}</a></td>
+	                    <td><a href="/sendEmail?empNo=${e.empNo}" id="sendEmail">${e.isMember}</a></td>
 	                </c:when>
 	                <c:otherwise>
 	                    <td>${e.isMember}</td>
