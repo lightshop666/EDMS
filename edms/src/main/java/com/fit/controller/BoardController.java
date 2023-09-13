@@ -41,7 +41,7 @@ public class BoardController {
 	public String addBoard(Model model, HttpSession session) {
 		int empNo = (int)session.getAttribute("loginMemberId");
 		log.debug(CC.YE + "BoardController.addBoard() empNo : " + empNo + CC.RESET);
-		
+
 		String deptName = (String)session.getAttribute("deptName");
 		log.debug(CC.YE+"BoardController.addBoard() deptName : " + deptName + CC.RESET);
 		
@@ -51,6 +51,7 @@ public class BoardController {
 		model.addAttribute("empNo", empNo);
 		model.addAttribute("empName", empName);
 		model.addAttribute("deptName", deptName);
+		
 		return "/board/addBoard";
 	}
 	
@@ -155,7 +156,7 @@ public class BoardController {
 /* 조회 */	
 	// 전체 게시글 조회
 	@GetMapping("/board/boardList")
-	public String boardList(Model model
+	public String boardList(Model model, HttpSession session
 							, @RequestParam(name = "currentPage", defaultValue = "1") int currentPage // 현재 페이지
 							, @RequestParam(name = "rowPerPage", defaultValue = "10") int rowPerPage // 한 페이지 당 행의 수
 							, @RequestParam(name = "searchCol", defaultValue = "", required = false) String searchCol // 검색항목
@@ -194,7 +195,10 @@ public class BoardController {
 		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 		log.debug(CC.YE + "BoardService.boardList() maxPage: " + maxPage + CC.RESET);
 		
-	    // 5. 모델값 view에 전달
+		// 5. 권한 설정
+		String accessLevel = boardService.selectAccess((int)session.getAttribute("loginMemberId"));
+		
+	    // 6. 모델값 view에 전달
 		model.addAttribute("board", boardList); // 공지 목록
 	    model.addAttribute("totalCount", totalCount); // 전체 행 개수
 	    model.addAttribute("lastPage", lastPage); // 마지막 페이지
@@ -204,6 +208,7 @@ public class BoardController {
 	    model.addAttribute("boardCategory", boardCategory); // 정렬값 유지
 	    model.addAttribute("searchCol", searchCol); // 검색 항목 값
 	    model.addAttribute("searchWord", searchWord); // 검색 값
+	    model.addAttribute("accessLevel", accessLevel); // 권한
 	    
 		return "/board/boardList";
 	}

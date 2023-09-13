@@ -169,7 +169,14 @@
 		        <a class="nav-link" data-toggle="tab" href="/board/boardList?boardCategory=영업지원본부">영업지원본부</a>
 		    </li>
 		</ul>
-		<a href="/board/addBoard"><button type="button" class="btn waves-effect waves-light btn-outline-dark">추가</button></a>
+		<c:choose>
+	        <c:when test="${!accessLevel.equals('0')}">
+	            <a href="/board/addBoard"><button type="button" class="btn waves-effect waves-light btn-outline-dark">추가</button></a>
+	        </c:when>
+	        <c:otherwise>
+	            &nbsp;
+	        </c:otherwise>
+	    </c:choose>
 	</div>
 	<br>
 	<table class="table">

@@ -13,7 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fit.mapper.BoardMapper;
+import com.fit.mapper.EmpMapper;
 import com.fit.vo.BoardFile;
+import com.fit.vo.EmpInfo;
 import com.fit.vo.Board;
 import com.fit.CC;
 import com.fit.mapper.BoardFileMapper;
@@ -27,6 +29,9 @@ public class BoardService {
 	
 	@Autowired
 	private BoardFileMapper boardFileMapper;
+	
+	@Autowired
+	private EmpMapper empMapper;
 	
 	// 게시글 추가(글 + 파일 추가)
 	public int addBoard(Board board, String path) {
@@ -294,5 +299,13 @@ public class BoardService {
 	    boardAndFileOne.put("selectSaveFile", selectSaveFile);
 	    
 	    return boardAndFileOne;
+	}
+	public String selectAccess(int empNo) {
+		String accessLevel = "";
+		
+		EmpInfo empInfo = empMapper.selectEmp(empNo);
+		accessLevel = empInfo.getAccessLevel();
+		
+		return accessLevel;
 	}
 }

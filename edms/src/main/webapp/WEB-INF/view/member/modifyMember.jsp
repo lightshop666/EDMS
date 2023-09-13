@@ -280,17 +280,17 @@
     	<!-- 조회할 정보 -->
     	<tr>
     		<td><label>사원번호&nbsp;</label></td>
-    		<td><input type="number" value="${empNo}" readonly class="form-control"></td>
+    		<td><input type="text" value="${empNo}" readonly class="form-control"></td>
     	</tr>
     	<tr><td>&nbsp;</td></tr>
     	<tr>	
     		<td><label>사원명</label></td>
-    		<td><input type="number" value="${empName}" readonly class="form-control"></td>
+    		<td><input type="text" value="${empName}" readonly class="form-control"></td>
     	</tr>
     	<tr><td>&nbsp;</td></tr>
     	<tr>	
     		<td><label>성별</label></td>
-    		<td><input type="number" value="${member.gender}" readonly class="form-control"></td>
+    		<td><input type="text" value="${member.gender}" readonly class="form-control"></td>
     	</tr>
     	<tr><td>&nbsp;</td></tr>
     	<!-- 서명 수정 -->
