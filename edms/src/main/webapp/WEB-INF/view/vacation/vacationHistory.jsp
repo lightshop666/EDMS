@@ -52,6 +52,27 @@
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    
+    <style>
+		/* 테이블 중앙 정렬 */
+		table, .draftCategory {
+			text-align: center;
+		}
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
+	</style>
 </head>
 <body>
 	<!-- ============================================================== -->
@@ -170,13 +191,13 @@
 			            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
 			        </select>
 		        </div>
-		        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
-		        
+		        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn" style="margin-right: 10px;">적용</button>
+		        <a href="${pageContext.request.contextPath}/vacation/vacationHistory?empNo=${empNo}" class="btn waves-effect waves-light btn-outline-dark">초기화</a>
 		    </div>
         
     </form>
     <div align="right">
-	    <a type = "button" href="${pageContext.request.contextPath}/vacation/adminAddVacation?empNo=${empNo}" class="btn btn-primary">보상휴가 지급</a>
+	    <a type = "button" href="${pageContext.request.contextPath}/vacation/adminAddVacation?empNo=${empNo}" class="btn waves-effect waves-light btn-outline-dark">보상휴가 지급</a>
 	</div>
 	<br>
     <!--  
@@ -185,15 +206,15 @@
         <a href="${pageContext.request.contextPath}/vacationHistory?vacationName=보상">보상</a>
     </div>
     -->
-    <table class="table table-hover table-primary">
-         <thead class="text-white">
+    <table class="table border table-striped table-bordered text-nowrap">
+         <thead>
             <tr>
-                <th class="bg-primary">휴가 번호</th>
-                <th class="bg-primary">사원 번호</th>
-                <th class="bg-primary">휴가 종류</th>
-                <th class="bg-primary">휴가 일수(+/-)</th>
-                <th class="bg-primary">휴가 일수</th>
-                <th class="bg-primary">발생 일자</th>
+                <th>휴가 번호</th>
+                <th>사원 번호</th>
+                <th>휴가 종류</th>
+                <th>휴가 일수(+/-)</th>
+                <th>휴가 일수</th>
+                <th>발생 일자</th>
             </tr>
         </thead>
         <tbody>

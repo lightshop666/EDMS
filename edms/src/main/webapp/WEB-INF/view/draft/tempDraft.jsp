@@ -90,6 +90,27 @@
 	});
 	
 	</script>
+	
+	<style>
+		/* 테이블 중앙 정렬 */
+		table, .draftCategory {
+			text-align: center;
+		}
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
+	</style>
 </head>
 
 <body>
@@ -150,55 +171,73 @@
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 
-			<h1>임시저장함</h1>
+			<h1 class="draftCategory">임시저장함</h1> <br>
 		    
 		    <!-- 검색 조건 영역 -->
 		    <form method="get" action="${pageContext.request.contextPath}/draft/tempDraft">
-		        <div class="date-area">
-		            <label class="date-label">검색 시작일</label>
-		            <input type="date" name="startDate" value="${startDate}">
-		            
-		            <label class="date-label">검색 종료일</label>
-		            <input type="date" name="endDate" value="${endDate}">
-		            
-		            <button type="submit" class="btn btn-secondary btn-sm">조회</button>
-		        </div>
-		
-		        <div class="sort-area">
-		            <label class="sort-label">정렬</label>
-		            <select name="col">
-		                <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>작성일</option>
-		            </select>
-		            <select name="ascDesc">
-		                <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
-		                <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
-		            </select>
-		            <button type="submit" class="btn btn-secondary btn-sm">정렬</button>
-		        </div>
-		        
-		        <div class="search-area">
-		            <label class="search-label">검색</label>
-		            <select name="searchCol">
-		                <option value="doc_title" ${searchCol eq 'docTitle' ? 'selected' : ''}>문서 제목</option>
-		            </select>
-		            <input type="text" name="searchWord" value="${searchWord}">
-		            <button type="submit" class="btn btn-secondary btn-sm">검색</button>
-		            <a href="${pageContext.request.contextPath}/draft/tempDraft" class="btn btn-secondary btn-sm">초기화</a>
-		        </div> <br>
+		        <div class="date-area" style="display: flex; align-items: center;">
+			 		<div class="form-group" style="width: 100px;">
+				        <label class="date-label">검색 시작일</label>
+			 		</div>
+			 		<div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+				        <input type="date" name="startDate" value="${startDate}" class="form-control">
+			        </div>
+			        <div class="form-group" style="width: 100px;">
+				        <label class="date-label">검색 종료일</label>
+				    </div>
+			        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+				        <input type="date" name="endDate" value="${endDate}" class="form-control">
+			        </div>
+				</div> <br>
+				<div class="sort-area" style="display: flex; align-items: center;">
+			    	<div class="form-group" style="width: 100px;">
+			        	<label class="sort-label">정렬</label>
+			        </div>
+			        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+				        <select name="col" class="form-control">
+				        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
+				        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
+				        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
+				        	조건이 거짓일 경우 빈 문자열('') -->
+				            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>등록일</option>
+				        </select>
+			        </div>
+			        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+				        <select name="ascDesc" class="form-control">
+				            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+				            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+				        </select>
+			        </div>
+			    </div> <br>
+				<div class="search-area" style="display: flex; align-items: center;">
+			    	<div class="form-group" style="width: 100px;">
+			        	<label class="search-label">검색</label>
+			        </div>
+			        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+				        <select name="searchCol" class="form-control">
+				            <option value="doc_title" ${searchCol eq 'docTitle' ? 'selected' : ''}>문서 제목</option>
+				        </select>
+			        </div>
+			        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+			        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
+			        </div>
+			        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn" style="margin-right: 10px;">적용</button>
+			        <a href="${pageContext.request.contextPath}/draft/approvalDraft" class="btn waves-effect waves-light btn-outline-dark">초기화</a>
+			    </div> <br>
 		    </form>
 		    <div style="text-align: right;">
-		    	<button type="button" class="btn btn-secondary btn-lg" id="delBtn">삭제</button>
+		    	<button type="button" class="btn waves-effect waves-light btn-outline-dark" id="delBtn">삭제</button>
 		    </div> <br>
 		    
 		    <!-- 문서 제출 목록 출력 -->
 		    <form action="${pageContext.request.contextPath}/draft/tempDraft" method="post" id="deleteForm">
-			    <table class="table table-hover table-primary">
-			    	<thead class="text-white">
+			    <table class="table border table-striped table-bordered text-nowrap">
+			    	<thead>
 				        <tr>
-				        	<th class="bg-primary"><input type="checkbox" id="checkAll"></th>
-				            <th class="bg-primary">문서 양식</th>
-				            <th class="bg-primary">문서 제목</th>
-				            <th class="bg-primary">작성일</th>
+				        	<th><input type="checkbox" id="checkAll"></th>
+				            <th>문서 양식</th>
+				            <th>문서 제목</th>
+				            <th>작성일</th>
 				        </tr>
 				     </thead>
 				     <tbody>

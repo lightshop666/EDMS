@@ -51,7 +51,7 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
     <script type='text/javascript'>
         $(document).ready(function(){
@@ -71,6 +71,26 @@
             });
         });
     </script>
+    <style>
+		/* 테이블 중앙 정렬 */
+		table, .draftCategory {
+			text-align: center;
+		}
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
+	</style>
 </head>
 <body>
 <!-- ============================================================== -->
@@ -148,7 +168,7 @@
 	       </div>
 	   </nav>
    <br>
-    <h2>기안함</h2>
+    <h2 class="draftCategory">기안함</h2> <br>
     
      <!-- 결재상태별 갯수 조회 -->
 			<div class="card-group text-center">
@@ -179,76 +199,64 @@
 	        </div>
     
     <form method="get" action="${pageContext.request.contextPath}/draft/submitDraft">
-		<!-- 날짜 조회 align-items: center; 속성은 해당 div안의 내용이 한 row에 출력되도록 함-->
-		 	
-		 	
-		 	<div class="date-area" style="display: flex; align-items: center;">
-		 		<div class="form-group" style="width: 100px;">
-			        <label class="date-label">검색 시작일</label>
-		 		</div>
-		 		<div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
-			        <input type="date" name="startDate" value="${startDate}" class="form-control">
-		        </div>
-		        <div class="form-group" style="width: 100px;">
-			        <label class="date-label">검색 종료일</label>
-			    </div>
-		        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
-			        <input type="date" name="endDate" value="${endDate}" class="form-control">
-		        </div>
-		       
-			</div>
-		
-		<br>
-		
-		<!-- 정렬조건 영역 -->
-		    <div class="sort-area" style="display: flex; align-items: center;">
-		    	<div class="form-group" style="width: 100px;">
-		        	<label class="sort-label">정렬</label>
-		        </div>
-		        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
-			        <select name="col" class="form-control">
-			        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
-			        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
-			        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
-			        	조건이 거짓일 경우 빈 문자열('') -->
-			            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>등록일</option>
-			        </select>
-		        </div>
-		        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
-			        <select name="ascDesc" class="form-control">
-			            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
-			            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
-			        </select>
-		        </div>
-		        
+		<div class="date-area" style="display: flex; align-items: center;">
+	 		<div class="form-group" style="width: 100px;">
+		        <label class="date-label">검색 시작일</label>
+	 		</div>
+	 		<div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+		        <input type="date" name="startDate" value="${startDate}" class="form-control">
+	        </div>
+	        <div class="form-group" style="width: 100px;">
+		        <label class="date-label">검색 종료일</label>
 		    </div>
-		
-		<br>
-        
-        <!-- 검색조건 영역 -->
-	    <div class="search-area" style="display: flex; align-items: center;">
+	        <div class="form-group" style="width: 200px; margin-left: 20px; margin-right: 20px;">
+		        <input type="date" name="endDate" value="${endDate}" class="form-control">
+	        </div>
+		</div> <br>
+		<div class="sort-area" style="display: flex; align-items: center;">
+	    	<div class="form-group" style="width: 100px;">
+	        	<label class="sort-label">정렬</label>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="col" class="form-control">
+		        	<!-- ${col eq 'createdate' ? 'selected' : ''}는 조건문을 통해 선택 여부를 결정하는 부분 
+		        	col eq 'createdate' 는 col 변수의 값이 createdate와 같은지 비교 
+		        	? 'selected' : '' 조건이 참일 경우 selected 속성을 추가하여 <option> 요소가 선택된 상태로 표시함. 
+		        	조건이 거짓일 경우 빈 문자열('') -->
+		            <option value="createdate" ${col eq 'createdate' ? 'selected' : ''}>등록일</option>
+		        </select>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="ascDesc" class="form-control">
+		            <option value="ASC" ${ascDesc eq 'ASC' ? 'selected' : ''}>오름차순</option>
+		            <option value="DESC" ${ascDesc eq 'DESC' ? 'selected' : ''}>내림차순</option>
+		        </select>
+	        </div>
+	    </div> <br>
+		<div class="search-area" style="display: flex; align-items: center;">
 	    	<div class="form-group" style="width: 100px;">
 	        	<label class="search-label">검색</label>
 	        </div>
 	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
-            <select name="searchCol">
-                <option value="doc_title" ${searchCol eq 'doc_title' ? 'selected' : ''}>문서 제목</option>
-            </select>
-            </div>
-         	<div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
+		        <select name="searchCol" class="form-control">
+		            <option value="doc_title" ${searchCol eq 'docTitle' ? 'selected' : ''}>문서 제목</option>
+		        </select>
+	        </div>
+	        <div class="form-group" style="width: 250px; margin-left: 20px; margin-right: 20px;">
 	        	<input type="text" name="searchWord" value="${searchWord}" class="form-control">
 	        </div>
-	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn">검색</button>
-	    </div>
+	        <button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="searchBtn" style="margin-right: 10px;">적용</button>
+	        <a href="${pageContext.request.contextPath}/draft/submitDraft" class="btn waves-effect waves-light btn-outline-dark">초기화</a>
+	    </div> <br>
 
     
-        <table class="table table-hover table-primary">
-           <thead class="text-white">
+        <table class="table border table-striped table-bordered text-nowrap">
+           <thead>
 	            <tr>
-	            	 <th class="bg-primary">양식</th>
-	                 <th class="bg-primary">문서 제목</th>
-	                 <th class="bg-primary">결재상태</th>
-	                 <th class="bg-primary">작성일</th>
+	            	 <th>문서 양식</th>
+	                 <th>문서 제목</th>
+	                 <th>결재상태</th>
+	                 <th>기안일</th>
 	            </tr>
             </thead>
             <tbody> 
@@ -283,22 +291,38 @@
     </form>
     
     <!-- 페이징 영역 -->
-    <c:if test="${minPage > 1 }">
-        <a href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">이전</a>
-    </c:if>
+    <nav aria-label="Page navigation example" style="text-align: center;">
+    	<ul class="pagination justify-content-center">
+		    <c:if test="${minPage > 1 }">
+		    	<li class="page-item">
+		        	<a class="page-link" aria-label="Previous" href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${currentPage - 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">
+		        		<span aria-hidden="true">&lt;</span>
+			            <span class="sr-only">Previous</span>
+			         </a>
+		    	</li>
+		    </c:if>
     
-    <c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
-        <c:if test="${i == currentPage}">
-            ${i}
-        </c:if>
-        <c:if test="${i != currentPage}">
-            <a href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
-        </c:if>
-    </c:forEach>
+    		<c:forEach var="i" begin="${minPage}" end="${maxPage}" step="1">
+    		<li class="page-item">
+        		<c:if test="${i == currentPage}">
+            		<span class="page-link">${i}</span>
+        		</c:if>
+        		<c:if test="${i != currentPage}">
+            		<a class="page-link" href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${i}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">${i}</a>
+       			</c:if>
+       		</li>
+    		</c:forEach>
     
-    <c:if test="${lastPage > currentPage}">
-        <a href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">다음</a>
-    </c:if>
+    		<c:if test="${lastPage > currentPage}">
+    			<li class="page-item">
+			        <a class="page-link" aria-label="Next" href="${pageContext.request.contextPath}/draft/submitDraft?currentPage=${currentPage + 1}&startDate=${startDate}&endDate=${endDate}&searchCol=${searchCol}&searchWord=${searchWord}&col=${col}&ascDesc=${ascDesc}">
+			        	<span aria-hidden="true">&gt;</span>
+						<span class="sr-only">Next</span>
+			        </a>
+			    </li>
+    		</c:if>
+    	</ul>
+    </nav>
     <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
 		</div>

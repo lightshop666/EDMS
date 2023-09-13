@@ -23,6 +23,7 @@ import com.fit.mapper.DraftMapper;
 import com.fit.service.DraftService;
 import com.fit.vo.EmpInfo;
 import com.fit.vo.ExpenseDraftContent;
+import com.fit.vo.MemberFile;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,15 +35,25 @@ public class ExpenseController {
     public String expenseDraft(HttpSession session,Model model) {
         log.debug("[DEBUG] expenseDraft() Start");
         String empName = (String) session.getAttribute("empName");
+        int empNo = (int) session.getAttribute("loginMemberId");
+        String deptName = (String) session.getAttribute("deptName");
+		String empPosition = (String) session.getAttribute("empPosition");
+		
         List<EmpInfo> employeeList = draftService.getAllEmp();
 
         // 사원 리스트 정보를 로그로 출력
         for (EmpInfo emp : employeeList) {
             log.debug(CC.JUNG+"[DEBUG] Employee: {}"+ CC.RESET, emp);
         }
-
+        // 기안자의 서명 이미지
+        MemberFile memberSign = draftService.selectMemberSign(empNo);
+        
         model.addAttribute("empName", empName);
         model.addAttribute("employeeList", employeeList);
+        model.addAttribute("sign", memberSign);
+		model.addAttribute("deptName", deptName);
+		model.addAttribute("empPosition", empPosition);
+        
         return "draft/expenseDraft";
     }
     

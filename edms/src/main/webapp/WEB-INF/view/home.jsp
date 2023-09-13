@@ -171,6 +171,7 @@
 		       	<!------------ 봉사 정보 지도 시작 ------------->
 		       	<div class="row">
 			       	<div class="col-lg-6">
+			       		<h3 class="center" style="color:black;">봉사 정보 지도</h3>
 				       	<div id="map" style="width:500px; height:400px; !important"></div>
 		
 						<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=${appkey}"></script>

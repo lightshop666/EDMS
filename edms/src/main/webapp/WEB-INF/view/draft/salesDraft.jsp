@@ -220,6 +220,20 @@
 	    input[type="number"] {
 	        text-align: right;
 	    }
+    	/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
 	</style>
 </head>
 
@@ -301,7 +315,7 @@
 			   </nav>
 		   <br>
 			<div class="container pt-5">
-				<h1 style="text-align: center;">매출보고서</h1>
+				<h1 style="text-align: center;">매출보고서 작성</h1> <br>
 				<!-- 공통 함수를 사용하기 위해 id명 draftForm로 지정 필요 -->
 				<form action="/draft/salesDraft" method="post" id="draftForm" enctype="multipart/form-data">
 					<input type="hidden" name="empNo" value="${empNo}">
@@ -526,7 +540,7 @@
 					</table>
 					<button type="button" id="cancelBtn" class="btn btn-secondary">취소</button>
 					<button type="button" id="saveBtn" class="btn btn-secondary">임시저장</button>
-					<button type="button" id="submitBtn" class="btn btn-secondary">저장</button>
+					<button type="button" id="submitBtn" class="btn btn-primary">저장</button>
 				</form>
 			</div>
 			

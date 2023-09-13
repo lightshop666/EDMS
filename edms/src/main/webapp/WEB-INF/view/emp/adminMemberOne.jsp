@@ -170,6 +170,31 @@
 		  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 		  background-color: #f5f5f5;
 		}
+		.card-title {
+            text-align: center;
+        }
+        /* 취소, 저장 왼/오른쪽 정렬 */
+        #cancelBtn {
+		    float: left;
+		}
+		
+		#pwBtn {
+		    float: right;
+		}
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
 	</style>
 </head>
 
@@ -247,71 +272,78 @@
 			       </div>
 			   </nav>
 		  	<br>
-			<h1>개인정보 조회 - 관리자</h1>
-			<!-- 회원가입 유무에 따라 분기 -->
-			<c:if test="${member.empNo != null}">
-				<table class="table-bordered">
-					<tr>
-						<td>사진</td>
-						<td>
-							<!-- 사진 클릭 시 모달로 이미지 출력 -->
-							<img src="${image.memberPath}${image.memberSaveFileName}" width="200" height="200"
-								data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
-						</td>
-					</tr>
-					<tr>
-						<td>사원명</td>
-						<td>
-							${member.empName}
-						</td>
-					</tr>
-					<tr>
-						<td>성별</td>
-						<td>
-							${member.gender}
-						</td>
-					</tr>
-					<tr>
-						<td>전화번호</td>
-						<td>
-							${member.phoneNumber}
-						</td>
-					</tr>
-					<tr>
-						<td>이메일</td>
-						<td>
-							${member.email}
-						</td>
-					</tr>
-					<tr>
-						<td>주소</td>
-						<td>
-							${member.address}
-						</td>
-					</tr>
-					<tr>
-						<td>저장된 서명</td>
-						<td>
-							<!-- 미리보기 클릭 시 모달로 서명 출력 -->
-							<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
-						</td>
-					</tr>
-					<tr>
-						<td>가입일</td>
-						<td>
-							${member.createdate}
-						</td>
-					</tr>
-					<tr>
-						<td>수정일</td>
-						<td>
-							${member.updatedate}
-						</td>
-					</tr>
-				</table>
-				<button type="button" id="cancelBtn" class="btn btn-secondary">취소</button> <!-- 왼쪽 정렬 -->
-				<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
-				<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal" class="btn btn-secondary">임시 비밀번호 발급</button> <!-- 오른쪽 정렬 -->
+		  	<div class="row">
+            	<div class="col-8">
+                	<div class="card">
+                		<div class="card-body">
+                		<h3 class="card-title center">개인정보 조회</h3>
+                        <h6 class="card-subtitle"></h6>
+                        <h6 class="card-title mt-5"><i
+                                        class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6>
+                        <div class="table-responsive">
+							<!-- 회원가입 유무에 따라 분기 -->
+							<c:if test="${member.empNo != null}">
+								<table class="table">
+									<tr>
+										<td colspan="2" class="text-center">
+											<!-- 사진 클릭 시 모달로 이미지 출력 -->
+											<img src="${image.memberPath}${image.memberSaveFileName}" width="300" height="300"
+												data-bs-toggle="modal" data-bs-target="#imageModal" class="hover">
+										</td>
+									</tr>
+									<tr>
+										<td>사원명</td>
+										<td>
+											${member.empName}
+										</td>
+									</tr>
+									<tr>
+										<td>성별</td>
+										<td>
+											${member.gender}
+										</td>
+									</tr>
+									<tr>
+										<td>전화번호</td>
+										<td>
+											${member.phoneNumber}
+										</td>
+									</tr>
+									<tr>
+										<td>이메일</td>
+										<td>
+											${member.email}
+										</td>
+									</tr>
+									<tr>
+										<td>주소</td>
+										<td>
+											${member.address}
+										</td>
+									</tr>
+									<tr>
+										<td>저장된 서명</td>
+										<td>
+											<!-- 미리보기 클릭 시 모달로 서명 출력 -->
+											<span data-bs-toggle="modal" data-bs-target="#signModal" class="hover">미리보기</span>
+										</td>
+									</tr>
+									<tr>
+										<td>가입일</td>
+										<td>
+											${member.createdate}
+										</td>
+									</tr>
+									<tr>
+										<td>수정일</td>
+										<td>
+											${member.updatedate}
+										</td>
+									</tr>
+								</table>
+								<button type="button" id="cancelBtn" class="btn waves-effect waves-light btn-outline-dark">취소</button> <!-- 왼쪽 정렬 -->
+								<!-- 비밀번호 초기화 버튼 클릭시 모달창 출력 -->
+								<button type="button" data-bs-toggle="modal" data-bs-target="#pwModal" class="btn waves-effect waves-light btn-outline-dark" id="pwBtn">임시 비밀번호 발급</button> <!-- 오른쪽 정렬 -->
 				
 				<!-- 모달창 시작 -->
 				

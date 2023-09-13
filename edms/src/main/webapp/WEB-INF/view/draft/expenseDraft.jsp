@@ -21,6 +21,20 @@
 	        width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
 	        box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
 	    }
+	    /* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
 	</style>
     	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!-- Tell the browser to be responsive to screen width -->
@@ -348,39 +362,45 @@
 	                   <a class="nav-link active" href="${pageContext.request.contextPath}/draft/expenseDraft">지출결의서</a>
 	               </li>
 	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">매출보고서</a>
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/salesDraft">매출보고서</a>
 	               </li>
 	               <li class="nav-item">
-	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/approvalDraft">휴가신청서</a>
+	                   <a class="nav-link" href="${pageContext.request.contextPath}/draft/vacationDraft">휴가신청서</a>
 	               </li>
 	           </ul>
 	       </div>
 	   </nav>
    <br>
-    <h1 style="text-align: center;">지출결의서 작성</h1>
-        <table class="table-bordered">
-            <tr>
-				<th rowspan="3" colspan="2">지출결의서</th>
-				<th rowspan="3">결재</th>
-				<th>기안자</th>
-				<th>중간승인자</th>
-				<th>최종승인자</th>
-			</tr>
-         
-            <tr>
-                <td rowspan="2">
-                    ${empName}
-                </td>
-                <td>    
-                    <span id="selectedMiddleApprover"></span> 
-                </td>
-                <td>    
-                    <span id="selectedFinalApprover"></span>	
-                    <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
-                    <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
-                </td>
-            </tr>
-            <tr>
+   <div class="container pt-5">
+	    <h1 style="text-align: center;">지출결의서 작성</h1> <br>
+	        <table class="table-bordered">
+	            <tr>
+					<th rowspan="3" colspan="2">지출결의서</th>
+					<th rowspan="3">결재</th>
+					<th>기안자</th>
+					<th>중간승인자</th>
+					<th>최종승인자</th>
+				</tr>
+	         
+	            <tr>
+	                <td>
+	                   <c:if test="${sign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
+							<img src="${sign.memberPath}${sign.memberSaveFileName}">
+						</c:if>
+	                </td>
+	                <td>    
+	                    <span id="selectedMiddleApprover"></span> 
+	                </td>
+	                <td>    
+	                    <span id="selectedFinalApprover"></span>	
+	                    <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
+	                    <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
+	                </td>
+	            </tr>
+	            <tr>
+	            	<td>
+	            		${empName}_${deptName}_${empPosition}
+	            	</td>
 					<td>
 						<button type="button" id="middleApproverBtn" class="btn btn-secondary">
 							검색 <!-- 중간승인자 검색 모달 버튼 -->
@@ -391,68 +411,69 @@
 							검색 <!-- 최종승인자 검색 모달 버튼 -->
 						</button>
 					</td>
-			</tr>
-            <tr>
-                <td>수신참조 <button type="button" id="recipientsBtn" class="btn btn-secondary">선택</button></td>
-                <td colspan="5">
-                    
-                    <span id="selectedRecipients"></span>
-                    <input type="hidden" id="selectedRecipientsIds" name="recipients[]" value="">
-                </td>
-            </tr>
-            <!-- 마감일 -->
-            <tr>
-                <td>마감일</td>
-                <td colspan="5"><input type="date" name="paymentDate" required></td>
-            </tr>
-            <!-- 제목 -->
-            <tr>
-                <td>제목</td>
-                <td colspan="5"><input type="text" name="documentTitle" required></td>
-            </tr>
-            <!-- 내역 항목 -->
-            <tr>
-                <td>
-                	내역
-                </td>
-                <td colspan="5">
-                    <table id="expenseDetailsTable" class="table-bordered">
-                        <tr>
-                            <th>카테고리</th>
-                            <th>금액</th>
-                            <th>내용</th>
-                            <th><button type="button" id="addExpenseDetailBtn">+</button></th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <select name="expenseCategory[]" required>
-                                    <option value="교통비">교통비</option>
-                                    <option value="식비">식비</option>
-                                    <option value="통신비">통신비</option>
-                                    <option value="사무용품비">사무용품비</option>
-                                </select>
-                            </td>
-                            <td><input type="number" name="expenseCost[]" required></td>
-                            <td><input type="text" name="expenseInfo[]" required></td>
-                            <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
-                        </tr>
-                        
-                    </table>
-                </td>
-            </tr>
-            <tr>
-				<th colspan="6">
-					위와 같이 결재바랍니다. <br>
-					${year}년 ${month}월 ${day}일
-				</th>
-			</tr>
-        </table>
-
-        <!-- 버튼 그룹 -->
-        <div class="buttons">
-            <button type="submit" class="btn btn-secondary" id="saveDraftBtn">임시저장</button>
-            <button type="submit" class="btn btn-primary" id="submitBtn">저장</button>
-        </div>
+				</tr>
+	            <tr>
+	                <td>수신참조 <button type="button" id="recipientsBtn" class="btn btn-secondary">선택</button></td>
+	                <td colspan="5">
+	                    
+	                    <span id="selectedRecipients"></span>
+	                    <input type="hidden" id="selectedRecipientsIds" name="recipients[]" value="">
+	                </td>
+	            </tr>
+	            <!-- 마감일 -->
+	            <tr>
+	                <td>마감일</td>
+	                <td colspan="5"><input type="date" name="paymentDate" required></td>
+	            </tr>
+	            <!-- 제목 -->
+	            <tr>
+	                <td>제목</td>
+	                <td colspan="5"><input type="text" name="documentTitle" required></td>
+	            </tr>
+	            <!-- 내역 항목 -->
+	            <tr>
+	                <td>
+	                	내역
+	                </td>
+	                <td colspan="5">
+	                    <table id="expenseDetailsTable" class="table-bordered">
+	                        <tr>
+	                            <th>카테고리</th>
+	                            <th>금액</th>
+	                            <th>내용</th>
+	                            <th><button type="button" id="addExpenseDetailBtn">+</button></th>
+	                        </tr>
+	                        <tr>
+	                            <td>
+	                                <select name="expenseCategory[]" required>
+	                                    <option value="교통비">교통비</option>
+	                                    <option value="식비">식비</option>
+	                                    <option value="통신비">통신비</option>
+	                                    <option value="사무용품비">사무용품비</option>
+	                                </select>
+	                            </td>
+	                            <td><input type="number" name="expenseCost[]" required></td>
+	                            <td><input type="text" name="expenseInfo[]" required></td>
+	                            <td><button type="button" class="removeExpenseDetailBtn">-</button></td>
+	                        </tr>
+	                        
+	                    </table>
+	                </td>
+	            </tr>
+	            <tr>
+					<th colspan="6">
+						위와 같이 결재바랍니다. <br>
+						${year}년 ${month}월 ${day}일
+					</th>
+				</tr>
+	        </table>
+	
+	        <!-- 버튼 그룹 -->
+	        <div class="buttons">
+	            <button type="submit" class="btn btn-secondary" id="saveDraftBtn">임시저장</button>
+	            <button type="submit" class="btn btn-primary" id="submitBtn">저장</button>
+	        </div>
+	   </div>
 
    <!-- 중간승인자 검색 모달 -->
    <div class="modal" id="middleApproverModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" style="display: none;">

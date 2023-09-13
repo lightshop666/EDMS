@@ -21,6 +21,20 @@
 	        width: 100%; /* input 요소와 textarea 요소가 셀의 너비에 맞게 꽉 차도록 설정 */
 	        box-sizing: border-box; /* 내부 패딩과 경계선을 포함하여 너비 계산 */
 	    }
+	    /* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
 	</style>
     	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<!-- Tell the browser to be responsive to screen width -->
@@ -311,33 +325,38 @@
 	       </div>
 	   </nav>
    <br>
-   
-    <h1 style="text-align: center;">기안서 작성</h1>
-    
-        <table class="table-bordered">
-       
-	        <tr>
-				<th rowspan="3" colspan="2">기안서</th>
-				<th rowspan="3">결재</th>
-				<th>기안자</th>
-				<th>중간승인자</th>
-				<th>최종승인자</th>
-			</tr>
-         
-            <tr>
-                <td rowspan="2">
-                   ${empName}
-                </td>
-                <td>    
-                    <span id="selectedMiddleApprover"></span> 
-                </td>
-                <td>    
-                    <span id="selectedFinalApprover"></span>	
-                    <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
-                    <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
-                </td>
-            </tr>
-            <tr>
+   <div class="container pt-5">
+	    <h1 style="text-align: center;">기안서 작성</h1> <br>
+	    
+	        <table class="table-bordered">
+	       
+		        <tr>
+					<th rowspan="3" colspan="2">기안서</th>
+					<th rowspan="3">결재</th>
+					<th>기안자</th>
+					<th>중간승인자</th>
+					<th>최종승인자</th>
+				</tr>
+	         
+	            <tr>
+	                <td>
+	                	<c:if test="${sign.memberSaveFileName != null}"> <!-- 서명 이미지 출력 -->
+							<img src="${sign.memberPath}${sign.memberSaveFileName}">
+						</c:if>
+					</td>
+	                <td>    
+	                    <span id="selectedMiddleApprover"></span> 
+	                </td>
+	                <td>    
+	                    <span id="selectedFinalApprover"></span>	
+	                    <input type="hidden" id="selectedMiddleApproverId" name="selectedMiddleApproverId" value="">
+	                    <input type="hidden" id="selectedFinalApproverId" name="selectedFinalApproverId" value="">
+	                </td>
+	            </tr>
+	            <tr>	
+	            	<td>
+	            		${empName}_${deptName}_${empPosition}
+	            	</td>
 					<td>
 						<button type="button" id="middleApproverBtn" class="btn btn-secondary">
 							검색 <!-- 중간승인자 검색 모달 버튼 -->
@@ -348,41 +367,42 @@
 							검색 <!-- 최종승인자 검색 모달 버튼 -->
 						</button>
 					</td>
-			</tr>
-            <tr>
-                <td>수신참조 <button type="button" id="recipientsBtn" class="btn btn-secondary">선택</button></td>
-                <td colspan="5">
-                    
-                    <span id="selectedRecipients"></span>
-                    <input type="hidden" id="selectedRecipientsIds" name="recipients[]" value="">
-                </td>
-            </tr>
-            <tr>
-                <td>제목</td>
-                <td colspan="5"><input type="text" name="documentTitle" required></td>
-            </tr>
-            <tr>
-                <td>내용</td>
-                <td colspan="5"><textarea name="docContent" rows="5" required></textarea></td>
-            </tr>
-       		<tr>
-				<th>파일첨부</th>
-				<td colspan="5">
-					<input type="file" name="multipartFile" multiple> <!-- 파일 첨부 -->
-				</td>
-			</tr>
-			<tr>
-				<th colspan="6">
-					위와 같이 결재바랍니다. <br>
-					${year}년 ${month}월 ${day}일
-				</th>
-			</tr>
-        </table>
-        
-        <div class="buttons">
-            <button type="submit" class="btn btn-secondary" id="saveDraftBtn">임시저장</button>
-            <button type="submit" class="btn btn-secondary" id="submitBtn">저장</button>
-        </div>
+				</tr>
+	            <tr>
+	                <td>수신참조 <button type="button" id="recipientsBtn" class="btn btn-secondary">선택</button></td>
+	                <td colspan="5">
+	                    
+	                    <span id="selectedRecipients"></span>
+	                    <input type="hidden" id="selectedRecipientsIds" name="recipients[]" value="">
+	                </td>
+	            </tr>
+	            <tr>
+	                <td>제목</td>
+	                <td colspan="5"><input type="text" name="documentTitle" required></td>
+	            </tr>
+	            <tr>
+	                <td>내용</td>
+	                <td colspan="5"><textarea name="docContent" rows="5" required></textarea></td>
+	            </tr>
+	       		<tr>
+					<th>파일첨부</th>
+					<td colspan="5">
+						<input type="file" name="multipartFile" multiple> <!-- 파일 첨부 -->
+					</td>
+				</tr>
+				<tr>
+					<th colspan="6">
+						위와 같이 결재바랍니다. <br>
+						${year}년 ${month}월 ${day}일
+					</th>
+				</tr>
+	        </table>
+	        
+	        <div class="buttons">
+	            <button type="submit" class="btn btn-secondary" id="saveDraftBtn">임시저장</button>
+	            <button type="submit" class="btn btn-primary" id="submitBtn">저장</button>
+	        </div>
+     </div>
 
 	<!-- 중간승인자 검색 모달 -->
 	<div class="modal" id="middleApproverModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="primary-header-modalLabel" style="display: none;">

@@ -75,6 +75,34 @@
 			});
 		});
 	</script>
+	
+	<style>
+		.card-title {
+            text-align: center;
+        }
+        /* 취소, 저장 왼/오른쪽 정렬 */
+        #cancelBtn {
+		    float: left;
+		}
+		
+		#saveBtn {
+		    float: right;
+		}
+		/* 탭 선택된 상태가 진하게 */
+		.nav-link.active {
+		    font-weight: bold;
+		    color: white;
+		    background-color: #007bff;
+		}
+		a:link, a:visited { 
+			color: black;
+			text-decoration: none;
+		}
+		a:hover { 
+			color: blue;
+			text-decoration: underline;
+		}
+	</style>
 </head>
 
 <body>
@@ -151,105 +179,117 @@
 			       </div>
 			   </nav>
 		  	<br>
-			<h1>인사정보 수정(조회) - 관리자</h1>
-			<form action="/emp/modifyEmp" method="post">
-				<input type="hidden" name="empNo" value="${emp.empNo}">
-				<table class="table-bordered">
-					<tr>
-						<td>사원번호</td>
-						<td>
-							${emp.empNo} <!-- 수정 불가, 단순 출력 -->
-						</td>
-					</tr>
-					<tr>
-						<td>사원명</td>
-						<td>
-							<input type="text" name="empName" value="${emp.empName}">
-						</td>
-					</tr>
-					<tr>
-						<td>부서명</td>
-						<td>
-							<select name="deptName">
-								<option value="" <c:if test="${emp.deptName.equals('')}">selected</c:if>>없음</option>
-								<c:forEach var="d" items="${deptList}">
-									<option value="${d.deptName}" <c:if test="${emp.deptName.equals(d.deptName)}">selected</c:if>>${d.deptName}</option>
-								</c:forEach>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>팀명</td>
-						<td>
-							<select name="teamName">
-								<option value="" <c:if test="${emp.teamName.equals('')}">selected</c:if>>없음</option>
-								<c:forEach var="t" items="${teamList}">
-									<option value="${t.teamName}" <c:if test="${emp.teamName.equals(t.teamName)}">selected</c:if>>${t.teamName}</option>
-								</c:forEach>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>직급</td>
-						<td>
-							<select name="empPosition">
-								<option value="CEO" <c:if test="${emp.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
-								<option value="부서장" <c:if test="${emp.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
-								<option value="팀장" <c:if test="${emp.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
-								<option value="부팀장" <c:if test="${emp.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
-								<option value="사원" <c:if test="${emp.empPosition.equals('사원')}">selected</c:if>>사원</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>권한</td>
-						<td>
-							<select name="accessLevel">
-								<option value="0" <c:if test="${emp.accessLevel.equals('0')}">selected</c:if>>0레벨</option>
-								<option value="1" <c:if test="${emp.accessLevel.equals('1')}">selected</c:if>>1레벨</option>
-								<option value="2" <c:if test="${emp.accessLevel.equals('2')}">selected</c:if>>2레벨</option>
-								<option value="3" <c:if test="${emp.accessLevel.equals('3')}">selected</c:if>>3레벨</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>재직사항</td>
-						<td>
-							<select name="empState">
-								<option value="재직" <c:if test="${emp.empState.equals('재직')}">selected</c:if>>재직</option>
-								<option value="퇴직" <c:if test="${emp.empState.equals('퇴직')}">selected</c:if>>퇴직</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>입사일</td>
-						<td>
-							<input type="date" name="employDate" value="${emp.employDate}">
-						</td>
-					</tr>
-					<tr>
-						<td>퇴사일</td>
-						<td>
-							<input type="date" name="employDate" value="${emp.retirementDate}">
-						</td>
-					</tr>
-					<tr>
-						<td>등록일</td>
-						<td>
-							${emp.createdate} <!-- 수정 불가, 단순 출력 -->
-						</td>
-					</tr>
-					<tr>
-						<td>수정일</td>
-						<td>
-							${emp.updatedate} <!-- 수정 불가, 단순 출력 -->
-						</td>
-					</tr>
-				</table>
-				<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-				<button type="submit" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
-			</form>
-
+		  	<div class="row">
+            	<div class="col-8">
+                	<div class="card">
+                		<div class="card-body">
+                		<h3 class="card-title center">인사정보 수정</h3>
+                        <h6 class="card-subtitle"></h6>
+                        <h6 class="card-title mt-5"><i
+                                        class="me-1 font-18 mdi mdi-numeric-1-box-multiple-outline"></i></h6>
+                        <div class="table-responsive">
+                        	<form action="/emp/modifyEmp" method="post">
+								<input type="hidden" name="empNo" value="${emp.empNo}">
+								<table class="table">
+									<tr>
+										<td>사원번호</td>
+										<td>
+											${emp.empNo} <!-- 수정 불가, 단순 출력 -->
+										</td>
+									</tr>
+									<tr>
+										<td>사원명</td>
+										<td>
+											<input type="text" name="empName" value="${emp.empName}" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td>부서명</td>
+										<td>
+											<select name="deptName" class="form-control">
+												<option value="" <c:if test="${emp.deptName.equals('')}">selected</c:if>>없음</option>
+												<c:forEach var="d" items="${deptList}">
+													<option value="${d.deptName}" <c:if test="${emp.deptName.equals(d.deptName)}">selected</c:if>>${d.deptName}</option>
+												</c:forEach>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>팀명</td>
+										<td>
+											<select name="teamName" class="form-control">
+												<option value="" <c:if test="${emp.teamName.equals('')}">selected</c:if>>없음</option>
+												<c:forEach var="t" items="${teamList}">
+													<option value="${t.teamName}" <c:if test="${emp.teamName.equals(t.teamName)}">selected</c:if>>${t.teamName}</option>
+												</c:forEach>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>직급</td>
+										<td>
+											<select name="empPosition" class="form-control">
+												<option value="CEO" <c:if test="${emp.empPosition.equals('CEO')}">selected</c:if>>CEO</option>
+												<option value="부서장" <c:if test="${emp.empPosition.equals('부서장')}">selected</c:if>>부서장</option>
+												<option value="팀장" <c:if test="${emp.empPosition.equals('팀장')}">selected</c:if>>팀장</option>
+												<option value="부팀장" <c:if test="${emp.empPosition.equals('부팀장')}">selected</c:if>>부팀장</option>
+												<option value="사원" <c:if test="${emp.empPosition.equals('사원')}">selected</c:if>>사원</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>권한</td>
+										<td>
+											<select name="accessLevel" class="form-control">
+												<option value="0" <c:if test="${emp.accessLevel.equals('0')}">selected</c:if>>0레벨</option>
+												<option value="1" <c:if test="${emp.accessLevel.equals('1')}">selected</c:if>>1레벨</option>
+												<option value="2" <c:if test="${emp.accessLevel.equals('2')}">selected</c:if>>2레벨</option>
+												<option value="3" <c:if test="${emp.accessLevel.equals('3')}">selected</c:if>>3레벨</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>재직사항</td>
+										<td>
+											<select name="empState" class="form-control">
+												<option value="재직" <c:if test="${emp.empState.equals('재직')}">selected</c:if>>재직</option>
+												<option value="퇴직" <c:if test="${emp.empState.equals('퇴직')}">selected</c:if>>퇴직</option>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>입사일</td>
+										<td>
+											<input type="date" name="employDate" value="${emp.employDate}" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td>퇴사일</td>
+										<td>
+											<input type="date" name="employDate" value="${emp.retirementDate}" class="form-control">
+										</td>
+									</tr>
+									<tr>
+										<td>등록일</td>
+										<td>
+											${emp.createdate} <!-- 수정 불가, 단순 출력 -->
+										</td>
+									</tr>
+									<tr>
+										<td>수정일</td>
+										<td>
+											${emp.updatedate} <!-- 수정 불가, 단순 출력 -->
+										</td>
+									</tr>
+								</table>
+								<button type="button" class="btn waves-effect waves-light btn-outline-dark" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+								<button type="submit" class="btn waves-effect waves-light btn-outline-dark" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
+							</form>
+                       	</div>
+                		</div>
+                    </div>
+               	</div>
+            </div>
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
 		</div>
