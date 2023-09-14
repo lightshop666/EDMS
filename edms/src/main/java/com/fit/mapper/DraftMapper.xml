@@ -727,7 +727,7 @@
       INNER JOIN
          approval a ON sd.approval_no = a.approval_no
       WHERE
-         sales_date IN (#{today}, #{previousMonth}, #{previousMonthBefore})
+         sales_date IN (#{previousMonth}, #{previousMonthBefore}, #{previousMonthBefore2})
          AND a.approval_state != '임시저장' <!-- 임시저장인 문서일 경우 옵션을 출력합니다. -->
          AND a.approval_state != '반려'; <!-- 반려인 문서일 경우 옵션을 출력합니다. -->
    </select>

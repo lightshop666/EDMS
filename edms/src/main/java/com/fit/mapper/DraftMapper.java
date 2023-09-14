@@ -128,7 +128,7 @@ public interface DraftMapper {
     
     int updateVacationDraft(VacationDraft vacationDraft); // 휴가신청서 수정
     
-    List<String> selectSalesDateList(String today, String previousMonth, String previousMonthBefore); // 해당 날짜의 기준년월 데이터가 존재하는지 조회
+    List<String> selectSalesDateList(String previousMonth, String previousMonthBefore, String previousMonthBefore2); // 해당 날짜의 기준년월 데이터가 존재하는지 조회
     
     List<Approval> selectApprovalDraftList(Map<String, Object> paramMap); // 내 결재함 리스트 조회
     

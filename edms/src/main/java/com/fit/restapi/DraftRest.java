@@ -52,12 +52,12 @@ public class DraftRest {
 	
 	// 이미 존재하는 기준년월 조회
 	@PostMapping("/getExistingSalesDates")
-	public List<String> getExistingSalesDates(String today, String previousMonth, String previousMonthBefore) {
-		log.debug(CC.HE + "DraftRest.getExistingSalesDates() today param : " + today + CC.RESET);
+	public List<String> getExistingSalesDates(String previousMonth, String previousMonthBefore, String previousMonthBefore2) {
 		log.debug(CC.HE + "DraftRest.getExistingSalesDates() previousMonth param : " + previousMonth + CC.RESET);
 		log.debug(CC.HE + "DraftRest.getExistingSalesDates() previousMonthBefore param : " + previousMonthBefore + CC.RESET);
+		log.debug(CC.HE + "DraftRest.getExistingSalesDates() previousMonthBefore2 param : " + previousMonthBefore2 + CC.RESET);
 		
-		List<String> salesDateList = draftMapper.selectSalesDateList(today, previousMonth, previousMonthBefore);
+		List<String> salesDateList = draftMapper.selectSalesDateList(previousMonth, previousMonthBefore, previousMonthBefore2);
 		log.debug(CC.HE + "DraftRest.getExistingSalesDates() salesDateList : " + salesDateList + CC.RESET);
 	
 		return salesDateList;
