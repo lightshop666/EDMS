@@ -46,7 +46,7 @@
 	<script src="${pageContext.request.contextPath}/webjars/sockjs-client/sockjs.min.js"></script>
 	<script src="${pageContext.request.contextPath}/webjars/stomp-websocket/stomp.min.js"></script>
 	<script src="${pageContext.request.contextPath}/WebsocketScripts.js"></script>
-	
+	<link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
 	<!-- 웹소켓 JS -->
 	<script src="../WebsocketScripts.js"></script>
 	
@@ -71,6 +71,9 @@ $(document).ready(function() {
 
 
 </script>
+<style>
+* { font-family: 'Spoqa Han Sans Neo', 'sans-serif'; }
+</style>
 	
 </head>
 
