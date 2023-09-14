@@ -391,9 +391,9 @@
 											</td>
 											<td>
 												<span class="rate">
-													<fmt:formatNumber value="${sc.targetRate * 100}" type="number" pattern="#,##0.00"></fmt:formatNumber>%
+													<fmt:formatNumber value="${sc.targetRate * 100}" type="number" pattern="#,##0.00"></fmt:formatNumber>
 												</span>
-												<input type="hidden" name="targetRate" class="targetRate" value="${sc.targetRate * 100}"> %
+												<input type="hidden" name="targetRate" class="targetRate" value="${sc.targetRate}"> %
 											</td>
 											<td>
 												<button type="button" class="removeDetailBtn">-</button>
