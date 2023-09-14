@@ -184,6 +184,25 @@
       });
       
    </script>
+   <style>
+		.custom-input {
+		  width: 500px;
+		  padding: 10px;
+		  border: 1px solid #ccc;
+		  border-radius: 5px;
+		}
+		
+		.custom-input:focus {
+		  border-color: #007bff;
+		  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+		  outline: none;
+		}
+		#diveder-bottom {
+		    border-bottom: 6px solid rgba(0, 0, 0, 0.3) !important;
+		    margin-top: 10px;
+		    margin-bottom: 10px;
+		}
+   </style>
 </head>
 
 <body>
@@ -303,46 +322,46 @@
 
 	<form action="/member/modifyMember" method="post">
 		<input type="hidden" name="empNo" value="${empNo}">
-		<table >
-		<!-- 수정할 정보 -->
-		<tr>
-			<td><label for="phoneNumber">전화번호</label></td>
-			<td><input type="text" id="phoneNumber" name="phoneNumber" class="form-control" value="${member.phoneNumber}"></td>
-		</tr>
-		<tr><td>&nbsp;</td></tr>
-		<tr>
-			<td><label for="email">이메일</label></td>
-			<td><input type="email" id="email" name="email" class="form-control" value="${member.email}"></td>
-		</tr>
-		<tr><td>&nbsp;</td></tr>
-	    <tr><!-- 기존 주소 표시 -->
-	    	<td><label for="existingAddress">주소</label></td>
-	    	<td><textarea id="existingAddress" name="existingAddress" class="form-control" readonly>${member.address}</textarea></td>
-	    </tr>
-	    <tr><td>&nbsp;</td></tr>
-		<tr>
-			<td colspan="2">
-				<!-- 새 주소 입력 -->
-			    <input type="text" id="sample6_postcode" placeholder="우편번호">
-			    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
-			    <input type="text" id="sample6_address" placeholder="주소"><br>
-			    <input type="text" id="sample6_detailAddress" placeholder="상세주소">
-			    <input type="text" id="sample6_extraAddress" placeholder="참고항목">
-			    <input type="hidden" name="address" id="address">
-			</td>
-		</tr>
-		<tr><td>&nbsp;</td></tr>
-		<tr>
-			<td><label for="createdate">가입일</label></td>
-			<td><input type="text" id="createdate" name="createdate" class="form-control" value="${member.createdate}" readonly></td>
-		</tr>
-		<tr><td>&nbsp;</td></tr>
-		<tr>
-			<td><label for="updatedate">최종 수정일</label></td>
-			<td><input type="text" id="updatedate" name="updatedate" class="form-control" value="${member.updatedate}" readonly></td>
-		</tr>
-		<tr><td>&nbsp;</td></tr>
-		</table>
+			<table>
+				<!-- 수정할 정보 -->
+				<tr>
+					<td><label for="phoneNumber">전화번호</label></td>
+					<td><input type="text" id="phoneNumber" name="phoneNumber" class="form-control" value="${member.phoneNumber}"></td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr>
+					<td><label for="email">이메일</label></td>
+					<td><input type="email" id="email" name="email" class="form-control" value="${member.email}"></td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+			    <tr><!-- 기존 주소 표시 -->
+			    	<td><label for="existingAddress">주소</label></td>
+			    	<td><textarea id="existingAddress" name="existingAddress" class="form-control" readonly>${member.address}</textarea></td>
+			    </tr>
+			    <tr><td>&nbsp;</td></tr>
+				<tr>
+					<td colspan="2">
+						<!-- 새 주소 입력 -->
+					    <input type="text" id="sample6_postcode" placeholder="우편번호" class="custom-input">
+					    <input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-primary"><br>
+					    <input type="text" id="sample6_address" placeholder="주소" class="custom-input"><br>
+					    <input type="text" id="sample6_detailAddress" placeholder="상세주소" class="custom-input">
+					    <input type="text" id="sample6_extraAddress" placeholder="참고항목" class="custom-input">
+					    <input type="hidden" name="address" id="address">
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr>
+					<td><label for="createdate">가입일</label></td>
+					<td><input type="text" id="createdate" name="createdate" class="form-control" value="${member.createdate}" readonly></td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+				<tr>
+					<td><label for="updatedate">최종 수정일</label></td>
+					<td><input type="text" id="updatedate" name="updatedate" class="form-control" value="${member.updatedate}" readonly></td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+			</table>
 		<hr>
 		<div style="display: flex; justify-content: space-between;">
 			<button type="button" class="btn btn-secondary" id="cancelBtn" style="text-align:left;">취소</button>

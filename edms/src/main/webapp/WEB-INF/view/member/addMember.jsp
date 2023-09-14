@@ -301,6 +301,25 @@
 			});
 		});
 	</script>
+	<style>
+		.custom-input {
+		  width: 500px;
+		  padding: 10px;
+		  border: 1px solid #ccc;
+		  border-radius: 5px;
+		}
+		
+		.custom-input:focus {
+		  border-color: #007bff;
+		  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+		  outline: none;
+		}
+		#diveder-bottom {
+		    border-bottom: 6px solid rgba(0, 0, 0, 0.3) !important;
+		    margin-top: 10px;
+		    margin-bottom: 10px;
+		}
+	</style>
 </head>
 
 <body>
@@ -360,74 +379,82 @@
 		<div class="container-fluid">
 <!-----------------------------------------------------------------본문 내용 ------------------------------------------------------->    
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
-			<h1>회원가입</h1>
-			<form action="/member/addMember" method="post">
-				<table class="table-bordered">
-					<tr>
-						<td>사원번호</td>
-						<td>
-							<input type="number" name="empNo" value="${empNo}" id="empNo"> <!-- empNo가 넘어올경우 출력 -->
-						</td>
-						<td>
-							<span id="empNoMsg"></span>
-						</td>
-					</tr>
-					<tr>
-						<td>비밀번호</td>
-						<td>
-							<input type="password" name="pw" placeholder="비밀번호를 입력하세요" id="pw1">
-						</td>
-						<td>
-							<span id="pwMsg1">최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.</span>
-						</td>
-					</tr>
-					<tr>
-						<td>비밀번호 확인</td>
-						<td>
-							<input type="password" name="pw2" placeholder="비밀번호를 한번 더 입력하세요" id="pw2">
-						</td>
-						<td>
-							<span id="pwMsg2"></span>
-						</td>
-					</tr>
-					<tr>
-						<td>성별</td>
-							<td colspan="2">
-							<input type="radio" name="gender" value="M">남
-							<input type="radio" name="gender" value="F">여
-						</td>
-					</tr>
-					<tr>
-						<td>전화번호</td>
-						<td>
-							<input type="text" name="phoneNumber" id="phoneNumber" placeholder="ex) 010-1234-5678">
-						</td>
-					</tr>
-					<tr>
-						<td>이메일</td>
-						<td>
-							<input type="email" name="email" id="email" placeholder="ex) example@email.com">
-						</td>
-						<td>
-							<span id="emailMsg"></span>
-						</td>
-					</tr>
-					<tr>
-						<td>주소</td>
+	<div class="container">
+		<h1 class="text-center">회원가입</h1>
+		<br>
+		<form action="/member/addMember" method="post">
+			<table class="table">
+				<tr>
+					<td>사원번호</td>
+					<td>
+						<input type="number" name="empNo" value="${empNo}" id="empNo" class="form-control"> <!-- empNo가 넘어올경우 출력 -->
+					</td>
+					<td>
+						<span id="empNoMsg"></span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호</td>
+					<td>
+						<input type="password" name="pw" placeholder="비밀번호를 입력하세요" id="pw1" class="form-control">
+					</td>
+					<td>
+						<span id="pwMsg1">최소 8자 이상, 영문 대소문자, 숫자, 특수문자를 포함해주세요.</span>
+					</td>
+				</tr>
+				<tr>
+					<td>비밀번호 확인</td>
+					<td>
+						<input type="password" name="pw2" placeholder="비밀번호를 한번 더 입력하세요" id="pw2" class="form-control">
+					</td>
+					<td>
+						<span id="pwMsg2"></span>
+					</td>
+				</tr>
+				<tr>
+					<td>성별</td>
 						<td colspan="2">
-							<!-- 도로명 주소 찾기 input -->
-							<input type="text" id="sample6_postcode" placeholder="우편번호">
-							<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기"><br>
-							<input type="text" id="sample6_address" placeholder="주소"><br>
-							<input type="text" id="sample6_detailAddress" placeholder="상세주소">
-							<input type="text" id="sample6_extraAddress" placeholder="참고항목">
-							<input type="hidden" name="address" id="fullAddress">
-						</td>
-					</tr>
-				</table>
-				<button type="button" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
-				<button type="submit" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
-			</form>
+						<input type="radio" name="gender" class="form-check-input" value="M" checked>남&nbsp;
+						<input type="radio" name="gender" class="form-check-input" value="F">여
+					</td>
+				</tr>
+				<tr>
+					<td>전화번호</td>
+					<td>
+						<input type="text" name="phoneNumber" id="phoneNumber" placeholder="ex) 010-1234-5678" class="form-control">
+					</td>
+				</tr>
+				<tr>
+					<td>이메일</td>
+					<td>
+						<input type="email" name="email" id="email" placeholder="ex) example@email.com" class="form-control">
+					</td>
+					<td>
+						<span id="emailMsg"></span>
+					</td>
+				</tr>
+				<tr id="diveder-bottom">
+					<td>주소</td>
+					<td colspan="2">
+						<!-- 도로명 주소 찾기 input -->
+						<input type="text" id="sample6_postcode" placeholder="우편번호" class="custom-input">
+						<input type="button" onclick="sample6_execDaumPostcode()" value="우편번호 찾기" class="btn btn-primary"><br>
+						<input type="text" id="sample6_address" placeholder="주소" class="custom-input"><br>
+						<input type="text" id="sample6_detailAddress" placeholder="상세주소" class="custom-input">
+						<input type="text" id="sample6_extraAddress" placeholder="참고항목" class="custom-input">
+						<input type="hidden" name="address" id="fullAddress">
+						<br>
+						<br>
+					</td>
+				</tr>
+			</table>
+			
+			<div class="d-flex justify-content-between">
+				<button type="button" class="btn btn-secondary" id="cancelBtn">취소</button> <!-- 왼쪽 정렬 -->
+				<button type="submit" class="btn btn-success" id="saveBtn">저장</button> <!-- 오른쪽 정렬 -->
+			</div>
+		</form>
+	</div>			
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
 
 		</div>
