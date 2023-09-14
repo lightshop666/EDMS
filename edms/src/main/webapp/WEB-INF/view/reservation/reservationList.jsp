@@ -22,7 +22,7 @@
 	  $(".reservationCancelBtn").click(function(){
 		// 클릭한 버튼($(this))의 'data-reservation-no' 속성 값을 가져와서 reservationNo 변수에 저장
 	    var reservationNo = $(this).data('reservation-no');
-	    var reservationNo = $(this).data('reservation-time');
+	    var reservationTime = $(this).data('reservation-time');
 	    var currentTime = new Date().getTime(); // 현재 시간 가져오기
 	    
 	    if (currentTime > reservationTime) {

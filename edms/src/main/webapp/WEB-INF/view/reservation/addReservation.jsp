@@ -46,6 +46,33 @@
 	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
+	<!-- 입력 태그중 필수 입력사항 미입력시 경고창 출력 -->
+	<script>
+	$(document).ready(function() {
+	    $('#addReservationForm').submit(function(e) {
+	        // 필수입력사항 선택되었는지 확인합니다.
+	        var utilityNo = $('select[name="utilityNo"]').val();
+	        var reservationDate = $('input[name="reservationDate"]').val();
+	
+	        if (!utilityNo || !reservationDate) {
+	            // 필수 항목이 비어 있다면 경고창을 보여주고, 폼 제출을 중단합니다.
+	            alert('필수 입력 항목을 작성해주세요.');
+	            e.preventDefault();
+	        }
+	    });
+	    
+	    $("#reservationDateField").change(function() {
+	        var selectedDate = new Date($(this).val()); // 선택된 날짜
+	        var currentDate = new Date(); // 현재 날짜
+
+	        if (selectedDate < currentDate) {
+	          alert("당일 및 이전의 날짜는 선택할 수 없습니다.");
+	          $(this).val(""); // 값 초기화
+	        }
+      	});
+	});
+	</script>
+	
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
@@ -68,23 +95,6 @@
 				}
 			});
 		});
-	</script>
-	
-	<!-- 입력 태그중 필수 입력사항 미입력시 경고창 출력 -->
-	<script>
-	$(document).ready(function() {
-	    $('#addReservationForm').submit(function(e) {
-	        // 필수입력사항 선택되었는지 확인합니다.
-	        var utilityNo = $('select[name="utilityNo"]').val();
-	        var reservationDate = $('input[name="reservationDate"]').val();
-	
-	        if (!utilityNo || !reservationDate) {
-	            // 필수 항목이 비어 있다면 경고창을 보여주고, 폼 제출을 중단합니다.
-	            alert('필수 입력 항목을 작성해주세요.');
-	            e.preventDefault();
-	        }
-	    });
-	});
 	</script>
 	
 	 <style>
@@ -216,7 +226,7 @@
 										</tr>
 										<tr>
 											<td>예약일 *</td>
-											<td><input type="date" name="reservationDate" class="form-control"></td>
+											<td><input type="date" name="reservationDate" id="reservationDateField" class="form-control"></td>
 										</tr>
 										<tr>
 											<!-- 신청 공용품 카테고리가 회의실이면 예약시간 태그가 출력되도록 -->
