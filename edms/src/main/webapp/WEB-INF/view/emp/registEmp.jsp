@@ -46,8 +46,6 @@
 	<script src="../assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
 	<script src="../dist/js/pages/dashboards/dashboard1.min.js"></script>
 	
-	<!-- xls 형식을 파싱하기 위해 SheetJS 라이브러리의 xls 모듈을 사용 -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
 	<script>
 		$(document).ready(function() { // 웹 페이지가 모든 html 요소를 로드한 후에 내부(JQuery)의 코드를 실행하도록 보장
 			
