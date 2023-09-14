@@ -14,7 +14,7 @@
     <title>GoodeeFit Login</title>
     <!-- Custom CSS -->
     <link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
-    
+    <link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
     <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
 	<script>
@@ -53,7 +53,9 @@
 		}
 	}
 	</script>
-
+	<style>
+		* { font-family: 'Spoqa Han Sans Neo', 'sans-serif'; }
+	</style>
     
 </head>
 
@@ -65,8 +67,7 @@
 <div class="auth-wrapper d-flex no-block justify-content-center align-items-center position-relative" 
 	style="background:url(${pageContext.request.contextPath}/assets/images/big/auth-bg.jpg) no-repeat center center;">
 <div class="auth-box row">
-	<div class="col-lg-7 col-md-5 modal-bg-img" style="background-image: url(${pageContext.request.contextPath}/assets/images/big/mainLogin-1.jpg);"> </div>
-	<div class="col-lg-5 col-md-7 bg-white">
+	<div class="col-lg-4 col-md-4 col-sm-12 bg-white">
 		<div class="p-3">
 			<div class="text-center">
 				<img src="${pageContext.request.contextPath}/assets/images/big/icon.png" alt="wrapkit">
@@ -79,30 +80,98 @@
 							<div class="form-group mb-3">
 							    <label class="form-label text-dark" for="uname">사원번호</label>
 							    <input class="form-control" name="memberId" value="${loginId}" type="text"
-									placeholder="enter your username">
+									placeholder="2022001">
 							</div>
 						</div>
 						<div class="col-lg-12">
 						    <div class="form-group mb-3">
 						        <label class="form-label text-dark" for="pwd">비밀번호</label>
 						        <input class="form-control" id="pwd" name="memberPw" type="password"
-									placeholder="enter your password">
+									placeholder="1234">
 						    </div>
 						</div>
 						<div class="col-lg-12 text-center">
 							<div align="left">
 								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장
-								<br>비밀번호 분실시 관리자에게 문의			
+								<br>비밀번호 분실시 관리자 문의			
 							</div>
-						    <button type="submit" class="btn w-100 btn-dark">로그인</button>
+						    <button type="submit" class="btn w-100 btn-dark">사원 로그인</button>
 						</div>
 					</div>
 				</form>
 			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 bg-white">
+		<div class="p-3">
+			<div class="text-center">
+				<img src="${pageContext.request.contextPath}/assets/images/big/icon.png" alt="wrapkit">
+			</div>
+			<h2 class="mt-3 text-center">Sign In</h2>
+			<p class="text-center">GoodeeFit 전자결재 시스템</p>
+				<form class="mt-4" action="${pageContext.request.contextPath}/login" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="form-group mb-3">
+							    <label class="form-label text-dark" for="uname">사원번호</label>
+							    <input class="form-control" name="memberId" value="${loginId}" type="text"
+									placeholder="2016001">
+							</div>
+						</div>
+						<div class="col-lg-12">
+						    <div class="form-group mb-3">
+						        <label class="form-label text-dark" for="pwd">비밀번호</label>
+						        <input class="form-control" id="pwd" name="memberPw" type="password"
+									placeholder="1234">
+						    </div>
+						</div>
+						<div class="col-lg-12 text-center">
+							<div align="left">
+								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장
+								<br>비밀번호 분실시 관리자 문의			
+							</div>
+						    <button type="submit" class="btn w-100 btn-dark">팀장 로그인</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="col-lg-4 col-md-4 col-sm-12 bg-white">
+		<div class="p-3">
+			<div class="text-center">
+				<img src="${pageContext.request.contextPath}/assets/images/big/icon.png" alt="wrapkit">
+			</div>
+			<h2 class="mt-3 text-center">Sign In</h2>
+			<p class="text-center">GoodeeFit 전자결재 시스템</p>
+				<form class="mt-4" action="${pageContext.request.contextPath}/login" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="form-group mb-3">
+							    <label class="form-label text-dark" for="uname">사원번호</label>
+							    <input class="form-control" name="memberId" value="${loginId}" type="text"
+									placeholder="2008001">
+							</div>
+						</div>
+						<div class="col-lg-12">
+						    <div class="form-group mb-3">
+						        <label class="form-label text-dark" for="pwd">비밀번호</label>
+						        <input class="form-control" id="pwd" name="memberPw" type="password"
+									placeholder="1234">
+						    </div>
+						</div>
+						<div class="col-lg-12 text-center">
+							<div align="left">
+								<input type="checkbox" name="idSave" value="y" id="idSaveCheckbox">ID저장
+								<br>비밀번호 분실시 관리자 문의			
+							</div>
+						    <button type="submit" class="btn w-100 btn-dark">부서장 로그인</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
 <!-- ============================================================== -->
 <!-- Login box.scss -->
 <!-- ============================================================== -->
-	</div>
 
 
 <!-----------------------------------------------------------------본문 끝 ------------------------------------------------------->          
