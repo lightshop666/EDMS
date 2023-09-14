@@ -5,48 +5,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<!-- Tell the browser to be responsive to screen width -->
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
-	<!-- Favicon icon -->
-	<link rel="icon" type="image/png" sizes="16x16" href="${pageContext.request.contextPath}/assets/images/favicon.png">
-	<title>empList</title>
-	<!-- Custom CSS -->
-	<link href="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.css" rel="stylesheet">
-	<link href="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-	<link href="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.css" rel="stylesheet" />
-	<!-- Custom CSS -->
-	<link href="${pageContext.request.contextPath}/dist/css/style.min.css" rel="stylesheet">
-	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-	<!--[if lt IE 9]>
-	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-	<![endif]-->
-	<!-- ============================================================== -->
-	<!-- All Jquery -->
-	<!-- ============================================================== -->
-	<script src="${pageContext.request.contextPath}/assets/libs/jquery/dist/jquery.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-	<!-- apps -->
-	<!-- apps -->
-	<script src="${pageContext.request.contextPath}/dist/js/app-style-switcher.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/feather.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/perfect-scrollbar/dist/perfect-scrollbar.jquery.min.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/sidebarmenu.js"></script>
-	<!--Custom JavaScript -->
-	<script src="${pageContext.request.contextPath}/dist/js/custom.min.js"></script>
-	<!--This page JavaScript -->
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/d3.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/c3/c3.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/chartist/dist/chartist.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-2.0.2.min.js"></script>
-	<script src="${pageContext.request.contextPath}/assets/extra-libs/jvector/jquery-jvectormap-world-mill-en.js"></script>
-	<script src="${pageContext.request.contextPath}/dist/js/pages/dashboards/dashboard1.min.js"></script>
-	<!-- jquery -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+	<title>GoodeeFit 사원목록</title>
 	<!-- excel download api : sheetjs  -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.15.5/xlsx.full.min.js"></script>
 	<!-- file download api : FileServer saveAs-->

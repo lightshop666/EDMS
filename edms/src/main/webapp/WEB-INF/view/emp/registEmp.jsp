@@ -167,13 +167,6 @@
 	table {
 		text-align: center;
 	}
-	/* body 중앙 정렬 */
-	body {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-    }
 </style>
 </head>
 <body>
