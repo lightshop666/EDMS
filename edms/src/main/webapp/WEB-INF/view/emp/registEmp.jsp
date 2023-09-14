@@ -118,7 +118,7 @@
             });
         	
         	
-			//사원번호 생성
+			// 사원번호 생성
 			$("#empNoMaker").click(function(){
 				$.ajax({
 					type: "POST",
@@ -132,7 +132,28 @@
 				});
 			});
         	
-        	
+		    // 등록 버튼 클릭 시
+		    $('#saveBtn').click(function(event) {
+		    	// 공백 유효성 검사
+				// 입력 필드에서 값 가져오기
+				var empNo = $('#empNo').val();
+		        var empName = $('#empName').val();
+		        var employDate = $('#employDate').val();
+		        
+		    	console.log('empNo : ' + empNo);
+				console.log('empName : ' + empName);
+				console.log('employDate : ' + employDate);
+		        event.preventDefault()
+		        // validateForm() 함수 호출
+		        if (empNo === "" || empName === "" || employDate === "") {
+		            alert("필수 입력 항목을 모두 작성해주세요."); // 실패시 알림
+		            return false;
+		        } else {
+		            // 폼이 유효할 시 제출
+		            $('#form').submit();
+		        }
+		    });
+		    
 		});
 	</script>
 <style>
@@ -216,19 +237,19 @@
 	<h1 class="text-center">사원 등록</h1>
 	<br>
 	<!-- 사원 정보 등록 -->
-	<form action="${pageContext.request.contextPath}/emp/registEmp" method="post"><!-- 성공 시 사원목록 페이지로 -->
+	<form action="${pageContext.request.contextPath}/emp/registEmp" method="post" id="form"><!-- 성공 시 사원목록 페이지로 -->
 		<!-- 재직과, 남은휴가일수는 고정되어있으므로 hidden 타입으로 제출 -->
 		<input type="hidden" name="empState" value="재직">
 		
 		<table class="table">
 			<tr>
 				<td>사원번호</td>
-				<td><input type="number" class="form-control" name="empNo" value="${empNo}"></td><!-- 직접 입력 / 사원번호 랜덤 생성 후 자동 입력 -->
+				<td><input type="number" class="form-control" id="empNo" name="empNo" value="${empNo}"></td><!-- 직접 입력 / 사원번호 랜덤 생성 후 자동 입력 -->
 				<td><button type="button" class="btn btn-primary" id="empNoMaker">사원번호 생성</button></td>
 			</tr>
 			<tr>
 				<td>사원명</td>
-				<td colspan="2"><input type="text" class="form-control" name="empName"></td>
+				<td colspan="2"><input type="text" class="form-control" id="empName" name="empName"></td>
 			</tr>
 			<tr>
 				<td>부서명</td>
@@ -278,7 +299,7 @@
 			<tr>
 				<td>입사일</td>
 				<td colspan="2">
-					<input type="date" class="form-control" name="employDate">
+					<input type="date" class="form-control" name="employDate" id="employDate">
 				</td>
 			</tr>
 		</table>

@@ -205,10 +205,8 @@ public class BoardController {
 	    model.addAttribute("minPage", minPage); // 페이지네이션에서 사용될 가장 작은 페이지 범위
 	    model.addAttribute("maxPage", maxPage); // 페이지네이션에서 사용될 가장 큰 페이지 범위
 	    model.addAttribute("param", param); // 파라미터 값
-	    model.addAttribute("boardCategory", boardCategory); // 정렬값 유지
-	    model.addAttribute("searchCol", searchCol); // 검색 항목 값
-	    model.addAttribute("searchWord", searchWord); // 검색 값
 	    model.addAttribute("accessLevel", accessLevel); // 권한
+	    model.addAttribute("currentPage", currentPage); // 현재페이지
 	    
 		return "/board/boardList";
 	}

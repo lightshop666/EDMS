@@ -582,7 +582,7 @@
 		<ul class="pagination justify-content-center">
 	        <c:if test="${minPage > 1}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage - 1}" aria-label="Previous">
+	                <a class="page-link" href="/emp/empList?currentPage=${currentPage-1}&startDate=${param.startDate}&endDate=${param.endDate}&empDate=${param.empDate}&ascDesc=${param.ascDesc}&col=${param.col}&deptName=${param.deptName}&teamName=${param.teamName}&empPosition=${param.empPosition}&searchCol=${param.searchCol}&searchWord=${param.searchWord}" aria-label="Previous">
 	                    <span aria-hidden="true">&laquo;</span>
 	                    <span class="sr-only">이전</span>
 	                </a>
@@ -596,7 +596,7 @@
 	                        <span class="page-link current-page">${i}</span>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${i}">${i}</a>
+	                        <a class="page-link" href="/emp/empList?currentPage=${i}&startDate=${param.startDate}&endDate=${param.endDate}&empDate=${param.empDate}&ascDesc=${param.ascDesc}&col=${param.col}&deptName=${param.deptName}&teamName=${param.teamName}&empPosition=${param.empPosition}&searchCol=${param.searchCol}&searchWord=${param.searchWord}">${i}</a>
 	                    </c:otherwise>
 	                </c:choose>
 	            </li>
@@ -604,7 +604,7 @@
 	        
 	        <c:if test="${lastPage > currentPage}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/emp/empList?currentPage=${currentPage + 1}" aria-label="Next">
+	                <a class="page-link" href="/emp/empList?currentPage=${currentPage+1}&startDate=${param.startDate}&endDate=${param.endDate}&empDate=${param.empDate}&ascDesc=${param.ascDesc}&col=${param.col}&deptName=${param.deptName}&teamName=${param.teamName}&empPosition=${param.empPosition}&searchCol=${param.searchCol}&searchWord=${param.searchWord}" aria-label="Next">
 	                    <span aria-hidden="true">&raquo;</span>
 	                    <span class="sr-only">다음</span>
 	                </a>

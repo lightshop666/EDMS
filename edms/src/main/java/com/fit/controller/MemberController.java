@@ -255,6 +255,7 @@ public class MemberController {
        model.addAttribute("minPage", minPage);
        model.addAttribute("maxPage", maxPage);
        model.addAttribute("lastPage", lastPage);
+       model.addAttribute("currentPage", currentPage);
        
        model.addAttribute("vacationByPeriod", vacationByPeriod); // 지급 연차
        model.addAttribute("remainDays", remainDays); // 남은 연차

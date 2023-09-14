@@ -220,7 +220,7 @@
 	    <ul class="pagination">
 	        <c:if test="${minPage > 1}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${currentPage - 1}" aria-label="Previous">
+	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${param.boardCategory}&searchCol=${param.searchCol}&searchWord=${param.searchWord}&currentPage=${currentPage - 1}" aria-label="Previous">
 	                    <span aria-hidden="true">&laquo;</span>
 	                    <span class="sr-only">이전</span>
 	                </a>
@@ -234,7 +234,7 @@
 	                        <span class="page-link current-page">${i}</span>
 	                    </c:when>
 	                    <c:otherwise>
-	                        <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${i}">${i}</a>
+	                        <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${param.boardCategory}&searchCol=${param.searchCol}&searchWord=${param.searchWord}&currentPage=${i}">${i}</a>
 	                    </c:otherwise>
 	                </c:choose>
 	            </li>
@@ -242,7 +242,7 @@
 	        
 	        <c:if test="${lastPage > currentPage}">
 	            <li class="page-item">
-	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${boardCategory}&currentPage=${currentPage + 1}" aria-label="Next">
+	                <a class="page-link" href="${pageContext.request.contextPath}/board/boardList?boardCategory=${param.boardCategory}&currentPage=${currentPage + 1}&searchCol=${param.searchCol}&searchWord=${param.searchWord}" aria-label="Next">
 	                    <span aria-hidden="true">&raquo;</span>
 	                    <span class="sr-only">다음</span>
 	                </a>
