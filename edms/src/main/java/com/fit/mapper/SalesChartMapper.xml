@@ -40,9 +40,9 @@
 		    approval a ON sd.approval_no = a.approval_no
 		WHERE
 			a.approval_state = '결재완료'
-			AND sdc.createdate = (
-				SELECT MAX(createdate)
-				FROM sales_draft_content
+			AND sd.sales_date = (
+				SELECT MAX(sales_date)
+				FROM sales_draft
 				)
 	</select>
 	
