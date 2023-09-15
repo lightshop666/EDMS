@@ -212,7 +212,7 @@ $(document).ready(function() {
 			
 			<!-- 채팅 내용 출력부분 -->
 			<div class="col-lg-9  col-xl-10">
-				<div class="chat-box scrollable position-relative" style="height: calc(100vh - 111px);">			
+				<div class="chat-box scrollable position-relative" style="height: calc(80vh - 111px);">			
 					 <ul class="chat-list list-style-none px-3 pt-3"></ul>				    
 				</div>
 				
