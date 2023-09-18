@@ -149,7 +149,7 @@
 		           	<div class="card">
 		               	<div class="card-body" style="text-align: center;">
 		                   	<h4 id="card-title" class="card-title">
-		                   		<span id="tagetMonth"></span> 매출현황</h4>
+		                   		최종 매출현황 - <span id="tagetMonth"></span></h4>
 		                       <ul id="chart-legend" class="list-inline text-end"></ul>
 		                   	<div id="morris-donut-chart"></div>
 		               	</div>
@@ -160,7 +160,7 @@
 		       	<div class="col-lg-8">
 		       		<div class="card">
 		               	<div class="card-body" style="text-align: center;">
-		                   	<h4 id="card-title" class="card-title">품목별 목표달성률 - 최근 3개월</h4>
+		                   	<h4 id="card-title" class="card-title">품목별 목표달성률 - 분기별</h4>
 		                       <ul id="chart-legend" class="list-inline text-end"></ul>
 		                   	<div id="morris-bar-chart"></div>
 		               	</div>
