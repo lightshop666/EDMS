@@ -300,7 +300,7 @@
 		<br>
 		 <div class="d-flex justify-content-between">
              <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
-             <button type="submit" class="btn btn-success" id="saveBtn">등록</button>
+             <button type="submit" class="btn btn-primary" id="saveBtn">등록</button>
          </div>
 	</form>
 </div>	

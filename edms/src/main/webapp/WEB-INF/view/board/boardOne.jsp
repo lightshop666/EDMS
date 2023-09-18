@@ -197,9 +197,10 @@
 <!-- 이 안에 각자 페이지 넣으시면 됩니다 -->
 	<h2 class="center">공지 상세</h2>
 	<br>
+	<br>
 	<table class="table">
 		<tr id="diveder-top">
-			<th colspan="2" class="center table-active black"><h3>${boardOne.boardTitle}</h3></th>
+			<th colspan="2" class="center table-active black"><h3>제목 : ${boardOne.boardTitle}</h3></th>
 		</tr>
 		<tr class="right" id="diveder-all">
 			<td colspan="2">작성자: ${boardOne.deptName}_${boardOne.empName}&nbsp;&nbsp;&nbsp;&nbsp;수정일: ${boardOne.updatedate}</td>
@@ -211,6 +212,7 @@
 				<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 			   
 				<div class="text-container">
+					<h3 class="black center">내용</h3>
 			       <textarea id="text-container" name="boardContent" class="summernote" readonly>${boardOne.boardContent}</textarea>
 			    </div>
 		    </td>

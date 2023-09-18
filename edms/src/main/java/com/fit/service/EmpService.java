@@ -28,7 +28,7 @@ public class EmpService {
 	
 	
 	//사번 생성
-   public int generateNewEmpNo() {
+	public int generateNewEmpNo() {
 	    // DB에서 가장 최근 emp_no를 가져옵니다.
 		Integer lastEmpNo = empMapper.findLastEmpNo();
 	    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 생성 lastEmpNo :  "+ lastEmpNo + CC.RESET);
@@ -54,11 +54,6 @@ public class EmpService {
 	    log.debug(CC.WOO +"EMP서비스.generateNewEmpNo 마지막 사번이 올해가 아닌 경우"+ CC.RESET);
 		return (currentYear * 1000) + 1;
 	}
-
-
-	
-	
-	
 	
 	// 인사정보 조회 (emp_info)
 	public EmpInfo selectEmp(int empNo) {

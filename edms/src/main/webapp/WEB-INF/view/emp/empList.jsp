@@ -363,9 +363,9 @@
 	        <div class="form-group" style="width: 150px; margin-left: 30px; margin-right: 20px;">
 			    <select name="deptName" class="form-control">
 			        <option value="" <c:if test="${param.deptName.equals('')}">selected</c:if>>전체</option>
-			        <option value="사업추진본부" <c:if test="${param.deptName.equals('사업추진본부')}">selected</c:if>>사업추진본부</option>
-			        <option value="경영지원본부" <c:if test="${param.deptName.equals('경영지원본부')}">selected</c:if>>경영지원본부</option>
-			        <option value="영업지원본부" <c:if test="${param.deptName.equals('영업지원본부')}">selected</c:if>>영업지원본부</option>
+			        <c:forEach var="d" items="${deptList}">
+			        	<option value="${d.deptName}" <c:if test="${param.deptName.equals(d.deptName)}">selected</c:if>>${d.deptName}</option>
+			    	</c:forEach>
 			    </select>
 		    </div>
 		    
@@ -374,10 +374,10 @@
 	        </div>
 	        <div class="form-group" style="width: 150px;">
 				<select name="teamName" class="form-control">
-				    <option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
-				    <option value="기획팀" <c:if test="${param.teamName.equals('기획팀')}">selected</c:if>>기획팀</option>
-				    <option value="경영팀" <c:if test="${param.teamName.equals('경영팀')}">selected</c:if>>경영팀</option>
-				    <option value="영업팀" <c:if test="${param.teamName.equals('영업팀')}">selected</c:if>>영업팀</option>
+					<option value="" <c:if test="${param.teamName.equals('')}">selected</c:if>>전체</option>
+					<c:forEach var="t" items="${teamList}">
+						<option value="${t.teamName}" <c:if test="${param.teamName.equals(t.teamName)}">selected</c:if>>${t.teamName}</option>
+					</c:forEach>
 				</select>
 		    </div>
 		    
@@ -444,8 +444,8 @@
 <!-- [끝] 엑셀 ------>
 	
 <!-- [시작] 관리자 리스트 출력 ------->	
-	<table class="table">
-		<tr class="table-primary"><!-- 관리자만 초기화 가능 -->
+	<table class="table border table-striped table-bordered text-nowrap">
+		<tr><!-- 관리자만 초기화 가능 -->
 			<c:if test="${accessLevel >= 3}">
                 <th>비밀번호 초기화</th>
             </c:if>

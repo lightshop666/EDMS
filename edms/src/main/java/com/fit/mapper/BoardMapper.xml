@@ -82,7 +82,8 @@
 					    b.board_content boardContent,
 					    b.top_exposure topExposure,
 					    DATE_FORMAT(b.createdate, '%Y-%m-%d') createdate,
-					    e.emp_name empName
+					    e.emp_name empName,
+					    1 top
 					FROM
 					    board b JOIN emp_info e ON b.emp_no = e.emp_no    
 					WHERE
@@ -99,7 +100,6 @@
 			        <if test="searchCol == 'empName' and searchWord != ''">
 			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 			        </if>
-			        ORDER BY b.createdate DESC
 					LIMIT 3
 				)
 			    
@@ -114,7 +114,8 @@
 					    b.board_content boardContent,
 					    b.top_exposure topExposure,
 					    DATE_FORMAT(b.createdate, '%Y-%m-%d') createdate,
-					    e.emp_name empName
+					    e.emp_name empName,
+					    2 top
 					FROM
 					    board b JOIN emp_info e ON b.emp_no = e.emp_no    
 				    WHERE
@@ -131,9 +132,9 @@
 			        <if test="searchCol == 'empName' and searchWord != ''">
 			            AND e.emp_name LIKE CONCAT('%', #{searchWord}, '%')
 			        </if>
-			        ORDER BY b.createdate DESC
 			    )
 		    ) AS boardList
+		    ORDER BY top, createdate DESC
 	    LIMIT #{beginRow}, #{rowPerPage}
 	</select>
 	

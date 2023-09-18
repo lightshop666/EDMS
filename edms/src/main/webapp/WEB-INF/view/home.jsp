@@ -263,7 +263,7 @@
 				    <!------------ 중요 공지 목록 시작 ------------->   	
 					<div class="col-lg-6">
 						<h3 class="center" style="color:black; text-align:center;">공지사항</h3>
-						<table class="table">
+						<table class="table center">
 							<tr>
 								<th>공지</th>
 								<th>제목</th>

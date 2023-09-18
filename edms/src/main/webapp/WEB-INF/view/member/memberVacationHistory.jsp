@@ -144,8 +144,8 @@
 			<div class="card-group text-center">
 				<div class="card">
 					<div class="card-body">
-						<h2 class="card-title">지급연차</h2>
-						<h2 class="card-title">${vacationByPeriod}일</h2>
+						<h3 class="card-title">지급연차</h3>
+						<h3 class="card-title">${vacationByPeriod}일</h3>
 					</div>
 				</div>
 			</div>
@@ -154,8 +154,8 @@
 			<div class="card-group text-center">
 				<div class="card">
 					<div class="card-body">
-						<h2 class="card-title">남은연차</h2>
-						<h2 class="card-title">${remainDays}일</h2>
+						<h3 class="card-title">남은연차</h3>
+						<h3 class="card-title">${remainDays}일</h3>
 					</div>
 				</div>
 			</div>
@@ -164,8 +164,8 @@
 			<div class="card-group text-center">
 				<div class="card">
 					<div class="card-body">
-						<h2 class="card-title">남은보상휴가</h2>
-						<h2 class="card-title">${remainRewardDays}일</h2>
+						<h3 class="card-title">남은보상휴가</h3>
+						<h3 class="card-title">${remainRewardDays}일</h3>
 					</div>
 				</div>
 			</div>

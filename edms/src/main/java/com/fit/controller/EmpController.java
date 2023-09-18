@@ -225,7 +225,10 @@ public class EmpController {
 		int maxPage = commonPagingService.getMaxPage(minPage, pagePerPage, lastPage);
 		log.debug(CC.YE + "EmpController.empList() maxPage: " + maxPage + CC.RESET);
 		
-	    // 5. 모델값 view에 전달
+		// 5. 부서명, 팀명 리스트
+		Map<String, Object> result = empService.getDeptAndTeamList();
+	    
+		// 6. 모델값 view에 전달
 	    model.addAttribute("enrichedEmpList", enrichedEmpList); // 사원 목록 리스트
 	    model.addAttribute("accessLevel", accessLevel); // 권한
 	    model.addAttribute("totalCount", totalCount); // 전체 행 개수
@@ -238,6 +241,8 @@ public class EmpController {
         model.addAttribute("serviceId", serviceId);
         model.addAttribute("emailTemplateId2", emailTemplateId2);
 	    model.addAttribute("empState", empState);
+	    model.addAttribute("deptList", result.get("deptList"));
+	    model.addAttribute("teamList", result.get("teamList"));
 	    
 	    return "/emp/empList"; // 사원 목록 페이지로 이동
     }
